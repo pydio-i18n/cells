@@ -25,28 +25,22 @@ import (
 	"context"
 	"fmt"
 	"html/template"
-	"net"
 	"runtime"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
 	"github.com/micro/go-micro/broker"
-	"github.com/micro/go-micro/client"
 	"github.com/micro/go-micro/registry"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/common"
-	"github.com/pydio/cells/common/log"
-	defaults "github.com/pydio/cells/common/micro"
-	registry2 "github.com/pydio/cells/common/registry"
-	servicecontext "github.com/pydio/cells/common/service/context"
-	proto "github.com/pydio/cells/common/service/proto"
-
+	"github.com/pydio/cells/common/caddy/hooks"
 	_ "github.com/pydio/cells/common/caddy/proxy"
+	"github.com/pydio/cells/common/log"
+	servicecontext "github.com/pydio/cells/common/service/context"
 )
 
 const (
@@ -56,10 +50,8 @@ const (
 var (
 	mainCaddy = &Caddy{}
 	FuncMap   = template.FuncMap{
-		"urls":           internalURLFromServices,
-		"serviceAddress": addressFromService,
+		"urls": internalURLFromServices,
 	}
-	restartChan        chan bool
 	restartRequired    bool
 	gatewayCtx         = servicecontext.WithServiceName(context.Background(), common.ServiceGatewayProxy)
 	LastKnownCaddyFile string
@@ -70,16 +62,16 @@ func init() {
 	caddy.AppName = common.PackageLabel
 	caddy.AppVersion = common.Version().String()
 	httpserver.GracefulTimeout = 30 * time.Second
-	restartChan = make(chan bool, 1)
 	dirOnce = &sync.Once{}
 
 	go watchRestart()
+	go watchStop()
 }
 
 func watchRestart() {
 	for {
 		select {
-		case <-restartChan:
+		case <-hooks.RestartChan:
 			log.Logger(context.Background()).Debug("Received Proxy Restart Event")
 			restartRequired = true
 		case <-time.After(caddyRestartDebounce):
@@ -92,22 +84,22 @@ func watchRestart() {
 	}
 }
 
+func watchStop() {
+	for range hooks.StopChan {
+		Stop()
+	}
+}
+
 // Caddy contains the templates and functions for building a dynamic caddyfile
 type Caddy struct {
 	caddyfile     string
 	caddytemplate *template.Template
-	player        TemplateFunc
-	pathes        []string
-	templates     []TemplateFunc
-	configPaths   [][]string
+	player        hooks.TemplateFunc
 	instance      *caddy.Instance
 }
 
-// TemplateFunc is a function providing a stringer
-type TemplateFunc func(site ...SiteConf) (*bytes.Buffer, error)
-
 // Enable the caddy builder
-func Enable(caddyfile string, player TemplateFunc) {
+func Enable(caddyfile string, player hooks.TemplateFunc) {
 	dirOnce.Do(func() {
 		httpserver.RegisterDevDirective("pydioproxy", "proxy")
 	})
@@ -140,18 +132,7 @@ func Get() *Caddy {
 	return mainCaddy
 }
 
-// RegisterPluginTemplate adds a TemplateFunc to be called for each plugin
-func RegisterPluginTemplate(fn TemplateFunc, watchConfigPath []string, pathes ...string) error {
-
-	mainCaddy.pathes = append(mainCaddy.pathes, pathes...)
-	mainCaddy.templates = append(mainCaddy.templates, fn)
-	if len(watchConfigPath) > 0 {
-		mainCaddy.configPaths = append(mainCaddy.configPaths, watchConfigPath)
-	}
-
-	return nil
-}
-
+// Start caddy
 func Start() error {
 	// load caddyfile
 	caddyfile, err := caddy.LoadCaddyfile("http")
@@ -175,14 +156,6 @@ func Stop() error {
 	instance := GetInstance()
 	instance.ShutdownCallbacks()
 	instance.Stop()
-
-	return nil
-}
-
-func Restart() error {
-	go func() {
-		restartChan <- true
-	}()
 
 	return nil
 }
@@ -260,18 +233,6 @@ func (c *Caddy) GetTemplate() *template.Template {
 	return c.caddytemplate
 }
 
-func GetPathes() []string {
-	return mainCaddy.pathes
-}
-
-func GetTemplates() []TemplateFunc {
-	return mainCaddy.templates
-}
-
-func GetConfigPaths() [][]string {
-	return mainCaddy.configPaths
-}
-
 func ServiceReady(name string) bool {
 	services, _ := registry.GetService(name)
 	for _, service := range services {
@@ -295,40 +256,10 @@ func internalURLFromServices(name string, uri ...string) string {
 
 	if len(res) == 0 {
 		go func() {
-			restartChan <- true
+			hooks.RestartChan <- true
 		}()
 		return "PENDING"
 	}
 
 	return strings.Join(res, " ")
-}
-
-func addressFromService(name string) string {
-
-	// List available instances
-	services, _ := registry.GetService(name)
-	c := proto.NewService(name, defaults.NewClient())
-	var urls []string
-
-	for _, service := range services {
-		for _, node := range service.Nodes {
-			add := fmt.Sprintf("%s:%d", node.Address, node.Port)
-			selector := registry2.FixedInstanceSelector(name, add)
-			r, err := c.Status(context.Background(), &empty.Empty{}, client.WithSelectOption(selector))
-			if err != nil || !r.GetOK() {
-				continue
-			}
-			a := r.Address
-			// Append node host to response
-			if h, p, e := net.SplitHostPort(a); e == nil && h == "" {
-				a = net.JoinHostPort(node.Address, p)
-			}
-			urls = append(urls, a)
-		}
-	}
-	if len(urls) == 0 {
-		return "NOT_AVAILABLE"
-	}
-
-	return strings.Join(urls, " ")
 }

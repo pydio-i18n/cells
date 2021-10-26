@@ -29,10 +29,6 @@ import (
 	"path/filepath"
 	"time"
 
-	servicecontext "github.com/pydio/cells/common/service/context"
-
-	"github.com/pydio/cells/common/caddy"
-
 	"github.com/gorilla/mux"
 	"github.com/lpar/gzipped"
 	"github.com/micro/go-micro"
@@ -40,12 +36,14 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/common"
+	"github.com/pydio/cells/common/caddy/hooks"
 	"github.com/pydio/cells/common/config"
 	"github.com/pydio/cells/common/log"
 	defaults "github.com/pydio/cells/common/micro"
 	"github.com/pydio/cells/common/plugins"
 	"github.com/pydio/cells/common/proto/front"
 	"github.com/pydio/cells/common/service"
+	servicecontext "github.com/pydio/cells/common/service/context"
 	"github.com/pydio/cells/common/service/frontend"
 	"github.com/pydio/cells/frontend/front-srv/web/index"
 )
@@ -119,7 +117,7 @@ func init() {
 				return routerWithTimeout
 			}),
 			service.AfterStart(func(_ service.Service) error {
-				return caddy.Restart()
+				return hooks.Restart()
 			}),
 		)
 	})

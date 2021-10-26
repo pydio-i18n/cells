@@ -23,11 +23,12 @@ package rest
 import (
 	"time"
 
+	"github.com/pydio/cells/common/caddy/hooks"
+
 	"github.com/emicklei/go-restful"
 	"github.com/jcuga/golongpoll"
 	"go.uber.org/zap"
 
-	"github.com/pydio/cells/common/caddy"
 	"github.com/pydio/cells/common/log"
 	"github.com/pydio/cells/common/proto/install"
 	"github.com/pydio/cells/common/service"
@@ -128,7 +129,7 @@ func (h *Handler) PostInstall(req *restful.Request, rsp *restful.Response) {
 
 	go func() {
 		<-time.After(3 * time.Second)
-		caddy.Stop()
+		hooks.Stop()
 		h.eventManager.Shutdown()
 	}()
 }

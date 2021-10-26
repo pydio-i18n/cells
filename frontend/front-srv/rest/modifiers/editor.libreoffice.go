@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/common"
-	"github.com/pydio/cells/common/caddy"
+	"github.com/pydio/cells/common/caddy/hooks"
 	"github.com/pydio/cells/common/config"
 	"github.com/pydio/cells/common/log"
 	"github.com/pydio/cells/common/plugins"
@@ -52,12 +52,12 @@ type EditorLibreOffice struct {
 	Enabled   bool
 	WOPI      string
 	Collabora *url.URL
-	Site      caddy.SiteConf
+	Site      interface{}
 }
 
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
-		caddy.RegisterPluginTemplate(
+		hooks.RegisterPluginTemplate(
 			play,
 			[]string{"frontend", "plugin", "editor.libreoffice"},
 			"/wopi/",
@@ -66,7 +66,7 @@ func init() {
 			"/lool/",
 		)
 
-		tmpl, err := template.New("caddyfile").Funcs(caddy.FuncMap).Parse(editorLibreOfficeTemplateStr)
+		tmpl, err := template.New("caddyfile").Parse(editorLibreOfficeTemplateStr)
 		if err != nil {
 			log.Fatal("Could not read template ", zap.Error(err))
 		}
@@ -75,13 +75,13 @@ func init() {
 	})
 }
 
-func play(site ...caddy.SiteConf) (*bytes.Buffer, error) {
+func play(sites ...interface{}) (*bytes.Buffer, error) {
 
 	data := &EditorLibreOffice{
 		WOPI: common.ServiceGatewayWopi,
 	}
-	if len(site) > 0 {
-		data.Site = site[0]
+	if len(sites) > 0 {
+		data.Site = sites[0]
 	}
 
 	if enabled, u, err := getCollaboraConfig(); err != nil {

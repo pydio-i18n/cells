@@ -9,7 +9,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/pydio/cells/common/caddy"
+	"github.com/pydio/cells/common/caddy/hooks"
 	"github.com/pydio/cells/common/config"
 	"github.com/pydio/cells/common/log"
 	"github.com/pydio/cells/common/plugins"
@@ -32,19 +32,19 @@ var (
 
 type actionLivekitData struct {
 	LivekitURL string
-	Site       caddy.SiteConf
+	Site       interface{}
 }
 
 func init() {
 	if os.Getenv("CELLS_ENABLE_LIVEKIT") != "" {
 		plugins.Register("main", func(ctx context.Context) {
-			caddy.RegisterPluginTemplate(
+			hooks.RegisterPluginTemplate(
 				playLK,
 				[]string{"frontend", "plugin", "action.livekit"},
 				"/rtc",
 			)
 
-			tmpl, err := template.New("caddyfile").Funcs(caddy.FuncMap).Parse(actionLivekitTemplateStr)
+			tmpl, err := template.New("caddyfile").Parse(actionLivekitTemplateStr)
 			if err != nil {
 				log.Fatal("Could not read template ", zap.Error(err))
 			}
@@ -54,12 +54,12 @@ func init() {
 	}
 }
 
-func playLK(site ...caddy.SiteConf) (*bytes.Buffer, error) {
+func playLK(sites ...interface{}) (*bytes.Buffer, error) {
 
 	data := new(actionLivekitData)
 
-	if len(site) > 0 {
-		data.Site = site[0]
+	if len(sites) > 0 {
+		data.Site = sites[0]
 	}
 
 	enabled := config.Get("frontend", "plugin", "action.livekit", config.KeyFrontPluginEnabled).Bool()

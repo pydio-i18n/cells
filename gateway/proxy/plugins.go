@@ -41,6 +41,7 @@ import (
 
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/caddy"
+	"github.com/pydio/cells/common/caddy/hooks"
 	_ "github.com/pydio/cells/common/caddy/proxy"
 	"github.com/pydio/cells/common/config"
 	"github.com/pydio/cells/common/log"
@@ -219,7 +220,7 @@ var (
 		if {path} not_starts_with "/ws/"
 		if {path} not_starts_with "/plug/"
 		if {path} not_starts_with "/dav"
-		{{range $.PluginPathes}}
+		{{range $.PluginPaths}}
 		if {path} not_starts_with "{{.}}"
 		{{end}}
 		if {path} not_starts_with "{{$.PublicBaseUri}}/"
@@ -267,8 +268,8 @@ var (
 		// Front service is pre-checked before template generation
 		FrontReady bool
 		// Additional modifiers used for templating
-		PluginTemplates []caddy.TemplateFunc
-		PluginPathes    []string
+		PluginTemplates []hooks.TemplateFunc
+		PluginPaths     []string
 	}{
 		MicroService:     common.ServiceMicroApi,
 		OAuthService:     common.ServiceWebNamespace_ + common.ServiceOAuth,
@@ -301,7 +302,7 @@ func init() {
 
 				logFunc := log.Logger(s.Options().Context).Debug
 				restartFunc := func() {
-					caddy.Restart()
+					hooks.Restart()
 				}
 				watcher := newWatcher(logFunc, restartFunc)
 
@@ -311,7 +312,7 @@ func init() {
 				}
 
 				// Watching plugins
-				for _, cPath := range caddy.GetConfigPaths() {
+				for _, cPath := range hooks.GetConfigPaths() {
 					err := watcher.subscribeToConfigs(cPath...)
 					if err != nil {
 						return err
@@ -347,7 +348,7 @@ func (g *gatewayProxyServer) Start() error {
 					caddytls.Agreed = true
 				}
 				if le.StagingCA {
-					caddytls.DefaultCAUrl = caddy.DefaultCaStagingUrl
+					caddytls.DefaultCAUrl = common.DefaultCaStagingUrl
 				}
 				useLE = true
 				break
@@ -375,8 +376,8 @@ func (g *gatewayProxyServer) Start() error {
 		}
 	}
 
-	caddyconf.PluginTemplates = caddy.GetTemplates()
-	caddyconf.PluginPathes = caddy.GetPathes()
+	caddyconf.PluginTemplates = hooks.GetTemplates()
+	caddyconf.PluginPaths = hooks.GetPluginPaths()
 
 	err := caddy.Start()
 	if err != nil {
@@ -415,7 +416,7 @@ func (g *gatewayProxyServer) Stop() error {
 	return nil
 }
 
-func play(site ...caddy.SiteConf) (*bytes.Buffer, error) {
+func play(site ...interface{}) (*bytes.Buffer, error) {
 	LoadCaddyConf()
 
 	template := caddy.Get().GetTemplate()

@@ -26,21 +26,20 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/mholt/caddy/caddytls"
 	"github.com/pkg/errors"
+
+	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/caddy/maintenance"
 	"github.com/pydio/cells/common/config"
-	"github.com/pydio/cells/discovery/install/assets"
-
-	"github.com/mholt/caddy/caddytls"
 	"github.com/pydio/cells/common/crypto/providers"
 	"github.com/pydio/cells/common/proto/install"
+	"github.com/pydio/cells/discovery/install/assets"
 )
 
-var (
-	DefaultCaUrl        = "https://acme-v02.api.letsencrypt.org/directory"
-	DefaultCaStagingUrl = "https://acme-staging-v02.api.letsencrypt.org/directory"
-)
+var maintenanceDir string
 
+// SiteConf wraps install.ProxyConfig with caddy-specific configurations
 type SiteConf struct {
 	*install.ProxyConfig
 	// Parsed values from proto oneOf
@@ -53,6 +52,7 @@ type SiteConf struct {
 	WebRoot string
 }
 
+// Redirects returns computed redirects - This function is used inside templates!
 func (s SiteConf) Redirects() map[string]string {
 	rr := make(map[string]string)
 	for _, bind := range s.GetBinds() {
@@ -79,7 +79,47 @@ func (s SiteConf) Redirects() map[string]string {
 	return rr
 }
 
-func SiteConfFromProxyConfig(pc *install.ProxyConfig) (SiteConf, error) {
+// SitesToCaddyConfigs computes all SiteConf from all *install.ProxyConfig by analyzing
+// TLSConfig, ReverseProxyURL and Maintenance fields values
+func SitesToCaddyConfigs(sites []*install.ProxyConfig) (caddySites []SiteConf, er error) {
+	for _, proxyConfig := range sites {
+		if bc, er := computeSiteConf(proxyConfig); er == nil {
+			caddySites = append(caddySites, bc)
+			if proxyConfig.HasTLS() && proxyConfig.GetLetsEncrypt() != nil {
+				le := proxyConfig.GetLetsEncrypt()
+				if le.AcceptEULA {
+					caddytls.Agreed = true
+				}
+				if le.StagingCA {
+					caddytls.DefaultCAUrl = common.DefaultCaStagingUrl
+				} else {
+					caddytls.DefaultCAUrl = common.DefaultCaUrl
+				}
+			}
+		} else {
+			return caddySites, er
+		}
+	}
+	return caddySites, nil
+}
+
+// GetMaintenanceRoot provides a static root folder for serving maintenance page
+func GetMaintenanceRoot() (string, error) {
+	if maintenanceDir != "" {
+		return maintenanceDir, nil
+	}
+	dir, err := assets.GetAssets("./maintenance/src")
+	if err != nil {
+		dir = filepath.Join(config.ApplicationWorkingDir(), "static", "maintenance")
+		if _, _, err := assets.RestoreAssets(dir, maintenance.PydioMaintenanceBox, nil); err != nil {
+			return "", errors.Wrap(err, "could not restore maintenance package")
+		}
+	}
+	maintenanceDir = dir
+	return dir, nil
+}
+
+func computeSiteConf(pc *install.ProxyConfig) (SiteConf, error) {
 	bc := SiteConf{
 		ProxyConfig: proto.Clone(pc).(*install.ProxyConfig),
 	}
@@ -113,43 +153,4 @@ func SiteConfFromProxyConfig(pc *install.ProxyConfig) (SiteConf, error) {
 		bc.WebRoot = mDir
 	}
 	return bc, nil
-}
-
-func SitesToCaddyConfigs(sites []*install.ProxyConfig) (caddySites []SiteConf, er error) {
-	for _, proxyConfig := range sites {
-		if bc, er := SiteConfFromProxyConfig(proxyConfig); er == nil {
-			caddySites = append(caddySites, bc)
-			if proxyConfig.HasTLS() && proxyConfig.GetLetsEncrypt() != nil {
-				le := proxyConfig.GetLetsEncrypt()
-				if le.AcceptEULA {
-					caddytls.Agreed = true
-				}
-				if le.StagingCA {
-					caddytls.DefaultCAUrl = DefaultCaStagingUrl
-				} else {
-					caddytls.DefaultCAUrl = DefaultCaUrl
-				}
-			}
-		} else {
-			return caddySites, er
-		}
-	}
-	return caddySites, nil
-}
-
-var maintenanceDir string
-
-func GetMaintenanceRoot() (string, error) {
-	if maintenanceDir != "" {
-		return maintenanceDir, nil
-	}
-	dir, err := assets.GetAssets("./maintenance/src")
-	if err != nil {
-		dir = filepath.Join(config.ApplicationWorkingDir(), "static", "maintenance")
-		if _, _, err := assets.RestoreAssets(dir, maintenance.PydioMaintenanceBox, nil); err != nil {
-			return "", errors.Wrap(err, "could not restore maintenance package")
-		}
-	}
-	maintenanceDir = dir
-	return dir, nil
 }
