@@ -23,10 +23,12 @@ package oauth
 import (
 	"context"
 	sql2 "database/sql"
+	"embed"
 	"fmt"
 	"time"
 
-	"github.com/pydio/packr"
+	"github.com/pydio/cells/common/utils/statics"
+
 	migrate "github.com/rubenv/sql-migrate"
 
 	"github.com/pydio/cells/common/log"
@@ -38,6 +40,9 @@ import (
 )
 
 var (
+	//go:embed migrations/*
+	migrationsFS embed.FS
+
 	queries = map[string]string{
 		"insert":       `INSERT INTO idm_personal_tokens VALUES (?,CONCAT('sha256:', SHA2(?, 256)),?,?,?,?,?,?,?,?,?,?)`,
 		"updateExpire": `UPDATE idm_personal_tokens SET expire_at=? WHERE uuid=?`,
@@ -65,8 +70,8 @@ func (s *sqlImpl) Init(options configx.Values) error {
 	s.DAO.Init(options)
 
 	// Doing the database migrations
-	migrations := &sql.PackrMigrationSource{
-		Box:         packr.NewBox("../../idm/oauth/migrations"),
+	migrations := &sql.FSMigrationSource{
+		Box:         statics.AsFS(migrationsFS, "migrations"),
 		Dir:         s.Driver(),
 		TablePrefix: s.Prefix(),
 	}

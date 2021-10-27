@@ -22,21 +22,24 @@ package resources
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"time"
 
 	"github.com/patrickmn/go-cache"
-
-	"github.com/pydio/packr"
 	migrate "github.com/rubenv/sql-migrate"
+	"gopkg.in/doug-martin/goqu.v4"
 
 	service "github.com/pydio/cells/common/service/proto"
 	"github.com/pydio/cells/common/sql"
+	"github.com/pydio/cells/common/utils/statics"
 	"github.com/pydio/cells/x/configx"
-	"gopkg.in/doug-martin/goqu.v4"
 )
 
 var (
+	//go:embed migrations/*
+	migrations embed.FS
+
 	queries = map[string]string{
 		"AddRuleForResource":              "insert into %%PREFIX%%_policies (resource, action, subject, effect, conditions) values (?, ?, ?, ?, ?)",
 		"SelectRulesForResource":          "select * from %%PREFIX%%_policies where resource=?",
@@ -59,8 +62,8 @@ func (s *ResourcesSQL) Init(options configx.Values) error {
 
 	s.cache = cache.New(30*time.Second, 2*time.Minute)
 
-	migrations := &sql.PackrMigrationSource{
-		Box:         packr.NewBox("../../../common/sql/resources/migrations"),
+	migrations := &sql.FSMigrationSource{
+		Box:         statics.AsFS(migrations, "migrations"),
 		Dir:         "./" + s.Driver(),
 		TablePrefix: s.Prefix() + "_policies",
 	}

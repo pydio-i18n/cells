@@ -22,12 +22,14 @@ package key
 
 import (
 	"context"
+	"embed"
+
+	"github.com/pydio/cells/common/utils/statics"
 
 	sqldb "database/sql"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/micro/go-micro/errors"
-	"github.com/pydio/packr"
 	migrate "github.com/rubenv/sql-migrate"
 	"go.uber.org/zap"
 
@@ -38,6 +40,9 @@ import (
 )
 
 var (
+	//go:embed migrations/*
+	migrationsFS embed.FS
+
 	queries = map[string]interface{}{
 		"node_select":                   `SELECT * FROM enc_nodes WHERE node_id=?;`,
 		"node_insert":                   `INSERT INTO enc_nodes VALUES (?, ?);`,
@@ -73,8 +78,8 @@ func (h *sqlimpl) Init(options configx.Values) error {
 	}
 
 	// Doing the database migrations
-	migrations := &sql.PackrMigrationSource{
-		Box:         packr.NewBox("../../data/key/migrations"),
+	migrations := &sql.FSMigrationSource{
+		Box:         statics.AsFS(migrationsFS, "migrations"),
 		Dir:         h.Driver(),
 		TablePrefix: h.Prefix(),
 	}

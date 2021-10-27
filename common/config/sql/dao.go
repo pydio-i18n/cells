@@ -21,10 +21,12 @@
 package sql
 
 import (
+	"embed"
+
 	"github.com/pydio/cells/common/dao"
 	"github.com/pydio/cells/common/sql"
+	"github.com/pydio/cells/common/utils/statics"
 	"github.com/pydio/cells/x/configx"
-	"github.com/pydio/packr"
 	migrate "github.com/rubenv/sql-migrate"
 )
 
@@ -43,10 +45,14 @@ type DAO interface {
 	Set([]byte) error
 }
 
-var queries = map[string]interface{}{
-	"get": "select data from %%PREFIX%%_config where id = 1",
-	"set": "insert into %%PREFIX%%_config(id, data) values (1, ?) on duplicate key update data = ?",
-}
+var (
+	//go:embed migrations/*
+	migrationsFS embed.FS
+	queries      = map[string]interface{}{
+		"get": "select data from %%PREFIX%%_config where id = 1",
+		"set": "insert into %%PREFIX%%_config(id, data) values (1, ?) on duplicate key update data = ?",
+	}
+)
 
 type sqlimpl struct {
 	sql.DAO
@@ -58,8 +64,8 @@ func (s *sqlimpl) Init(options configx.Values) error {
 	// super
 	s.DAO.Init(options)
 
-	migrations := &sql.PackrMigrationSource{
-		Box:         packr.NewBox("../../../common/config/sql/migrations"),
+	migrations := &sql.FSMigrationSource{
+		Box:         statics.AsFS(migrationsFS, "migrations"),
 		Dir:         "./" + s.DAO.Driver(),
 		TablePrefix: s.DAO.Prefix(),
 	}

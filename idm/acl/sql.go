@@ -22,14 +22,16 @@ package acl
 
 import (
 	"context"
+	"embed"
 	"errors"
 	"fmt"
 	"time"
 
+	"github.com/pydio/cells/common/utils/statics"
+
 	"github.com/go-sql-driver/mysql"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
-	"github.com/pydio/packr"
 	migrate "github.com/rubenv/sql-migrate"
 	"go.uber.org/zap"
 	goqu "gopkg.in/doug-martin/goqu.v4"
@@ -41,6 +43,9 @@ import (
 )
 
 var (
+	//go:embed migrations/*
+	migrationsFS embed.FS
+
 	queries = map[string]string{
 		"AddACL":                  `insert into idm_acls (action_name, action_value, role_id, workspace_id, node_id) values (?, ?, ?, ?, ?)`,
 		"AddACLNode":              `insert into idm_acl_nodes (uuid) values (?)`,
@@ -67,8 +72,8 @@ func (dao *sqlimpl) Init(options configx.Values) error {
 	dao.DAO.Init(options)
 
 	// Doing the database migrations
-	migrations := &sql.PackrMigrationSource{
-		Box:         packr.NewBox("../../idm/acl/migrations"),
+	migrations := &sql.FSMigrationSource{
+		Box:         statics.AsFS(migrationsFS, "migrations"),
 		Dir:         dao.Driver(),
 		TablePrefix: dao.Prefix(),
 	}

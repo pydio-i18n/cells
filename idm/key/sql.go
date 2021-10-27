@@ -21,16 +21,21 @@
 package key
 
 import (
+	"embed"
+
 	"github.com/gogo/protobuf/proto"
 	"github.com/micro/go-micro/errors"
 	"github.com/pydio/cells/common/proto/encryption"
 	"github.com/pydio/cells/common/sql"
+	"github.com/pydio/cells/common/utils/statics"
 	"github.com/pydio/cells/x/configx"
-	"github.com/pydio/packr"
 	migrate "github.com/rubenv/sql-migrate"
 )
 
 var (
+	//go:embed migrations/*
+	migrationsFS embed.FS
+
 	queries = map[string]string{
 		"insert": `INSERT INTO idm_user_keys VALUES (?,?,?,?,?,?);`,
 		"update": `UPDATE idm_user_keys SET key_data=?,key_info=? WHERE owner=? AND key_id=?;`,
@@ -51,8 +56,8 @@ func (dao *sqlimpl) Init(options configx.Values) error {
 	dao.DAO.Init(options)
 
 	// Doing the database migrations
-	migrations := &sql.PackrMigrationSource{
-		Box:         packr.NewBox("../../idm/key/migrations"),
+	migrations := &sql.FSMigrationSource{
+		Box:         statics.AsFS(migrationsFS, "migrations"),
 		Dir:         dao.Driver(),
 		TablePrefix: dao.Prefix(),
 	}

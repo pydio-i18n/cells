@@ -25,6 +25,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/pydio/cells/common/utils/statics"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/mholt/caddy/caddytls"
 	"github.com/pkg/errors"
@@ -34,7 +36,6 @@ import (
 	"github.com/pydio/cells/common/config"
 	"github.com/pydio/cells/common/crypto/providers"
 	"github.com/pydio/cells/common/proto/install"
-	"github.com/pydio/cells/discovery/install/assets"
 )
 
 var maintenanceDir string
@@ -108,10 +109,10 @@ func GetMaintenanceRoot() (string, error) {
 	if maintenanceDir != "" {
 		return maintenanceDir, nil
 	}
-	dir, err := assets.GetAssets("./maintenance/src")
+	dir, err := statics.GetAssets("./maintenance/src")
 	if err != nil {
 		dir = filepath.Join(config.ApplicationWorkingDir(), "static", "maintenance")
-		if _, _, err := assets.RestoreAssets(dir, maintenance.PydioMaintenanceBox, nil); err != nil {
+		if _, _, err := statics.RestoreAssets(dir, maintenance.PydioMaintenanceBox, nil); err != nil {
 			return "", errors.Wrap(err, "could not restore maintenance package")
 		}
 	}

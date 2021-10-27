@@ -21,13 +21,15 @@
 package workspace
 
 import (
+	"embed"
 	"fmt"
 	"time"
+
+	"github.com/pydio/cells/common/utils/statics"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
 	"github.com/micro/go-micro/errors"
-	"github.com/pydio/packr"
 	migrate "github.com/rubenv/sql-migrate"
 	"gopkg.in/doug-martin/goqu.v4"
 
@@ -40,6 +42,9 @@ import (
 )
 
 var (
+	//go:embed migrations/*
+	migrationsFS embed.FS
+
 	queries = map[string]string{
 		"AddWorkspace":            `replace into idm_workspaces (uuid, label, description, attributes, slug, scope, last_updated) values (?, ?, ?, ?, ?, ?, ?)`,
 		"GetWorkspace":            `select uuid from idm_workspaces where uuid = ?`,
@@ -67,8 +72,8 @@ func (s *sqlimpl) Init(options configx.Values) error {
 		return err
 	}
 	// Doing the database migrations
-	migrations := &sql.PackrMigrationSource{
-		Box:         packr.NewBox("../../idm/workspace/migrations"),
+	migrations := &sql.FSMigrationSource{
+		Box:         statics.AsFS(migrationsFS, "migrations"),
 		Dir:         s.Driver(),
 		TablePrefix: s.Prefix(),
 	}

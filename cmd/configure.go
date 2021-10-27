@@ -32,8 +32,9 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/pydio/cells/common/utils/statics"
+
 	"github.com/manifoldco/promptui"
-	_ "github.com/mholt/caddy/caddyhttp"
 	"github.com/micro/go-micro/broker"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -372,10 +373,10 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 	initServices()
 
 	// Installing the JS data
-	dir, err := assets.GetAssets("../discovery/install/assets/src")
+	dir, err := statics.GetAssets("../discovery/install/assets/src")
 	if err != nil {
 		dir = filepath.Join(config.ApplicationWorkingDir(), "static", "install")
-		if _, _, err := assets.RestoreAssets(dir, assets.PydioInstallBox, nil); err != nil {
+		if _, _, err := statics.RestoreAssets(dir, assets.PydioInstallBox, nil); err != nil {
 			cmd.Println("Could not restore install package", err)
 			os.Exit(0)
 		}

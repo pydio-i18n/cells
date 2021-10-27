@@ -33,9 +33,6 @@ import (
 )
 
 var (
-	DefaultCaUrl        = "https://acme-v02.api.letsencrypt.org/directory"
-	DefaultCaStagingUrl = "https://acme-staging-v02.api.letsencrypt.org/directory"
-
 	tlsClientMutex  = &sync.Mutex{}
 	tlsClientConfig = make(map[string]*tls.Config)
 

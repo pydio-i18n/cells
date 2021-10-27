@@ -80,7 +80,7 @@ func init() {
 				},
 			}),
 			service.WithHTTP(func() http.Handler {
-				httpFs := frontend.GetPluginsFS()
+				httpFs := http.FS(frontend.GetPluginsFS())
 				fs := gzipped.FileServer(httpFs)
 
 				router := mux.NewRouter()
@@ -108,7 +108,7 @@ func init() {
 					// Reload FS
 					log.Logger(servicecontext.WithServiceName(ctx, common.ServiceGrpcNamespace_+common.ServiceFrontStatics)).Info("Reloading frontend plugins from file system")
 					frontend.HotReload()
-					httpFs = frontend.GetPluginsFS()
+					httpFs = http.FS(frontend.GetPluginsFS())
 					return nil
 				}); err != nil {
 					return nil

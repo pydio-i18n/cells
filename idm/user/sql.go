@@ -22,16 +22,18 @@ package user
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
 	"unicode"
 
+	"github.com/pydio/cells/common/utils/statics"
+
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
 	"github.com/micro/go-micro/errors"
-	"github.com/pydio/packr"
 	migrate "github.com/rubenv/sql-migrate"
 	"go.uber.org/zap"
 	"golang.org/x/text/transform"
@@ -55,6 +57,9 @@ const (
 )
 
 var (
+	//go:embed migrations/*
+	migrationsFS embed.FS
+
 	queries = map[string]string{
 		"AddAttribute":     `replace into idm_user_attributes (uuid, name, value) values (?, ?, ?)`,
 		"GetAttributes":    `select name, value from idm_user_attributes where uuid = ?`,
@@ -137,8 +142,8 @@ func (s *sqlimpl) Init(options configx.Values) error {
 	s.IndexSQL.FixRandHash2()
 
 	// Doing the database migrations
-	migrations := &sql.PackrMigrationSource{
-		Box:         packr.NewBox("../../idm/user/migrations"),
+	migrations := &sql.FSMigrationSource{
+		Box:         statics.AsFS(migrationsFS, "migrations"),
 		Dir:         s.Driver(),
 		TablePrefix: s.Prefix(),
 	}

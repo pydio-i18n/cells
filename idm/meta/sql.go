@@ -22,10 +22,12 @@ package meta
 
 import (
 	"context"
+	"embed"
 	"time"
 
+	"github.com/pydio/cells/common/utils/statics"
+
 	"github.com/pborman/uuid"
-	"github.com/pydio/packr"
 	migrate "github.com/rubenv/sql-migrate"
 	"go.uber.org/zap"
 
@@ -40,6 +42,9 @@ import (
 )
 
 var (
+	//go:embed migrations/*
+	migrationsFS embed.FS
+
 	queries = map[string]string{
 		"AddMeta":      `insert into idm_usr_meta (uuid, node_uuid, namespace, owner, timestamp, format, data) values (?, ?,?,?,?,?,?)`,
 		"UpdateMeta":   `update idm_usr_meta set node_uuid=?, namespace=?, owner=?, timestamp=?, format=?, data=? WHERE uuid=?`,
@@ -76,8 +81,8 @@ func (dao *sqlimpl) Init(options configx.Values) error {
 	}
 
 	// Doing the database migrations
-	migrations := &sql.PackrMigrationSource{
-		Box:         packr.NewBox("../../idm/meta/migrations"),
+	migrations := &sql.FSMigrationSource{
+		Box:         statics.AsFS(migrationsFS, "migrations"),
 		Dir:         dao.Driver(),
 		TablePrefix: dao.Prefix(),
 	}

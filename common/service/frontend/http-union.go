@@ -22,8 +22,8 @@ package frontend
 
 import (
 	"io"
+	"io/fs"
 	"math"
-	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -31,23 +31,22 @@ import (
 	"github.com/pydio/cells/common"
 
 	"github.com/gin-gonic/gin/json"
-	"github.com/pydio/packr"
 )
 
 type UnionHttpFs struct {
-	boxes     []packr.Box
-	indexFile http.File
+	boxes     []fs.FS
+	indexFile fs.File
 
 	useTime bool
 	time    time.Time
 }
 
 type timedFile struct {
-	http.File
+	fs.File
 	t time.Time
 }
 
-func newTimedFile(f http.File, t time.Time) *timedFile {
+func newTimedFile(f fs.File, t time.Time) *timedFile {
 	return &timedFile{
 		File: f,
 		t:    t,
@@ -77,7 +76,7 @@ func (ti *timedInfo) ModTime() time.Time {
 
 func NewUnionHttpFs(boxes ...PluginBox) *UnionHttpFs {
 
-	var packrs []packr.Box
+	var packrs []fs.FS
 	var allRoots []string
 	// Build index.json
 	for _, b := range boxes {
@@ -107,7 +106,7 @@ func NewUnionHttpFs(boxes ...PluginBox) *UnionHttpFs {
 	return ufs
 }
 
-func (p *UnionHttpFs) Open(name string) (http.File, error) {
+func (p *UnionHttpFs) Open(name string) (fs.File, error) {
 
 	safeName := strings.TrimLeft(name, "/")
 	if safeName == "index.json" {
@@ -126,7 +125,7 @@ func (p *UnionHttpFs) Open(name string) (http.File, error) {
 
 }
 
-func NewIndexFile(rootList []string, times ...time.Time) http.File {
+func NewIndexFile(rootList []string, times ...time.Time) fs.File {
 	jsonData, _ := json.Marshal(rootList)
 	t := time.Now()
 	if len(times) > 0 {

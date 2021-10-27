@@ -22,13 +22,15 @@ package policy
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"time"
+
+	"github.com/pydio/cells/common/utils/statics"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/ory/ladon"
 	"github.com/pborman/uuid"
-	"github.com/pydio/packr"
 	migrate "github.com/rubenv/sql-migrate"
 	"go.uber.org/zap"
 
@@ -47,6 +49,9 @@ type sqlimpl struct {
 }
 
 var (
+	//go:embed migrations/*
+	migrationsFS embed.FS
+
 	queries = map[string]string{
 		"upsertPolicyGroup": `INSERT INTO idm_policy_group (uuid,name,description,owner_uuid,resource_group,last_updated) VALUES (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE name=?,description=?,owner_uuid=?,resource_group=?,last_updated=?`,
 		"deletePolicyGroup": `DELETE FROM idm_policy_group WHERE uuid=?`,
@@ -75,8 +80,8 @@ func (s *sqlimpl) Init(options configx.Values) error {
 	s.SQLManager = *manag
 
 	// Doing the database migrations
-	migrations := &sql.PackrMigrationSource{
-		Box:         packr.NewBox("../../idm/policy/migrations"),
+	migrations := &sql.FSMigrationSource{
+		Box:         statics.AsFS(migrationsFS, "migrations"),
 		Dir:         s.Driver(),
 		TablePrefix: s.Prefix(),
 	}

@@ -21,14 +21,16 @@
 package role
 
 import (
+	"embed"
 	"strings"
 	"time"
+
+	"github.com/pydio/cells/common/utils/statics"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
 	"github.com/micro/go-micro/errors"
 	"github.com/pborman/uuid"
-	"github.com/pydio/packr"
 	migrate "github.com/rubenv/sql-migrate"
 	"gopkg.in/doug-martin/goqu.v4"
 
@@ -41,6 +43,9 @@ import (
 )
 
 var (
+	//go:embed migrations/*
+	migrationsFS embed.FS
+
 	queries = map[string]string{
 		"AddRole":    `insert into idm_roles (uuid, label, team_role, group_role, user_role, last_updated, auto_applies, override) values (?,?,?,?,?,?,?,?)`,
 		"UpdateRole": `update idm_roles set label=?, team_role=?, group_role=?, user_role=?, last_updated=?, auto_applies=?, override=? where uuid= ?`,
@@ -70,8 +75,8 @@ func (s *sqlimpl) Init(options configx.Values) error {
 	}
 
 	// Doing the database migrations
-	migrations := &sql.PackrMigrationSource{
-		Box:         packr.NewBox("../../idm/role/migrations"),
+	migrations := &sql.FSMigrationSource{
+		Box:         statics.AsFS(migrationsFS, "migrations"),
 		Dir:         s.Driver(),
 		TablePrefix: s.Prefix(),
 	}

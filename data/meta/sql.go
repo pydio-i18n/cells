@@ -21,10 +21,12 @@
 package meta
 
 import (
+	"embed"
 	"time"
 
+	"github.com/pydio/cells/common/utils/statics"
+
 	"github.com/micro/go-micro/errors"
-	"github.com/pydio/packr"
 	migrate "github.com/rubenv/sql-migrate"
 
 	"github.com/pydio/cells/common/sql"
@@ -32,6 +34,9 @@ import (
 )
 
 var (
+	//go:embed migrations/*
+	migrationsFS embed.FS
+
 	queries = map[string]string{
 		"upsert":     `INSERT INTO data_meta (node_id,namespace,data,author,timestamp,format) VALUES (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE data=?,author=?,timestamp=?,format=?`,
 		"deleteNS":   `DELETE FROM data_meta WHERE namespace=?`,
@@ -53,8 +58,8 @@ func (h *sqlImpl) Init(options configx.Values) error {
 	h.DAO.Init(options)
 
 	// Doing the database migrations
-	migrations := &sql.PackrMigrationSource{
-		Box:         packr.NewBox("../../data/meta/migrations"),
+	migrations := &sql.FSMigrationSource{
+		Box:         statics.AsFS(migrationsFS, "migrations"),
 		Dir:         h.Driver(),
 		TablePrefix: h.Prefix(),
 	}

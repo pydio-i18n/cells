@@ -20,9 +20,12 @@
 
 package maintenance
 
-import "github.com/pydio/packr"
+import (
+	"github.com/pydio/cells/common/utils/statics"
+	"github.com/pydio/packr"
+)
 
 var (
 	// PydioInstallBox holds the root of the pydio maintenance static page
-	PydioMaintenanceBox = packr.NewBox("../maintenance/src")
+	PydioMaintenanceBox = statics.AsFS(packr.NewBox("../maintenance/src"))
 )

@@ -25,6 +25,7 @@ import (
 	"context"
 	"crypto/md5"
 	databasesql "database/sql"
+	"embed"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -35,9 +36,10 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/pydio/cells/common/utils/statics"
+
 	gocache "github.com/patrickmn/go-cache"
 	"github.com/pborman/uuid"
-	"github.com/pydio/packr"
 	migrate "github.com/rubenv/sql-migrate"
 	"go.uber.org/zap"
 
@@ -50,6 +52,9 @@ import (
 )
 
 var (
+	//go:embed migrations/*
+	migrationsFS embed.FS
+
 	queries   = map[string]interface{}{}
 	inserting atomic.Value
 	cond      *sync.Cond
@@ -351,8 +356,8 @@ func (dao *IndexSQL) Init(options configx.Values) error {
 
 	dao.shortCache = gocache.New(5*time.Second, 10*time.Second)
 
-	migrations := &sql.PackrMigrationSource{
-		Box:         packr.NewBox("../../../common/sql/index/migrations"),
+	migrations := &sql.FSMigrationSource{
+		Box:         statics.AsFS(migrationsFS, "migrations"),
 		Dir:         "./" + dao.Driver(),
 		TablePrefix: dao.Prefix() + "_idx",
 	}
@@ -380,8 +385,8 @@ func (dao *IndexSQL) Init(options configx.Values) error {
 // CleanResourcesOnDeletion revert the creation of the table for a datasource
 func (dao *IndexSQL) CleanResourcesOnDeletion() (string, error) {
 
-	migrations := &sql.PackrMigrationSource{
-		Box:         packr.NewBox("../../../common/sql/index/migrations"),
+	migrations := &sql.FSMigrationSource{
+		Box:         statics.AsFS(migrationsFS, "migrations"),
 		Dir:         "./" + dao.Driver(),
 		TablePrefix: dao.Prefix() + "_idx",
 	}

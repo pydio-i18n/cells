@@ -24,11 +24,12 @@ import (
 	"bytes"
 	"errors"
 
+	"github.com/pydio/cells/common/utils/statics"
+
 	"github.com/pydio/cells/common/dao"
 	"github.com/pydio/cells/common/sql"
 	"github.com/pydio/cells/x/configx"
 	json "github.com/pydio/cells/x/jsonx"
-	"github.com/pydio/packr"
 	migrate "github.com/rubenv/sql-migrate"
 )
 
@@ -64,8 +65,8 @@ func New(driver string, dsn string, prefix string) configx.Entrypoint {
 // Init handler for the SQL DAO
 func (s *SQL) Init(options configx.Values) error {
 
-	migrations := &sql.PackrMigrationSource{
-		Box:         packr.NewBox("../../../common/config/sql/migrations"),
+	migrations := &sql.FSMigrationSource{
+		Box:         statics.AsFS(migrationsFS, "migrations"),
 		Dir:         "./" + s.dao.Driver(),
 		TablePrefix: s.dao.Prefix(),
 	}

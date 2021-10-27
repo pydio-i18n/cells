@@ -21,11 +21,21 @@
 package frontend
 
 import (
+	"embed"
 	"io/ioutil"
 	"testing"
 
+	"github.com/pydio/cells/common/utils/statics"
+
 	"github.com/pydio/packr"
 	. "github.com/smartystreets/goconvey/convey"
+)
+
+var (
+	//go:embed tests/assets1
+	testAssets1 embed.FS
+	//go:embed tests/assets2
+	testAssets2 embed.FS
 )
 
 func TestUnionHttpFs(t *testing.T) {
@@ -36,10 +46,10 @@ func TestUnionHttpFs(t *testing.T) {
 		box2 := packr.NewBox("./tests/assets2")
 		fs := NewUnionHttpFs(PluginBox{
 			Exposes: []string{"a", "b"},
-			Box:     box,
+			Box:     statics.AsFS(box),
 		}, PluginBox{
 			Exposes: []string{"c"},
-			Box:     box2,
+			Box:     statics.AsFS(box2),
 		})
 		So(fs, ShouldNotBeNil)
 
@@ -69,4 +79,43 @@ func TestUnionHttpFs(t *testing.T) {
 		So(string(indexData), ShouldEqual, `["a","b","c"]`)
 
 	})
+
+	Convey("Test EmbedFS", t, func() {
+
+		fs := NewUnionHttpFs(PluginBox{
+			Exposes: []string{"a", "b"},
+			Box:     statics.AsFS(testAssets1, "tests/assets1"),
+		}, PluginBox{
+			Exposes: []string{"c"},
+			Box:     statics.AsFS(testAssets2, "tests/assets2"),
+		})
+		So(fs, ShouldNotBeNil)
+
+		file, e := fs.Open("plugin1/file1")
+		So(e, ShouldBeNil)
+		stat, e := file.Stat()
+		So(e, ShouldBeNil)
+		So(stat.IsDir(), ShouldBeFalse)
+
+		folder, e := fs.Open("plugin2")
+		So(e, ShouldBeNil)
+		folderStat, e := folder.Stat()
+		So(e, ShouldBeNil)
+		So(folderStat.IsDir(), ShouldBeTrue)
+
+		index, e := fs.Open("index.json")
+		So(e, ShouldBeNil)
+		info, e := index.Stat()
+		So(e, ShouldBeNil)
+		indexData := make([]byte, info.Size())
+		size, e := index.Read(indexData)
+		So(size, ShouldEqual, info.Size())
+		index.Close()
+		readAll, e := ioutil.ReadAll(index)
+		So(e, ShouldBeNil)
+		So(string(readAll), ShouldEqual, `["a","b","c"]`)
+		So(string(indexData), ShouldEqual, `["a","b","c"]`)
+
+	})
+
 }
