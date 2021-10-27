@@ -24,6 +24,7 @@ import (
 	"io"
 	"io/fs"
 	"math"
+	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -42,11 +43,11 @@ type UnionHttpFs struct {
 }
 
 type timedFile struct {
-	fs.File
+	http.File
 	t time.Time
 }
 
-func newTimedFile(f fs.File, t time.Time) *timedFile {
+func newTimedFile(f http.File, t time.Time) *timedFile {
 	return &timedFile{
 		File: f,
 		t:    t,
@@ -115,7 +116,11 @@ func (p *UnionHttpFs) Open(name string) (fs.File, error) {
 	for _, b := range p.boxes {
 		if o, e := b.Open(safeName); e == nil {
 			if p.useTime {
-				return newTimedFile(o, p.time), nil
+				if hf, ok := o.(http.File); ok {
+					return newTimedFile(hf, p.time), nil
+				} else {
+					return o, nil
+				}
 			} else {
 				return o, nil
 			}
