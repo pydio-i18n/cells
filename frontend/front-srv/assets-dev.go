@@ -23,7 +23,6 @@
 package front_srv
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/pydio/cells/common/utils/statics"
@@ -35,7 +34,6 @@ var (
 
 func init() {
 	if assetsDir, e := statics.GetAssets("./assets"); e == nil {
-		fmt.Println("Loading FS from dir", assetsDir)
 		FrontendAssets = statics.AsFS(http.Dir(assetsDir))
 	}
 }
