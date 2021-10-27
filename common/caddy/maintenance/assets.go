@@ -21,11 +21,15 @@
 package maintenance
 
 import (
+	"embed"
+
 	"github.com/pydio/cells/common/utils/statics"
-	"github.com/pydio/packr"
 )
 
 var (
-	// PydioInstallBox holds the root of the pydio maintenance static page
-	PydioMaintenanceBox = statics.AsFS(packr.NewBox("../maintenance/src"))
+	//go:embed src/*
+	src embed.FS
+
+	// PydioMaintenanceBox holds the root of the pydio maintenance static page
+	PydioMaintenanceBox = statics.AsFS(src, "src")
 )

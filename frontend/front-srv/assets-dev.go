@@ -1,5 +1,7 @@
+// +build dev
+
 /*
- * Copyright (c) 2018. Abstrium SAS <team (at) pydio.com>
+ * Copyright (c) 2019-2021. Abstrium SAS <team (at) pydio.com>
  * This file is part of Pydio Cells.
  *
  * Pydio Cells is free software: you can redistribute it and/or modify
@@ -18,22 +20,22 @@
  * The latest code can be found at <https://pydio.com>.
  */
 
-// Package assets is based on Packr to embed static data inside the binary.
-//
-// It embeds the small pure-js frontend loaded at install time and the pure-JS frontend
-// served to the end-users (packages separately, not committed and added a build time).
-package assets
+package front_srv
 
 import (
-	"embed"
+	"fmt"
+	"net/http"
 
 	"github.com/pydio/cells/common/utils/statics"
 )
 
 var (
-	//go:embed src
-	installSrc embed.FS
-
-	// PydioInstallBox holds the root of the pydio install static files
-	PydioInstallBox = statics.AsFS(installSrc, "src")
+	FrontendAssets statics.FS
 )
+
+func init() {
+	if assetsDir, e := statics.GetAssets("./assets"); e == nil {
+		fmt.Println("Loading FS from dir", assetsDir)
+		FrontendAssets = statics.AsFS(http.Dir(assetsDir))
+	}
+}

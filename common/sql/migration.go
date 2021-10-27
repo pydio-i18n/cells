@@ -82,6 +82,7 @@ func (p FSMigrationSource) FindMigrations() ([]*migrate.Migration, error) {
 				return nil, e
 			}
 			data, _ := ioutil.ReadAll(file)
+			file.Close()
 			content := bytes.Replace(data, []byte("%%PREFIX%%"), []byte(p.TablePrefix), -1)
 
 			migration, err := migrate.ParseMigration(name, bytes.NewReader(content))

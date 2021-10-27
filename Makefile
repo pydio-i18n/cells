@@ -12,13 +12,7 @@ XGO_IMAGE?=pydio/xgo:latest
 
 all: clean build
 
-build: generate main
-
-generate:
-	# Removing existing packr files and running packr
-	find . -name *-packr.go | xargs rm -f
-	# manually filtering out ory/x/dbal package
-	grep -ri --exclude-dir=vendor/* --exclude-dir=frontend/front-srv/assets/* -l "packr.NewBox" */* | while read -r line; do if ! [ "$$line" = "vendor/github.com/ory/x/dbal/migrate.go" ]; then cd `dirname "$$line"`; echo "Run packr for $$line"; ${GOPATH}/bin/packr --compress --input=. ; cd -;  fi; done;
+build: main
 
 main:
 	go build -a -trimpath\
@@ -59,7 +53,6 @@ ds: dev start
 
 clean:
 	rm -f cells cells-*
-	${GOPATH}/bin/packr clean
 
 vdrminio:
 	${GOPATH}/bin/govendor update github.com/pydio/minio-srv

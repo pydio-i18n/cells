@@ -26,19 +26,17 @@ import (
 	"encoding/gob"
 	"os"
 
-	"github.com/pydio/packr"
-
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/config"
 	"github.com/pydio/cells/common/plugins"
 	"github.com/pydio/cells/common/service"
 	"github.com/pydio/cells/common/service/frontend"
-	"github.com/pydio/cells/common/utils/statics"
+	"github.com/pydio/cells/frontend/front-srv"
 	"github.com/pydio/cells/frontend/front-srv/rest/modifiers"
 )
 
 var BasePluginsBox = frontend.PluginBox{
-	Box: statics.AsFS(packr.NewBox("../../../frontend/front-srv/assets")),
+	Box: front_srv.FrontendAssets,
 	Exposes: []string{
 		"access.gateway",
 		"access.homepage",

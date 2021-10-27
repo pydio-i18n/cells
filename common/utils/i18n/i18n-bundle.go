@@ -51,6 +51,7 @@ func (b *I18nBundle) LoadPackrTranslationFiles(box statics.FS) {
 		if strings.HasSuffix(f, ".json") {
 			if file, e := box.Open(f); e == nil {
 				data, _ := ioutil.ReadAll(file)
+				file.Close()
 				b.ParseTranslationFileBytes(f, data)
 			}
 		}

@@ -72,6 +72,18 @@ func (e *embedFS) List() []string {
 	return output
 }
 
+type httpFS struct {
+	http.FileSystem
+}
+
+func (h httpFS) Open(name string) (fs.File, error) {
+	return h.FileSystem.Open(name)
+}
+
+func (h httpFS) List() []string {
+	return []string{}
+}
+
 func AsFS(box interface{}, sub ...string) FS {
 	if pb, ok := box.(PackrBox); ok {
 		return &packrFS{box: pb}
@@ -87,6 +99,8 @@ func AsFS(box interface{}, sub ...string) FS {
 			f, _ = fs.Sub(f, sub[0])
 		}
 		return &embedFS{FS: f}
+	} else if hf, ok4 := box.(http.FileSystem); ok4 {
+		return &httpFS{FileSystem: hf}
 	} else {
 		fmt.Println("Calling AsFS on unknown type, returning empty embedFS", box)
 		empty := embed.FS{}
