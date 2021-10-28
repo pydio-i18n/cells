@@ -28,6 +28,8 @@ import (
 	"text/tabwriter"
 	"text/template"
 
+	json "github.com/pydio/cells/x/jsonx"
+
 	"github.com/micro/go-micro"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -44,6 +46,7 @@ var (
 	filterListTags    []string
 	filterListExclude []string
 	runningServices   []string
+	psJSONformat      bool
 
 	tmpl = `
 	{{- block "keys" .}}
@@ -62,6 +65,18 @@ var (
 			{{- ""}} {{""}}	{{""}}	{{"\n"}}
 		{{- end}}
 	{{- end}}
+	`
+	tmplJSON = `
+	{ {{- block "keys" .}}
+		{{- range $index, $category := .}}
+			{{- range $index, $subcategory := .Tags}}
+				{{- range .Services}}
+					"{{.Name}}":"{{.RunningNodes}}",{{"\n"}}
+				{{- end}}
+			{{- end}}
+			{{- ""}} {{""}}	{{""}}	{{"\n"}}
+		{{- end}}
+	{{- end}} }
 	`
 )
 
@@ -196,6 +211,21 @@ EXAMPLE
 		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
+
+		if psJSONformat {
+			data := make(map[string]interface{})
+			tt := getTagsPerType(func(s registry.Service) bool { return true })
+			for _, t := range tt {
+				for _, s := range t.Services {
+					if rs, ok := s.(*runningService); ok {
+						data[s.Name()] = strings.Split(rs.nodes, ",")
+					}
+				}
+			}
+			out, _ := json.MarshalIndent(data, "", "  ")
+			fmt.Println(string(out))
+			return
+		}
 		t, _ := template.New("t1").Parse(tmpl)
 
 		tags := []*Tags{
@@ -211,6 +241,7 @@ EXAMPLE
 
 func init() {
 	psCmd.Flags().BoolVarP(&showDescription, "verbose", "v", false, "Show additional information")
+	psCmd.Flags().BoolVarP(&psJSONformat, "json", "j", false, "Output as json")
 	psCmd.Flags().StringArrayVarP(&filterListTags, "tags", "t", []string{}, "Filter by tags")
 	psCmd.Flags().StringArrayVarP(&filterListExclude, "exclude", "x", []string{}, "Filter")
 
@@ -233,9 +264,13 @@ func getTagsPerType(f func(s registry.Service) bool) map[string]*Tags {
 				}
 
 				var nodes []string
-				if showDescription {
+				if showDescription || psJSONformat {
 					for _, node := range s.RunningNodes() {
-						nodes = append(nodes, fmt.Sprintf("%s:%d (exp: %s)", node.Address, node.Port, node.Metadata["expiry"]))
+						if psJSONformat {
+							nodes = append(nodes, fmt.Sprintf("%s:%d", node.Address, node.Port))
+						} else {
+							nodes = append(nodes, fmt.Sprintf("%s:%d (exp: %s)", node.Address, node.Port, node.Metadata["expiry"]))
+						}
 					}
 				}
 
