@@ -43,12 +43,8 @@ type Client struct {
 	cli *client.PydioAPIV2
 }
 
-// User Client Rewrite
+// GetPeople is a client specific rewrite for p8 store
 func (a *Client) GetPeople(params *GetPeopleParams) (*GetPeopleOK, error) {
-	// // TODO: Validate the params before sending
-	// if params == nil {
-	// 	params = NewGetPeopleParams()
-	// }
 
 	result, err := a.cli.Transport.Submit(&runtime.ClientOperation{
 		ID:                 "getPeople",
@@ -74,20 +70,11 @@ for the get people operation typically these are written to a http.Request
 */
 type GetPeopleParams struct {
 
-	/*Format
-	  Format produced in output (defaults to xml)
-
-	*/
+	// Format produced in output (defaults to xml)
 	Format *string
-	/*List
-	  list children of the current resource
-
-	*/
+	// List children of the current resource
 	List *bool
-	/*Path
-	  User or group identifier, including full group path (optional)
-
-	*/
+	// Path is the User or group identifier, including full group path (optional)
 	Path string
 
 	Page int64
@@ -160,7 +147,7 @@ func (o *GetPeopleParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Reg
 //  ROLE client rewrite
 
 func (a *Client) GetRoles(params *provisioning.GetRolesParams) (*GetRolesOK, error) {
-	// TODO: Validate the params before sending
+
 	if params == nil {
 		params = provisioning.NewGetRolesParams()
 	}

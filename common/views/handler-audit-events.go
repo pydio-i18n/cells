@@ -69,6 +69,9 @@ func (h *HandlerAuditEvent) GetObject(ctx context.Context, node *tree.Node, requ
 func (h *HandlerAuditEvent) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
 	auditer := log.Auditer(ctx)
 	written, e := h.next.PutObject(ctx, node, reader, requestData)
+	if e != nil {
+		return written, e
+	}
 
 	isBinary, wsInfo, wsScope := checkBranchInfoForAudit(ctx, "in")
 	if isBinary {
@@ -113,6 +116,9 @@ func (h *HandlerAuditEvent) ReadNode(ctx context.Context, in *tree.ReadNodeReque
 // ListNodes logs an audit message on each call after having transferred the call to following handlers.
 func (h *HandlerAuditEvent) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 	c, e := h.next.ListNodes(ctx, in, opts...)
+	if e != nil {
+		return c, e
+	}
 
 	_, wsInfo, wsScope := checkBranchInfoForAudit(ctx, "in")
 	log.Auditer(ctx).Info(
@@ -131,6 +137,9 @@ func (h *HandlerAuditEvent) ListNodes(ctx context.Context, in *tree.ListNodesReq
 // CreateNode logs an audit message on each call after having transferred the call to following handlers.
 func (h *HandlerAuditEvent) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...client.CallOption) (*tree.CreateNodeResponse, error) {
 	response, e := h.next.CreateNode(ctx, in, opts...)
+	if e != nil {
+		return response, e
+	}
 
 	_, wsInfo, wsScope := checkBranchInfoForAudit(ctx, "in")
 	log.Auditer(ctx).Info(
@@ -148,14 +157,12 @@ func (h *HandlerAuditEvent) CreateNode(ctx context.Context, in *tree.CreateNodeR
 // UpdateNode logs an audit message on each call after having transferred the call to following handlers.
 func (h *HandlerAuditEvent) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...client.CallOption) (*tree.UpdateNodeResponse, error) {
 	response, e := h.next.UpdateNode(ctx, in, opts...)
-
-	from := in.From
-	to := in.To
-
-	log.Logger(ctx).Debug(fmt.Sprintf("Updated node, from: %v to: %v", from, to))
+	if e != nil {
+		return response, e
+	}
 
 	log.Auditer(ctx).Info(
-		fmt.Sprintf("Update node at %s", in.From.Path),
+		fmt.Sprintf("Update node from %s to %s", in.From.Path, in.To.Path),
 		log.GetAuditId(common.AuditNodeUpdate),
 		in.From.ZapUuid(),
 		in.From.ZapPath(),
@@ -168,7 +175,9 @@ func (h *HandlerAuditEvent) UpdateNode(ctx context.Context, in *tree.UpdateNodeR
 // DeleteNode logs an audit message on each call after having transferred the call to following handlers.
 func (h *HandlerAuditEvent) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...client.CallOption) (*tree.DeleteNodeResponse, error) {
 	response, e := h.next.DeleteNode(ctx, in, opts...)
-
+	if e != nil {
+		return response, e
+	}
 	_, wsInfo, wsScope := checkBranchInfoForAudit(ctx, "in")
 	log.Auditer(ctx).Info(
 		fmt.Sprintf("Deleted node at %s", in.Node.Path),
@@ -184,39 +193,59 @@ func (h *HandlerAuditEvent) DeleteNode(ctx context.Context, in *tree.DeleteNodeR
 }
 
 func (h *HandlerAuditEvent) CopyObject(ctx context.Context, from *tree.Node, to *tree.Node, requestData *models.CopyRequestData) (int64, error) {
-	// TODO implement
-	return h.next.CopyObject(ctx, from, to, requestData)
+	size, e := h.next.CopyObject(ctx, from, to, requestData)
+	if e != nil {
+		return size, e
+	}
+	_, wsInfo, wsScope := checkBranchInfoForAudit(ctx, "in")
+	log.Auditer(ctx).Info(
+		fmt.Sprintf("Copied node from %s to %s", from.Path, to.Path),
+		log.GetAuditId(common.AuditNodeCreate),
+		from.ZapUuid(),
+		from.ZapPath(),
+		wsInfo,
+		wsScope,
+	)
+	return size, e
 }
 
 // Multi part upload management
 
 func (h *HandlerAuditEvent) MultipartCreate(ctx context.Context, target *tree.Node, requestData *models.MultipartRequestData) (string, error) {
-	// TODO implement
 	return h.next.MultipartCreate(ctx, target, requestData)
 }
 
 func (h *HandlerAuditEvent) MultipartPutObjectPart(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, reader io.Reader, requestData *models.PutRequestData) (minio.ObjectPart, error) {
-	// TODO implement
 	return h.next.MultipartPutObjectPart(ctx, target, uploadID, partNumberMarker, reader, requestData)
 }
 
 func (h *HandlerAuditEvent) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []minio.CompletePart) (minio.ObjectInfo, error) {
-	// TODO implement
-	return h.next.MultipartComplete(ctx, target, uploadID, uploadedParts)
+	oi, e := h.next.MultipartComplete(ctx, target, uploadID, uploadedParts)
+	if e != nil {
+		return oi, e
+	}
+	_, wsInfo, wsScope := checkBranchInfoForAudit(ctx, "in")
+	log.Auditer(ctx).Info(
+		fmt.Sprintf("Uploaded node %s", target.Path),
+		log.GetAuditId(common.AuditNodeCreate),
+		target.ZapUuid(),
+		target.ZapPath(),
+		wsInfo,
+		wsScope,
+	)
+
+	return oi, e
 }
 
 func (h *HandlerAuditEvent) MultipartAbort(ctx context.Context, target *tree.Node, uploadID string, requestData *models.MultipartRequestData) error {
-	// TODO implement
 	return h.next.MultipartAbort(ctx, target, uploadID, requestData)
 }
 
 func (h *HandlerAuditEvent) MultipartList(ctx context.Context, prefix string, requestData *models.MultipartRequestData) (minio.ListMultipartUploadsResult, error) {
-	// TODO implement
 	return h.next.MultipartList(ctx, prefix, requestData)
 }
 
 func (h *HandlerAuditEvent) MultipartListObjectParts(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, maxParts int) (minio.ListObjectPartsResult, error) {
-	// TODO implement
 	return h.next.MultipartListObjectParts(ctx, target, uploadID, partNumberMarker, maxParts)
 }
 

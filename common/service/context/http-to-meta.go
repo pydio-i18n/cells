@@ -66,7 +66,9 @@ func HttpRequestInfoToMetadata(ctx context.Context, req *http.Request) context.C
 	layout := "2006-01-02T15:04-0700"
 	t := time.Now()
 	meta[ServerTime] = t.Format(layout)
-	// We currently use server time instead of client time. TODO: Retrieve client time and locale and set it here.
+	//TODO: Retrieve client time and locale and set it here.
+	//Unfortunately this is not sent by HTTP Requests.
+	//We currently use server time instead of client time.
 	meta[ClientTime] = t.Format(layout)
 
 	meta[HttpMetaHost] = req.Host

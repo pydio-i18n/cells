@@ -101,7 +101,7 @@ func findRecycleForSource(ctx context.Context, source *tree.Node, ancestors []*t
 
 	if recycle == nil {
 		l := len(ancestors)
-		// TODO - for now we just check if it starts with a DATASOURCE:personal
+		// TODO - for now we just check if it starts with a DATASOURCE:personalXXX
 		// But we would need a process that could reverse lookup the template.js
 		if l > 3 && strings.HasPrefix(ancestors[l-2].Uuid, "DATASOURCE:personal") {
 			personalFolder := ancestors[l-3]

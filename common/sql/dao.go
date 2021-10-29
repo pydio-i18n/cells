@@ -93,7 +93,7 @@ type Handler struct {
 	helper Helper
 
 	stmts         map[string]string
-	ifuncs        map[string]func(DAO, ...interface{}) string // TODO - replace next with this
+	ifuncs        map[string]func(DAO, ...interface{}) string // More generic version than func(DAO, ...string) below
 	funcs         map[string]func(DAO, ...string) string      // Queries that need to be run before we get a statement
 	funcsWithArgs map[string]func(DAO, ...string) (string, []interface{})
 

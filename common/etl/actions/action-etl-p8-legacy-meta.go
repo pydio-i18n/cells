@@ -281,7 +281,7 @@ func (c *MigratePydioMetaAction) BrowseNodesForMeta(ctx context.Context, slug st
 						log.TasksLogger(ctx).Info("Metadata found for node : ", metaNode.Zap(), resp.Node.Zap(), zap.Any("metadata", userMeta.Meta))
 					}
 				}
-				// TODO Uncomment to Delete original file - NO DON'T IF WE ARE LOOKING DIRECTLY AT THE P8 STORAGE! Should be a separate task
+				// We do not delete original metadata file if we are looking directly at the P8 storage
 				// router.DeleteNode(ctx, &tree.DeleteNodeRequest{Node: metaNode})
 			}
 		}

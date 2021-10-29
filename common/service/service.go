@@ -208,7 +208,7 @@ func NewService(opts ...ServiceOption) Service {
 	// Setting context
 	ctx = servicecontext.WithServiceName(ctx, name)
 
-	// TODO : adding web services automatic dependencies to auth, this should be done in each service instead
+	// Adding web services automatic dependencies to auth
 	if s.IsREST() && s.Options().Name != common.ServiceRestNamespace_+common.ServiceInstall {
 		s.Init(WithWebAuth())
 	}

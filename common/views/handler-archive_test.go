@@ -60,8 +60,8 @@ func TestArchiveHandler_WrappingStreamer(t *testing.T) {
 	s := NewWrappingStreamer()
 
 	wg := &sync.WaitGroup{}
+	wg.Add(1)
 	go func() {
-		wg.Add(1)
 		defer s.Close()
 		defer wg.Done()
 

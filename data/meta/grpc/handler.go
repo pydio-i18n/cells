@@ -58,6 +58,9 @@ func (s *MetaServer) Stop() {
 	if s.cache != nil {
 		s.cache.Close()
 	}
+	if s.eventsChannel != nil {
+		close(s.eventsChannel)
+	}
 }
 
 // CreateNodeChangeSubscriber that will treat events for the meta server
@@ -74,7 +77,6 @@ func (s *MetaServer) CreateNodeChangeSubscriber(parentContext context.Context) *
 
 func (s *MetaServer) initEventsChannel() {
 
-	// Todo: find a way to close channel on topic UnSubscription ?
 	s.eventsChannel = make(chan *cache.EventWithContext)
 	go func() {
 		for eventWCtx := range s.eventsChannel {

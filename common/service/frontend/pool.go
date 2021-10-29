@@ -358,7 +358,6 @@ func (p *PluginsPool) parseI18nFolder(ns string, lang string, defaultLang string
 }
 
 func (p *PluginsPool) ExposedParametersByScope(scopeName string, exposed bool) (params []*ExposedParam) {
-	// Todo : cache?
 
 	for _, plugin := range p.Plugins {
 		s := plugin.GetServerSettings()

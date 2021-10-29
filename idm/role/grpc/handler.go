@@ -127,8 +127,7 @@ func (h *Handler) DeleteRole(ctx context.Context, req *idm.DeleteRoleRequest, re
 	}
 
 	for _, r := range roles {
-		// FIXME errors where ignored until now. Should we stop and return an error
-		// or better handle the error?
+		// Errors a ignored until now. Should we stop and return an error or better handle the error?
 		err2 := dao.DeletePoliciesForResource(r.Uuid)
 		if err2 != nil {
 			log.Logger(ctx).Error("could not delete policies for removed role "+r.Label, zap.Error(err2))
@@ -177,7 +176,7 @@ func (h *Handler) SearchRole(ctx context.Context, request *idm.SearchRoleRequest
 func (h *Handler) CountRole(ctx context.Context, request *idm.SearchRoleRequest, response *idm.CountRoleResponse) error {
 	dao := servicecontext.GetDAO(ctx).(role.DAO)
 
-	count, err := dao.Count(request.Query);
+	count, err := dao.Count(request.Query)
 	if err != nil {
 		return err
 	}

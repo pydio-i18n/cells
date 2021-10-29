@@ -43,16 +43,12 @@ func getTempArchive(formatOrName string) (*tree.Node, string, error) {
 	switch formatOrName {
 	case "zip":
 		fName = "actions.zip"
-		break
 	case "tar":
 		fName = "actions.tar"
-		break
 	case "tar.gz":
 		fName = "actions.tar.gz"
-		break
 	default:
 		fName = formatOrName
-		break
 	}
 
 	refFile := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "pydio", "cells", "common", "views", "testdata", fName)

@@ -50,14 +50,6 @@ import (
 //	<xs:attribute name="group_switch_name" use="optional"/>
 //	<xs:attribute name="group_switch_value" use="optional"/>
 //	<xs:attribute name="group_switch_label" use="optional"/>
-//
-//  DO WE NEED THOSE ? TODO
-//	<xs:attribute name="expose" type="xs:boolean"/>
-//	<xs:attribute name="no_templates" type="xs:boolean"/>
-//	<xs:attribute name="templates_only" type="xs:boolean"/>
-//	<xs:attribute name="scope"/>
-//	<xs:attribute name="repoScope"/>
-//	<xs:attribute name="inherit" type="xs:boolean" use="optional"/>
 //</xs:complexType>
 
 type ParamType string

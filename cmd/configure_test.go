@@ -22,7 +22,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"testing"
 
@@ -104,8 +103,7 @@ func printMarshalled(title string, conf *install.InstallConfig) {
 
 func TestUnmarshallConf(t *testing.T) {
 
-	// TODO this will fail with modules.
-	testDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "pydio", "cells", "cmd", "sampleconf")
+	testDir := "sampleconf"
 
 	Convey("Insure sample files are valid", t, func() {
 

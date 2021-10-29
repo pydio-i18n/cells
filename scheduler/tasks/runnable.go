@@ -97,7 +97,7 @@ func (r *Runnable) CreateChild(parentPath string, chainIndex int, action *jobs.A
 }
 
 // Dispatch gets next runnable from Action and enqueues it to the Queue
-// Todo - Check that done channel is working correctly with chained actions
+// Done channel should be working correctly with chained actions
 func (r *Runnable) Dispatch(parentPath string, input jobs.ActionMessage, aa []*jobs.Action, Queue chan Runnable) {
 
 	for i, action := range aa {

@@ -58,25 +58,21 @@ func BenchmarkClientsPoolWithRegistryWatch(b *testing.B) {
 func listOpenFiles() {
 	tick := time.Tick(10 * time.Millisecond)
 
-	for {
-		select {
-		case <-tick:
-
-			lsof := exec.Command("lsof", "-p", fmt.Sprintf("%d", os.Getpid()))
-			wc := exec.Command("wc", "-l")
-			outPipe, err := lsof.StdoutPipe()
-			if err != nil {
-				continue
-			}
-			lsof.Start()
-			wc.Stdin = outPipe
-			out, err := wc.Output()
-			if err != nil {
-				continue
-			}
-
-			fmt.Printf("Number of Open Files : %s\n", out)
+	for range tick {
+		lsof := exec.Command("lsof", "-p", fmt.Sprintf("%d", os.Getpid()))
+		wc := exec.Command("wc", "-l")
+		outPipe, err := lsof.StdoutPipe()
+		if err != nil {
+			continue
 		}
+		lsof.Start()
+		wc.Stdin = outPipe
+		out, err := wc.Output()
+		if err != nil {
+			continue
+		}
+
+		fmt.Printf("Number of Open Files : %s\n", out)
 	}
 }
 

@@ -99,7 +99,6 @@ $` + os.Args[0] + ` doc i18n count -p $GOPATH/src/github.com/pydio/cells-enterpr
 
 			counters[dir] = newProjectCounter(dir)
 
-			// TODO enhance filtering out skipped folders
 			vendorDir := "vendor"
 			nodeModules := "node_modules"
 

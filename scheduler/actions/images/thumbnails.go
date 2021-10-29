@@ -191,7 +191,7 @@ func (t *ThumbnailExtractor) resize(ctx context.Context, node *tree.Node, sizes 
 		reader, err = os.Open(localPath)
 		errPath = localPath
 	} else {
-		// TODO : tmp security until Router is transmitting nodes immutably
+		// Security in case Router is not transmitting nodes immutably
 		routerNode := proto.Clone(node).(*tree.Node)
 		reader, err = getRouter().GetObject(ctx, routerNode, &models.GetRequestData{Length: -1})
 		errPath = routerNode.Path
