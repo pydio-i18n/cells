@@ -27,8 +27,6 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/pydio/cells/common/proto/idm"
-	servicecontext "github.com/pydio/cells/common/service/context"
-	"github.com/pydio/cells/common/utils/permissions"
 	"github.com/pydio/cells/idm/policy/conditions"
 )
 
@@ -81,10 +79,10 @@ func TestLadonToProtoPolicy(t *testing.T) {
 			Actions:     []string{"write"},
 			Effect:      ladon.DenyAccess,
 			Conditions: ladon.Conditions{
-				servicecontext.HttpMetaRemoteAddress: &conditions.StringNotMatchCondition{
+				"RemoteAddress": &conditions.StringNotMatchCondition{
 					Matches: "localhost|127.0.0.1|::1",
 				},
-				permissions.PolicyNodeMetaName: &ladon.StringMatchCondition{
+				"NodeMetaName": &ladon.StringMatchCondition{
 					Matches: "target",
 				},
 			},
@@ -94,8 +92,8 @@ func TestLadonToProtoPolicy(t *testing.T) {
 		So(test, ShouldNotBeNil)
 		So(test.Id, ShouldEqual, "acl-complex-rule2")
 		So(test.Conditions, ShouldHaveLength, 2)
-		So(test.Conditions, ShouldContainKey, servicecontext.HttpMetaRemoteAddress)
-		cd := test.Conditions[servicecontext.HttpMetaRemoteAddress]
+		So(test.Conditions, ShouldContainKey, "RemoteAddress")
+		cd := test.Conditions["RemoteAddress"]
 		So(cd, ShouldResemble, &idm.PolicyCondition{Type: "StringNotMatchCondition", JsonOptions: "{\"matches\":\"localhost|127.0.0.1|::1\"}"})
 	})
 }
