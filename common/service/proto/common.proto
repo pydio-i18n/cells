@@ -46,6 +46,7 @@ message ResourcePolicy {
     string JsonConditions = 6;
 }
 
+// TODO: To be removed
 message ActionOutputQuery {
     // Check if ActionOutput has Success = true
     bool Success = 1;
@@ -62,6 +63,7 @@ message ActionOutputQuery {
     bool Not = 6;
 }
 
+// TODO: To be removed
 message SourceSingleQuery{
     // Regexp to filter context by IP
     string IPMask = 2;

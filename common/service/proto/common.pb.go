@@ -11,8 +11,6 @@ It has these top-level messages:
 	Query
 	ResourcePolicyQuery
 	ResourcePolicy
-	ActionOutputQuery
-	SourceSingleQuery
 	StopEvent
 	StatusResponse
 	ChangesArchiveQuery
@@ -254,112 +252,6 @@ func (m *ResourcePolicy) GetJsonConditions() string {
 	return ""
 }
 
-type ActionOutputQuery struct {
-	// Check if ActionOutput has Success = true
-	Success bool `protobuf:"varint,1,opt,name=Success" json:"Success,omitempty"`
-	// Check if ActionOutput has Success = false
-	Failed bool `protobuf:"varint,2,opt,name=Failed" json:"Failed,omitempty"`
-	// Find occurence of string in body
-	StringBodyCompare string `protobuf:"bytes,3,opt,name=StringBodyCompare" json:"StringBodyCompare,omitempty"`
-	// Find similar Json
-	JsonBodyCompare string `protobuf:"bytes,4,opt,name=JsonBodyCompare" json:"JsonBodyCompare,omitempty"`
-	// Find occurence of string in error
-	ErrorStringCompare string `protobuf:"bytes,5,opt,name=ErrorStringCompare" json:"ErrorStringCompare,omitempty"`
-	// Invert condition
-	Not bool `protobuf:"varint,6,opt,name=Not" json:"Not,omitempty"`
-}
-
-func (m *ActionOutputQuery) Reset()                    { *m = ActionOutputQuery{} }
-func (m *ActionOutputQuery) String() string            { return proto.CompactTextString(m) }
-func (*ActionOutputQuery) ProtoMessage()               {}
-func (*ActionOutputQuery) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
-
-func (m *ActionOutputQuery) GetSuccess() bool {
-	if m != nil {
-		return m.Success
-	}
-	return false
-}
-
-func (m *ActionOutputQuery) GetFailed() bool {
-	if m != nil {
-		return m.Failed
-	}
-	return false
-}
-
-func (m *ActionOutputQuery) GetStringBodyCompare() string {
-	if m != nil {
-		return m.StringBodyCompare
-	}
-	return ""
-}
-
-func (m *ActionOutputQuery) GetJsonBodyCompare() string {
-	if m != nil {
-		return m.JsonBodyCompare
-	}
-	return ""
-}
-
-func (m *ActionOutputQuery) GetErrorStringCompare() string {
-	if m != nil {
-		return m.ErrorStringCompare
-	}
-	return ""
-}
-
-func (m *ActionOutputQuery) GetNot() bool {
-	if m != nil {
-		return m.Not
-	}
-	return false
-}
-
-type SourceSingleQuery struct {
-	// Regexp to filter context by IP
-	IPMask string `protobuf:"bytes,2,opt,name=IPMask" json:"IPMask,omitempty"`
-	// Regexp to filter for a given user-agent
-	UserAgent string `protobuf:"bytes,3,opt,name=UserAgent" json:"UserAgent,omitempty"`
-	// Limit to a given workspaceId
-	WorkspaceId string `protobuf:"bytes,4,opt,name=WorkspaceId" json:"WorkspaceId,omitempty"`
-	// Invert condition
-	Not bool `protobuf:"varint,5,opt,name=Not" json:"Not,omitempty"`
-}
-
-func (m *SourceSingleQuery) Reset()                    { *m = SourceSingleQuery{} }
-func (m *SourceSingleQuery) String() string            { return proto.CompactTextString(m) }
-func (*SourceSingleQuery) ProtoMessage()               {}
-func (*SourceSingleQuery) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
-
-func (m *SourceSingleQuery) GetIPMask() string {
-	if m != nil {
-		return m.IPMask
-	}
-	return ""
-}
-
-func (m *SourceSingleQuery) GetUserAgent() string {
-	if m != nil {
-		return m.UserAgent
-	}
-	return ""
-}
-
-func (m *SourceSingleQuery) GetWorkspaceId() string {
-	if m != nil {
-		return m.WorkspaceId
-	}
-	return ""
-}
-
-func (m *SourceSingleQuery) GetNot() bool {
-	if m != nil {
-		return m.Not
-	}
-	return false
-}
-
 type StopEvent struct {
 	ServiceName string `protobuf:"bytes,1,opt,name=ServiceName" json:"ServiceName,omitempty"`
 }
@@ -421,8 +313,6 @@ func init() {
 	proto.RegisterType((*Query)(nil), "service.Query")
 	proto.RegisterType((*ResourcePolicyQuery)(nil), "service.ResourcePolicyQuery")
 	proto.RegisterType((*ResourcePolicy)(nil), "service.ResourcePolicy")
-	proto.RegisterType((*ActionOutputQuery)(nil), "service.ActionOutputQuery")
-	proto.RegisterType((*SourceSingleQuery)(nil), "service.SourceSingleQuery")
 	proto.RegisterType((*StopEvent)(nil), "service.StopEvent")
 	proto.RegisterType((*StatusResponse)(nil), "service.StatusResponse")
 	proto.RegisterType((*ChangesArchiveQuery)(nil), "service.ChangesArchiveQuery")

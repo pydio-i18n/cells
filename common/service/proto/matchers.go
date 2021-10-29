@@ -70,3 +70,25 @@ func (mm *MultiMatcher) Matches(object interface{}) bool {
 	}
 	return ReduceQueryBooleans(res, mm.Operation)
 }
+
+// ReduceQueryBooleans combines multiple booleans depending on Operation Type
+func ReduceQueryBooleans(results []bool, operation OperationType) bool {
+
+	reduced := true
+	if operation == OperationType_AND {
+		// If one is false, it's false
+		for _, b := range results {
+			reduced = reduced && b
+		}
+	} else {
+		// At least one must be true
+		reduced = false
+		for _, b := range results {
+			reduced = reduced || b
+			if b {
+				break
+			}
+		}
+	}
+	return reduced
+}

@@ -11,8 +11,6 @@ It has these top-level messages:
 	Query
 	ResourcePolicyQuery
 	ResourcePolicy
-	ActionOutputQuery
-	SourceSingleQuery
 	StopEvent
 	StatusResponse
 	ChangesArchiveQuery
@@ -26,9 +24,10 @@ import _ "github.com/golang/protobuf/ptypes/any"
 import google_protobuf1 "github.com/golang/protobuf/ptypes/empty"
 
 import (
+	context "context"
+
 	client "github.com/micro/go-micro/client"
 	server "github.com/micro/go-micro/server"
-	context "context"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
