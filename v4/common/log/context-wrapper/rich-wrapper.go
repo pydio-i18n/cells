@@ -23,7 +23,7 @@ package context_wrapper
 import (
 	"context"
 
-	"github.com/micro/go-micro/metadata"
+	"github.com/micro/micro/v3/service/context/metadata"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 

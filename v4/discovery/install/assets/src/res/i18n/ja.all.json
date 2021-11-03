@@ -1,0 +1,257 @@
+{
+  "welcome.stepLabel": {
+    "other": "利用規約"
+  },
+  "welcome.title": {
+    "other": "Pydio Cellsインストールウィザードへようこそ"
+  },
+  "welcome.legend": {
+    "other": "サーバーにすべてのサービスをインストールします。実行する前に、以下のライセンス条件に同意してください。"
+  },
+  "welcome.agreed": {
+    "other": "利用規約に同意する"
+  },
+  "database.stepLabel": {
+    "other": "データベース接続"
+  },
+  "database.title": {
+    "other": "データベース設定"
+  },
+  "database.legend": {
+    "other": "Pydioでは、各種設定の保存とデータの検索のため、少なくとも1つのSQLストレージが必要です。MySQL/MariaDBサーバーへの接続設定を実施してください。"
+  },
+  "database.legend.bold": {
+    "other": "MySQLのバージョンが5.6以上であることを確認してください。"
+  },
+  "database.installDetected": {
+    "other": "データベースにセットアップされたCellsがあります。このまま続行するか確認してください。 "
+  },
+  "database.installDetected.retry": {
+    "other": "新しい値で再試行する"
+  },
+  "database.useDefaultsSet": {
+    "other": "A default database is already configured, just click next to validate connection."
+  },
+  "database.forceConfigure": {
+    "other": "Configure another database."
+  },
+  "admin.stepLabel": {
+    "other": "管理者ユーザー"
+  },
+  "admin.title": {
+    "other": "管理者ユーザーとフロントエンドのデフォルト設定"
+  },
+  "admin.legend": {
+    "other": "管理者ユーザーの認証情報を提供します。インストール済みのプログラムにデプロイする場合は、フィールドを空のままにします。"
+  },
+  "admin.adminFound": {
+    "other": "管理者ユーザーはすでに登録されています。新しいユーザーを作成しますか？"
+  },
+  "advanced.stepLabel": {
+    "other": "詳細設定"
+  },
+  "advanced.title": {
+    "other": "詳細設定 (オプション)"
+  },
+  "advanced.legend": {
+    "other": "Pydio Cells サービスがデプロイされます。設定を変更する場合、以下の詳細設定を確認してください。"
+  },
+  "advanced.toggle": {
+    "other": "詳細設定を表示"
+  },
+  "advanced.default.datasource": {
+    "other": "ユーザーの個人データとcellsを保存するデータソースは、スタートアップ時に作成されます。後で、他のデータソースを作成することも可能です。"
+  },
+  "license.stepLabel": {
+    "other": "エンタープライズライセンス"
+  },
+  "license.title": {
+    "other": "Pydio Cells エンタープライズライセンス"
+  },
+  "license.success": {
+    "other": "ライセンスファイルの検出に成功しました。"
+  },
+  "license.details": {
+    "other": "このプログラムは%expiration中%countのユーザーまで登録可能です"
+  },
+  "license.failed": {
+    "other": "ライセンスキーの検証中にエラーが発生しました。サポートに連絡してください。"
+  },
+  "license.required": {
+    "other": "エンタープライズディストリビューションの実行には、ライセンスキーが必要です。30日間のトライアルライセンス、またはお見積もりが必要な場合は、お問い合わせください"
+  },
+  "license.fieldLabel": {
+    "other": "ライセンス文字列"
+  },
+  "license.fieldLegend": {
+    "other": "ライセンスキーをコピー/ペーストしてください。"
+  },
+  "apply.stepLabel": {
+    "other": "プログラムを適用"
+  },
+  "apply.title": {
+    "other": "Pydio Cellsのインストールしています。しばらくお待ちください..."
+  },
+  "apply.success": {
+    "other": "インストールが成功しました。サービスを開始しております。サービス開始後に、このページを再読み込みします。"
+  },
+  "apply.success.restarted": {
+    "other": "インストールが成功し、サービスが開始されました。今すぐページを再読み込みしてください（ %1sに自動で再読み込みされます）"
+  },
+  "apply.error": {
+    "other": "インストール中にエラーが発生しました！設定を確認してください。"
+  },
+  "apply.error.detail": {
+    "other": "エラーが発生しました: "
+  },
+  "form.dbConnectionType.label": {
+    "other": "接続タイプ"
+  },
+  "form.dbConnectionType.tcp": {
+    "other": "TCP"
+  },
+  "form.dbConnectionType.socket": {
+    "other": "ソケット"
+  },
+  "form.dbConnectionType.manual": {
+    "other": "手動"
+  },
+  "form.dbTCPHostname.label": {
+    "other": "ホスト名"
+  },
+  "form.dbTCPHostname.legend": {
+    "other": "mysqlサーバー"
+  },
+  "form.dbName.label": {
+    "other": "データベース名"
+  },
+  "form.dbName.legend": {
+    "other": "使用するデータベース（存在しない場合は作成されます）"
+  },
+  "form.dbTCPPort.label": {
+    "other": "ポート"
+  },
+  "form.dbTCPPort.legend": {
+    "other": "mysqlに接続するポート"
+  },
+  "form.dbUser.label": {
+    "other": "データベースのユーザー"
+  },
+  "form.dbUser.legend": {
+    "other": "不要な場合は空白にしてください"
+  },
+  "form.dbPassword.label": {
+    "other": "データベースのパスワード"
+  },
+  "form.dbPassword.legend": {
+    "other": "不要な場合は空白にしてください"
+  },
+  "form.dbSocketFile.label": {
+    "other": "ソケット"
+  },
+  "form.dbSocketFile.legend": {
+    "other": "接続に使用するソケットファイルの場所を入力してください"
+  },
+  "form.dbManualDSN.label": {
+    "other": "DSN"
+  },
+  "form.dbManualDSN.legend": {
+    "other": "Golang-style DSNを使用してデータベースに接続します"
+  },
+  "form.frontendApplicationTitle.label": {
+    "other": "アプリケーションのタイトル"
+  },
+  "form.frontendApplicationTitle.legend": {
+    "other": "プログラムのメインタイトル"
+  },
+  "form.frontendDefaultLanguage.label": {
+    "other": "デフォルトの言語"
+  },
+  "form.frontendLogin.label": {
+    "other": "管理者ユーザーのログイン *"
+  },
+  "form.frontendLogin.legend": {
+    "other": "ログインに使用するID"
+  },
+  "form.frontendPassword.label": {
+    "other": "管理者のパスワード *"
+  },
+  "form.frontendPassword.legend": {
+    "other": "ログインに使用するパスワード"
+  },
+  "form.frontendRepeatPassword.label": {
+    "other": "パスワードの確認"
+  },
+  "form.frontendRepeatPassword.legend": {
+    "other": "パスワードの確認"
+  },
+  "form.dsFolder.label": {
+    "other": "データソースのデフォルトパス"
+  },
+  "form.dsFolder.legend": {
+    "other": "絶対パスを使用する"
+  },
+  "form.dsType.FS": {
+    "other": "ローカル FS (このサーバーにすべてのデータを保存する)"
+  },
+  "form.dsType.S3": {
+    "other": "Amazon S3 / S3-compatible (store inside S3 buckets)"
+  },
+  "form.dsS3Custom.label": {
+    "other": "S3-Compatible storage endpoint"
+  },
+  "form.dsS3Custom.legend": {
+    "other": "Leave empty for Amazon"
+  },
+  "form.dsS3CustomRegion.label": {
+    "other": "S3 Custom region"
+  },
+  "form.dsS3CustomRegion.legend": {
+    "other": "Leave empty for default (us-east-1)"
+  },
+  "form.dsS3ApiKey.label": {
+    "other": "S3 APIキー"
+  },
+  "form.dsS3ApiKey.legend": {
+    "other": "S3に接続するキー"
+  },
+  "form.dsS3ApiSecret.label": {
+    "other": "S3 APIシークレット"
+  },
+  "form.dsS3ApiSecret.legend": {
+    "other": "シークレットキー"
+  },
+  "form.dsS3ValidateKeys": {
+    "other": "S3に接続して、バケットを設定する"
+  },
+  "form.s3BucketsPrefix.label": {
+    "other": "バケットのプリフィクス"
+  },
+  "form.s3BucketsPrefix.legend": {
+    "other": "6つのデフォルトバケットを作成するためのユニークなプリフィックスです。"
+  },
+  "form.bucketList.found": {
+    "other": "以下のバケットは既に存在しています"
+  },
+  "form.bucketList.toCreate": {
+    "other": "以下のバケットが作成されます"
+  },
+  "form.bucketList.notFound": {
+    "other": "以下のバケットが見つかりません"
+  },
+  "form.bucketList.warnCreate": {
+    "other": "バケットの作成は許可されていません。手動で作成できるか確認してください。"
+  },
+  "stepper.button.next": {
+    "other": "次へ"
+  },
+  "stepper.button.back": {
+    "other": "戻る"
+  },
+  "stepper.button.last": {
+    "other": "今すぐインストールする"
+  },
+  "stepper.button.reload": {
+    "other": "再読み込み"
+  }
+}

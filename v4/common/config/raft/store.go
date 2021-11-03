@@ -29,8 +29,8 @@ import (
 
 	"github.com/pydio/cells/v4/x/configx"
 
-	"go.etcd.io/etcd/etcdserver/api/snap"
-	"go.etcd.io/etcd/raft/raftpb"
+	"go.etcd.io/etcd/server/v3/etcdserver/api/snap"
+	"go.etcd.io/etcd/raft/v3/raftpb"
 )
 
 // a key-value store backed by raft

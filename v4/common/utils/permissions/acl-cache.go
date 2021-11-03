@@ -23,8 +23,9 @@ package permissions
 import (
 	"time"
 
+	"google.golang.org/protobuf/proto"
 	"github.com/micro/micro/v3/service/broker"
-	"github.com/micro/protobuf/proto"
+	// "github.com/micro/micro/v3/protobuf/proto"
 	"github.com/patrickmn/go-cache"
 
 	"github.com/pydio/cells/v4/common"

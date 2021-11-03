@@ -23,7 +23,7 @@ package raft
 import (
 	"fmt"
 
-	"go.etcd.io/etcd/raft/raftpb"
+	"go.etcd.io/etcd/raft/v3/raftpb"
 )
 
 type transport struct {
