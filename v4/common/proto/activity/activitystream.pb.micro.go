@@ -6,14 +6,15 @@ package activity
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/golang/protobuf/ptypes/timestamp"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	math "math"
 )
 
 import (
 	context "context"
-	client "github.com/micro/go-micro/client"
-	server "github.com/micro/go-micro/server"
+	api "github.com/micro/micro/v3/service/api"
+	client "github.com/micro/micro/v3/service/client"
+	server "github.com/micro/micro/v3/service/server"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -28,9 +29,16 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 // Reference imports to suppress errors if they are not otherwise used.
+var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
+
+// Api Endpoints for ActivityService service
+
+func NewActivityServiceEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
 
 // Client API for ActivityService service
 
@@ -50,12 +58,6 @@ type activityService struct {
 }
 
 func NewActivityService(name string, c client.Client) ActivityService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "activity"
-	}
 	return &activityService{
 		c:    c,
 		name: name,
@@ -72,9 +74,10 @@ func (c *activityService) PostActivity(ctx context.Context, opts ...client.CallO
 }
 
 type ActivityService_PostActivityService interface {
+	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
-	Close() error
+	CloseAndRecv() (*PostActivityResponse, error)
 	Send(*PostActivityRequest) error
 }
 
@@ -82,8 +85,17 @@ type activityServicePostActivity struct {
 	stream client.Stream
 }
 
-func (x *activityServicePostActivity) Close() error {
-	return x.stream.Close()
+func (x *activityServicePostActivity) CloseAndRecv() (*PostActivityResponse, error) {
+	if err := x.stream.Close(); err != nil {
+		return nil, err
+	}
+	r := new(PostActivityResponse)
+	err := x.RecvMsg(r)
+	return r, err
+}
+
+func (x *activityServicePostActivity) Context() context.Context {
+	return x.stream.Context()
 }
 
 func (x *activityServicePostActivity) SendMsg(m interface{}) error {
@@ -111,6 +123,7 @@ func (c *activityService) StreamActivities(ctx context.Context, in *StreamActivi
 }
 
 type ActivityService_StreamActivitiesService interface {
+	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
@@ -123,6 +136,10 @@ type activityServiceStreamActivities struct {
 
 func (x *activityServiceStreamActivities) Close() error {
 	return x.stream.Close()
+}
+
+func (x *activityServiceStreamActivities) Context() context.Context {
+	return x.stream.Context()
 }
 
 func (x *activityServiceStreamActivities) SendMsg(m interface{}) error {
@@ -195,6 +212,7 @@ func (c *activityService) SearchSubscriptions(ctx context.Context, in *SearchSub
 }
 
 type ActivityService_SearchSubscriptionsService interface {
+	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
@@ -207,6 +225,10 @@ type activityServiceSearchSubscriptions struct {
 
 func (x *activityServiceSearchSubscriptions) Close() error {
 	return x.stream.Close()
+}
+
+func (x *activityServiceSearchSubscriptions) Context() context.Context {
+	return x.stream.Context()
 }
 
 func (x *activityServiceSearchSubscriptions) SendMsg(m interface{}) error {
@@ -264,9 +286,10 @@ func (h *activityServiceHandler) PostActivity(ctx context.Context, stream server
 }
 
 type ActivityService_PostActivityStream interface {
+	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
-	Close() error
+	SendAndClose(*PostActivityResponse) error
 	Recv() (*PostActivityRequest, error)
 }
 
@@ -274,8 +297,15 @@ type activityServicePostActivityStream struct {
 	stream server.Stream
 }
 
-func (x *activityServicePostActivityStream) Close() error {
+func (x *activityServicePostActivityStream) SendAndClose(in *PostActivityResponse) error {
+	if err := x.SendMsg(in); err != nil {
+		return err
+	}
 	return x.stream.Close()
+}
+
+func (x *activityServicePostActivityStream) Context() context.Context {
+	return x.stream.Context()
 }
 
 func (x *activityServicePostActivityStream) SendMsg(m interface{}) error {
@@ -303,6 +333,7 @@ func (h *activityServiceHandler) StreamActivities(ctx context.Context, stream se
 }
 
 type ActivityService_StreamActivitiesStream interface {
+	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
@@ -315,6 +346,10 @@ type activityServiceStreamActivitiesStream struct {
 
 func (x *activityServiceStreamActivitiesStream) Close() error {
 	return x.stream.Close()
+}
+
+func (x *activityServiceStreamActivitiesStream) Context() context.Context {
+	return x.stream.Context()
 }
 
 func (x *activityServiceStreamActivitiesStream) SendMsg(m interface{}) error {
@@ -354,6 +389,7 @@ func (h *activityServiceHandler) SearchSubscriptions(ctx context.Context, stream
 }
 
 type ActivityService_SearchSubscriptionsStream interface {
+	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
@@ -366,6 +402,10 @@ type activityServiceSearchSubscriptionsStream struct {
 
 func (x *activityServiceSearchSubscriptionsStream) Close() error {
 	return x.stream.Close()
+}
+
+func (x *activityServiceSearchSubscriptionsStream) Context() context.Context {
+	return x.stream.Context()
 }
 
 func (x *activityServiceSearchSubscriptionsStream) SendMsg(m interface{}) error {

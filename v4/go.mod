@@ -14,6 +14,7 @@ require (
 	github.com/google/uuid v1.1.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.6.0 // indirect
 	github.com/hashicorp/go-version v1.2.1
 	github.com/jaytaylor/go-hostsfile v0.0.0-20201026230151-f581673a59cf
 	github.com/json-iterator/go v1.1.11
@@ -44,8 +45,9 @@ require (
 	go.etcd.io/bbolt v1.3.5
 	go.uber.org/zap v1.17.0
 	golang.org/x/net v0.0.0-20210421230115-4e50805a0758
-	google.golang.org/genproto v0.0.0-20210602131652-f16073e35f0c
+	google.golang.org/genproto v0.0.0-20210903162649-d08c68adba83
 	google.golang.org/grpc v1.40.0
+	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0 // indirect
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

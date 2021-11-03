@@ -3,16 +3,18 @@
 
 package jobs
 
-import github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
-import _ "github.com/golang/protobuf/ptypes/any"
-import _ "github.com/pydio/cells/v4/common/proto/activity"
-import _ "github.com/pydio/cells/v4/common/proto/idm"
-import _ "github.com/pydio/cells/v4/common/proto/object"
-import _ "github.com/pydio/cells/v4/common/proto/service"
-import _ "github.com/pydio/cells/v4/common/proto/tree"
+import (
+	fmt "fmt"
+	proto "github.com/golang/protobuf/proto"
+	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
+	_ "github.com/pydio/cells/v4/common/proto/activity"
+	_ "github.com/pydio/cells/v4/common/proto/idm"
+	_ "github.com/pydio/cells/v4/common/proto/object"
+	_ "github.com/pydio/cells/v4/common/proto/service"
+	_ "github.com/pydio/cells/v4/common/proto/tree"
+	_ "google.golang.org/protobuf/types/known/anypb"
+	math "math"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal

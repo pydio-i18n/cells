@@ -11,8 +11,9 @@ import (
 
 import (
 	context "context"
-	client "github.com/micro/go-micro/client"
-	server "github.com/micro/go-micro/server"
+	api "github.com/micro/micro/v3/service/api"
+	client "github.com/micro/micro/v3/service/client"
+	server "github.com/micro/micro/v3/service/server"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -27,9 +28,16 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 // Reference imports to suppress errors if they are not otherwise used.
+var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
+
+// Api Endpoints for UserKeyStore service
+
+func NewUserKeyStoreEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
 
 // Client API for UserKeyStore service
 
@@ -49,12 +57,6 @@ type userKeyStoreService struct {
 }
 
 func NewUserKeyStoreService(name string, c client.Client) UserKeyStoreService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "encryption"
-	}
 	return &userKeyStoreService{
 		c:    c,
 		name: name,
@@ -192,6 +194,12 @@ func (h *userKeyStoreHandler) AdminImportKey(ctx context.Context, in *AdminImpor
 	return h.UserKeyStoreHandler.AdminImportKey(ctx, in, out)
 }
 
+// Api Endpoints for NodeKeyManager service
+
+func NewNodeKeyManagerEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
+
 // Client API for NodeKeyManager service
 
 type NodeKeyManagerService interface {
@@ -210,12 +218,6 @@ type nodeKeyManagerService struct {
 }
 
 func NewNodeKeyManagerService(name string, c client.Client) NodeKeyManagerService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "encryption"
-	}
 	return &nodeKeyManagerService{
 		c:    c,
 		name: name,
@@ -252,9 +254,10 @@ func (c *nodeKeyManagerService) SetNodeInfo(ctx context.Context, opts ...client.
 }
 
 type NodeKeyManager_SetNodeInfoService interface {
+	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
-	Close() error
+	CloseAndRecv() (*SetNodeInfoResponse, error)
 	Send(*SetNodeInfoRequest) error
 }
 
@@ -262,8 +265,17 @@ type nodeKeyManagerServiceSetNodeInfo struct {
 	stream client.Stream
 }
 
-func (x *nodeKeyManagerServiceSetNodeInfo) Close() error {
-	return x.stream.Close()
+func (x *nodeKeyManagerServiceSetNodeInfo) CloseAndRecv() (*SetNodeInfoResponse, error) {
+	if err := x.stream.Close(); err != nil {
+		return nil, err
+	}
+	r := new(SetNodeInfoResponse)
+	err := x.RecvMsg(r)
+	return r, err
+}
+
+func (x *nodeKeyManagerServiceSetNodeInfo) Context() context.Context {
+	return x.stream.Context()
 }
 
 func (x *nodeKeyManagerServiceSetNodeInfo) SendMsg(m interface{}) error {
@@ -364,9 +376,10 @@ func (h *nodeKeyManagerHandler) SetNodeInfo(ctx context.Context, stream server.S
 }
 
 type NodeKeyManager_SetNodeInfoStream interface {
+	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
-	Close() error
+	SendAndClose(*SetNodeInfoResponse) error
 	Recv() (*SetNodeInfoRequest, error)
 }
 
@@ -374,8 +387,15 @@ type nodeKeyManagerSetNodeInfoStream struct {
 	stream server.Stream
 }
 
-func (x *nodeKeyManagerSetNodeInfoStream) Close() error {
+func (x *nodeKeyManagerSetNodeInfoStream) SendAndClose(in *SetNodeInfoResponse) error {
+	if err := x.SendMsg(in); err != nil {
+		return err
+	}
 	return x.stream.Close()
+}
+
+func (x *nodeKeyManagerSetNodeInfoStream) Context() context.Context {
+	return x.stream.Context()
 }
 
 func (x *nodeKeyManagerSetNodeInfoStream) SendMsg(m interface{}) error {

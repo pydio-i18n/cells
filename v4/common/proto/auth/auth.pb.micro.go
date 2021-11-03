@@ -11,8 +11,9 @@ import (
 
 import (
 	context "context"
-	client "github.com/micro/go-micro/client"
-	server "github.com/micro/go-micro/server"
+	api "github.com/micro/micro/v3/service/api"
+	client "github.com/micro/micro/v3/service/client"
+	server "github.com/micro/micro/v3/service/server"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -27,9 +28,16 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 // Reference imports to suppress errors if they are not otherwise used.
+var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
+
+// Api Endpoints for AuthTokenRevoker service
+
+func NewAuthTokenRevokerEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
 
 // Client API for AuthTokenRevoker service
 
@@ -44,12 +52,6 @@ type authTokenRevokerService struct {
 }
 
 func NewAuthTokenRevokerService(name string, c client.Client) AuthTokenRevokerService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "auth"
-	}
 	return &authTokenRevokerService{
 		c:    c,
 		name: name,
@@ -92,6 +94,12 @@ func (h *authTokenRevokerHandler) Revoke(ctx context.Context, in *RevokeTokenReq
 	return h.AuthTokenRevokerHandler.Revoke(ctx, in, out)
 }
 
+// Api Endpoints for AuthTokenPruner service
+
+func NewAuthTokenPrunerEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
+
 // Client API for AuthTokenPruner service
 
 type AuthTokenPrunerService interface {
@@ -105,12 +113,6 @@ type authTokenPrunerService struct {
 }
 
 func NewAuthTokenPrunerService(name string, c client.Client) AuthTokenPrunerService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "auth"
-	}
 	return &authTokenPrunerService{
 		c:    c,
 		name: name,
@@ -153,6 +155,12 @@ func (h *authTokenPrunerHandler) PruneTokens(ctx context.Context, in *PruneToken
 	return h.AuthTokenPrunerHandler.PruneTokens(ctx, in, out)
 }
 
+// Api Endpoints for LoginProvider service
+
+func NewLoginProviderEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
+
 // Client API for LoginProvider service
 
 type LoginProviderService interface {
@@ -167,12 +175,6 @@ type loginProviderService struct {
 }
 
 func NewLoginProviderService(name string, c client.Client) LoginProviderService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "auth"
-	}
 	return &loginProviderService{
 		c:    c,
 		name: name,
@@ -246,6 +248,12 @@ func (h *loginProviderHandler) AcceptLogin(ctx context.Context, in *AcceptLoginR
 	return h.LoginProviderHandler.AcceptLogin(ctx, in, out)
 }
 
+// Api Endpoints for ConsentProvider service
+
+func NewConsentProviderEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
+
 // Client API for ConsentProvider service
 
 type ConsentProviderService interface {
@@ -260,12 +268,6 @@ type consentProviderService struct {
 }
 
 func NewConsentProviderService(name string, c client.Client) ConsentProviderService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "auth"
-	}
 	return &consentProviderService{
 		c:    c,
 		name: name,
@@ -339,6 +341,12 @@ func (h *consentProviderHandler) AcceptConsent(ctx context.Context, in *AcceptCo
 	return h.ConsentProviderHandler.AcceptConsent(ctx, in, out)
 }
 
+// Api Endpoints for LogoutProvider service
+
+func NewLogoutProviderEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
+
 // Client API for LogoutProvider service
 
 type LogoutProviderService interface {
@@ -352,12 +360,6 @@ type logoutProviderService struct {
 }
 
 func NewLogoutProviderService(name string, c client.Client) LogoutProviderService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "auth"
-	}
 	return &logoutProviderService{
 		c:    c,
 		name: name,
@@ -415,6 +417,12 @@ func (h *logoutProviderHandler) AcceptLogout(ctx context.Context, in *AcceptLogo
 	return h.LogoutProviderHandler.AcceptLogout(ctx, in, out)
 }
 
+// Api Endpoints for AuthCodeProvider service
+
+func NewAuthCodeProviderEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
+
 // Client API for AuthCodeProvider service
 
 type AuthCodeProviderService interface {
@@ -427,12 +435,6 @@ type authCodeProviderService struct {
 }
 
 func NewAuthCodeProviderService(name string, c client.Client) AuthCodeProviderService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "auth"
-	}
 	return &authCodeProviderService{
 		c:    c,
 		name: name,
@@ -474,6 +476,12 @@ func (h *authCodeProviderHandler) CreateAuthCode(ctx context.Context, in *Create
 	return h.AuthCodeProviderHandler.CreateAuthCode(ctx, in, out)
 }
 
+// Api Endpoints for AuthTokenVerifier service
+
+func NewAuthTokenVerifierEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
+
 // Client API for AuthTokenVerifier service
 
 type AuthTokenVerifierService interface {
@@ -487,12 +495,6 @@ type authTokenVerifierService struct {
 }
 
 func NewAuthTokenVerifierService(name string, c client.Client) AuthTokenVerifierService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "auth"
-	}
 	return &authTokenVerifierService{
 		c:    c,
 		name: name,
@@ -535,6 +537,12 @@ func (h *authTokenVerifierHandler) Verify(ctx context.Context, in *VerifyTokenRe
 	return h.AuthTokenVerifierHandler.Verify(ctx, in, out)
 }
 
+// Api Endpoints for AuthCodeExchanger service
+
+func NewAuthCodeExchangerEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
+
 // Client API for AuthCodeExchanger service
 
 type AuthCodeExchangerService interface {
@@ -547,12 +555,6 @@ type authCodeExchangerService struct {
 }
 
 func NewAuthCodeExchangerService(name string, c client.Client) AuthCodeExchangerService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "auth"
-	}
 	return &authCodeExchangerService{
 		c:    c,
 		name: name,
@@ -594,6 +596,12 @@ func (h *authCodeExchangerHandler) Exchange(ctx context.Context, in *ExchangeReq
 	return h.AuthCodeExchangerHandler.Exchange(ctx, in, out)
 }
 
+// Api Endpoints for PasswordCredentialsToken service
+
+func NewPasswordCredentialsTokenEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
+
 // Client API for PasswordCredentialsToken service
 
 type PasswordCredentialsTokenService interface {
@@ -606,12 +614,6 @@ type passwordCredentialsTokenService struct {
 }
 
 func NewPasswordCredentialsTokenService(name string, c client.Client) PasswordCredentialsTokenService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "auth"
-	}
 	return &passwordCredentialsTokenService{
 		c:    c,
 		name: name,
@@ -653,6 +655,12 @@ func (h *passwordCredentialsTokenHandler) PasswordCredentialsToken(ctx context.C
 	return h.PasswordCredentialsTokenHandler.PasswordCredentialsToken(ctx, in, out)
 }
 
+// Api Endpoints for AuthTokenRefresher service
+
+func NewAuthTokenRefresherEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
+
 // Client API for AuthTokenRefresher service
 
 type AuthTokenRefresherService interface {
@@ -665,12 +673,6 @@ type authTokenRefresherService struct {
 }
 
 func NewAuthTokenRefresherService(name string, c client.Client) AuthTokenRefresherService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "auth"
-	}
 	return &authTokenRefresherService{
 		c:    c,
 		name: name,
@@ -712,6 +714,12 @@ func (h *authTokenRefresherHandler) Refresh(ctx context.Context, in *RefreshToke
 	return h.AuthTokenRefresherHandler.Refresh(ctx, in, out)
 }
 
+// Api Endpoints for PersonalAccessTokenService service
+
+func NewPersonalAccessTokenServiceEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
+
 // Client API for PersonalAccessTokenService service
 
 type PersonalAccessTokenService interface {
@@ -726,12 +734,6 @@ type personalAccessTokenService struct {
 }
 
 func NewPersonalAccessTokenService(name string, c client.Client) PersonalAccessTokenService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "auth"
-	}
 	return &personalAccessTokenService{
 		c:    c,
 		name: name,

@@ -1,0 +1,17 @@
+version: v1
+directories:
+  - activity
+  - auth
+  - ctl
+  - docstore
+  - encryption
+  - idm
+  - install
+  - jobs
+  - log
+  - mailer
+  - object
+  - rest
+  - service
+  - tree
+  - update

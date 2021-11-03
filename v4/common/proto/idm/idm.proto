@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-import "github.com/pydio/cells/v4/common/proto/service/service.proto";
-import "github.com/pydio/cells/v4/common/proto/tree/tree.proto";
+import "service.proto";
+import "tree.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 
 package idm;

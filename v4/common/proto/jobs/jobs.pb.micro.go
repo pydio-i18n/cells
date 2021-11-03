@@ -6,19 +6,20 @@ package jobs
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/golang/protobuf/ptypes/any"
 	_ "github.com/pydio/cells/v4/common/proto/activity"
 	_ "github.com/pydio/cells/v4/common/proto/idm"
 	_ "github.com/pydio/cells/v4/common/proto/object"
 	_ "github.com/pydio/cells/v4/common/proto/service"
 	_ "github.com/pydio/cells/v4/common/proto/tree"
+	_ "google.golang.org/protobuf/types/known/anypb"
 	math "math"
 )
 
 import (
 	context "context"
-	client "github.com/micro/go-micro/client"
-	server "github.com/micro/go-micro/server"
+	api "github.com/micro/micro/v3/service/api"
+	client "github.com/micro/micro/v3/service/client"
+	server "github.com/micro/micro/v3/service/server"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -33,9 +34,16 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 // Reference imports to suppress errors if they are not otherwise used.
+var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
+
+// Api Endpoints for JobService service
+
+func NewJobServiceEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
 
 // Client API for JobService service
 
@@ -57,12 +65,6 @@ type jobService struct {
 }
 
 func NewJobService(name string, c client.Client) JobService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "jobs"
-	}
 	return &jobService{
 		c:    c,
 		name: name,
@@ -112,6 +114,7 @@ func (c *jobService) ListJobs(ctx context.Context, in *ListJobsRequest, opts ...
 }
 
 type JobService_ListJobsService interface {
+	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
@@ -124,6 +127,10 @@ type jobServiceListJobs struct {
 
 func (x *jobServiceListJobs) Close() error {
 	return x.stream.Close()
+}
+
+func (x *jobServiceListJobs) Context() context.Context {
+	return x.stream.Context()
 }
 
 func (x *jobServiceListJobs) SendMsg(m interface{}) error {
@@ -163,6 +170,7 @@ func (c *jobService) PutTaskStream(ctx context.Context, opts ...client.CallOptio
 }
 
 type JobService_PutTaskStreamService interface {
+	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
@@ -176,6 +184,10 @@ type jobServicePutTaskStream struct {
 
 func (x *jobServicePutTaskStream) Close() error {
 	return x.stream.Close()
+}
+
+func (x *jobServicePutTaskStream) Context() context.Context {
+	return x.stream.Context()
 }
 
 func (x *jobServicePutTaskStream) SendMsg(m interface{}) error {
@@ -212,6 +224,7 @@ func (c *jobService) ListTasks(ctx context.Context, in *ListTasksRequest, opts .
 }
 
 type JobService_ListTasksService interface {
+	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
@@ -224,6 +237,10 @@ type jobServiceListTasks struct {
 
 func (x *jobServiceListTasks) Close() error {
 	return x.stream.Close()
+}
+
+func (x *jobServiceListTasks) Context() context.Context {
+	return x.stream.Context()
 }
 
 func (x *jobServiceListTasks) SendMsg(m interface{}) error {
@@ -321,6 +338,7 @@ func (h *jobServiceHandler) ListJobs(ctx context.Context, stream server.Stream) 
 }
 
 type JobService_ListJobsStream interface {
+	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
@@ -333,6 +351,10 @@ type jobServiceListJobsStream struct {
 
 func (x *jobServiceListJobsStream) Close() error {
 	return x.stream.Close()
+}
+
+func (x *jobServiceListJobsStream) Context() context.Context {
+	return x.stream.Context()
 }
 
 func (x *jobServiceListJobsStream) SendMsg(m interface{}) error {
@@ -356,6 +378,7 @@ func (h *jobServiceHandler) PutTaskStream(ctx context.Context, stream server.Str
 }
 
 type JobService_PutTaskStreamStream interface {
+	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
@@ -369,6 +392,10 @@ type jobServicePutTaskStreamStream struct {
 
 func (x *jobServicePutTaskStreamStream) Close() error {
 	return x.stream.Close()
+}
+
+func (x *jobServicePutTaskStreamStream) Context() context.Context {
+	return x.stream.Context()
 }
 
 func (x *jobServicePutTaskStreamStream) SendMsg(m interface{}) error {
@@ -400,6 +427,7 @@ func (h *jobServiceHandler) ListTasks(ctx context.Context, stream server.Stream)
 }
 
 type JobService_ListTasksStream interface {
+	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
@@ -412,6 +440,10 @@ type jobServiceListTasksStream struct {
 
 func (x *jobServiceListTasksStream) Close() error {
 	return x.stream.Close()
+}
+
+func (x *jobServiceListTasksStream) Context() context.Context {
+	return x.stream.Context()
 }
 
 func (x *jobServiceListTasksStream) SendMsg(m interface{}) error {
@@ -434,6 +466,12 @@ func (h *jobServiceHandler) DetectStuckTasks(ctx context.Context, in *DetectStuc
 	return h.JobServiceHandler.DetectStuckTasks(ctx, in, out)
 }
 
+// Api Endpoints for TaskService service
+
+func NewTaskServiceEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
+
 // Client API for TaskService service
 
 type TaskService interface {
@@ -446,12 +484,6 @@ type taskService struct {
 }
 
 func NewTaskService(name string, c client.Client) TaskService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "jobs"
-	}
 	return &taskService{
 		c:    c,
 		name: name,

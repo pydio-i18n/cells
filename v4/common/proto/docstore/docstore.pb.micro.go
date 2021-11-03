@@ -11,8 +11,9 @@ import (
 
 import (
 	context "context"
-	client "github.com/micro/go-micro/client"
-	server "github.com/micro/go-micro/server"
+	api "github.com/micro/micro/v3/service/api"
+	client "github.com/micro/micro/v3/service/client"
+	server "github.com/micro/micro/v3/service/server"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -27,9 +28,16 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 // Reference imports to suppress errors if they are not otherwise used.
+var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
+
+// Api Endpoints for DocStore service
+
+func NewDocStoreEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
 
 // Client API for DocStore service
 
@@ -47,12 +55,6 @@ type docStoreService struct {
 }
 
 func NewDocStoreService(name string, c client.Client) DocStoreService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "docstore"
-	}
 	return &docStoreService{
 		c:    c,
 		name: name,
@@ -112,6 +114,7 @@ func (c *docStoreService) ListDocuments(ctx context.Context, in *ListDocumentsRe
 }
 
 type DocStore_ListDocumentsService interface {
+	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
@@ -124,6 +127,10 @@ type docStoreServiceListDocuments struct {
 
 func (x *docStoreServiceListDocuments) Close() error {
 	return x.stream.Close()
+}
+
+func (x *docStoreServiceListDocuments) Context() context.Context {
+	return x.stream.Context()
 }
 
 func (x *docStoreServiceListDocuments) SendMsg(m interface{}) error {
@@ -197,6 +204,7 @@ func (h *docStoreHandler) ListDocuments(ctx context.Context, stream server.Strea
 }
 
 type DocStore_ListDocumentsStream interface {
+	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
@@ -209,6 +217,10 @@ type docStoreListDocumentsStream struct {
 
 func (x *docStoreListDocumentsStream) Close() error {
 	return x.stream.Close()
+}
+
+func (x *docStoreListDocumentsStream) Context() context.Context {
+	return x.stream.Context()
 }
 
 func (x *docStoreListDocumentsStream) SendMsg(m interface{}) error {

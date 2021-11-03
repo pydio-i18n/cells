@@ -2,16 +2,15 @@ syntax = "proto3";
 
 import "google/protobuf/any.proto";
 
-import "github.com/pydio/cells/v4/common/proto/service/service.proto";
-import "github.com/pydio/cells/v4/common/proto/tree/tree.proto";
-import "github.com/pydio/cells/v4/common/proto/idm/idm.proto";
-import "github.com/pydio/cells/v4/common/proto/activity/activitystream.proto";
-import "github.com/pydio/cells/v4/common/proto/object/object.proto";
+import "service.proto";
+import "tree.proto";
+import "idm.proto";
+import "activitystream.proto";
+import "object.proto";
 
 package jobs;
 
-option go_package="../jobs";
-
+option go_package="github.com/pydio/cells/v4/common/proto/jobs";
 ///////////////////
 // JOB  SERVICE  //
 ///////////////////

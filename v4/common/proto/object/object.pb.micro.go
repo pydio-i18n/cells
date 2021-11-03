@@ -12,8 +12,9 @@ import (
 
 import (
 	context "context"
-	client "github.com/micro/go-micro/client"
-	server "github.com/micro/go-micro/server"
+	api "github.com/micro/micro/v3/service/api"
+	client "github.com/micro/micro/v3/service/client"
+	server "github.com/micro/micro/v3/service/server"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -28,9 +29,16 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 // Reference imports to suppress errors if they are not otherwise used.
+var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
+
+// Api Endpoints for ObjectsEndpoint service
+
+func NewObjectsEndpointEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
 
 // Client API for ObjectsEndpoint service
 
@@ -45,12 +53,6 @@ type objectsEndpointService struct {
 }
 
 func NewObjectsEndpointService(name string, c client.Client) ObjectsEndpointService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "object"
-	}
 	return &objectsEndpointService{
 		c:    c,
 		name: name,
@@ -108,6 +110,12 @@ func (h *objectsEndpointHandler) StorageStats(ctx context.Context, in *StorageSt
 	return h.ObjectsEndpointHandler.StorageStats(ctx, in, out)
 }
 
+// Api Endpoints for DataSourceEndpoint service
+
+func NewDataSourceEndpointEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
+
 // Client API for DataSourceEndpoint service
 
 type DataSourceEndpointService interface {
@@ -120,12 +128,6 @@ type dataSourceEndpointService struct {
 }
 
 func NewDataSourceEndpointService(name string, c client.Client) DataSourceEndpointService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "object"
-	}
 	return &dataSourceEndpointService{
 		c:    c,
 		name: name,
@@ -167,6 +169,12 @@ func (h *dataSourceEndpointHandler) GetDataSourceConfig(ctx context.Context, in 
 	return h.DataSourceEndpointHandler.GetDataSourceConfig(ctx, in, out)
 }
 
+// Api Endpoints for ResourceCleanerEndpoint service
+
+func NewResourceCleanerEndpointEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
+
 // Client API for ResourceCleanerEndpoint service
 
 type ResourceCleanerEndpointService interface {
@@ -179,12 +187,6 @@ type resourceCleanerEndpointService struct {
 }
 
 func NewResourceCleanerEndpointService(name string, c client.Client) ResourceCleanerEndpointService {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(name) == 0 {
-		name = "object"
-	}
 	return &resourceCleanerEndpointService{
 		c:    c,
 		name: name,
