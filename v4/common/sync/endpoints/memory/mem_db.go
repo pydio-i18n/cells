@@ -29,11 +29,12 @@ import (
 	"strings"
 	"time"
 
+	json "github.com/pydio/cells/x/jsonx"
+
 	"golang.org/x/text/unicode/norm"
 
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/sync/model"
-	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 type DBEvent struct {
