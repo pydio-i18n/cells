@@ -2,7 +2,9 @@ syntax = "proto3";
 
 package rest;
 
-import "github.com/pydio/cells/v4/common/proto/auth/auth.proto";
+option go_package = "github.com/pydio/cells/v4/common/proto/rest";
+
+import "auth.proto";
 
 message SettingsMenuRequest{}
 

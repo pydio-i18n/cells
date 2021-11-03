@@ -2,12 +2,80 @@
   "swagger": "2.0",
   "info": {
     "title": "Pydio Cells Rest API",
-    "version": "1.0",
+    "version": "4.0",
     "contact": {
       "name": "Pydio",
       "url": "https://pydio.com"
     }
   },
+  "tags": [
+    {
+      "name": "ConfigService"
+    },
+    {
+      "name": "RoleService"
+    },
+    {
+      "name": "UserService"
+    },
+    {
+      "name": "ACLService"
+    },
+    {
+      "name": "PolicyService"
+    },
+    {
+      "name": "WorkspaceService"
+    },
+    {
+      "name": "ActivityService"
+    },
+    {
+      "name": "LogService"
+    },
+    {
+      "name": "TokenService"
+    },
+    {
+      "name": "MailerService"
+    },
+    {
+      "name": "SearchService"
+    },
+    {
+      "name": "TreeService"
+    },
+    {
+      "name": "TemplatesService"
+    },
+    {
+      "name": "MetaService"
+    },
+    {
+      "name": "UserMetaService"
+    },
+    {
+      "name": "JobsService"
+    },
+    {
+      "name": "AdminTreeService"
+    },
+    {
+      "name": "GraphService"
+    },
+    {
+      "name": "ShareService"
+    },
+    {
+      "name": "InstallService"
+    },
+    {
+      "name": "UpdateService"
+    },
+    {
+      "name": "FrontendService"
+    }
+  ],
   "schemes": [
     "http",
     "https",
@@ -26,11 +94,35 @@
         "operationId": "SearchAcls",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restACLCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -51,11 +143,35 @@
         "operationId": "PutAcl",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmACL"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -78,11 +194,35 @@
         "operationId": "DeleteAcl",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDeleteResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -105,11 +245,35 @@
         "operationId": "Stream",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/activityObject"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -132,11 +296,35 @@
         "operationId": "Subscribe",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/activitySubscription"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -159,11 +347,35 @@
         "operationId": "SearchSubscriptions",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restSubscriptionsCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -186,11 +398,35 @@
         "operationId": "ResetPassword",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restResetPasswordResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -213,15 +449,40 @@
         "operationId": "ResetPasswordToken",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restResetPasswordTokenResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "UserLogin",
+            "description": "Start a ResetPassword workflow for this user",
             "in": "path",
             "required": true,
             "type": "string"
@@ -238,11 +499,35 @@
         "operationId": "GenerateDocumentAccessToken",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDocumentAccessTokenResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -265,11 +550,35 @@
         "operationId": "Revoke",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restRevokeResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -292,11 +601,35 @@
         "operationId": "ListStorageBuckets",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restNodesCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -319,11 +652,35 @@
         "operationId": "ListServices",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restServiceCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -351,11 +708,35 @@
         "operationId": "ControlService",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/ctlService"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -378,11 +759,35 @@
         "operationId": "ListDataSources",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDataSourceCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "ConfigService"
@@ -395,15 +800,40 @@
         "operationId": "GetDataSource",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/objectDataSource"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Name",
+            "description": "Name of the data source (max length 34)",
             "in": "path",
             "required": true,
             "type": "string"
@@ -413,8 +843,7 @@
             "description": "Whether this data source is disabled or running.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "StorageType",
@@ -462,8 +891,7 @@
             "description": "Corresponding objects service connection type.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "ObjectsBucket",
@@ -505,24 +933,21 @@
             "description": "Not implemented, whether to watch for underlying changes on the FS.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "FlatStorage",
             "description": "Store data in flat format (object-storage like).",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "SkipSyncOnRestart",
             "description": "Do not trigger resync at start.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "EncryptionMode",
@@ -578,18 +1003,198 @@
         "operationId": "DeleteDataSource",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDeleteDataSourceResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Name",
+            "description": "Name of the data source (max length 34)",
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "Disabled",
+            "description": "Whether this data source is disabled or running.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "StorageType",
+            "description": "Type of underlying storage (LOCAL, S3, AZURE, GCS).",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "LOCAL",
+              "S3",
+              "SMB",
+              "CELLS",
+              "AZURE",
+              "GCS",
+              "B2",
+              "MANTA",
+              "SIA"
+            ],
+            "default": "LOCAL"
+          },
+          {
+            "name": "ObjectsServiceName",
+            "description": "Corresponding objects service name (underlying s3 service).",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "ObjectsHost",
+            "description": "Corresponding objects service host.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "ObjectsPort",
+            "description": "Corresponding objects service port.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "ObjectsSecure",
+            "description": "Corresponding objects service connection type.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "ObjectsBucket",
+            "description": "Corresponding objects service bucket.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "ObjectsBaseFolder",
+            "description": "Corresponding objects service base folder inside the bucket.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "ApiKey",
+            "description": "Corresponding objects service api key.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "ApiSecret",
+            "description": "Corresponding objects service api secret.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "PeerAddress",
+            "description": "Peer address of the data source.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Watch",
+            "description": "Not implemented, whether to watch for underlying changes on the FS.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "FlatStorage",
+            "description": "Store data in flat format (object-storage like).",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "SkipSyncOnRestart",
+            "description": "Do not trigger resync at start.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "EncryptionMode",
+            "description": "Type of encryption applied before sending data to storage.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "CLEAR",
+              "MASTER",
+              "USER",
+              "USER_PWD"
+            ],
+            "default": "CLEAR"
+          },
+          {
+            "name": "EncryptionKey",
+            "description": "Encryption key used for encrypting data.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "VersioningPolicyName",
+            "description": "Versioning policy describes how files are kept in the versioning queue.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "CreationDate",
+            "description": "Data Source creation date.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "LastSynchronizationDate",
+            "description": "Data Source last synchronization date.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "tags": [
@@ -601,15 +1206,40 @@
         "operationId": "PutDataSource",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/objectDataSource"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Name",
+            "description": "Name of the data source (max length 34)",
             "in": "path",
             "required": true,
             "type": "string"
@@ -619,7 +1249,96 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/objectDataSource"
+              "type": "object",
+              "properties": {
+                "Disabled": {
+                  "type": "boolean",
+                  "title": "Whether this data source is disabled or running"
+                },
+                "StorageType": {
+                  "$ref": "#/definitions/objectStorageType",
+                  "title": "Type of underlying storage (LOCAL, S3, AZURE, GCS)"
+                },
+                "StorageConfiguration": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "List of key values describing storage configuration"
+                },
+                "ObjectsServiceName": {
+                  "type": "string",
+                  "title": "Corresponding objects service name (underlying s3 service)"
+                },
+                "ObjectsHost": {
+                  "type": "string",
+                  "title": "Corresponding objects service host"
+                },
+                "ObjectsPort": {
+                  "type": "integer",
+                  "format": "int32",
+                  "title": "Corresponding objects service port"
+                },
+                "ObjectsSecure": {
+                  "type": "boolean",
+                  "title": "Corresponding objects service connection type"
+                },
+                "ObjectsBucket": {
+                  "type": "string",
+                  "title": "Corresponding objects service bucket"
+                },
+                "ObjectsBaseFolder": {
+                  "type": "string",
+                  "title": "Corresponding objects service base folder inside the bucket"
+                },
+                "ApiKey": {
+                  "type": "string",
+                  "title": "Corresponding objects service api key"
+                },
+                "ApiSecret": {
+                  "type": "string",
+                  "title": "Corresponding objects service api secret"
+                },
+                "PeerAddress": {
+                  "type": "string",
+                  "title": "Peer address of the data source"
+                },
+                "Watch": {
+                  "type": "boolean",
+                  "title": "Not implemented, whether to watch for underlying changes on the FS"
+                },
+                "FlatStorage": {
+                  "type": "boolean",
+                  "title": "Store data in flat format (object-storage like)"
+                },
+                "SkipSyncOnRestart": {
+                  "type": "boolean",
+                  "title": "Do not trigger resync at start"
+                },
+                "EncryptionMode": {
+                  "$ref": "#/definitions/objectEncryptionMode",
+                  "title": "Type of encryption applied before sending data to storage"
+                },
+                "EncryptionKey": {
+                  "type": "string",
+                  "title": "Encryption key used for encrypting data"
+                },
+                "VersioningPolicyName": {
+                  "type": "string",
+                  "title": "Versioning policy describes how files are kept in the versioning queue"
+                },
+                "CreationDate": {
+                  "type": "integer",
+                  "format": "int32",
+                  "title": "Data Source creation date"
+                },
+                "LastSynchronizationDate": {
+                  "type": "integer",
+                  "format": "int32",
+                  "title": "Data Source last synchronization date"
+                }
+              },
+              "title": "DataSource Object description"
             }
           }
         ],
@@ -634,11 +1353,35 @@
         "operationId": "EndpointsDiscovery",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDiscoveryResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -660,15 +1403,40 @@
         "operationId": "ConfigFormsDiscovery",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDiscoveryResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "ServiceName",
+            "description": "Retrieve a configuration form for a given service",
             "in": "path",
             "required": true,
             "type": "string"
@@ -685,11 +1453,35 @@
         "operationId": "OpenApiDiscovery",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restOpenApiResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -711,11 +1503,35 @@
         "operationId": "CreateEncryptionKey",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/encryptionAdminCreateKeyResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -738,11 +1554,35 @@
         "operationId": "DeleteEncryptionKey",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/encryptionAdminDeleteKeyResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -765,11 +1605,35 @@
         "operationId": "ExportEncryptionKey",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/encryptionAdminExportKeyResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -792,11 +1656,35 @@
         "operationId": "ImportEncryptionKey",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/encryptionAdminImportKeyResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -819,11 +1707,35 @@
         "operationId": "ListEncryptionKeys",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/encryptionAdminListKeysResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -846,11 +1758,35 @@
         "operationId": "ListPeersAddresses",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restListPeersAddressesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "ConfigService"
@@ -863,15 +1799,40 @@
         "operationId": "ListPeerFolders",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restNodesCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "PeerAddress",
+            "description": "Restrict listing to a given peer",
             "in": "path",
             "required": true,
             "type": "string"
@@ -881,7 +1842,13 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/restListPeerFoldersRequest"
+              "type": "object",
+              "properties": {
+                "Path": {
+                  "type": "string",
+                  "title": "Path to the parent folder for listing"
+                }
+              }
             }
           }
         ],
@@ -894,15 +1861,40 @@
         "operationId": "CreatePeerFolder",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restCreatePeerFolderResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "PeerAddress",
+            "description": "Restrict listing to a given peer",
             "in": "path",
             "required": true,
             "type": "string"
@@ -912,7 +1904,13 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/restCreatePeerFolderRequest"
+              "type": "object",
+              "properties": {
+                "Path": {
+                  "type": "string",
+                  "title": "Path to the folder to be created"
+                }
+              }
             }
           }
         ],
@@ -927,11 +1925,35 @@
         "operationId": "ListProcesses",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restListProcessesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -954,11 +1976,35 @@
         "operationId": "SchedulerActionsDiscovery",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restSchedulerActionsResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "ConfigService"
@@ -971,15 +2017,40 @@
         "operationId": "SchedulerActionFormDiscovery",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restSchedulerActionFormResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "ActionName",
+            "description": "Name of the action to load",
             "in": "path",
             "required": true,
             "type": "string"
@@ -996,11 +2067,35 @@
         "operationId": "ListSites",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restListSitesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1021,11 +2116,35 @@
         "operationId": "ListVersioningPolicies",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restVersioningPolicyCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "ConfigService"
@@ -1038,11 +2157,35 @@
         "operationId": "GetVersioningPolicy",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/treeVersioningPolicy"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1120,11 +2263,35 @@
         "operationId": "ListVirtualNodes",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restNodesCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "ConfigService"
@@ -1137,15 +2304,40 @@
         "operationId": "GetConfig",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restConfiguration"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "FullPath",
+            "description": "Full slash-separated path to the config key",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1167,15 +2359,40 @@
         "operationId": "PutConfig",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restConfiguration"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "FullPath",
+            "description": "Full slash-separated path to the config key",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1185,7 +2402,14 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/restConfiguration"
+              "type": "object",
+              "properties": {
+                "Data": {
+                  "type": "string",
+                  "title": "JSON-encoded data to store"
+                }
+              },
+              "title": "Configuration message. Data is an Json representation of any value"
             }
           }
         ],
@@ -1200,61 +2424,50 @@
         "operationId": "FrontServeBinary",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restFrontBinaryResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "BinaryType",
+            "description": "Currently supported values are USER and GLOBAL",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "Uuid",
+            "description": "Id of the binary",
             "in": "path",
             "required": true,
             "type": "string"
-          }
-        ],
-        "tags": [
-          "FrontendService"
-        ]
-      },
-      "post": {
-        "summary": "Upload frontend binaries (avatars / logos / bg images)",
-        "operationId": "FrontPutBinary",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/restFrontBinaryResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "BinaryType",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "Uuid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/restFrontBinaryRequest"
-            }
           }
         ],
         "tags": [
@@ -1268,11 +2481,35 @@
         "operationId": "FrontBootConf",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restFrontBootConfResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "FrontendService"
@@ -1285,11 +2522,35 @@
         "operationId": "FrontEnrollAuth",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restFrontEnrollAuthResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1312,11 +2573,35 @@
         "operationId": "FrontMessages",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restFrontMessagesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1337,11 +2622,35 @@
         "operationId": "FrontPlugins",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restFrontPluginsResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1362,11 +2671,35 @@
         "operationId": "FrontSession",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restFrontSessionResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1385,15 +2718,39 @@
     },
     "/frontend/settings-menu": {
       "get": {
-        "summary": "Sends a tree of nodes to be used a menu in the Settings panel",
+        "summary": "Upload frontend binaries (avatars / logos / bg images)\nrpc FrontPutBinary(FrontBinaryRequest) returns (FrontBinaryResponse) {\n   option (google.api.http) =  {\n       post: \"/frontend/binaries/{BinaryType}/{Uuid}\"\n       body: \"*\"\n   };\n}\nSends a tree of nodes to be used a menu in the Settings panel",
         "operationId": "SettingsMenu",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restSettingsMenuResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "FrontendService"
@@ -1406,11 +2763,35 @@
         "operationId": "FrontState",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restFrontStateResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "FrontendService"
@@ -1423,11 +2804,35 @@
         "operationId": "Relation",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restRelationResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1448,11 +2853,35 @@
         "operationId": "UserState",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restUserStateResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1473,11 +2902,35 @@
         "operationId": "GetInstall",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/installGetDefaultsResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "InstallService"
@@ -1488,11 +2941,35 @@
         "operationId": "PostInstall",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/installInstallResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1515,11 +2992,35 @@
         "operationId": "GetAgreement",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/installGetAgreementResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "InstallService"
@@ -1532,11 +3033,35 @@
         "operationId": "PerformInstallCheck",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/installPerformCheckResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1558,11 +3083,35 @@
         "operationId": "InstallEvents",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/installInstallEventsResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "InstallService"
@@ -1575,11 +3124,35 @@
         "operationId": "UserDeleteTasks",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/jobsDeleteTasksResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1602,11 +3175,35 @@
         "operationId": "ListTasksLogs",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restLogMessageCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1629,11 +3226,35 @@
         "operationId": "UserListJobs",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restUserJobsCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1654,11 +3275,35 @@
         "operationId": "UserControlJob",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/jobsCtrlCommandResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1681,15 +3326,40 @@
         "operationId": "UserCreateJob",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restUserJobResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "JobName",
+            "description": "Name of the job to create in the user space",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1699,7 +3369,13 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/restUserJobRequest"
+              "type": "object",
+              "properties": {
+                "JsonParameters": {
+                  "type": "string",
+                  "title": "Json-encoded parameters for this job"
+                }
+              }
             }
           }
         ],
@@ -1714,11 +3390,35 @@
         "operationId": "Syslog",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restLogMessageCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1741,11 +3441,35 @@
         "operationId": "Send",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/mailerSendMailResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1768,11 +3492,35 @@
         "operationId": "GetBulkMeta",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restBulkMetaResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1795,15 +3543,40 @@
         "operationId": "DeleteMeta",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/treeNode"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "NodePath",
+            "description": "Path to the requested node",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1813,7 +3586,16 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/restMetaNamespaceRequest"
+              "type": "object",
+              "properties": {
+                "Namespace": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "List of namespaces to load"
+                }
+              }
             }
           }
         ],
@@ -1828,15 +3610,40 @@
         "operationId": "GetMeta",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/treeNode"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "NodePath",
+            "description": "Path to the requested node",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1846,7 +3653,16 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/restMetaNamespaceRequest"
+              "type": "object",
+              "properties": {
+                "Namespace": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "List of namespaces to load"
+                }
+              }
             }
           }
         ],
@@ -1861,11 +3677,35 @@
         "operationId": "SetMeta",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/treeNode"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1879,7 +3719,15 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/restMetaCollection"
+              "type": "object",
+              "properties": {
+                "Metadatas": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/restMetadata"
+                  }
+                }
+              }
             }
           }
         ],
@@ -1894,11 +3742,35 @@
         "operationId": "ListPolicies",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmListPolicyGroupsResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1921,11 +3793,35 @@
         "operationId": "SearchRoles",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restRolesCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1948,15 +3844,40 @@
         "operationId": "GetRole",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmRole"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Uuid",
+            "description": "Unique identifier of this role",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1973,24 +3894,21 @@
             "description": "Whether this role represents a user team or not.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "GroupRole",
             "description": "Whether this role is attached to a Group object.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "UserRole",
             "description": "Whether this role is attached to a User object.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "LastUpdated",
@@ -2008,23 +3926,22 @@
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "collectionFormat": "multi"
           },
           {
             "name": "PoliciesContextEditable",
             "description": "Whether the policies resolve into an editable state.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "ForceOverride",
             "description": "Is used in a stack of roles, this one will always be applied last.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           }
         ],
         "tags": [
@@ -2036,18 +3953,104 @@
         "operationId": "DeleteRole",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmRole"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Uuid",
+            "description": "Unique identifier of this role",
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "Label",
+            "description": "Label of this role.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "IsTeam",
+            "description": "Whether this role represents a user team or not.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "GroupRole",
+            "description": "Whether this role is attached to a Group object.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "UserRole",
+            "description": "Whether this role is attached to a User object.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "LastUpdated",
+            "description": "Last modification date of the role.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "AutoApplies",
+            "description": "List of profiles (standard, shared, admin) on which the role will be automatically applied.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "PoliciesContextEditable",
+            "description": "Whether the policies resolve into an editable state.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "ForceOverride",
+            "description": "Is used in a stack of roles, this one will always be applied last.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
           }
         ],
         "tags": [
@@ -2059,15 +4062,40 @@
         "operationId": "SetRole",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmRole"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Uuid",
+            "description": "Unique identifier of this role",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2077,7 +4105,53 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/idmRole"
+              "type": "object",
+              "properties": {
+                "Label": {
+                  "type": "string",
+                  "title": "Label of this role"
+                },
+                "IsTeam": {
+                  "type": "boolean",
+                  "title": "Whether this role represents a user team or not"
+                },
+                "GroupRole": {
+                  "type": "boolean",
+                  "title": "Whether this role is attached to a Group object"
+                },
+                "UserRole": {
+                  "type": "boolean",
+                  "title": "Whether this role is attached to a User object"
+                },
+                "LastUpdated": {
+                  "type": "integer",
+                  "format": "int32",
+                  "title": "Last modification date of the role"
+                },
+                "AutoApplies": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "List of profiles (standard, shared, admin) on which the role will be automatically applied"
+                },
+                "Policies": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/serviceResourcePolicy"
+                  },
+                  "title": "List of policies for securing this role access"
+                },
+                "PoliciesContextEditable": {
+                  "type": "boolean",
+                  "title": "Whether the policies resolve into an editable state"
+                },
+                "ForceOverride": {
+                  "type": "boolean",
+                  "description": "Is used in a stack of roles, this one will always be applied last."
+                }
+              },
+              "description": "Role represents a generic set of permissions that can be applied to any users or groups."
             }
           }
         ],
@@ -2092,11 +4166,35 @@
         "operationId": "Nodes",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restSearchResults"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2119,11 +4217,35 @@
         "operationId": "PutCell",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restCell"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2146,15 +4268,40 @@
         "operationId": "GetCell",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restCell"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Uuid",
+            "description": "Cell Uuid",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2169,15 +4316,40 @@
         "operationId": "DeleteCell",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDeleteCellResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Uuid",
+            "description": "Cell Uuid",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2194,11 +4366,35 @@
         "operationId": "PutShareLink",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restShareLink"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2221,15 +4417,40 @@
         "operationId": "GetShareLink",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restShareLink"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Uuid",
+            "description": "Link Uuid",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2244,15 +4465,40 @@
         "operationId": "DeleteShareLink",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDeleteShareLinkResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Uuid",
+            "description": "Id of Link to delete",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2269,11 +4515,35 @@
         "operationId": "UpdateSharePolicies",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restUpdateSharePoliciesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2296,11 +4566,35 @@
         "operationId": "ListSharedResources",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restListSharedResourcesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2323,11 +4617,35 @@
         "operationId": "ListTemplates",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restListTemplatesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "TemplatesService"
@@ -2340,11 +4658,35 @@
         "operationId": "ListAdminTree",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restNodesCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2367,11 +4709,35 @@
         "operationId": "StatAdminTree",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/treeReadNodeResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2394,11 +4760,35 @@
         "operationId": "CreateNodes",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restNodesCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2421,11 +4811,35 @@
         "operationId": "DeleteNodes",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDeleteNodesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2448,11 +4862,35 @@
         "operationId": "RestoreNodes",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restRestoreNodesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2475,11 +4913,35 @@
         "operationId": "CreateSelection",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restCreateSelectionResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2502,15 +4964,40 @@
         "operationId": "HeadNode",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restHeadNodeResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Node",
+            "description": "The node to state",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2527,11 +5014,35 @@
         "operationId": "BulkStatNodes",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restBulkMetaResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2554,11 +5065,35 @@
         "operationId": "UpdateRequired",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/updateUpdateResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2581,15 +5116,40 @@
         "operationId": "ApplyUpdate",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/updateApplyUpdateResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "TargetVersion",
+            "description": "Version of the target binary",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2599,7 +5159,13 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/updateApplyUpdateRequest"
+              "type": "object",
+              "properties": {
+                "PackageName": {
+                  "type": "string",
+                  "title": "Name of the package if it's not the same as the current binary"
+                }
+              }
             }
           }
         ],
@@ -2614,11 +5180,35 @@
         "operationId": "SearchUsers",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restUsersCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2641,11 +5231,35 @@
         "operationId": "UserBookmarks",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restBulkMetaResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2668,11 +5282,35 @@
         "operationId": "ListUserMetaNamespace",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restUserMetaNamespaceCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "UserMetaService"
@@ -2683,11 +5321,35 @@
         "operationId": "UpdateUserMetaNamespace",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmUpdateUserMetaNamespaceResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2710,11 +5372,35 @@
         "operationId": "SearchUserMeta",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restUserMetaCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2737,15 +5423,40 @@
         "operationId": "ListUserMetaTags",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restListUserMetaTagsResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Namespace",
+            "description": "List user meta tags for this namespace",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2760,15 +5471,40 @@
         "operationId": "PutUserMetaTag",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restPutUserMetaTagResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Namespace",
+            "description": "Add a tag value for this namespace",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2778,7 +5514,13 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/restPutUserMetaTagRequest"
+              "type": "object",
+              "properties": {
+                "Tag": {
+                  "type": "string",
+                  "title": "New tag value"
+                }
+              }
             }
           }
         ],
@@ -2793,21 +5535,47 @@
         "operationId": "DeleteUserMetaTags",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDeleteUserMetaTagsResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Namespace",
+            "description": "Delete tags from this namespace",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "Tags",
+            "description": "Delete this tag",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2824,11 +5592,35 @@
         "operationId": "UpdateUserMeta",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmUpdateUserMetaResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2851,15 +5643,40 @@
         "operationId": "PutRoles",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmUser"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Login",
+            "description": "User login is used to connect, field is empty for groups",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2869,7 +5686,64 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/idmUser"
+              "type": "object",
+              "properties": {
+                "Uuid": {
+                  "type": "string",
+                  "title": "User unique identifier"
+                },
+                "GroupPath": {
+                  "type": "string",
+                  "title": "Path to the parent group"
+                },
+                "Attributes": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "A free list of attributes"
+                },
+                "Roles": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/idmRole"
+                  },
+                  "title": "List of roles applied to this user or group"
+                },
+                "Password": {
+                  "type": "string",
+                  "title": "Password can be passed to be updated (but never read back), field is empty for groups"
+                },
+                "OldPassword": {
+                  "type": "string",
+                  "title": "OldPassword must be set when a user updates her own password"
+                },
+                "IsGroup": {
+                  "type": "boolean",
+                  "title": "Whether this object is a group or a user"
+                },
+                "GroupLabel": {
+                  "type": "string",
+                  "title": "Label of the group, field is empty for users"
+                },
+                "LastConnected": {
+                  "type": "integer",
+                  "format": "int32",
+                  "title": "Last successful connection timestamp"
+                },
+                "Policies": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/serviceResourcePolicy"
+                  },
+                  "title": "Policies securing access to this user"
+                },
+                "PoliciesContextEditable": {
+                  "type": "boolean",
+                  "description": "Context-resolved to quickly check if user is editable or not."
+                }
+              },
+              "title": "User can represent either a User or a Group"
             }
           }
         ],
@@ -2884,15 +5758,40 @@
         "operationId": "GetUser",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmUser"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Login",
+            "description": "User login is used to connect, field is empty for groups",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2930,8 +5829,7 @@
             "description": "Whether this object is a group or a user.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "GroupLabel",
@@ -2953,8 +5851,7 @@
             "description": "Context-resolved to quickly check if user is editable or not.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           }
         ],
         "tags": [
@@ -2966,18 +5863,100 @@
         "operationId": "DeleteUser",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDeleteResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Login",
+            "description": "User login is used to connect, field is empty for groups",
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "Uuid",
+            "description": "User unique identifier.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "GroupPath",
+            "description": "Path to the parent group.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Password",
+            "description": "Password can be passed to be updated (but never read back), field is empty for groups.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "OldPassword",
+            "description": "OldPassword must be set when a user updates her own password.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "IsGroup",
+            "description": "Whether this object is a group or a user.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "GroupLabel",
+            "description": "Label of the group, field is empty for users.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "LastConnected",
+            "description": "Last successful connection timestamp.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "PoliciesContextEditable",
+            "description": "Context-resolved to quickly check if user is editable or not.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
           }
         ],
         "tags": [
@@ -2989,15 +5968,40 @@
         "operationId": "PutUser",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmUser"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Login",
+            "description": "User login is used to connect, field is empty for groups",
             "in": "path",
             "required": true,
             "type": "string"
@@ -3007,7 +6011,64 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/idmUser"
+              "type": "object",
+              "properties": {
+                "Uuid": {
+                  "type": "string",
+                  "title": "User unique identifier"
+                },
+                "GroupPath": {
+                  "type": "string",
+                  "title": "Path to the parent group"
+                },
+                "Attributes": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "A free list of attributes"
+                },
+                "Roles": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/idmRole"
+                  },
+                  "title": "List of roles applied to this user or group"
+                },
+                "Password": {
+                  "type": "string",
+                  "title": "Password can be passed to be updated (but never read back), field is empty for groups"
+                },
+                "OldPassword": {
+                  "type": "string",
+                  "title": "OldPassword must be set when a user updates her own password"
+                },
+                "IsGroup": {
+                  "type": "boolean",
+                  "title": "Whether this object is a group or a user"
+                },
+                "GroupLabel": {
+                  "type": "string",
+                  "title": "Label of the group, field is empty for users"
+                },
+                "LastConnected": {
+                  "type": "integer",
+                  "format": "int32",
+                  "title": "Last successful connection timestamp"
+                },
+                "Policies": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/serviceResourcePolicy"
+                  },
+                  "title": "Policies securing access to this user"
+                },
+                "PoliciesContextEditable": {
+                  "type": "boolean",
+                  "description": "Context-resolved to quickly check if user is editable or not."
+                }
+              },
+              "title": "User can represent either a User or a Group"
             }
           }
         ],
@@ -3022,11 +6083,35 @@
         "operationId": "SearchWorkspaces",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restWorkspaceCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -3049,18 +6134,111 @@
         "operationId": "DeleteWorkspace",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDeleteResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Slug",
+            "description": "Slug is an url-compatible form of the workspace label, or can be freely modified (max length 500)",
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "UUID",
+            "description": "Unique identifier of the workspace.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Label",
+            "description": "Label of the workspace (max length 500).",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Description",
+            "description": "Description of the workspace (max length 1000).",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Scope",
+            "description": "Scope can be ADMIN, ROOM (=CELL) or LINK.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "ANY",
+              "ADMIN",
+              "ROOM",
+              "LINK"
+            ],
+            "default": "ANY"
+          },
+          {
+            "name": "LastUpdated",
+            "description": "Last modification time.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "Attributes",
+            "description": "JSON-encoded list of attributes.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "RootUUIDs",
+            "description": "Quick list of the RootNodes uuids.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "PoliciesContextEditable",
+            "description": "Context-resolved to quickly check if workspace is editable or not.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
           }
         ],
         "tags": [
@@ -3072,15 +6250,40 @@
         "operationId": "PutWorkspace",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmWorkspace"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Slug",
+            "description": "Slug is an url-compatible form of the workspace label, or can be freely modified (max length 500)",
             "in": "path",
             "required": true,
             "type": "string"
@@ -3090,7 +6293,60 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/idmWorkspace"
+              "type": "object",
+              "properties": {
+                "UUID": {
+                  "type": "string",
+                  "title": "Unique identifier of the workspace"
+                },
+                "Label": {
+                  "type": "string",
+                  "title": "Label of the workspace (max length 500)"
+                },
+                "Description": {
+                  "type": "string",
+                  "title": "Description of the workspace (max length 1000)"
+                },
+                "Scope": {
+                  "$ref": "#/definitions/idmWorkspaceScope",
+                  "title": "Scope can be ADMIN, ROOM (=CELL) or LINK"
+                },
+                "LastUpdated": {
+                  "type": "integer",
+                  "format": "int32",
+                  "title": "Last modification time"
+                },
+                "Policies": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/serviceResourcePolicy"
+                  },
+                  "title": "Policies for securing access"
+                },
+                "Attributes": {
+                  "type": "string",
+                  "title": "JSON-encoded list of attributes"
+                },
+                "RootUUIDs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Quick list of the RootNodes uuids"
+                },
+                "RootNodes": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/definitions/treeNode"
+                  },
+                  "title": "List of the Root Nodes in the tree that compose this workspace"
+                },
+                "PoliciesContextEditable": {
+                  "type": "boolean",
+                  "title": "Context-resolved to quickly check if workspace is editable or not"
+                }
+              },
+              "description": "A Workspace is composed of a set of nodes UUIDs and is used to provide accesses to the tree via ACLs."
             }
           }
         ],
@@ -3189,7 +6445,7 @@
     "activityObject": {
       "type": "object",
       "properties": {
-        "jsonLdContext": {
+        "@context": {
           "type": "string"
         },
         "type": {
@@ -3524,7 +6780,6 @@
         },
         "UnreadCountOnly": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Count last activities that were not loaded yet"
         },
         "Offset": {
@@ -3539,7 +6794,6 @@
         },
         "AsDigest": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Compute a digest of all unread activities"
         },
         "PointOfView": {
@@ -3648,8 +6902,7 @@
           "type": "string"
         },
         "Controllable": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Status": {
           "$ref": "#/definitions/ctlServiceStatus"
@@ -3698,8 +6951,7 @@
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -3716,8 +6968,7 @@
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -3755,7 +7006,6 @@
         },
         "Override": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether to override if a key with same ID already exists"
         }
       }
@@ -3764,8 +7014,7 @@
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -3923,8 +7172,7 @@
           }
         },
         "not": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -4065,17 +7313,14 @@
         },
         "IsTeam": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether this role represents a user team or not"
         },
         "GroupRole": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether this role is attached to a Group object"
         },
         "UserRole": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether this role is attached to a User object"
         },
         "LastUpdated": {
@@ -4099,12 +7344,10 @@
         },
         "PoliciesContextEditable": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether the policies resolve into an editable state"
         },
         "ForceOverride": {
           "type": "boolean",
-          "format": "boolean",
           "description": "Is used in a stack of roles, this one will always be applied last."
         }
       },
@@ -4126,27 +7369,22 @@
         },
         "IsTeam": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Look for team roles only"
         },
         "IsGroupRole": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Look for group roles only"
         },
         "IsUserRole": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Look for user roles only"
         },
         "HasAutoApply": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Look for roles that have any value in the autoApplies field"
         },
         "not": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Negate the query"
         }
       },
@@ -4280,7 +7518,6 @@
         },
         "IsGroup": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether this object is a group or a user"
         },
         "GroupLabel": {
@@ -4301,7 +7538,6 @@
         },
         "PoliciesContextEditable": {
           "type": "boolean",
-          "format": "boolean",
           "description": "Context-resolved to quickly check if user is editable or not."
         }
       },
@@ -4335,7 +7571,6 @@
         },
         "PoliciesContextEditable": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Context-resolved to quickly check if this meta is editable or not"
         },
         "ResolvedNode": {
@@ -4363,7 +7598,6 @@
         },
         "Indexable": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether a modification of a metadata value for this namespace should trigger an indexation by the search engine"
         },
         "JsonDefinition": {
@@ -4379,7 +7613,6 @@
         },
         "PoliciesContextEditable": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Context-resolved to quickly check if this meta is editable or not"
         }
       },
@@ -4402,8 +7635,7 @@
           "title": "Search on group path, and if so, search recursively"
         },
         "Recursive": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "FullPath": {
           "type": "string",
@@ -4417,8 +7649,7 @@
           "type": "string"
         },
         "AttributeAnyValue": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "HasRole": {
           "type": "string",
@@ -4436,8 +7667,7 @@
           "title": "Compare to last connection date, starting with \u003e or \u003c"
         },
         "not": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -4496,7 +7726,6 @@
         },
         "PoliciesContextEditable": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Context-resolved to quickly check if workspace is editable or not"
         }
       },
@@ -4543,8 +7772,7 @@
           "type": "string"
         },
         "not": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -4555,8 +7783,7 @@
           "type": "string"
         },
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "JsonResult": {
           "type": "string"
@@ -4619,8 +7846,7 @@
           "type": "string"
         },
         "dbUseDefaults": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "dsName": {
           "type": "string"
@@ -4683,8 +7909,7 @@
           "type": "string"
         },
         "licenseRequired": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "licenseString": {
           "type": "string"
@@ -4716,8 +7941,7 @@
       "type": "object",
       "properties": {
         "success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -4765,12 +7989,10 @@
         },
         "SSLRedirect": {
           "type": "boolean",
-          "format": "boolean",
           "title": "If TLS is set, whether to automatically redirect each http://host:port to https://host:port"
         },
         "Maintenance": {
           "type": "boolean",
-          "format": "boolean",
           "title": "If set, this site will be in maintenance mode"
         },
         "MaintenanceConditions": {
@@ -4805,12 +8027,10 @@
           "type": "string"
         },
         "AcceptEULA": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "StagingCA": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       },
       "title": "TLSLetsEncrypt set up proxy to automatically get a valid certificate from let's encrypt servers"
@@ -4844,12 +8064,10 @@
         },
         "Bypass": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Bypass this action (forward input to output and do nothing)"
         },
         "BreakAfter": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Stop full chain now : do not carry on executing next actions"
         },
         "NodesSelector": {
@@ -5004,7 +8222,6 @@
       "properties": {
         "Success": {
           "type": "boolean",
-          "format": "boolean",
           "title": "True if action succeeded"
         },
         "RawBody": {
@@ -5027,7 +8244,6 @@
         },
         "Ignored": {
           "type": "boolean",
-          "format": "boolean",
           "title": "If action was returned WithIgnore()"
         },
         "Time": {
@@ -5155,12 +8371,10 @@
         },
         "All": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Select all"
         },
         "Collect": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Collect results"
         },
         "Query": {
@@ -5226,7 +8440,6 @@
         },
         "All": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Load all objects"
         },
         "Query": {
@@ -5235,7 +8448,6 @@
         },
         "Collect": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Pass a slice of objects to one action, or trigger all actions in parallel"
         },
         "Label": {
@@ -5277,12 +8489,10 @@
         },
         "Inactive": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Admin can temporarily disable this job"
         },
         "Custom": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Job created by application or by administrator"
         },
         "Languages": {
@@ -5305,12 +8515,10 @@
         },
         "AutoStart": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Start task as soon as job is inserted"
         },
         "AutoClean": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Remove job automatically once it is finished (success only)"
         },
         "Actions": {
@@ -5327,7 +8535,6 @@
         },
         "TasksSilentUpdate": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Do not send notification on task update"
         },
         "Tasks": {
@@ -5390,7 +8597,6 @@
         },
         "Mandatory": {
           "type": "boolean",
-          "format": "boolean",
           "title": "If mandatory, job cannot start without a value"
         },
         "Type": {
@@ -5412,12 +8618,10 @@
         },
         "EventsOnly": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Filter with only event-based jobs"
         },
         "TimersOnly": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Filter with only timer-based jobs"
         },
         "LoadTasks": {
@@ -5448,7 +8652,6 @@
       "properties": {
         "All": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Select all files - ignore any other condition"
         },
         "Pathes": {
@@ -5464,7 +8667,6 @@
         },
         "Collect": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether to trigger one action per node or one action\nwith all nodes as selection"
         },
         "Label": {
@@ -5519,17 +8721,14 @@
         },
         "CanStop": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Can be interrupted"
         },
         "CanPause": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Can be paused/resumed"
         },
         "HasProgress": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Tasks publish a progress"
         },
         "Progress": {
@@ -5585,7 +8784,6 @@
       "properties": {
         "All": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Select all users"
         },
         "Users": {
@@ -5601,7 +8799,6 @@
         },
         "Collect": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Wether to trigger one action per user or one action\nwith all user as a selection"
         },
         "Label": {
@@ -5824,8 +9021,7 @@
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -5855,7 +9051,6 @@
         },
         "Disabled": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether this data source is disabled or running"
         },
         "StorageType": {
@@ -5884,7 +9079,6 @@
         },
         "ObjectsSecure": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Corresponding objects service connection type"
         },
         "ObjectsBucket": {
@@ -5909,17 +9103,14 @@
         },
         "Watch": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Not implemented, whether to watch for underlying changes on the FS"
         },
         "FlatStorage": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Store data in flat format (object-storage like)"
         },
         "SkipSyncOnRestart": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Do not trigger resync at start"
         },
         "EncryptionMode": {
@@ -5977,17 +9168,13 @@
     "protobufAny": {
       "type": "object",
       "properties": {
-        "type_url": {
+        "@type": {
           "type": "string",
           "description": "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
-        },
-        "value": {
-          "type": "string",
-          "format": "byte",
-          "description": "Must be a valid serialized protocol buffer of the above specified type."
         }
       },
-      "description": "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(\u0026foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := \u0026pb.Foo{...}\n     any, err := ptypes.MarshalAny(foo)\n     ...\n     foo := \u0026pb.Foo{}\n     if err := ptypes.UnmarshalAny(any, foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": \u003cstring\u003e,\n      \"lastName\": \u003cstring\u003e\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+      "additionalProperties": {},
+      "description": "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(\u0026foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := \u0026pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := \u0026pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": \u003cstring\u003e,\n      \"lastName\": \u003cstring\u003e\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
     },
     "restACLCollection": {
       "type": "object",
@@ -6032,7 +9219,6 @@
         },
         "HasForm": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether this action has a form or not"
         },
         "FormModule": {
@@ -6061,7 +9247,6 @@
         },
         "IsInternal": {
           "type": "boolean",
-          "format": "boolean",
           "description": "If action is declared internal, it is hidden to avoid polluting the list."
         }
       }
@@ -6132,7 +9317,6 @@
         },
         "PoliciesContextEditable": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether these policies are currently editable"
         }
       },
@@ -6154,7 +9338,6 @@
         },
         "IsUserRole": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Flag for detecting if it's a user role or not"
         },
         "User": {
@@ -6215,7 +9398,6 @@
         },
         "Recursive": {
           "type": "boolean",
-          "format": "boolean",
           "title": "If nodes are created inside non-existing folders, whether the parents should be created automatically or not"
         },
         "TemplateUUID": {
@@ -6224,25 +9406,11 @@
         }
       }
     },
-    "restCreatePeerFolderRequest": {
-      "type": "object",
-      "properties": {
-        "PeerAddress": {
-          "type": "string",
-          "title": "Restrict listing to a given peer"
-        },
-        "Path": {
-          "type": "string",
-          "title": "Path to the folder to be created"
-        }
-      }
-    },
     "restCreatePeerFolderResponse": {
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Node": {
           "$ref": "#/definitions/treeNode"
@@ -6265,7 +9433,6 @@
         },
         "Persist": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether to save the selection or just get a temporary Uuid in return"
         }
       }
@@ -6305,7 +9472,6 @@
       "properties": {
         "Success": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Delete result"
         }
       }
@@ -6314,8 +9480,7 @@
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -6331,12 +9496,10 @@
         },
         "Recursive": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether to delete all the children if node is a folder"
         },
         "RemovePermanently": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Force permanent deletion even if a recycle bin is defined"
         }
       }
@@ -6352,12 +9515,40 @@
         }
       }
     },
+    "restError": {
+      "type": "object",
+      "properties": {
+        "Code": {
+          "type": "string",
+          "title": "Unique ID of the error"
+        },
+        "Title": {
+          "type": "string",
+          "title": "Human-readable, short label"
+        },
+        "Detail": {
+          "type": "string",
+          "title": "Human-readable, longer description"
+        },
+        "Source": {
+          "type": "string",
+          "title": "Cells service name or other quickly useful info"
+        },
+        "Meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Additional Metadata"
+        }
+      },
+      "title": "Generic error message"
+    },
     "restDeleteResponse": {
       "type": "object",
       "properties": {
         "Success": {
           "type": "boolean",
-          "format": "boolean",
           "title": "If delete was successfull"
         },
         "NumRows": {
@@ -6373,7 +9564,6 @@
       "properties": {
         "Success": {
           "type": "boolean",
-          "format": "boolean",
           "title": "If delete sucess or failed"
         }
       },
@@ -6383,8 +9573,7 @@
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -6439,20 +9628,6 @@
           "type": "string"
         }
       }
-    },
-    "restFrontBinaryRequest": {
-      "type": "object",
-      "properties": {
-        "BinaryType": {
-          "type": "string",
-          "title": "Currently supported values are USER and GLOBAL"
-        },
-        "Uuid": {
-          "type": "string",
-          "title": "Id of the binary"
-        }
-      },
-      "title": "Download binary"
     },
     "restFrontBinaryResponse": {
       "type": "object",
@@ -6526,7 +9701,6 @@
         },
         "Logout": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Kill session now"
         }
       }
@@ -6579,12 +9753,10 @@
         },
         "AllMetaProviders": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether to query all services for the metadata they can contribute to enrich the node"
         },
         "Versions": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Load Versions of the given node"
         },
         "Offset": {
@@ -6604,19 +9776,6 @@
       "properties": {
         "Node": {
           "$ref": "#/definitions/treeNode"
-        }
-      }
-    },
-    "restListPeerFoldersRequest": {
-      "type": "object",
-      "properties": {
-        "PeerAddress": {
-          "type": "string",
-          "title": "Restrict listing to a given peer"
-        },
-        "Path": {
-          "type": "string",
-          "title": "Path to the parent folder for listing"
         }
       }
     },
@@ -6669,7 +9828,6 @@
         },
         "OwnedBySubject": {
           "type": "boolean",
-          "format": "boolean",
           "title": "If true, will also check filter the output to shares actually owned by subject"
         },
         "Offset": {
@@ -6766,36 +9924,6 @@
         }
       },
       "title": "Collection of serialized log messages"
-    },
-    "restMetaCollection": {
-      "type": "object",
-      "properties": {
-        "NodePath": {
-          "type": "string"
-        },
-        "Metadatas": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/restMetadata"
-          }
-        }
-      }
-    },
-    "restMetaNamespaceRequest": {
-      "type": "object",
-      "properties": {
-        "NodePath": {
-          "type": "string",
-          "title": "Path to the requested node"
-        },
-        "Namespace": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "title": "List of namespaces to load"
-        }
-      }
     },
     "restMetadata": {
       "type": "object",
@@ -6912,7 +10040,6 @@
         },
         "CreateEmptyRoot": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether to create a dedicated folder for this cell at creation"
         }
       },
@@ -6927,7 +10054,6 @@
         },
         "PasswordEnabled": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether it has Password enabled"
         },
         "CreatePassword": {
@@ -6945,25 +10071,11 @@
       },
       "title": "Request for create/update a link"
     },
-    "restPutUserMetaTagRequest": {
-      "type": "object",
-      "properties": {
-        "Namespace": {
-          "type": "string",
-          "title": "Add a tag value for this namespace"
-        },
-        "Tag": {
-          "type": "string",
-          "title": "New tag value"
-        }
-      }
-    },
     "restPutUserMetaTagResponse": {
       "type": "object",
       "properties": {
         "Success": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Operation success"
         }
       }
@@ -7006,8 +10118,7 @@
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Message": {
           "type": "string"
@@ -7018,8 +10129,7 @@
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Message": {
           "type": "string"
@@ -7077,8 +10187,7 @@
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Message": {
           "type": "string"
@@ -7146,7 +10255,6 @@
         },
         "CountOnly": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Return counts only, no actual results"
         },
         "Operation": {
@@ -7208,7 +10316,6 @@
         },
         "CountOnly": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Return counts only, no actual results"
         },
         "Operation": {
@@ -7249,7 +10356,6 @@
         },
         "CountOnly": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Return counts only, no actual results"
         },
         "Operation": {
@@ -7290,7 +10396,6 @@
         },
         "CountOnly": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Return counts only, no actual results"
         },
         "Operation": {
@@ -7349,19 +10454,19 @@
         "Key": {
           "type": "string"
         },
-        "Label": {
+        "LABEL": {
           "type": "string"
         },
-        "Description": {
+        "DESCRIPTION": {
           "type": "string"
         },
-        "Manager": {
+        "MANAGER": {
           "type": "string"
         },
-        "Alias": {
+        "ALIAS": {
           "type": "string"
         },
-        "Metadata": {
+        "METADATA": {
           "$ref": "#/definitions/restSettingsEntryMeta"
         },
         "Accesses": {
@@ -7378,20 +10483,19 @@
     "restSettingsEntryMeta": {
       "type": "object",
       "properties": {
-        "IconClass": {
+        "icon_class": {
           "type": "string"
         },
-        "Component": {
+        "component": {
           "type": "string"
         },
-        "Props": {
+        "props": {
           "type": "string"
         },
-        "Advanced": {
-          "type": "boolean",
-          "format": "boolean"
+        "advanced": {
+          "type": "boolean"
         },
-        "Indexed": {
+        "indexed": {
           "type": "array",
           "items": {
             "type": "string"
@@ -7402,7 +10506,7 @@
     "restSettingsMenuResponse": {
       "type": "object",
       "properties": {
-        "RootMetadata": {
+        "__metadata__": {
           "$ref": "#/definitions/restSettingsEntryMeta"
         },
         "Sections": {
@@ -7419,13 +10523,13 @@
         "Key": {
           "type": "string"
         },
-        "Label": {
+        "LABEL": {
           "type": "string"
         },
-        "Description": {
+        "DESCRIPTION": {
           "type": "string"
         },
-        "Children": {
+        "CHILDREN": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/restSettingsEntry"
@@ -7466,7 +10570,6 @@
         },
         "PasswordRequired": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether a password is required or not to access the link"
         },
         "AccessStart": {
@@ -7502,7 +10605,6 @@
         },
         "RestrictToTargetUsers": {
           "type": "boolean",
-          "format": "boolean",
           "title": "RestrictToTargetUsers enable users restriction"
         },
         "RootNodes": {
@@ -7528,7 +10630,6 @@
         },
         "PoliciesContextEditable": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether policies are currently editable or not"
         }
       },
@@ -7598,7 +10699,6 @@
       "properties": {
         "IsFile": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether it's a file or a folder"
         },
         "BinaryUUUID": {
@@ -7639,8 +10739,7 @@
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Policies": {
           "type": "array",
@@ -7649,26 +10748,12 @@
           }
         },
         "PoliciesContextEditable": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
     "restUserBookmarksRequest": {
       "type": "object"
-    },
-    "restUserJobRequest": {
-      "type": "object",
-      "properties": {
-        "JobName": {
-          "type": "string",
-          "title": "Name of the job to create in the user space"
-        },
-        "JsonParameters": {
-          "type": "string",
-          "title": "Json-encoded parameters for this job"
-        }
-      }
     },
     "restUserJobResponse": {
       "type": "object",
@@ -7785,6 +10870,24 @@
       },
       "title": "Rest response for workspace search"
     },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
     "serviceOperationType": {
       "type": "string",
       "enum": [
@@ -7875,12 +10978,10 @@
           }
         },
         "Empty": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Any": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -7966,22 +11067,18 @@
         },
         "Recursive": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Send back all children of the node"
         },
         "Ancestors": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Send back a list of parent nodes, until the root, including the original node"
         },
         "WithVersions": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Sends the list of versions for a given node"
         },
         "WithCommits": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Sends the list of commits for a given node (not used)"
         },
         "Limit": {
@@ -8074,12 +11171,10 @@
           }
         },
         "Silent": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Optimistic": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -8174,7 +11269,6 @@
         },
         "Not": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Negate this query"
         }
       },
@@ -8189,17 +11283,14 @@
         },
         "WithCommits": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Gather commit information"
         },
         "WithExtendedStats": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Get extended stats - For folders, computes ChildrenCount"
         },
         "ObjectStats": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Used internally for the router ReadNode request, stat the datasource instead of index"
         }
       },
@@ -8209,8 +11300,7 @@
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Node": {
           "$ref": "#/definitions/treeNode"
@@ -8276,7 +11366,6 @@
         },
         "Details": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Load node details"
         }
       }
@@ -8369,25 +11458,11 @@
       },
       "title": "Used in AppearsIn to signal a node is\nappearing in multiple workspaces in the current context"
     },
-    "updateApplyUpdateRequest": {
-      "type": "object",
-      "properties": {
-        "TargetVersion": {
-          "type": "string",
-          "title": "Version of the target binary"
-        },
-        "PackageName": {
-          "type": "string",
-          "title": "Name of the package if it's not the same as the current binary"
-        }
-      }
-    },
     "updateApplyUpdateResponse": {
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Message": {
           "type": "string"
@@ -8457,7 +11532,6 @@
         },
         "IsPatch": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Not used : if binary is a patch"
         },
         "PatchAlgorithm": {

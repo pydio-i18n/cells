@@ -2,10 +2,12 @@ syntax = "proto3";
 
 package rest;
 
-import "github.com/pydio/cells/v4/common/proto/tree/tree.proto";
-import "github.com/pydio/cells/v4/common/proto/object/object.proto";
-import "github.com/pydio/cells/v4/common/proto/ctl/ctl.proto";
-import "github.com/pydio/cells/v4/common/proto/install/install.proto";
+option go_package = "github.com/pydio/cells/v4/common/proto/rest";
+
+import "tree.proto";
+import "object.proto";
+import "ctl.proto";
+import "install.proto";
 
 // Configuration message. Data is an Json representation of any value
 message Configuration{

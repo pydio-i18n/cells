@@ -1,6 +1,8 @@
 syntax="proto3";
 
-import "github.com/pydio/cells/v4/common/proto/jobs/jobs.proto";
+import "jobs.proto";
+
+option go_package = "github.com/pydio/cells/v4/common/proto/rest";
 
 package rest;
 

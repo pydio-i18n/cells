@@ -3,14 +3,16 @@
 
 package rest
 
-import fmt "fmt"
-import github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
-import proto "github.com/golang/protobuf/proto"
-import math "math"
-import _ "github.com/mwitkow/go-proto-validators"
-import _ "github.com/pydio/cells/v4/common/proto/idm"
-import _ "github.com/pydio/cells/v4/common/proto/tree"
-import _ "github.com/pydio/cells/v4/common/proto/service"
+import (
+	fmt "fmt"
+	math "math"
+	proto "github.com/golang/protobuf/proto"
+	_ "github.com/pydio/cells/v4/common/proto/service"
+	_ "github.com/pydio/cells/v4/common/proto/idm"
+	_ "github.com/pydio/cells/v4/common/proto/tree"
+	_ "github.com/mwitkow/go-proto-validators"
+	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -44,10 +46,10 @@ func (this *CellAcl) Validate() error {
 }
 func (this *Cell) Validate() error {
 	if !(len(this.Label) < 500) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Label", fmt.Errorf(`value '%v' must length be less than '500'`, this.Label))
+		return github_com_mwitkow_go_proto_validators.FieldError("Label", fmt.Errorf(`value '%v' must have a length smaller than '500'`, this.Label))
 	}
 	if !(len(this.Description) < 1000) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Description", fmt.Errorf(`value '%v' must length be less than '1000'`, this.Description))
+		return github_com_mwitkow_go_proto_validators.FieldError("Description", fmt.Errorf(`value '%v' must have a length smaller than '1000'`, this.Description))
 	}
 	for _, item := range this.RootNodes {
 		if item != nil {
@@ -71,10 +73,10 @@ func (this *ShareLinkTargetUser) Validate() error {
 }
 func (this *ShareLink) Validate() error {
 	if !(len(this.Label) < 500) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Label", fmt.Errorf(`value '%v' must length be less than '500'`, this.Label))
+		return github_com_mwitkow_go_proto_validators.FieldError("Label", fmt.Errorf(`value '%v' must have a length smaller than '500'`, this.Label))
 	}
 	if !(len(this.Description) < 1000) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Description", fmt.Errorf(`value '%v' must length be less than '1000'`, this.Description))
+		return github_com_mwitkow_go_proto_validators.FieldError("Description", fmt.Errorf(`value '%v' must have a length smaller than '1000'`, this.Description))
 	}
 	// Validation of proto3 map<> fields is unsupported.
 	for _, item := range this.RootNodes {

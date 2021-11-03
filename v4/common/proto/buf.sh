@@ -48,6 +48,14 @@ fi
 
 cd $1
 
+echo "Generate protobufs for $1"
 buf generate --output $GOPATH/src
+
+if [ $1 == "rest" ]
+then
+  echo "Generate OpenAPIv2 JSON specification"
+  buf generate --path rest.proto --template buf.openapi.yaml
+  go run cmd/main.go
+fi
 
 cd -

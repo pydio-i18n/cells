@@ -1,35 +1,82 @@
-/*
- * Copyright (c) 2019-2021. Abstrium SAS <team (at) pydio.com>
- * This file is part of Pydio Cells.
- *
- * Pydio Cells is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Pydio Cells is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Pydio Cells.  If not, see <http://www.gnu.org/licenses/>.
- *
- * The latest code can be found at <https://pydio.com>.
- */
-
 package rest
-
 var SwaggerJson = `{
   "swagger": "2.0",
   "info": {
     "title": "Pydio Cells Rest API",
-    "version": "1.0",
+    "version": "4.0",
     "contact": {
       "name": "Pydio",
       "url": "https://pydio.com"
     }
   },
+  "tags": [
+    {
+      "name": "ConfigService"
+    },
+    {
+      "name": "RoleService"
+    },
+    {
+      "name": "UserService"
+    },
+    {
+      "name": "ACLService"
+    },
+    {
+      "name": "PolicyService"
+    },
+    {
+      "name": "WorkspaceService"
+    },
+    {
+      "name": "ActivityService"
+    },
+    {
+      "name": "LogService"
+    },
+    {
+      "name": "TokenService"
+    },
+    {
+      "name": "MailerService"
+    },
+    {
+      "name": "SearchService"
+    },
+    {
+      "name": "TreeService"
+    },
+    {
+      "name": "TemplatesService"
+    },
+    {
+      "name": "MetaService"
+    },
+    {
+      "name": "UserMetaService"
+    },
+    {
+      "name": "JobsService"
+    },
+    {
+      "name": "AdminTreeService"
+    },
+    {
+      "name": "GraphService"
+    },
+    {
+      "name": "ShareService"
+    },
+    {
+      "name": "InstallService"
+    },
+    {
+      "name": "UpdateService"
+    },
+    {
+      "name": "FrontendService"
+    }
+  ],
   "schemes": [
     "http",
     "https",
@@ -41,32 +88,6 @@ var SwaggerJson = `{
   "produces": [
     "application/json"
   ],
-"responses": {
-    "401":{
-      "description":"User is not authenticated",
-      "schema":{
-        "$ref": "#/definitions/restError"
-      }
-    },
-    "403":{
-      "description":"User has no permission to access this particular resource",
-      "schema":{
-        "$ref": "#/definitions/restError"
-      }
-    },
-    "404":{
-      "description":"Resource does not exist in the system",
-      "schema":{
-        "$ref": "#/definitions/restError"
-      }
-    },
-    "500":{
-      "description":"An internal error occurred in the backend",
-      "schema":{
-        "$ref": "#/definitions/restError"
-      }
-    }
-  },
   "paths": {
     "/acl": {
       "post": {
@@ -74,11 +95,35 @@ var SwaggerJson = `{
         "operationId": "SearchAcls",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restACLCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -99,11 +144,35 @@ var SwaggerJson = `{
         "operationId": "PutAcl",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmACL"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -126,11 +195,35 @@ var SwaggerJson = `{
         "operationId": "DeleteAcl",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDeleteResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -153,11 +246,35 @@ var SwaggerJson = `{
         "operationId": "Stream",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/activityObject"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -180,11 +297,35 @@ var SwaggerJson = `{
         "operationId": "Subscribe",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/activitySubscription"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -207,11 +348,35 @@ var SwaggerJson = `{
         "operationId": "SearchSubscriptions",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restSubscriptionsCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -234,11 +399,35 @@ var SwaggerJson = `{
         "operationId": "ResetPassword",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restResetPasswordResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -261,15 +450,40 @@ var SwaggerJson = `{
         "operationId": "ResetPasswordToken",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restResetPasswordTokenResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "UserLogin",
+            "description": "Start a ResetPassword workflow for this user",
             "in": "path",
             "required": true,
             "type": "string"
@@ -286,11 +500,35 @@ var SwaggerJson = `{
         "operationId": "GenerateDocumentAccessToken",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDocumentAccessTokenResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -313,11 +551,35 @@ var SwaggerJson = `{
         "operationId": "Revoke",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restRevokeResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -340,11 +602,35 @@ var SwaggerJson = `{
         "operationId": "ListStorageBuckets",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restNodesCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -367,11 +653,35 @@ var SwaggerJson = `{
         "operationId": "ListServices",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restServiceCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -399,11 +709,35 @@ var SwaggerJson = `{
         "operationId": "ControlService",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/ctlService"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -426,11 +760,35 @@ var SwaggerJson = `{
         "operationId": "ListDataSources",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDataSourceCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "ConfigService"
@@ -443,15 +801,40 @@ var SwaggerJson = `{
         "operationId": "GetDataSource",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/objectDataSource"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Name",
+            "description": "Name of the data source (max length 34)",
             "in": "path",
             "required": true,
             "type": "string"
@@ -461,8 +844,7 @@ var SwaggerJson = `{
             "description": "Whether this data source is disabled or running.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "StorageType",
@@ -510,8 +892,7 @@ var SwaggerJson = `{
             "description": "Corresponding objects service connection type.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "ObjectsBucket",
@@ -553,24 +934,21 @@ var SwaggerJson = `{
             "description": "Not implemented, whether to watch for underlying changes on the FS.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "FlatStorage",
             "description": "Store data in flat format (object-storage like).",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "SkipSyncOnRestart",
             "description": "Do not trigger resync at start.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "EncryptionMode",
@@ -626,18 +1004,198 @@ var SwaggerJson = `{
         "operationId": "DeleteDataSource",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDeleteDataSourceResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Name",
+            "description": "Name of the data source (max length 34)",
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "Disabled",
+            "description": "Whether this data source is disabled or running.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "StorageType",
+            "description": "Type of underlying storage (LOCAL, S3, AZURE, GCS).",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "LOCAL",
+              "S3",
+              "SMB",
+              "CELLS",
+              "AZURE",
+              "GCS",
+              "B2",
+              "MANTA",
+              "SIA"
+            ],
+            "default": "LOCAL"
+          },
+          {
+            "name": "ObjectsServiceName",
+            "description": "Corresponding objects service name (underlying s3 service).",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "ObjectsHost",
+            "description": "Corresponding objects service host.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "ObjectsPort",
+            "description": "Corresponding objects service port.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "ObjectsSecure",
+            "description": "Corresponding objects service connection type.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "ObjectsBucket",
+            "description": "Corresponding objects service bucket.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "ObjectsBaseFolder",
+            "description": "Corresponding objects service base folder inside the bucket.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "ApiKey",
+            "description": "Corresponding objects service api key.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "ApiSecret",
+            "description": "Corresponding objects service api secret.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "PeerAddress",
+            "description": "Peer address of the data source.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Watch",
+            "description": "Not implemented, whether to watch for underlying changes on the FS.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "FlatStorage",
+            "description": "Store data in flat format (object-storage like).",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "SkipSyncOnRestart",
+            "description": "Do not trigger resync at start.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "EncryptionMode",
+            "description": "Type of encryption applied before sending data to storage.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "CLEAR",
+              "MASTER",
+              "USER",
+              "USER_PWD"
+            ],
+            "default": "CLEAR"
+          },
+          {
+            "name": "EncryptionKey",
+            "description": "Encryption key used for encrypting data.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "VersioningPolicyName",
+            "description": "Versioning policy describes how files are kept in the versioning queue.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "CreationDate",
+            "description": "Data Source creation date.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "LastSynchronizationDate",
+            "description": "Data Source last synchronization date.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "tags": [
@@ -649,15 +1207,40 @@ var SwaggerJson = `{
         "operationId": "PutDataSource",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/objectDataSource"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Name",
+            "description": "Name of the data source (max length 34)",
             "in": "path",
             "required": true,
             "type": "string"
@@ -667,7 +1250,96 @@ var SwaggerJson = `{
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/objectDataSource"
+              "type": "object",
+              "properties": {
+                "Disabled": {
+                  "type": "boolean",
+                  "title": "Whether this data source is disabled or running"
+                },
+                "StorageType": {
+                  "$ref": "#/definitions/objectStorageType",
+                  "title": "Type of underlying storage (LOCAL, S3, AZURE, GCS)"
+                },
+                "StorageConfiguration": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "List of key values describing storage configuration"
+                },
+                "ObjectsServiceName": {
+                  "type": "string",
+                  "title": "Corresponding objects service name (underlying s3 service)"
+                },
+                "ObjectsHost": {
+                  "type": "string",
+                  "title": "Corresponding objects service host"
+                },
+                "ObjectsPort": {
+                  "type": "integer",
+                  "format": "int32",
+                  "title": "Corresponding objects service port"
+                },
+                "ObjectsSecure": {
+                  "type": "boolean",
+                  "title": "Corresponding objects service connection type"
+                },
+                "ObjectsBucket": {
+                  "type": "string",
+                  "title": "Corresponding objects service bucket"
+                },
+                "ObjectsBaseFolder": {
+                  "type": "string",
+                  "title": "Corresponding objects service base folder inside the bucket"
+                },
+                "ApiKey": {
+                  "type": "string",
+                  "title": "Corresponding objects service api key"
+                },
+                "ApiSecret": {
+                  "type": "string",
+                  "title": "Corresponding objects service api secret"
+                },
+                "PeerAddress": {
+                  "type": "string",
+                  "title": "Peer address of the data source"
+                },
+                "Watch": {
+                  "type": "boolean",
+                  "title": "Not implemented, whether to watch for underlying changes on the FS"
+                },
+                "FlatStorage": {
+                  "type": "boolean",
+                  "title": "Store data in flat format (object-storage like)"
+                },
+                "SkipSyncOnRestart": {
+                  "type": "boolean",
+                  "title": "Do not trigger resync at start"
+                },
+                "EncryptionMode": {
+                  "$ref": "#/definitions/objectEncryptionMode",
+                  "title": "Type of encryption applied before sending data to storage"
+                },
+                "EncryptionKey": {
+                  "type": "string",
+                  "title": "Encryption key used for encrypting data"
+                },
+                "VersioningPolicyName": {
+                  "type": "string",
+                  "title": "Versioning policy describes how files are kept in the versioning queue"
+                },
+                "CreationDate": {
+                  "type": "integer",
+                  "format": "int32",
+                  "title": "Data Source creation date"
+                },
+                "LastSynchronizationDate": {
+                  "type": "integer",
+                  "format": "int32",
+                  "title": "Data Source last synchronization date"
+                }
+              },
+              "title": "DataSource Object description"
             }
           }
         ],
@@ -682,11 +1354,35 @@ var SwaggerJson = `{
         "operationId": "EndpointsDiscovery",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDiscoveryResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -708,15 +1404,40 @@ var SwaggerJson = `{
         "operationId": "ConfigFormsDiscovery",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDiscoveryResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "ServiceName",
+            "description": "Retrieve a configuration form for a given service",
             "in": "path",
             "required": true,
             "type": "string"
@@ -733,11 +1454,35 @@ var SwaggerJson = `{
         "operationId": "OpenApiDiscovery",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restOpenApiResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -759,11 +1504,35 @@ var SwaggerJson = `{
         "operationId": "CreateEncryptionKey",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/encryptionAdminCreateKeyResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -786,11 +1555,35 @@ var SwaggerJson = `{
         "operationId": "DeleteEncryptionKey",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/encryptionAdminDeleteKeyResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -813,11 +1606,35 @@ var SwaggerJson = `{
         "operationId": "ExportEncryptionKey",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/encryptionAdminExportKeyResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -840,11 +1657,35 @@ var SwaggerJson = `{
         "operationId": "ImportEncryptionKey",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/encryptionAdminImportKeyResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -867,11 +1708,35 @@ var SwaggerJson = `{
         "operationId": "ListEncryptionKeys",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/encryptionAdminListKeysResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -894,11 +1759,35 @@ var SwaggerJson = `{
         "operationId": "ListPeersAddresses",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restListPeersAddressesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "ConfigService"
@@ -911,15 +1800,40 @@ var SwaggerJson = `{
         "operationId": "ListPeerFolders",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restNodesCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "PeerAddress",
+            "description": "Restrict listing to a given peer",
             "in": "path",
             "required": true,
             "type": "string"
@@ -929,7 +1843,13 @@ var SwaggerJson = `{
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/restListPeerFoldersRequest"
+              "type": "object",
+              "properties": {
+                "Path": {
+                  "type": "string",
+                  "title": "Path to the parent folder for listing"
+                }
+              }
             }
           }
         ],
@@ -942,15 +1862,40 @@ var SwaggerJson = `{
         "operationId": "CreatePeerFolder",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restCreatePeerFolderResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "PeerAddress",
+            "description": "Restrict listing to a given peer",
             "in": "path",
             "required": true,
             "type": "string"
@@ -960,7 +1905,13 @@ var SwaggerJson = `{
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/restCreatePeerFolderRequest"
+              "type": "object",
+              "properties": {
+                "Path": {
+                  "type": "string",
+                  "title": "Path to the folder to be created"
+                }
+              }
             }
           }
         ],
@@ -975,11 +1926,35 @@ var SwaggerJson = `{
         "operationId": "ListProcesses",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restListProcessesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1002,11 +1977,35 @@ var SwaggerJson = `{
         "operationId": "SchedulerActionsDiscovery",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restSchedulerActionsResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "ConfigService"
@@ -1019,15 +2018,40 @@ var SwaggerJson = `{
         "operationId": "SchedulerActionFormDiscovery",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restSchedulerActionFormResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "ActionName",
+            "description": "Name of the action to load",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1044,11 +2068,35 @@ var SwaggerJson = `{
         "operationId": "ListSites",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restListSitesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1069,11 +2117,35 @@ var SwaggerJson = `{
         "operationId": "ListVersioningPolicies",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restVersioningPolicyCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "ConfigService"
@@ -1086,11 +2158,35 @@ var SwaggerJson = `{
         "operationId": "GetVersioningPolicy",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/treeVersioningPolicy"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1168,11 +2264,35 @@ var SwaggerJson = `{
         "operationId": "ListVirtualNodes",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restNodesCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "ConfigService"
@@ -1185,15 +2305,40 @@ var SwaggerJson = `{
         "operationId": "GetConfig",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restConfiguration"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "FullPath",
+            "description": "Full slash-separated path to the config key",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1215,15 +2360,40 @@ var SwaggerJson = `{
         "operationId": "PutConfig",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restConfiguration"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "FullPath",
+            "description": "Full slash-separated path to the config key",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1233,7 +2403,14 @@ var SwaggerJson = `{
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/restConfiguration"
+              "type": "object",
+              "properties": {
+                "Data": {
+                  "type": "string",
+                  "title": "JSON-encoded data to store"
+                }
+              },
+              "title": "Configuration message. Data is an Json representation of any value"
             }
           }
         ],
@@ -1248,61 +2425,50 @@ var SwaggerJson = `{
         "operationId": "FrontServeBinary",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restFrontBinaryResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "BinaryType",
+            "description": "Currently supported values are USER and GLOBAL",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "Uuid",
+            "description": "Id of the binary",
             "in": "path",
             "required": true,
             "type": "string"
-          }
-        ],
-        "tags": [
-          "FrontendService"
-        ]
-      },
-      "post": {
-        "summary": "Upload frontend binaries (avatars / logos / bg images)",
-        "operationId": "FrontPutBinary",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/restFrontBinaryResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "BinaryType",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "Uuid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/restFrontBinaryRequest"
-            }
           }
         ],
         "tags": [
@@ -1316,11 +2482,35 @@ var SwaggerJson = `{
         "operationId": "FrontBootConf",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restFrontBootConfResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "FrontendService"
@@ -1333,11 +2523,35 @@ var SwaggerJson = `{
         "operationId": "FrontEnrollAuth",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restFrontEnrollAuthResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1360,11 +2574,35 @@ var SwaggerJson = `{
         "operationId": "FrontMessages",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restFrontMessagesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1385,11 +2623,35 @@ var SwaggerJson = `{
         "operationId": "FrontPlugins",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restFrontPluginsResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1410,11 +2672,35 @@ var SwaggerJson = `{
         "operationId": "FrontSession",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restFrontSessionResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1433,15 +2719,39 @@ var SwaggerJson = `{
     },
     "/frontend/settings-menu": {
       "get": {
-        "summary": "Sends a tree of nodes to be used a menu in the Settings panel",
+        "summary": "Upload frontend binaries (avatars / logos / bg images)\nrpc FrontPutBinary(FrontBinaryRequest) returns (FrontBinaryResponse) {\n   option (google.api.http) =  {\n       post: \"/frontend/binaries/{BinaryType}/{Uuid}\"\n       body: \"*\"\n   };\n}\nSends a tree of nodes to be used a menu in the Settings panel",
         "operationId": "SettingsMenu",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restSettingsMenuResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "FrontendService"
@@ -1454,11 +2764,35 @@ var SwaggerJson = `{
         "operationId": "FrontState",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restFrontStateResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "FrontendService"
@@ -1471,11 +2805,35 @@ var SwaggerJson = `{
         "operationId": "Relation",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restRelationResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1496,11 +2854,35 @@ var SwaggerJson = `{
         "operationId": "UserState",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restUserStateResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1521,11 +2903,35 @@ var SwaggerJson = `{
         "operationId": "GetInstall",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/installGetDefaultsResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "InstallService"
@@ -1536,11 +2942,35 @@ var SwaggerJson = `{
         "operationId": "PostInstall",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/installInstallResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1563,11 +2993,35 @@ var SwaggerJson = `{
         "operationId": "GetAgreement",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/installGetAgreementResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "InstallService"
@@ -1580,11 +3034,35 @@ var SwaggerJson = `{
         "operationId": "PerformInstallCheck",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/installPerformCheckResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1606,11 +3084,35 @@ var SwaggerJson = `{
         "operationId": "InstallEvents",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/installInstallEventsResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "InstallService"
@@ -1623,11 +3125,35 @@ var SwaggerJson = `{
         "operationId": "UserDeleteTasks",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/jobsDeleteTasksResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1650,11 +3176,35 @@ var SwaggerJson = `{
         "operationId": "ListTasksLogs",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restLogMessageCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1677,11 +3227,35 @@ var SwaggerJson = `{
         "operationId": "UserListJobs",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restUserJobsCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1702,11 +3276,35 @@ var SwaggerJson = `{
         "operationId": "UserControlJob",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/jobsCtrlCommandResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1729,15 +3327,40 @@ var SwaggerJson = `{
         "operationId": "UserCreateJob",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restUserJobResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "JobName",
+            "description": "Name of the job to create in the user space",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1747,7 +3370,13 @@ var SwaggerJson = `{
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/restUserJobRequest"
+              "type": "object",
+              "properties": {
+                "JsonParameters": {
+                  "type": "string",
+                  "title": "Json-encoded parameters for this job"
+                }
+              }
             }
           }
         ],
@@ -1762,11 +3391,35 @@ var SwaggerJson = `{
         "operationId": "Syslog",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restLogMessageCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1789,11 +3442,35 @@ var SwaggerJson = `{
         "operationId": "Send",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/mailerSendMailResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1816,11 +3493,35 @@ var SwaggerJson = `{
         "operationId": "GetBulkMeta",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restBulkMetaResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1843,15 +3544,40 @@ var SwaggerJson = `{
         "operationId": "DeleteMeta",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/treeNode"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "NodePath",
+            "description": "Path to the requested node",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1861,7 +3587,16 @@ var SwaggerJson = `{
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/restMetaNamespaceRequest"
+              "type": "object",
+              "properties": {
+                "Namespace": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "List of namespaces to load"
+                }
+              }
             }
           }
         ],
@@ -1876,15 +3611,40 @@ var SwaggerJson = `{
         "operationId": "GetMeta",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/treeNode"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "NodePath",
+            "description": "Path to the requested node",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1894,7 +3654,16 @@ var SwaggerJson = `{
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/restMetaNamespaceRequest"
+              "type": "object",
+              "properties": {
+                "Namespace": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "List of namespaces to load"
+                }
+              }
             }
           }
         ],
@@ -1909,11 +3678,35 @@ var SwaggerJson = `{
         "operationId": "SetMeta",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/treeNode"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1927,7 +3720,15 @@ var SwaggerJson = `{
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/restMetaCollection"
+              "type": "object",
+              "properties": {
+                "Metadatas": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/restMetadata"
+                  }
+                }
+              }
             }
           }
         ],
@@ -1942,11 +3743,35 @@ var SwaggerJson = `{
         "operationId": "ListPolicies",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmListPolicyGroupsResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1969,11 +3794,35 @@ var SwaggerJson = `{
         "operationId": "SearchRoles",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restRolesCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -1996,15 +3845,40 @@ var SwaggerJson = `{
         "operationId": "GetRole",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmRole"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Uuid",
+            "description": "Unique identifier of this role",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2021,24 +3895,21 @@ var SwaggerJson = `{
             "description": "Whether this role represents a user team or not.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "GroupRole",
             "description": "Whether this role is attached to a Group object.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "UserRole",
             "description": "Whether this role is attached to a User object.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "LastUpdated",
@@ -2056,23 +3927,22 @@ var SwaggerJson = `{
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "collectionFormat": "multi"
           },
           {
             "name": "PoliciesContextEditable",
             "description": "Whether the policies resolve into an editable state.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "ForceOverride",
             "description": "Is used in a stack of roles, this one will always be applied last.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           }
         ],
         "tags": [
@@ -2084,18 +3954,104 @@ var SwaggerJson = `{
         "operationId": "DeleteRole",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmRole"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Uuid",
+            "description": "Unique identifier of this role",
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "Label",
+            "description": "Label of this role.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "IsTeam",
+            "description": "Whether this role represents a user team or not.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "GroupRole",
+            "description": "Whether this role is attached to a Group object.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "UserRole",
+            "description": "Whether this role is attached to a User object.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "LastUpdated",
+            "description": "Last modification date of the role.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "AutoApplies",
+            "description": "List of profiles (standard, shared, admin) on which the role will be automatically applied.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "PoliciesContextEditable",
+            "description": "Whether the policies resolve into an editable state.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "ForceOverride",
+            "description": "Is used in a stack of roles, this one will always be applied last.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
           }
         ],
         "tags": [
@@ -2107,15 +4063,40 @@ var SwaggerJson = `{
         "operationId": "SetRole",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmRole"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Uuid",
+            "description": "Unique identifier of this role",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2125,7 +4106,53 @@ var SwaggerJson = `{
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/idmRole"
+              "type": "object",
+              "properties": {
+                "Label": {
+                  "type": "string",
+                  "title": "Label of this role"
+                },
+                "IsTeam": {
+                  "type": "boolean",
+                  "title": "Whether this role represents a user team or not"
+                },
+                "GroupRole": {
+                  "type": "boolean",
+                  "title": "Whether this role is attached to a Group object"
+                },
+                "UserRole": {
+                  "type": "boolean",
+                  "title": "Whether this role is attached to a User object"
+                },
+                "LastUpdated": {
+                  "type": "integer",
+                  "format": "int32",
+                  "title": "Last modification date of the role"
+                },
+                "AutoApplies": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "List of profiles (standard, shared, admin) on which the role will be automatically applied"
+                },
+                "Policies": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/serviceResourcePolicy"
+                  },
+                  "title": "List of policies for securing this role access"
+                },
+                "PoliciesContextEditable": {
+                  "type": "boolean",
+                  "title": "Whether the policies resolve into an editable state"
+                },
+                "ForceOverride": {
+                  "type": "boolean",
+                  "description": "Is used in a stack of roles, this one will always be applied last."
+                }
+              },
+              "description": "Role represents a generic set of permissions that can be applied to any users or groups."
             }
           }
         ],
@@ -2140,11 +4167,35 @@ var SwaggerJson = `{
         "operationId": "Nodes",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restSearchResults"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2167,11 +4218,35 @@ var SwaggerJson = `{
         "operationId": "PutCell",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restCell"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2194,15 +4269,40 @@ var SwaggerJson = `{
         "operationId": "GetCell",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restCell"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Uuid",
+            "description": "Cell Uuid",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2217,15 +4317,40 @@ var SwaggerJson = `{
         "operationId": "DeleteCell",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDeleteCellResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Uuid",
+            "description": "Cell Uuid",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2242,11 +4367,35 @@ var SwaggerJson = `{
         "operationId": "PutShareLink",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restShareLink"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2269,15 +4418,40 @@ var SwaggerJson = `{
         "operationId": "GetShareLink",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restShareLink"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Uuid",
+            "description": "Link Uuid",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2292,15 +4466,40 @@ var SwaggerJson = `{
         "operationId": "DeleteShareLink",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDeleteShareLinkResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Uuid",
+            "description": "Id of Link to delete",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2317,11 +4516,35 @@ var SwaggerJson = `{
         "operationId": "UpdateSharePolicies",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restUpdateSharePoliciesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2344,11 +4567,35 @@ var SwaggerJson = `{
         "operationId": "ListSharedResources",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restListSharedResourcesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2371,11 +4618,35 @@ var SwaggerJson = `{
         "operationId": "ListTemplates",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restListTemplatesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "TemplatesService"
@@ -2388,11 +4659,35 @@ var SwaggerJson = `{
         "operationId": "ListAdminTree",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restNodesCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2415,11 +4710,35 @@ var SwaggerJson = `{
         "operationId": "StatAdminTree",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/treeReadNodeResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2442,11 +4761,35 @@ var SwaggerJson = `{
         "operationId": "CreateNodes",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restNodesCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2469,11 +4812,35 @@ var SwaggerJson = `{
         "operationId": "DeleteNodes",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDeleteNodesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2496,11 +4863,35 @@ var SwaggerJson = `{
         "operationId": "RestoreNodes",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restRestoreNodesResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2523,11 +4914,35 @@ var SwaggerJson = `{
         "operationId": "CreateSelection",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restCreateSelectionResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2550,15 +4965,40 @@ var SwaggerJson = `{
         "operationId": "HeadNode",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restHeadNodeResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Node",
+            "description": "The node to state",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2575,11 +5015,35 @@ var SwaggerJson = `{
         "operationId": "BulkStatNodes",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restBulkMetaResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2602,11 +5066,35 @@ var SwaggerJson = `{
         "operationId": "UpdateRequired",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/updateUpdateResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2629,15 +5117,40 @@ var SwaggerJson = `{
         "operationId": "ApplyUpdate",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/updateApplyUpdateResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "TargetVersion",
+            "description": "Version of the target binary",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2647,7 +5160,13 @@ var SwaggerJson = `{
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/updateApplyUpdateRequest"
+              "type": "object",
+              "properties": {
+                "PackageName": {
+                  "type": "string",
+                  "title": "Name of the package if it's not the same as the current binary"
+                }
+              }
             }
           }
         ],
@@ -2662,11 +5181,35 @@ var SwaggerJson = `{
         "operationId": "SearchUsers",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restUsersCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2689,11 +5232,35 @@ var SwaggerJson = `{
         "operationId": "UserBookmarks",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restBulkMetaResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2716,11 +5283,35 @@ var SwaggerJson = `{
         "operationId": "ListUserMetaNamespace",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restUserMetaNamespaceCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "tags": [
           "UserMetaService"
@@ -2731,11 +5322,35 @@ var SwaggerJson = `{
         "operationId": "UpdateUserMetaNamespace",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmUpdateUserMetaNamespaceResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2758,11 +5373,35 @@ var SwaggerJson = `{
         "operationId": "SearchUserMeta",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restUserMetaCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2785,15 +5424,40 @@ var SwaggerJson = `{
         "operationId": "ListUserMetaTags",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restListUserMetaTagsResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Namespace",
+            "description": "List user meta tags for this namespace",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2808,15 +5472,40 @@ var SwaggerJson = `{
         "operationId": "PutUserMetaTag",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restPutUserMetaTagResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Namespace",
+            "description": "Add a tag value for this namespace",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2826,7 +5515,13 @@ var SwaggerJson = `{
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/restPutUserMetaTagRequest"
+              "type": "object",
+              "properties": {
+                "Tag": {
+                  "type": "string",
+                  "title": "New tag value"
+                }
+              }
             }
           }
         ],
@@ -2841,21 +5536,47 @@ var SwaggerJson = `{
         "operationId": "DeleteUserMetaTags",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDeleteUserMetaTagsResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Namespace",
+            "description": "Delete tags from this namespace",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "Tags",
+            "description": "Delete this tag",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2872,11 +5593,35 @@ var SwaggerJson = `{
         "operationId": "UpdateUserMeta",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmUpdateUserMetaResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -2899,15 +5644,40 @@ var SwaggerJson = `{
         "operationId": "PutRoles",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmUser"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Login",
+            "description": "User login is used to connect, field is empty for groups",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2917,7 +5687,64 @@ var SwaggerJson = `{
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/idmUser"
+              "type": "object",
+              "properties": {
+                "Uuid": {
+                  "type": "string",
+                  "title": "User unique identifier"
+                },
+                "GroupPath": {
+                  "type": "string",
+                  "title": "Path to the parent group"
+                },
+                "Attributes": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "A free list of attributes"
+                },
+                "Roles": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/idmRole"
+                  },
+                  "title": "List of roles applied to this user or group"
+                },
+                "Password": {
+                  "type": "string",
+                  "title": "Password can be passed to be updated (but never read back), field is empty for groups"
+                },
+                "OldPassword": {
+                  "type": "string",
+                  "title": "OldPassword must be set when a user updates her own password"
+                },
+                "IsGroup": {
+                  "type": "boolean",
+                  "title": "Whether this object is a group or a user"
+                },
+                "GroupLabel": {
+                  "type": "string",
+                  "title": "Label of the group, field is empty for users"
+                },
+                "LastConnected": {
+                  "type": "integer",
+                  "format": "int32",
+                  "title": "Last successful connection timestamp"
+                },
+                "Policies": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/serviceResourcePolicy"
+                  },
+                  "title": "Policies securing access to this user"
+                },
+                "PoliciesContextEditable": {
+                  "type": "boolean",
+                  "description": "Context-resolved to quickly check if user is editable or not."
+                }
+              },
+              "title": "User can represent either a User or a Group"
             }
           }
         ],
@@ -2932,15 +5759,40 @@ var SwaggerJson = `{
         "operationId": "GetUser",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmUser"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Login",
+            "description": "User login is used to connect, field is empty for groups",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2978,8 +5830,7 @@ var SwaggerJson = `{
             "description": "Whether this object is a group or a user.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           },
           {
             "name": "GroupLabel",
@@ -3001,8 +5852,7 @@ var SwaggerJson = `{
             "description": "Context-resolved to quickly check if user is editable or not.",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           }
         ],
         "tags": [
@@ -3014,18 +5864,100 @@ var SwaggerJson = `{
         "operationId": "DeleteUser",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDeleteResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Login",
+            "description": "User login is used to connect, field is empty for groups",
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "Uuid",
+            "description": "User unique identifier.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "GroupPath",
+            "description": "Path to the parent group.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Password",
+            "description": "Password can be passed to be updated (but never read back), field is empty for groups.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "OldPassword",
+            "description": "OldPassword must be set when a user updates her own password.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "IsGroup",
+            "description": "Whether this object is a group or a user.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "GroupLabel",
+            "description": "Label of the group, field is empty for users.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "LastConnected",
+            "description": "Last successful connection timestamp.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "PoliciesContextEditable",
+            "description": "Context-resolved to quickly check if user is editable or not.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
           }
         ],
         "tags": [
@@ -3037,15 +5969,40 @@ var SwaggerJson = `{
         "operationId": "PutUser",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmUser"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Login",
+            "description": "User login is used to connect, field is empty for groups",
             "in": "path",
             "required": true,
             "type": "string"
@@ -3055,7 +6012,64 @@ var SwaggerJson = `{
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/idmUser"
+              "type": "object",
+              "properties": {
+                "Uuid": {
+                  "type": "string",
+                  "title": "User unique identifier"
+                },
+                "GroupPath": {
+                  "type": "string",
+                  "title": "Path to the parent group"
+                },
+                "Attributes": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "A free list of attributes"
+                },
+                "Roles": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/idmRole"
+                  },
+                  "title": "List of roles applied to this user or group"
+                },
+                "Password": {
+                  "type": "string",
+                  "title": "Password can be passed to be updated (but never read back), field is empty for groups"
+                },
+                "OldPassword": {
+                  "type": "string",
+                  "title": "OldPassword must be set when a user updates her own password"
+                },
+                "IsGroup": {
+                  "type": "boolean",
+                  "title": "Whether this object is a group or a user"
+                },
+                "GroupLabel": {
+                  "type": "string",
+                  "title": "Label of the group, field is empty for users"
+                },
+                "LastConnected": {
+                  "type": "integer",
+                  "format": "int32",
+                  "title": "Last successful connection timestamp"
+                },
+                "Policies": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/serviceResourcePolicy"
+                  },
+                  "title": "Policies securing access to this user"
+                },
+                "PoliciesContextEditable": {
+                  "type": "boolean",
+                  "description": "Context-resolved to quickly check if user is editable or not."
+                }
+              },
+              "title": "User can represent either a User or a Group"
             }
           }
         ],
@@ -3070,11 +6084,35 @@ var SwaggerJson = `{
         "operationId": "SearchWorkspaces",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restWorkspaceCollection"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
@@ -3097,18 +6135,111 @@ var SwaggerJson = `{
         "operationId": "DeleteWorkspace",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/restDeleteResponse"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Slug",
+            "description": "Slug is an url-compatible form of the workspace label, or can be freely modified (max length 500)",
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "UUID",
+            "description": "Unique identifier of the workspace.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Label",
+            "description": "Label of the workspace (max length 500).",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Description",
+            "description": "Description of the workspace (max length 1000).",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Scope",
+            "description": "Scope can be ADMIN, ROOM (=CELL) or LINK.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "ANY",
+              "ADMIN",
+              "ROOM",
+              "LINK"
+            ],
+            "default": "ANY"
+          },
+          {
+            "name": "LastUpdated",
+            "description": "Last modification time.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "Attributes",
+            "description": "JSON-encoded list of attributes.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "RootUUIDs",
+            "description": "Quick list of the RootNodes uuids.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "PoliciesContextEditable",
+            "description": "Context-resolved to quickly check if workspace is editable or not.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
           }
         ],
         "tags": [
@@ -3120,15 +6251,40 @@ var SwaggerJson = `{
         "operationId": "PutWorkspace",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/idmWorkspace"
             }
-          }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
         },
         "parameters": [
           {
             "name": "Slug",
+            "description": "Slug is an url-compatible form of the workspace label, or can be freely modified (max length 500)",
             "in": "path",
             "required": true,
             "type": "string"
@@ -3138,7 +6294,60 @@ var SwaggerJson = `{
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/idmWorkspace"
+              "type": "object",
+              "properties": {
+                "UUID": {
+                  "type": "string",
+                  "title": "Unique identifier of the workspace"
+                },
+                "Label": {
+                  "type": "string",
+                  "title": "Label of the workspace (max length 500)"
+                },
+                "Description": {
+                  "type": "string",
+                  "title": "Description of the workspace (max length 1000)"
+                },
+                "Scope": {
+                  "$ref": "#/definitions/idmWorkspaceScope",
+                  "title": "Scope can be ADMIN, ROOM (=CELL) or LINK"
+                },
+                "LastUpdated": {
+                  "type": "integer",
+                  "format": "int32",
+                  "title": "Last modification time"
+                },
+                "Policies": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/serviceResourcePolicy"
+                  },
+                  "title": "Policies for securing access"
+                },
+                "Attributes": {
+                  "type": "string",
+                  "title": "JSON-encoded list of attributes"
+                },
+                "RootUUIDs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Quick list of the RootNodes uuids"
+                },
+                "RootNodes": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/definitions/treeNode"
+                  },
+                  "title": "List of the Root Nodes in the tree that compose this workspace"
+                },
+                "PoliciesContextEditable": {
+                  "type": "boolean",
+                  "title": "Context-resolved to quickly check if workspace is editable or not"
+                }
+              },
+              "description": "A Workspace is composed of a set of nodes UUIDs and is used to provide accesses to the tree via ACLs."
             }
           }
         ],
@@ -3237,7 +6446,7 @@ var SwaggerJson = `{
     "activityObject": {
       "type": "object",
       "properties": {
-        "jsonLdContext": {
+        "@context": {
           "type": "string"
         },
         "type": {
@@ -3572,7 +6781,6 @@ var SwaggerJson = `{
         },
         "UnreadCountOnly": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Count last activities that were not loaded yet"
         },
         "Offset": {
@@ -3587,7 +6795,6 @@ var SwaggerJson = `{
         },
         "AsDigest": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Compute a digest of all unread activities"
         },
         "PointOfView": {
@@ -3696,8 +6903,7 @@ var SwaggerJson = `{
           "type": "string"
         },
         "Controllable": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Status": {
           "$ref": "#/definitions/ctlServiceStatus"
@@ -3746,8 +6952,7 @@ var SwaggerJson = `{
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -3764,8 +6969,7 @@ var SwaggerJson = `{
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -3803,7 +7007,6 @@ var SwaggerJson = `{
         },
         "Override": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether to override if a key with same ID already exists"
         }
       }
@@ -3812,8 +7015,7 @@ var SwaggerJson = `{
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -3971,8 +7173,7 @@ var SwaggerJson = `{
           }
         },
         "not": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -4113,17 +7314,14 @@ var SwaggerJson = `{
         },
         "IsTeam": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether this role represents a user team or not"
         },
         "GroupRole": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether this role is attached to a Group object"
         },
         "UserRole": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether this role is attached to a User object"
         },
         "LastUpdated": {
@@ -4147,12 +7345,10 @@ var SwaggerJson = `{
         },
         "PoliciesContextEditable": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether the policies resolve into an editable state"
         },
         "ForceOverride": {
           "type": "boolean",
-          "format": "boolean",
           "description": "Is used in a stack of roles, this one will always be applied last."
         }
       },
@@ -4174,27 +7370,22 @@ var SwaggerJson = `{
         },
         "IsTeam": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Look for team roles only"
         },
         "IsGroupRole": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Look for group roles only"
         },
         "IsUserRole": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Look for user roles only"
         },
         "HasAutoApply": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Look for roles that have any value in the autoApplies field"
         },
         "not": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Negate the query"
         }
       },
@@ -4328,7 +7519,6 @@ var SwaggerJson = `{
         },
         "IsGroup": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether this object is a group or a user"
         },
         "GroupLabel": {
@@ -4349,7 +7539,6 @@ var SwaggerJson = `{
         },
         "PoliciesContextEditable": {
           "type": "boolean",
-          "format": "boolean",
           "description": "Context-resolved to quickly check if user is editable or not."
         }
       },
@@ -4383,7 +7572,6 @@ var SwaggerJson = `{
         },
         "PoliciesContextEditable": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Context-resolved to quickly check if this meta is editable or not"
         },
         "ResolvedNode": {
@@ -4411,7 +7599,6 @@ var SwaggerJson = `{
         },
         "Indexable": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether a modification of a metadata value for this namespace should trigger an indexation by the search engine"
         },
         "JsonDefinition": {
@@ -4427,7 +7614,6 @@ var SwaggerJson = `{
         },
         "PoliciesContextEditable": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Context-resolved to quickly check if this meta is editable or not"
         }
       },
@@ -4450,8 +7636,7 @@ var SwaggerJson = `{
           "title": "Search on group path, and if so, search recursively"
         },
         "Recursive": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "FullPath": {
           "type": "string",
@@ -4465,8 +7650,7 @@ var SwaggerJson = `{
           "type": "string"
         },
         "AttributeAnyValue": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "HasRole": {
           "type": "string",
@@ -4484,8 +7668,7 @@ var SwaggerJson = `{
           "title": "Compare to last connection date, starting with \u003e or \u003c"
         },
         "not": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -4544,7 +7727,6 @@ var SwaggerJson = `{
         },
         "PoliciesContextEditable": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Context-resolved to quickly check if workspace is editable or not"
         }
       },
@@ -4591,8 +7773,7 @@ var SwaggerJson = `{
           "type": "string"
         },
         "not": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -4603,8 +7784,7 @@ var SwaggerJson = `{
           "type": "string"
         },
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "JsonResult": {
           "type": "string"
@@ -4667,8 +7847,7 @@ var SwaggerJson = `{
           "type": "string"
         },
         "dbUseDefaults": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "dsName": {
           "type": "string"
@@ -4731,8 +7910,7 @@ var SwaggerJson = `{
           "type": "string"
         },
         "licenseRequired": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "licenseString": {
           "type": "string"
@@ -4764,8 +7942,7 @@ var SwaggerJson = `{
       "type": "object",
       "properties": {
         "success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -4813,12 +7990,10 @@ var SwaggerJson = `{
         },
         "SSLRedirect": {
           "type": "boolean",
-          "format": "boolean",
           "title": "If TLS is set, whether to automatically redirect each http://host:port to https://host:port"
         },
         "Maintenance": {
           "type": "boolean",
-          "format": "boolean",
           "title": "If set, this site will be in maintenance mode"
         },
         "MaintenanceConditions": {
@@ -4853,12 +8028,10 @@ var SwaggerJson = `{
           "type": "string"
         },
         "AcceptEULA": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "StagingCA": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       },
       "title": "TLSLetsEncrypt set up proxy to automatically get a valid certificate from let's encrypt servers"
@@ -4892,12 +8065,10 @@ var SwaggerJson = `{
         },
         "Bypass": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Bypass this action (forward input to output and do nothing)"
         },
         "BreakAfter": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Stop full chain now : do not carry on executing next actions"
         },
         "NodesSelector": {
@@ -5052,7 +8223,6 @@ var SwaggerJson = `{
       "properties": {
         "Success": {
           "type": "boolean",
-          "format": "boolean",
           "title": "True if action succeeded"
         },
         "RawBody": {
@@ -5075,7 +8245,6 @@ var SwaggerJson = `{
         },
         "Ignored": {
           "type": "boolean",
-          "format": "boolean",
           "title": "If action was returned WithIgnore()"
         },
         "Time": {
@@ -5203,12 +8372,10 @@ var SwaggerJson = `{
         },
         "All": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Select all"
         },
         "Collect": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Collect results"
         },
         "Query": {
@@ -5274,7 +8441,6 @@ var SwaggerJson = `{
         },
         "All": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Load all objects"
         },
         "Query": {
@@ -5283,7 +8449,6 @@ var SwaggerJson = `{
         },
         "Collect": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Pass a slice of objects to one action, or trigger all actions in parallel"
         },
         "Label": {
@@ -5325,12 +8490,10 @@ var SwaggerJson = `{
         },
         "Inactive": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Admin can temporarily disable this job"
         },
         "Custom": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Job created by application or by administrator"
         },
         "Languages": {
@@ -5353,12 +8516,10 @@ var SwaggerJson = `{
         },
         "AutoStart": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Start task as soon as job is inserted"
         },
         "AutoClean": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Remove job automatically once it is finished (success only)"
         },
         "Actions": {
@@ -5375,7 +8536,6 @@ var SwaggerJson = `{
         },
         "TasksSilentUpdate": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Do not send notification on task update"
         },
         "Tasks": {
@@ -5438,7 +8598,6 @@ var SwaggerJson = `{
         },
         "Mandatory": {
           "type": "boolean",
-          "format": "boolean",
           "title": "If mandatory, job cannot start without a value"
         },
         "Type": {
@@ -5460,12 +8619,10 @@ var SwaggerJson = `{
         },
         "EventsOnly": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Filter with only event-based jobs"
         },
         "TimersOnly": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Filter with only timer-based jobs"
         },
         "LoadTasks": {
@@ -5496,7 +8653,6 @@ var SwaggerJson = `{
       "properties": {
         "All": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Select all files - ignore any other condition"
         },
         "Pathes": {
@@ -5512,7 +8668,6 @@ var SwaggerJson = `{
         },
         "Collect": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether to trigger one action per node or one action\nwith all nodes as selection"
         },
         "Label": {
@@ -5567,17 +8722,14 @@ var SwaggerJson = `{
         },
         "CanStop": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Can be interrupted"
         },
         "CanPause": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Can be paused/resumed"
         },
         "HasProgress": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Tasks publish a progress"
         },
         "Progress": {
@@ -5633,7 +8785,6 @@ var SwaggerJson = `{
       "properties": {
         "All": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Select all users"
         },
         "Users": {
@@ -5649,7 +8800,6 @@ var SwaggerJson = `{
         },
         "Collect": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Wether to trigger one action per user or one action\nwith all user as a selection"
         },
         "Label": {
@@ -5872,8 +9022,7 @@ var SwaggerJson = `{
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -5903,7 +9052,6 @@ var SwaggerJson = `{
         },
         "Disabled": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether this data source is disabled or running"
         },
         "StorageType": {
@@ -5932,7 +9080,6 @@ var SwaggerJson = `{
         },
         "ObjectsSecure": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Corresponding objects service connection type"
         },
         "ObjectsBucket": {
@@ -5957,17 +9104,14 @@ var SwaggerJson = `{
         },
         "Watch": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Not implemented, whether to watch for underlying changes on the FS"
         },
         "FlatStorage": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Store data in flat format (object-storage like)"
         },
         "SkipSyncOnRestart": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Do not trigger resync at start"
         },
         "EncryptionMode": {
@@ -6025,17 +9169,13 @@ var SwaggerJson = `{
     "protobufAny": {
       "type": "object",
       "properties": {
-        "type_url": {
+        "@type": {
           "type": "string",
-          "description": "A URL/resource name whose content describes the type of the\nserialized protocol buffer message.\n\nFor URLs which use the scheme http, https, or no scheme, the\nfollowing restrictions and interpretations apply:\n\n* If no scheme is provided, https is assumed.\n* The last segment of the URL's path must represent the fully\n  qualified name of the type (as in path/google.protobuf.Duration).\n  The name should be in a canonical form (e.g., leading \".\" is\n  not accepted).\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nSchemes other than http, https (or the empty scheme) might be\nused with implementation specific semantics."
-        },
-        "value": {
-          "type": "string",
-          "format": "byte",
-          "description": "Must be a valid serialized protocol buffer of the above specified type."
+          "description": "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\npath/google.protobuf.Duration). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme http, https, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, https is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com.\n\nSchemes other than http, https (or the empty scheme) might be\nused with implementation specific semantics."
         }
       },
-      "description": "Any contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(\u0026foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := \u0026pb.Foo{...}\n     any, err := ptypes.MarshalAny(foo)\n     ...\n     foo := \u0026pb.Foo{}\n     if err := ptypes.UnmarshalAny(any, foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\n\nJSON\n====\nThe JSON representation of an Any value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field @type which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": \u003cstring\u003e,\n      \"lastName\": \u003cstring\u003e\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\nvalue which holds the custom JSON in addition to the @type\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+      "additionalProperties": {},
+      "description": "Any contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(\u0026foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := \u0026pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := \u0026pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\n\nJSON\n====\nThe JSON representation of an Any value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field @type which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": \u003cstring\u003e,\n      \"lastName\": \u003cstring\u003e\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\nvalue which holds the custom JSON in addition to the @type\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
     },
     "restACLCollection": {
       "type": "object",
@@ -6080,7 +9220,6 @@ var SwaggerJson = `{
         },
         "HasForm": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether this action has a form or not"
         },
         "FormModule": {
@@ -6109,7 +9248,6 @@ var SwaggerJson = `{
         },
         "IsInternal": {
           "type": "boolean",
-          "format": "boolean",
           "description": "If action is declared internal, it is hidden to avoid polluting the list."
         }
       }
@@ -6180,7 +9318,6 @@ var SwaggerJson = `{
         },
         "PoliciesContextEditable": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether these policies are currently editable"
         }
       },
@@ -6202,7 +9339,6 @@ var SwaggerJson = `{
         },
         "IsUserRole": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Flag for detecting if it's a user role or not"
         },
         "User": {
@@ -6263,7 +9399,6 @@ var SwaggerJson = `{
         },
         "Recursive": {
           "type": "boolean",
-          "format": "boolean",
           "title": "If nodes are created inside non-existing folders, whether the parents should be created automatically or not"
         },
         "TemplateUUID": {
@@ -6272,25 +9407,11 @@ var SwaggerJson = `{
         }
       }
     },
-    "restCreatePeerFolderRequest": {
-      "type": "object",
-      "properties": {
-        "PeerAddress": {
-          "type": "string",
-          "title": "Restrict listing to a given peer"
-        },
-        "Path": {
-          "type": "string",
-          "title": "Path to the folder to be created"
-        }
-      }
-    },
     "restCreatePeerFolderResponse": {
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Node": {
           "$ref": "#/definitions/treeNode"
@@ -6313,7 +9434,6 @@ var SwaggerJson = `{
         },
         "Persist": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether to save the selection or just get a temporary Uuid in return"
         }
       }
@@ -6353,7 +9473,6 @@ var SwaggerJson = `{
       "properties": {
         "Success": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Delete result"
         }
       }
@@ -6362,8 +9481,7 @@ var SwaggerJson = `{
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -6379,12 +9497,10 @@ var SwaggerJson = `{
         },
         "Recursive": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether to delete all the children if node is a folder"
         },
         "RemovePermanently": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Force permanent deletion even if a recycle bin is defined"
         }
       }
@@ -6434,7 +9550,6 @@ var SwaggerJson = `{
       "properties": {
         "Success": {
           "type": "boolean",
-          "format": "boolean",
           "title": "If delete was successfull"
         },
         "NumRows": {
@@ -6450,7 +9565,6 @@ var SwaggerJson = `{
       "properties": {
         "Success": {
           "type": "boolean",
-          "format": "boolean",
           "title": "If delete sucess or failed"
         }
       },
@@ -6460,8 +9574,7 @@ var SwaggerJson = `{
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -6516,20 +9629,6 @@ var SwaggerJson = `{
           "type": "string"
         }
       }
-    },
-    "restFrontBinaryRequest": {
-      "type": "object",
-      "properties": {
-        "BinaryType": {
-          "type": "string",
-          "title": "Currently supported values are USER and GLOBAL"
-        },
-        "Uuid": {
-          "type": "string",
-          "title": "Id of the binary"
-        }
-      },
-      "title": "Download binary"
     },
     "restFrontBinaryResponse": {
       "type": "object",
@@ -6603,7 +9702,6 @@ var SwaggerJson = `{
         },
         "Logout": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Kill session now"
         }
       }
@@ -6656,12 +9754,10 @@ var SwaggerJson = `{
         },
         "AllMetaProviders": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether to query all services for the metadata they can contribute to enrich the node"
         },
         "Versions": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Load Versions of the given node"
         },
         "Offset": {
@@ -6681,19 +9777,6 @@ var SwaggerJson = `{
       "properties": {
         "Node": {
           "$ref": "#/definitions/treeNode"
-        }
-      }
-    },
-    "restListPeerFoldersRequest": {
-      "type": "object",
-      "properties": {
-        "PeerAddress": {
-          "type": "string",
-          "title": "Restrict listing to a given peer"
-        },
-        "Path": {
-          "type": "string",
-          "title": "Path to the parent folder for listing"
         }
       }
     },
@@ -6746,7 +9829,6 @@ var SwaggerJson = `{
         },
         "OwnedBySubject": {
           "type": "boolean",
-          "format": "boolean",
           "title": "If true, will also check filter the output to shares actually owned by subject"
         },
         "Offset": {
@@ -6843,36 +9925,6 @@ var SwaggerJson = `{
         }
       },
       "title": "Collection of serialized log messages"
-    },
-    "restMetaCollection": {
-      "type": "object",
-      "properties": {
-        "NodePath": {
-          "type": "string"
-        },
-        "Metadatas": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/restMetadata"
-          }
-        }
-      }
-    },
-    "restMetaNamespaceRequest": {
-      "type": "object",
-      "properties": {
-        "NodePath": {
-          "type": "string",
-          "title": "Path to the requested node"
-        },
-        "Namespace": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "title": "List of namespaces to load"
-        }
-      }
     },
     "restMetadata": {
       "type": "object",
@@ -6989,7 +10041,6 @@ var SwaggerJson = `{
         },
         "CreateEmptyRoot": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether to create a dedicated folder for this cell at creation"
         }
       },
@@ -7004,7 +10055,6 @@ var SwaggerJson = `{
         },
         "PasswordEnabled": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether it has Password enabled"
         },
         "CreatePassword": {
@@ -7022,25 +10072,11 @@ var SwaggerJson = `{
       },
       "title": "Request for create/update a link"
     },
-    "restPutUserMetaTagRequest": {
-      "type": "object",
-      "properties": {
-        "Namespace": {
-          "type": "string",
-          "title": "Add a tag value for this namespace"
-        },
-        "Tag": {
-          "type": "string",
-          "title": "New tag value"
-        }
-      }
-    },
     "restPutUserMetaTagResponse": {
       "type": "object",
       "properties": {
         "Success": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Operation success"
         }
       }
@@ -7083,8 +10119,7 @@ var SwaggerJson = `{
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Message": {
           "type": "string"
@@ -7095,8 +10130,7 @@ var SwaggerJson = `{
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Message": {
           "type": "string"
@@ -7154,8 +10188,7 @@ var SwaggerJson = `{
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Message": {
           "type": "string"
@@ -7223,7 +10256,6 @@ var SwaggerJson = `{
         },
         "CountOnly": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Return counts only, no actual results"
         },
         "Operation": {
@@ -7285,7 +10317,6 @@ var SwaggerJson = `{
         },
         "CountOnly": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Return counts only, no actual results"
         },
         "Operation": {
@@ -7326,7 +10357,6 @@ var SwaggerJson = `{
         },
         "CountOnly": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Return counts only, no actual results"
         },
         "Operation": {
@@ -7367,7 +10397,6 @@ var SwaggerJson = `{
         },
         "CountOnly": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Return counts only, no actual results"
         },
         "Operation": {
@@ -7426,19 +10455,19 @@ var SwaggerJson = `{
         "Key": {
           "type": "string"
         },
-        "Label": {
+        "LABEL": {
           "type": "string"
         },
-        "Description": {
+        "DESCRIPTION": {
           "type": "string"
         },
-        "Manager": {
+        "MANAGER": {
           "type": "string"
         },
-        "Alias": {
+        "ALIAS": {
           "type": "string"
         },
-        "Metadata": {
+        "METADATA": {
           "$ref": "#/definitions/restSettingsEntryMeta"
         },
         "Accesses": {
@@ -7455,20 +10484,19 @@ var SwaggerJson = `{
     "restSettingsEntryMeta": {
       "type": "object",
       "properties": {
-        "IconClass": {
+        "icon_class": {
           "type": "string"
         },
-        "Component": {
+        "component": {
           "type": "string"
         },
-        "Props": {
+        "props": {
           "type": "string"
         },
-        "Advanced": {
-          "type": "boolean",
-          "format": "boolean"
+        "advanced": {
+          "type": "boolean"
         },
-        "Indexed": {
+        "indexed": {
           "type": "array",
           "items": {
             "type": "string"
@@ -7479,7 +10507,7 @@ var SwaggerJson = `{
     "restSettingsMenuResponse": {
       "type": "object",
       "properties": {
-        "RootMetadata": {
+        "__metadata__": {
           "$ref": "#/definitions/restSettingsEntryMeta"
         },
         "Sections": {
@@ -7496,13 +10524,13 @@ var SwaggerJson = `{
         "Key": {
           "type": "string"
         },
-        "Label": {
+        "LABEL": {
           "type": "string"
         },
-        "Description": {
+        "DESCRIPTION": {
           "type": "string"
         },
-        "Children": {
+        "CHILDREN": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/restSettingsEntry"
@@ -7543,7 +10571,6 @@ var SwaggerJson = `{
         },
         "PasswordRequired": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether a password is required or not to access the link"
         },
         "AccessStart": {
@@ -7579,7 +10606,6 @@ var SwaggerJson = `{
         },
         "RestrictToTargetUsers": {
           "type": "boolean",
-          "format": "boolean",
           "title": "RestrictToTargetUsers enable users restriction"
         },
         "RootNodes": {
@@ -7605,7 +10631,6 @@ var SwaggerJson = `{
         },
         "PoliciesContextEditable": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether policies are currently editable or not"
         }
       },
@@ -7675,7 +10700,6 @@ var SwaggerJson = `{
       "properties": {
         "IsFile": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Whether it's a file or a folder"
         },
         "BinaryUUUID": {
@@ -7716,8 +10740,7 @@ var SwaggerJson = `{
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Policies": {
           "type": "array",
@@ -7726,26 +10749,12 @@ var SwaggerJson = `{
           }
         },
         "PoliciesContextEditable": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
     "restUserBookmarksRequest": {
       "type": "object"
-    },
-    "restUserJobRequest": {
-      "type": "object",
-      "properties": {
-        "JobName": {
-          "type": "string",
-          "title": "Name of the job to create in the user space"
-        },
-        "JsonParameters": {
-          "type": "string",
-          "title": "Json-encoded parameters for this job"
-        }
-      }
     },
     "restUserJobResponse": {
       "type": "object",
@@ -7862,6 +10871,24 @@ var SwaggerJson = `{
       },
       "title": "Rest response for workspace search"
     },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
     "serviceOperationType": {
       "type": "string",
       "enum": [
@@ -7952,12 +10979,10 @@ var SwaggerJson = `{
           }
         },
         "Empty": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Any": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -8043,22 +11068,18 @@ var SwaggerJson = `{
         },
         "Recursive": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Send back all children of the node"
         },
         "Ancestors": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Send back a list of parent nodes, until the root, including the original node"
         },
         "WithVersions": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Sends the list of versions for a given node"
         },
         "WithCommits": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Sends the list of commits for a given node (not used)"
         },
         "Limit": {
@@ -8151,12 +11172,10 @@ var SwaggerJson = `{
           }
         },
         "Silent": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Optimistic": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         }
       }
     },
@@ -8251,7 +11270,6 @@ var SwaggerJson = `{
         },
         "Not": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Negate this query"
         }
       },
@@ -8266,17 +11284,14 @@ var SwaggerJson = `{
         },
         "WithCommits": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Gather commit information"
         },
         "WithExtendedStats": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Get extended stats - For folders, computes ChildrenCount"
         },
         "ObjectStats": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Used internally for the router ReadNode request, stat the datasource instead of index"
         }
       },
@@ -8286,8 +11301,7 @@ var SwaggerJson = `{
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Node": {
           "$ref": "#/definitions/treeNode"
@@ -8353,7 +11367,6 @@ var SwaggerJson = `{
         },
         "Details": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Load node details"
         }
       }
@@ -8446,25 +11459,11 @@ var SwaggerJson = `{
       },
       "title": "Used in AppearsIn to signal a node is\nappearing in multiple workspaces in the current context"
     },
-    "updateApplyUpdateRequest": {
-      "type": "object",
-      "properties": {
-        "TargetVersion": {
-          "type": "string",
-          "title": "Version of the target binary"
-        },
-        "PackageName": {
-          "type": "string",
-          "title": "Name of the package if it's not the same as the current binary"
-        }
-      }
-    },
     "updateApplyUpdateResponse": {
       "type": "object",
       "properties": {
         "Success": {
-          "type": "boolean",
-          "format": "boolean"
+          "type": "boolean"
         },
         "Message": {
           "type": "string"
@@ -8534,7 +11533,6 @@ var SwaggerJson = `{
         },
         "IsPatch": {
           "type": "boolean",
-          "format": "boolean",
           "title": "Not used : if binary is a patch"
         },
         "PatchAlgorithm": {

@@ -2,7 +2,9 @@ syntax = "proto3";
 
 package rest;
 
-import "github.com/pydio/cells/v4/common/proto/idm/idm.proto";
+option go_package = "github.com/pydio/cells/v4/common/proto/rest";
+
+import "idm.proto";
 
 message UserStateRequest {
     string Segment = 1;

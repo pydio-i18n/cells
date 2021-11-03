@@ -30,37 +30,41 @@ import (
 )
 
 var (
-	base     = filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "pydio", "cells", "common", "proto", "rest")
+	base     = filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "pydio", "cells", "v4", "common", "proto", "rest")
 	template = `package rest
 var SwaggerJson = ` + "`%s`"
 	replaces = map[string]string{
-		`  "paths"`: `"responses": {
-    "401":{
-      "description":"User is not authenticated",
-      "schema":{
-        "$ref": "#/definitions/restError"
-      }
-    },
-    "403":{
-      "description":"User has no permission to access this particular resource",
-      "schema":{
-        "$ref": "#/definitions/restError"
-      }
-    },
-    "404":{
-      "description":"Resource does not exist in the system",
-      "schema":{
-        "$ref": "#/definitions/restError"
-      }
-    },
-    "500":{
-      "description":"An internal error occurred in the backend",
-      "schema":{
-        "$ref": "#/definitions/restError"
-      }
-    }
-  },
-  "paths"`,
+		`          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+`: `		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
+`,
 		`    "restDeleteResponse":`: `    "restError": {
       "type": "object",
       "properties": {
@@ -99,7 +103,7 @@ func main() {
 		fmt.Println("** Monkey Patching json file with error responses")
 		c1 := string(content)
 		for k, v := range replaces {
-			c1 = strings.Replace(c1, k, v, 1)
+			c1 = strings.ReplaceAll(c1, k, v)
 		}
 		content = []byte(c1)
 		ioutil.WriteFile(filepath.Join(base, "rest.swagger.json"), []byte(c1), 0777)

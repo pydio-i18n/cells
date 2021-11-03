@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package rest;
 
+option go_package = "github.com/pydio/cells/v4/common/proto/rest";
+
 // Generic Message
 message DeleteResponse {
     // If delete was successfull

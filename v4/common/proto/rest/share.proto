@@ -2,9 +2,11 @@ syntax = "proto3";
 
 package rest;
 
-import "github.com/pydio/cells/v4/common/proto/service/service.proto";
-import "github.com/pydio/cells/v4/common/proto/idm/idm.proto";
-import "github.com/pydio/cells/v4/common/proto/tree/tree.proto";
+option go_package = "github.com/pydio/cells/v4/common/proto/rest";
+
+import "service.proto";
+import "idm.proto";
+import "tree.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 
 // Group collected acls by subjects

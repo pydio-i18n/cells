@@ -4,7 +4,7 @@ package rest;
 
 import "common.proto";
 import "data.proto";
-import "idm.proto";
+import "idm-rest.proto";
 import "broker.proto";
 import "config.proto";
 import "scheduler.proto";
@@ -12,24 +12,28 @@ import "graph.proto";
 import "share.proto";
 import "frontend.proto";
 import "templates.proto";
-import "github.com/pydio/cells/v4/common/proto/tree/tree.proto";
-import "github.com/pydio/cells/v4/common/proto/idm/idm.proto";
-import "github.com/pydio/cells/v4/common/proto/mailer/mailer.proto";
-import "github.com/pydio/cells/v4/common/proto/activity/activitystream.proto";
-import "github.com/pydio/cells/v4/common/proto/jobs/jobs.proto";
-import "github.com/pydio/cells/v4/common/proto/encryption/encryption.proto";
-import "github.com/pydio/cells/v4/common/proto/log/log.proto";
-import "github.com/pydio/cells/v4/common/proto/object/object.proto";
-import "github.com/pydio/cells/v4/common/proto/install/install.proto";
-import "github.com/pydio/cells/v4/common/proto/ctl/ctl.proto";
-import "github.com/pydio/cells/v4/common/proto/update/update.proto";
-import "google/api/annotations.proto";
-import "protoc-gen-swagger/options/annotations.proto";
 
-option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+import "tree.proto";
+import "idm.proto";
+import "mailer.proto";
+import "activitystream.proto";
+import "jobs.proto";
+import "encryption.proto";
+import "log.proto";
+import "object.proto";
+import "install.proto";
+import "ctl.proto";
+import "update.proto";
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/pydio/cells/v4/common/proto/rest";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
     title: "Pydio Cells Rest API";
-    version: "1.0";
+    version: "4.0";
     contact: {
         name: "Pydio";
         url: "https://pydio.com";
@@ -831,12 +835,12 @@ service FrontendService {
         };
     }
     // Upload frontend binaries (avatars / logos / bg images)
-    rpc FrontPutBinary(FrontBinaryRequest) returns (FrontBinaryResponse) {
-        option (google.api.http) =  {
-            post: "/frontend/binaries/{BinaryType}/{Uuid}"
-            body:"*"
-        };
-    }
+    //rpc FrontPutBinary(FrontBinaryRequest) returns (FrontBinaryResponse) {
+    //    option (google.api.http) =  {
+    //        post: "/frontend/binaries/{BinaryType}/{Uuid}"
+    //        body: "*"
+    //    };
+    //}
     // Sends a tree of nodes to be used a menu in the Settings panel
     rpc SettingsMenu(SettingsMenuRequest) returns (SettingsMenuResponse) {
         option (google.api.http) =  {
