@@ -35,12 +35,12 @@ then
   mkdir -p ./bin
   export GOBIN=$PWD/bin
   export PATH=$GOBIN:$PATH
-  go get google.golang.org/protobuf/cmd/protoc-gen-go
-  go get github.com/micro/micro/v3/cmd/protoc-gen-micro
-  go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
-  go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
-  go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
-  go get github.com/mwitkow/go-proto-validators/protoc-gen-govalidators
+  go install google.golang.org/protobuf/cmd/protoc-gen-go
+  go install github.com/micro/micro/v3/cmd/protoc-gen-micro
+  go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
+  go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
+  go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
+  go install github.com/mwitkow/go-proto-validators/protoc-gen-govalidators
 else
   export GOBIN=$PWD/bin
   export PATH=$GOBIN:$PATH
