@@ -3,8 +3,11 @@ module github.com/pydio/cells/v4
 go 1.15
 
 require (
+	github.com/ajvb/kala v0.8.4 // indirect
 	github.com/beevik/ntp v0.2.0
 	github.com/caddyserver/caddy v1.0.5
+	github.com/codegangsta/cli v1.8.1-0.20150711215404-bca61c476e3c // indirect
+	github.com/codegangsta/negroni v0.1.1-0.20150319171304-c7477ad8e330 // indirect
 	github.com/dchest/uniuri v0.0.0-20200228104902-7aecb25e1fe5
 	github.com/emicklei/go-restful v2.15.0+incompatible
 	github.com/go-openapi/loads v0.21.0
@@ -12,7 +15,7 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.1.2
-	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
+	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.6.0 // indirect
 	github.com/hashicorp/go-version v1.2.1
@@ -26,6 +29,7 @@ require (
 	github.com/minio/minio-go v6.0.14+incompatible // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mwitkow/go-proto-validators v0.3.2
+	github.com/nicksnyder/go-i18n v1.10.1
 	github.com/ory/ladon v1.2.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.1
