@@ -24,11 +24,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/any"
-	"github.com/pydio/cells/v4/common/proto/service"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 	"gopkg.in/doug-martin/goqu.v4"
 	_ "gopkg.in/doug-martin/goqu.v4/adapters/mysql"
+
+	"github.com/pydio/cells/v4/common/proto/service"
 )
 
 // Expressioner ...
@@ -38,7 +39,7 @@ type Expressioner interface {
 
 // ExpressionConverter ...
 type ExpressionConverter interface {
-	Convert(sub *any.Any, driver string) (goqu.Expression, bool)
+	Convert(sub *anypb.Any, driver string) (goqu.Expression, bool)
 }
 
 type queryBuilder struct {
@@ -62,9 +63,8 @@ func (qb *queryBuilder) Expression(driver string) (ex goqu.Expression) {
 
 		sub := new(service.Query)
 
-		if ptypes.Is(subQ, sub) {
+		if e := anypb.UnmarshalTo(subQ, sub, proto.UnmarshalOptions{}); e == nil {
 
-			ptypes.UnmarshalAny(subQ, sub)
 			expression := NewQueryBuilder(sub, qb.converters...).Expression(driver)
 			if expression != nil {
 				qb.wheres = append(qb.wheres, expression)

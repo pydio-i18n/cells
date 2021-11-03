@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"path"
 
-	"github.com/golang/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 	"github.com/hashicorp/go-version"
 	"github.com/pborman/uuid"
 

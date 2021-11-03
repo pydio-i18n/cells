@@ -25,18 +25,16 @@ import (
 	"path/filepath"
 	"strings"
 
-
-
-	"github.com/golang/protobuf/proto"
 	"github.com/caddyserver/caddy/caddytls"
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/proto"
 
-	"github.com/pydio/cells/v4/common/utils/statics"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/caddy/maintenance"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/crypto/providers"
 	"github.com/pydio/cells/v4/common/proto/install"
+	"github.com/pydio/cells/v4/common/utils/statics"
 )
 
 var maintenanceDir string

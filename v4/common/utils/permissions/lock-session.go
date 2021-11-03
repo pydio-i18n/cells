@@ -22,19 +22,16 @@ package permissions
 
 import (
 	"context"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"time"
 
-	"github.com/pydio/cells/v4/common/log"
-
-	"github.com/pydio/cells/v4/common/proto/tree"
-
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/any"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/log"
+	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service "github.com/pydio/cells/v4/common/proto/service"
+	"github.com/pydio/cells/v4/common/proto/tree"
 )
 
 type SessionLocker interface {
@@ -145,13 +142,13 @@ func (l *LockSession) create(ctx context.Context, cli idm.ACLService, nodeUUID s
 
 func (l *LockSession) remove(ctx context.Context, cli idm.ACLService, action *idm.ACLAction) error {
 
-	q, _ := ptypes.MarshalAny(&idm.ACLSingleQuery{
+	q, _ := anypb.New(&idm.ACLSingleQuery{
 		Actions: []*idm.ACLAction{action},
 	})
 
 	_, err := cli.DeleteACL(ctx, &idm.DeleteACLRequest{
 		Query: &service.Query{
-			SubQueries: []*any.Any{q},
+			SubQueries: []*anypb.Any{q},
 		},
 	})
 	return err
@@ -160,14 +157,14 @@ func (l *LockSession) remove(ctx context.Context, cli idm.ACLService, action *id
 
 func (l *LockSession) updateExpiration(ctx context.Context, cli idm.ACLService, nodeUUID string, action *idm.ACLAction, expireAfter time.Duration) error {
 
-	q, _ := ptypes.MarshalAny(&idm.ACLSingleQuery{
+	q, _ := anypb.New(&idm.ACLSingleQuery{
 		Actions: []*idm.ACLAction{action},
 		NodeIDs: []string{nodeUUID},
 	})
 
 	_, err := cli.ExpireACL(ctx, &idm.ExpireACLRequest{
 		Query: &service.Query{
-			SubQueries: []*any.Any{q},
+			SubQueries: []*anypb.Any{q},
 		},
 		Timestamp: time.Now().Add(expireAfter).Unix(),
 	})
@@ -176,11 +173,11 @@ func (l *LockSession) updateExpiration(ctx context.Context, cli idm.ACLService, 
 
 func HasChildLocks(ctx context.Context, node *tree.Node) bool {
 	aclClient := idm.NewACLService(common.ServiceAcl, defaults.NewClient())
-	q, _ := ptypes.MarshalAny(&idm.ACLSingleQuery{
+	q, _ := anypb.New(&idm.ACLSingleQuery{
 		Actions: []*idm.ACLAction{{Name: AclChildLock.Name + ":*"}},
 		NodeIDs: []string{node.GetUuid()},
 	})
-	if st, e := aclClient.SearchACL(ctx, &idm.SearchACLRequest{Query: &service.Query{SubQueries: []*any.Any{q}}}); e == nil {
+	if st, e := aclClient.SearchACL(ctx, &idm.SearchACLRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}}); e == nil {
 		defer st.Close()
 		for {
 			_, er := st.Recv()

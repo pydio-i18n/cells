@@ -211,6 +211,14 @@ func (s *SQLManager) FindRequestCandidates(r *Request) (Policies, error) {
 	return scanRows(rows)
 }
 
+func (s *SQLManager) FindPoliciesForResource(resource string) (Policies, error) {
+	return nil, fmt.Errorf("FindPoliciesForResource not implemented inside common/sql/ladon-manager/SQLManager as Ladon Manager interface")
+}
+
+func (s *SQLManager) FindPoliciesForSubject(subject string) (Policies, error) {
+	return nil, fmt.Errorf("FindPoliciesForSubject not implemented inside common/sql/ladon-manager/SQLManager as Ladon Manager interface")
+}
+
 func scanRows(rows *sql.Rows) (Policies, error) {
 	var policies = map[string]*DefaultPolicy{}
 

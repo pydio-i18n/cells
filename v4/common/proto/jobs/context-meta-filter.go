@@ -24,12 +24,13 @@ import (
 	"context"
 	"strings"
 
-	"github.com/golang/protobuf/ptypes"
 	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/ory/ladon"
 	"github.com/ory/ladon/manager/memory"
 	"github.com/pborman/uuid"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
@@ -79,7 +80,7 @@ func (m *ContextMetaFilter) filterPolicyQueries(ctx context.Context, input Actio
 	warden := &ladon.Ladon{Manager: memory.NewMemoryManager()}
 	for _, q := range m.Query.SubQueries {
 		var c ContextMetaSingleQuery
-		if e := ptypes.UnmarshalAny(q, &c); e == nil {
+		if e := anypb.UnmarshalTo(q, &c, proto.UnmarshalOptions{}); e == nil {
 			idPol := &idm.Policy{
 				Id:        uuid.New(),
 				Subjects:  []string{"ctx"},

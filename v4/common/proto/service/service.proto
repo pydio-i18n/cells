@@ -48,35 +48,6 @@ message ResourcePolicy {
     string JsonConditions = 6;
 }
 
-// TODO: To be removed
-message ActionOutputQuery {
-    // Check if ActionOutput has Success = true
-    bool Success = 1;
-    // Check if ActionOutput has Success = false
-    bool Failed = 2;
-
-    // Find occurence of string in body
-    string StringBodyCompare = 3;
-    // Find similar Json
-    string JsonBodyCompare = 4;
-    // Find occurence of string in error
-    string ErrorStringCompare = 5;
-    // Invert condition
-    bool Not = 6;
-}
-
-// TODO: To be removed
-message SourceSingleQuery{
-    // Regexp to filter context by IP
-    string IPMask = 2;
-    // Regexp to filter for a given user-agent
-    string UserAgent = 3;
-    // Limit to a given workspaceId
-    string WorkspaceId = 4;
-    // Invert condition
-    bool Not = 5;
-}
-
 message StopEvent {
     string ServiceName = 1;
 }

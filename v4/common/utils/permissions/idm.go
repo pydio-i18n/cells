@@ -29,20 +29,19 @@ import (
 
 	json "github.com/pydio/cells/v4/x/jsonx"
 
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/any"
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/context/metadata"
+	"github.com/micro/micro/v3/service/errors"
 	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth/claim"
 	"github.com/pydio/cells/v4/common/log"
 	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
-	"github.com/pydio/cells/v4/common/proto/tree"
 	service "github.com/pydio/cells/v4/common/proto/service"
+	"github.com/pydio/cells/v4/common/proto/tree"
 )
 
 var (
@@ -70,13 +69,13 @@ func GetRolesForUser(ctx context.Context, user *idm.User, createMissing bool) []
 
 	roleClient := idm.NewRoleService(common.ServiceGrpcNamespace_+common.ServiceRole, defaults.NewClient())
 
-	query, _ := ptypes.MarshalAny(&idm.RoleSingleQuery{
+	query, _ := anypb.New(&idm.RoleSingleQuery{
 		Uuid: roleIds,
 	})
 
 	if stream, err := roleClient.SearchRole(ctx, &idm.SearchRoleRequest{
 		Query: &service.Query{
-			SubQueries: []*any.Any{query},
+			SubQueries: []*anypb.Any{query},
 		},
 	}); err != nil {
 		log.Logger(ctx).Error("failed to retrieve roles", zap.Error(err))
@@ -141,9 +140,9 @@ func GetRoles(ctx context.Context, names []string) []*idm.Role {
 		return roles
 	}
 
-	query, _ := ptypes.MarshalAny(&idm.RoleSingleQuery{Uuid: names})
+	query, _ := anypb.New(&idm.RoleSingleQuery{Uuid: names})
 	roleClient := idm.NewRoleService(common.ServiceGrpcNamespace_+common.ServiceRole, defaults.NewClient())
-	stream, err := roleClient.SearchRole(ctx, &idm.SearchRoleRequest{Query: &service.Query{SubQueries: []*any.Any{query}}})
+	stream, err := roleClient.SearchRole(ctx, &idm.SearchRoleRequest{Query: &service.Query{SubQueries: []*anypb.Any{query}}})
 
 	if err != nil {
 		if !strings.Contains(err.Error(), "context canceled") {
@@ -195,12 +194,12 @@ func GetACLsForRoles(ctx context.Context, roles []*idm.Role, actions ...*idm.ACL
 	q1.Actions = actions
 	q2.RoleIDs = roleIDs
 
-	q1Any, err := ptypes.MarshalAny(q1)
+	q1Any, err := anypb.New(q1)
 	if err != nil {
 		return acls
 	}
 
-	q2Any, err := ptypes.MarshalAny(q2)
+	q2Any, err := anypb.New(q2)
 	if err != nil {
 		return acls
 	}
@@ -208,7 +207,7 @@ func GetACLsForRoles(ctx context.Context, roles []*idm.Role, actions ...*idm.ACL
 	aclClient := idm.NewACLService(common.ServiceGrpcNamespace_+common.ServiceAcl, defaults.NewClient())
 	stream, err := aclClient.SearchACL(ctx, &idm.SearchACLRequest{
 		Query: &service.Query{
-			SubQueries: []*any.Any{q1Any, q2Any},
+			SubQueries: []*anypb.Any{q1Any, q2Any},
 			Operation:  service.OperationType_AND,
 		},
 	})
@@ -238,9 +237,9 @@ func GetACLsForRoles(ctx context.Context, roles []*idm.Role, actions ...*idm.ACL
 // GetACLsForWorkspace compiles ACLs list attached to a given workspace.
 func GetACLsForWorkspace(ctx context.Context, workspaceIds []string, actions ...*idm.ACLAction) (acls []*idm.ACL, err error) {
 
-	var subQueries []*any.Any
-	q1, _ := ptypes.MarshalAny(&idm.ACLSingleQuery{WorkspaceIDs: workspaceIds})
-	q2, _ := ptypes.MarshalAny(&idm.ACLSingleQuery{Actions: actions})
+	var subQueries []*anypb.Any
+	q1, _ := anypb.New(&idm.ACLSingleQuery{WorkspaceIDs: workspaceIds})
+	q2, _ := anypb.New(&idm.ACLSingleQuery{Actions: actions})
 	subQueries = append(subQueries, q1, q2)
 
 	aclClient := idm.NewACLService(common.ServiceGrpcNamespace_+common.ServiceAcl, defaults.NewClient())
@@ -283,9 +282,9 @@ func GetWorkspacesForACLs(ctx context.Context, list *AccessList) []*idm.Workspac
 
 	workspaceClient := idm.NewWorkspaceService(common.ServiceGrpcNamespace_+common.ServiceWorkspace, defaults.NewClient())
 
-	var queries []*any.Any
+	var queries []*anypb.Any
 	for workspaceID := range workspaceNodes {
-		query, _ := ptypes.MarshalAny(&idm.WorkspaceSingleQuery{Uuid: workspaceID})
+		query, _ := anypb.New(&idm.WorkspaceSingleQuery{Uuid: workspaceID})
 		queries = append(queries, query)
 	}
 
@@ -320,8 +319,8 @@ func GetWorkspacesForACLs(ctx context.Context, list *AccessList) []*idm.Workspac
 }
 
 func GetACLsForActions(ctx context.Context, actions ...*idm.ACLAction) (acls []*idm.ACL, err error) {
-	var subQueries []*any.Any
-	q1, _ := ptypes.MarshalAny(&idm.ACLSingleQuery{Actions: actions})
+	var subQueries []*anypb.Any
+	q1, _ := anypb.New(&idm.ACLSingleQuery{Actions: actions})
 	subQueries = append(subQueries, q1)
 
 	aclClient := idm.NewACLService(common.ServiceGrpcNamespace_+common.ServiceAcl, defaults.NewClient())
@@ -457,16 +456,16 @@ func SearchUniqueUser(ctx context.Context, login string, uuid string, queries ..
 	}
 
 	userCli := idm.NewUserService(common.ServiceGrpcNamespace_+common.ServiceUser, defaults.NewClient())
-	var searchRequests []*any.Any
+	var searchRequests []*anypb.Any
 	if uuid != "" {
-		searchRequest, _ := ptypes.MarshalAny(&idm.UserSingleQuery{Uuid: uuid})
+		searchRequest, _ := anypb.New(&idm.UserSingleQuery{Uuid: uuid})
 		searchRequests = append(searchRequests, searchRequest)
 	} else if login != "" {
-		searchRequest, _ := ptypes.MarshalAny(&idm.UserSingleQuery{Login: login})
+		searchRequest, _ := anypb.New(&idm.UserSingleQuery{Login: login})
 		searchRequests = append(searchRequests, searchRequest)
 	}
 	for _, q := range queries {
-		searchRequest, _ := ptypes.MarshalAny(q)
+		searchRequest, _ := anypb.New(q)
 		searchRequests = append(searchRequests, searchRequest)
 	}
 	if len(searchRequests) == 0 {
@@ -611,8 +610,8 @@ func CheckContentLock(ctx context.Context, node *tree.Node) error {
 	// Look for "quota" ACLs on this node
 	singleQ := &idm.ACLSingleQuery{NodeIDs: []string{node.Uuid}, Actions: []*idm.ACLAction{{Name: AclContentLock.Name}}}
 	//log.Logger(ctx).Debug("SEARCHING FOR LOCKS IN ACLS", zap.Any("q", singleQ))
-	q, _ := ptypes.MarshalAny(singleQ)
-	stream, err := aclClient.SearchACL(ctx, &idm.SearchACLRequest{Query: &service.Query{SubQueries: []*any.Any{q}}})
+	q, _ := anypb.New(singleQ)
+	stream, err := aclClient.SearchACL(ctx, &idm.SearchACLRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}})
 	if err != nil {
 		return err
 	}

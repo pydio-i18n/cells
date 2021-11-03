@@ -6,6 +6,7 @@ import (
 
 	json "github.com/pydio/cells/v4/x/jsonx"
 
+	// Todo: replace with protojson library
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	"github.com/spf13/cast"

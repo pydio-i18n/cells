@@ -23,8 +23,8 @@ package service
 import (
 	"fmt"
 
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/any"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 // Matcher interface provides a way to filter idm objects with standard XXXSingleQueries.
@@ -40,7 +40,7 @@ type MultiMatcher struct {
 }
 
 // MatcherParser is a generic function to parse a protobuf into Matcher
-type MatcherParser func(o *any.Any) (Matcher, error)
+type MatcherParser func(o *anypb.Any) (Matcher, error)
 
 // Parse transforms input query into Matcher interfaces
 func (mm *MultiMatcher) Parse(q *Query, parser MatcherParser) error {
@@ -49,7 +49,7 @@ func (mm *MultiMatcher) Parse(q *Query, parser MatcherParser) error {
 		subQ := &Query{}
 		if m, e := parser(an); e == nil {
 			mm.matchers = append(mm.matchers, m)
-		} else if e := ptypes.UnmarshalAny(an, subQ); e == nil {
+		} else if e := anypb.UnmarshalTo(an, subQ, proto.UnmarshalOptions{}); e == nil {
 			subM := &MultiMatcher{}
 			if er := subM.Parse(subQ, parser); er != nil {
 				return er

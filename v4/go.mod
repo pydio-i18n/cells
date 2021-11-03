@@ -25,7 +25,6 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/micro/go-micro v1.18.0
 	github.com/micro/micro/v3 v3.6.0
-	github.com/micro/protobuf v0.0.0-20180321161605-ebd3be6d4fdb
 	github.com/minio/minio v0.0.0-20211103064834-9f3c151c3c20
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/ory/hydra v1.10.7
