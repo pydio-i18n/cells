@@ -23,9 +23,8 @@ package jobs
 import (
 	"context"
 
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/any"
 	"github.com/micro/micro/v3/service/client"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/proto/idm"
@@ -45,13 +44,13 @@ func (m *UsersSelector) Select(cl client.Client, ctx context.Context, input Acti
 	// Push Claims in Context to impersonate this user
 	var query *service.Query
 	if len(m.Users) > 0 {
-		queries := []*any.Any{}
+		var queries []*anypb.Any
 		for _, user := range m.Users {
 			if user.Login != "" {
-				q, _ := ptypes.MarshalAny(&idm.UserSingleQuery{Login: user.Login})
+				q, _ := anypb.New(&idm.UserSingleQuery{Login: user.Login})
 				queries = append(queries, q)
 			} else if user.Uuid != "" {
-				q, _ := ptypes.MarshalAny(&idm.UserSingleQuery{Uuid: user.Uuid})
+				q, _ := anypb.New(&idm.UserSingleQuery{Uuid: user.Uuid})
 				queries = append(queries, q)
 			}
 		}
@@ -59,7 +58,7 @@ func (m *UsersSelector) Select(cl client.Client, ctx context.Context, input Acti
 	} else if m.Query != nil {
 		query = m.Query
 	} else if m.All {
-		query = &service.Query{SubQueries: []*any.Any{}}
+		query = &service.Query{SubQueries: []*anypb.Any{}}
 	}
 	if query == nil {
 		return nil

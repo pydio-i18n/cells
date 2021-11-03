@@ -23,19 +23,17 @@ package jobs
 import (
 	"context"
 	"fmt"
-	defaults "github.com/pydio/cells/v4/common/micro"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/micro/micro/v3/service/context/metadata"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
-
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/any"
 	"github.com/micro/micro/v3/service/client"
+	"github.com/micro/micro/v3/service/context/metadata"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
+	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/service"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 )
 
 func (m *IdmSelector) MultipleSelection() bool {
@@ -53,7 +51,7 @@ func (m *IdmSelector) Select(cl client.Client, ctx context.Context, input Action
 	if m.Query != nil {
 		query = m.cloneEvaluated(ctx, input, m.Query)
 	} else if m.All {
-		query = &service.Query{SubQueries: []*any.Any{}}
+		query = &service.Query{SubQueries: []*anypb.Any{}}
 	}
 	if query == nil {
 		return nil
@@ -150,9 +148,9 @@ func (m *IdmSelector) Filter(ctx context.Context, input ActionMessage) (ActionMe
 		if len(input.Users) == 0 {
 			return input, nil, false // break!
 		}
-		if er := multi.Parse(m.Query, func(o *any.Any) (service.Matcher, error) {
+		if er := multi.Parse(m.Query, func(o *anypb.Any) (service.Matcher, error) {
 			target := &idm.UserSingleQuery{}
-			if e := ptypes.UnmarshalAny(o, target); e != nil {
+			if e := anypb.UnmarshalTo(o, target, proto.UnmarshalOptions{}); e != nil {
 				return nil, e
 			}
 			return m.evaluate(ctx, input, target), nil
@@ -181,9 +179,9 @@ func (m *IdmSelector) Filter(ctx context.Context, input ActionMessage) (ActionMe
 		if len(input.Roles) == 0 {
 			return input, nil, false
 		}
-		if er := multi.Parse(m.Query, func(o *any.Any) (service.Matcher, error) {
+		if er := multi.Parse(m.Query, func(o *anypb.Any) (service.Matcher, error) {
 			target := &idm.RoleSingleQuery{}
-			if e := ptypes.UnmarshalAny(o, target); e != nil {
+			if e := anypb.UnmarshalTo(o, target, proto.UnmarshalOptions{}); e != nil {
 				return nil, e
 			}
 			return m.evaluate(ctx, input, target), nil
@@ -218,9 +216,9 @@ func (m *IdmSelector) Filter(ctx context.Context, input ActionMessage) (ActionMe
 				return input, nil, false
 			}
 		}
-		if er := multi.Parse(m.Query, func(o *any.Any) (service.Matcher, error) {
+		if er := multi.Parse(m.Query, func(o *anypb.Any) (service.Matcher, error) {
 			target := &idm.WorkspaceSingleQuery{}
-			if e := ptypes.UnmarshalAny(o, target); e != nil {
+			if e := anypb.UnmarshalTo(o, target, proto.UnmarshalOptions{}); e != nil {
 				return nil, e
 			}
 			return m.evaluate(ctx, input, target), nil
@@ -249,9 +247,9 @@ func (m *IdmSelector) Filter(ctx context.Context, input ActionMessage) (ActionMe
 		if len(input.Acls) == 0 {
 			return input, nil, false
 		}
-		if er := multi.Parse(m.Query, func(o *any.Any) (service.Matcher, error) {
+		if er := multi.Parse(m.Query, func(o *anypb.Any) (service.Matcher, error) {
 			target := &idm.ACLSingleQuery{}
-			if e := ptypes.UnmarshalAny(o, target); e != nil {
+			if e := anypb.UnmarshalTo(o, target, proto.UnmarshalOptions{}); e != nil {
 				return nil, e
 			}
 			return m.evaluate(ctx, input, target), nil
@@ -293,14 +291,14 @@ func (m *IdmSelector) cloneEvaluated(ctx context.Context, input ActionMessage, q
 		r := &idm.RoleSingleQuery{}
 		ws := &idm.WorkspaceSingleQuery{}
 		a := &idm.ACLSingleQuery{}
-		if e := ptypes.UnmarshalAny(sub, ws); e == nil {
-			q.SubQueries[i], _ = ptypes.MarshalAny(m.evaluate(ctx, input, ws).(*idm.WorkspaceSingleQuery))
-		} else if e := ptypes.UnmarshalAny(sub, r); e == nil {
-			q.SubQueries[i], _ = ptypes.MarshalAny(m.evaluate(ctx, input, r).(*idm.RoleSingleQuery))
-		} else if e := ptypes.UnmarshalAny(sub, u); e == nil {
-			q.SubQueries[i], _ = ptypes.MarshalAny(m.evaluate(ctx, input, u).(*idm.UserSingleQuery))
-		} else if e := ptypes.UnmarshalAny(sub, a); e == nil {
-			q.SubQueries[i], _ = ptypes.MarshalAny(m.evaluate(ctx, input, a).(*idm.ACLSingleQuery))
+		if e := anypb.UnmarshalTo(sub, ws, proto.UnmarshalOptions{}); e == nil {
+			q.SubQueries[i], _ = anypb.New(m.evaluate(ctx, input, ws).(*idm.WorkspaceSingleQuery))
+		} else if e := anypb.UnmarshalTo(sub, r, proto.UnmarshalOptions{}); e == nil {
+			q.SubQueries[i], _ = anypb.New(m.evaluate(ctx, input, r).(*idm.RoleSingleQuery))
+		} else if e := anypb.UnmarshalTo(sub, u, proto.UnmarshalOptions{}); e == nil {
+			q.SubQueries[i], _ = anypb.New(m.evaluate(ctx, input, u).(*idm.UserSingleQuery))
+		} else if e := anypb.UnmarshalTo(sub, a, proto.UnmarshalOptions{}); e == nil {
+			q.SubQueries[i], _ = anypb.New(m.evaluate(ctx, input, a).(*idm.ACLSingleQuery))
 		}
 	}
 	return q
@@ -353,8 +351,8 @@ func (m *IdmSelector) WorkspaceFromEventContext(ctx context.Context) (*idm.Works
 		return nil, false
 	}
 	wsClient := idm.NewWorkspaceService(common.ServiceWorkspace, defaults.NewClient())
-	q, _ := ptypes.MarshalAny(&idm.WorkspaceSingleQuery{Uuid: wsUuid})
-	r, e := wsClient.SearchWorkspace(ctx, &idm.SearchWorkspaceRequest{Query: &service.Query{SubQueries: []*any.Any{q}}})
+	q, _ := anypb.New(&idm.WorkspaceSingleQuery{Uuid: wsUuid})
+	r, e := wsClient.SearchWorkspace(ctx, &idm.SearchWorkspaceRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}})
 	if e != nil {
 		return nil, false
 	}

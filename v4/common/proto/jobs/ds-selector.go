@@ -23,8 +23,9 @@ package jobs
 import (
 	"context"
 
-	"github.com/golang/protobuf/ptypes"
 	"github.com/micro/micro/v3/service/client"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/proto/object"
@@ -79,7 +80,7 @@ func (m *DataSourceSelector) evaluate(ctx context.Context, query *service.Query,
 	for _, q := range query.SubQueries {
 		msg := &object.DataSourceSingleQuery{}
 		subQ := &service.Query{}
-		if e := ptypes.UnmarshalAny(q, msg); e == nil {
+		if e := anypb.UnmarshalTo(q, msg, proto.UnmarshalOptions{}); e == nil {
 			// Evaluate fields
 			msg.Name = EvaluateFieldStr(ctx, input, msg.Name)
 			msg.ObjectServiceName = EvaluateFieldStr(ctx, input, msg.ObjectServiceName)
@@ -89,7 +90,7 @@ func (m *DataSourceSelector) evaluate(ctx context.Context, query *service.Query,
 			msg.EncryptionKey = EvaluateFieldStr(ctx, input, msg.EncryptionKey)
 			msg.VersioningPolicyName = EvaluateFieldStr(ctx, input, msg.VersioningPolicyName)
 			bb = append(bb, msg.Matches(dsObject))
-		} else if e := ptypes.UnmarshalAny(q, subQ); e == nil {
+		} else if e := anypb.UnmarshalTo(q, subQ, proto.UnmarshalOptions{}); e == nil {
 			bb = append(bb, m.evaluate(ctx, subQ, input, dsObject))
 		}
 	}

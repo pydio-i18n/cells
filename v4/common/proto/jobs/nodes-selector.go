@@ -23,18 +23,17 @@ package jobs
 import (
 	"context"
 	"fmt"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"path"
 	"strings"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes/any"
 	"github.com/micro/micro/v3/service/client"
-	"github.com/micro/protobuf/ptypes"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
+	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
 )
@@ -82,7 +81,7 @@ func (n *NodesSelector) Select(cl client.Client, ctx context.Context, input Acti
 			return nil
 		}
 
-		if e := ptypes.UnmarshalAny(selector.Query.SubQueries[0], q); e != nil {
+		if e := anypb.UnmarshalTo(selector.Query.SubQueries[0], q, proto.UnmarshalOptions{}); e != nil {
 			log.Logger(ctx).Error("Could not parse input query", zap.Error(e))
 			return e
 		}
@@ -204,9 +203,9 @@ func (n *NodesSelector) Filter(ctx context.Context, input ActionMessage) (Action
 	var multi *service.MultiMatcher
 	if selector.Query != nil && len(selector.Query.SubQueries) > 0 {
 		multi = &service.MultiMatcher{}
-		if er := multi.Parse(selector.Query, func(o *any.Any) (service.Matcher, error) {
+		if er := multi.Parse(selector.Query, func(o *anypb.Any) (service.Matcher, error) {
 			target := &tree.Query{}
-			if e := ptypes.UnmarshalAny(o, target); e != nil {
+			if e := anypb.UnmarshalTo(o, target, proto.UnmarshalOptions{}); e != nil {
 				return nil, e
 			}
 			return &NodeMatcher{Query: target}, nil
@@ -255,7 +254,7 @@ func (n *NodesSelector) evaluatedClone(ctx context.Context, input ActionMessage)
 	if c.Query != nil && len(c.Query.SubQueries) > 0 {
 		for i, q := range c.Query.SubQueries {
 			singleQuery := &tree.Query{}
-			if e := ptypes.UnmarshalAny(q, singleQuery); e != nil {
+			if e := anypb.UnmarshalTo(q, singleQuery, proto.UnmarshalOptions{}); e != nil {
 				continue
 			}
 			singleQuery.Content = EvaluateFieldStr(ctx, input, singleQuery.Content)
@@ -267,7 +266,7 @@ func (n *NodesSelector) evaluatedClone(ctx context.Context, input ActionMessage)
 			singleQuery.PathPrefix = EvaluateFieldStrSlice(ctx, input, singleQuery.PathPrefix)
 			singleQuery.Paths = EvaluateFieldStrSlice(ctx, input, singleQuery.Paths)
 			singleQuery.UUIDs = EvaluateFieldStrSlice(ctx, input, singleQuery.UUIDs)
-			c.Query.SubQueries[i], _ = ptypes.MarshalAny(singleQuery)
+			c.Query.SubQueries[i], _ = anypb.New(singleQuery)
 		}
 	}
 	return c
