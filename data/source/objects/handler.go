@@ -119,7 +119,12 @@ func (t *TreeHandler) ListNodes(ctx context.Context, request *tree.ListNodesRequ
 		var err error
 		for _, volume := range volumes {
 			err = stream.Send(&tree.ListNodesResponse{
-				Node: volume,
+				Node: &tree.Node{
+					Uuid: volume.Uuid,
+					Path: volume.Path,
+					Type: tree.NodeType_COLLECTION,
+					Size: volume.Size,
+				},
 			})
 			if err != nil {
 				log.Logger(ctx).Error("could not send node", zap.Error(err))
