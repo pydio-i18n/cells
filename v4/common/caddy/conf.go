@@ -25,11 +25,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/caddyserver/caddy/caddytls"
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/caddy/maintenance"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/crypto/providers"
@@ -85,17 +83,20 @@ func SitesToCaddyConfigs(sites []*install.ProxyConfig) (caddySites []SiteConf, e
 	for _, proxyConfig := range sites {
 		if bc, er := computeSiteConf(proxyConfig); er == nil {
 			caddySites = append(caddySites, bc)
-			if proxyConfig.HasTLS() && proxyConfig.GetLetsEncrypt() != nil {
-				le := proxyConfig.GetLetsEncrypt()
-				if le.AcceptEULA {
-					caddytls.Agreed = true
+			/*
+				// TODO Enable these in caddy generated config
+				if proxyConfig.HasTLS() && proxyConfig.GetLetsEncrypt() != nil {
+					le := proxyConfig.GetLetsEncrypt()
+					if le.AcceptEULA {
+						caddytls.Agreed = true
+					}
+					if le.StagingCA {
+						caddytls.DefaultCAUrl = common.DefaultCaStagingUrl
+					} else {
+						caddytls.DefaultCAUrl = common.DefaultCaUrl
+					}
 				}
-				if le.StagingCA {
-					caddytls.DefaultCAUrl = common.DefaultCaStagingUrl
-				} else {
-					caddytls.DefaultCAUrl = common.DefaultCaUrl
-				}
-			}
+			*/
 		} else {
 			return caddySites, er
 		}
