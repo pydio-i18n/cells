@@ -84,7 +84,7 @@ func SitesToCaddyConfigs(sites []*install.ProxyConfig) (caddySites []SiteConf, e
 		if bc, er := computeSiteConf(proxyConfig); er == nil {
 			caddySites = append(caddySites, bc)
 			/*
-				// TODO Enable these in caddy generated config
+				// TODO V4 Enable these in caddy generated config
 				if proxyConfig.HasTLS() && proxyConfig.GetLetsEncrypt() != nil {
 					le := proxyConfig.GetLetsEncrypt()
 					if le.AcceptEULA {
