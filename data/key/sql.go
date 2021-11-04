@@ -49,14 +49,14 @@ var (
 		"node_update":                   `UPDATE enc_nodes SET legacy=? WHERE node_id=?;`,
 		"node_delete":                   `DELETE FROM enc_nodes WHERE node_id=?;`,
 		"node_key_insert":               `INSERT INTO enc_node_keys (node_id,owner_id,user_id,key_data) VALUES (?,?,?,?)`,
-		"node_key_select":               `SELECT * FROM enc_node_keys WHERE node_id=? AND user_id=?;`,
-		"node_key_select_all":           `SELECT * FROM enc_node_keys WHERE node_id=?;`,
+		"node_key_select":               `SELECT node_id,owner_id,user_id,key_data FROM enc_node_keys WHERE node_id=? AND user_id=?;`,
+		"node_key_select_all":           `SELECT node_id,owner_id,user_id,key_data FROM enc_node_keys WHERE node_id=?;`,
 		"node_key_copy":                 `INSERT INTO enc_node_keys (SELECT ?, owner_id, user_id, key_data FROM enc_node_keys WHERE node_id=?);`,
 		"node_key_delete":               `DELETE FROM enc_node_keys WHERE node_id=? AND user_id=?;`,
 		"node_shared_key_delete":        `DELETE FROM enc_node_keys WHERE user_id<>owner_id AND node_id=? AND owner_id=? AND user_id=?`,
 		"node_shared_key_delete_all":    `DELETE FROM enc_node_keys WHERE  user_id<>owner_id AND node_id=? AND owner_id=?`,
-		"node_block_insert":             `INSERT INTO enc_node_blocks VALUES (?, ?, ?, ?, ?, ?, ?);`,
-		"node_block_select":             `SELECT * FROM enc_node_blocks WHERE node_id=? order by part_id, seq_start;`,
+		"node_block_insert":             `INSERT INTO enc_node_blocks (node_id, part_id, seq_start, seq_end, block_data_size, block_header_size, owner) VALUES (?, ?, ?, ?, ?, ?, ?);`,
+		"node_block_select":             `SELECT node_id,part_id,seq_start,seq_end,block_data_size,block_header_size,owner FROM enc_node_blocks WHERE node_id=? order by part_id, seq_start;`,
 		"node_block_copy":               `INSERT INTO enc_node_blocks (SELECT ?, part_id, seq_start, seq_end, block_data_size, block_header_size, owner FROM enc_node_blocks WHERE node_id=?);`,
 		"node_block_delete":             `DELETE FROM enc_node_blocks WHERE node_id=?;`,
 		"node_block_part_delete":        `DELETE FROM enc_node_blocks WHERE node_id=? and part_id=?;`,
@@ -219,7 +219,7 @@ func (h *sqlimpl) CopyNode(srcUuid string, targetUuid string) error {
 		}
 
 		b := bi.(*RangedBlocks)
-		_, err = stmt.Exec(targetUuid, b.PartId, b.SeqStart, b.SeqEnd, b.BlockSize, b.HeaderSize, b.HeaderSize)
+		_, err = stmt.Exec(targetUuid, b.PartId, b.SeqStart, b.SeqEnd, b.BlockSize, b.HeaderSize, b.OwnerId)
 		if err != nil {
 			log.Logger(ctx).Error("failed to save block", zap.Any("block", b), zap.Error(err))
 			_ = cursor.Close()
