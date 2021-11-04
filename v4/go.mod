@@ -66,7 +66,10 @@ require (
 	github.com/allegro/bigcache v1.2.1
 	github.com/c2fo/testify v0.0.0-20150827203832-fba96363964a // indirect
 	github.com/gobwas/glob v0.2.3
+	github.com/karrick/godirwalk v1.16.1
 	github.com/nicksnyder/go-i18n v1.10.0
+	github.com/rjeczalik/notify v0.9.2
+	github.com/spf13/afero v1.6.0
 	github.com/stretchr/testify v1.7.0
 	github.com/twmb/murmur3 v1.1.6 // indirect
 	golang.org/x/text v0.3.7
