@@ -61,6 +61,14 @@ const (
 	{{if .TLS}}tls {{.TLS}}{{end}}
 	{{if .TLSCert}}tls "{{.TLSCert}}" "{{.TLSKey}}"{{end}}
 }
+{{if .SSLRedirect}}
+{{range $k,$v := .Redirects}}
+{{$k}} {
+	redir {{$v}}
+}
+{{end}}
+{{end}}
+
 {{end}}
 	 `
 )
