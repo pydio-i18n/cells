@@ -17,5 +17,7 @@ func WithGRPC(f func(*grpc.Server) error) ServiceOption {
 		}
 
 		f(srv)
+
+		// TODO v4 import wrappers for the server
 	}
 }
