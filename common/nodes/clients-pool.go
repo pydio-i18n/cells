@@ -79,7 +79,7 @@ func NewSource(data *object.DataSource) (LoadedSource, error) {
 	return loaded, err
 }
 
-// NewClientsPool creates a client pool and initialises it by calling the registry.
+// NewClientsPool creates a client Pool and initialises it by calling the registry.
 func NewClientsPool(watchRegistry bool) *ClientsPool {
 
 	pool := &ClientsPool{
@@ -206,7 +206,7 @@ func (p *ClientsPool) LoadDataSources() {
 		response, err := endpointClient.GetDataSourceConfig(ctx, &object.GetDataSourceConfigRequest{})
 		if err == nil && response.DataSource != nil {
 			log.Logger(ctx).Debug("Creating client for datasource " + source)
-			p.createClientsForDataSource(source, response.DataSource)
+			p.CreateClientsForDataSource(source, response.DataSource)
 		} else {
 			log.Logger(context.Background()).Debug("no answer from endpoint, maybe not ready yet? "+common.ServiceGrpcNamespace_+common.ServiceDataSync_+source, zap.Any("r", response), zap.Error(err))
 		}
@@ -286,7 +286,7 @@ func (p *ClientsPool) watchConfigChanges() {
 	}
 }
 
-func (p *ClientsPool) createClientsForDataSource(dataSourceName string, dataSource *object.DataSource) error {
+func (p *ClientsPool) CreateClientsForDataSource(dataSourceName string, dataSource *object.DataSource) error {
 
 	log.Logger(context.Background()).Debug("Adding dataSource", zap.String("dsname", dataSourceName))
 	p.Lock()
@@ -298,4 +298,42 @@ func (p *ClientsPool) createClientsForDataSource(dataSourceName string, dataSour
 
 	p.sources[dataSourceName] = loaded
 	return nil
+}
+
+func MakeFakeClientsPool() *ClientsPool {
+	IsUnitTestEnv = true
+	c := NewClientsPool(false)
+
+	mockDatasource := &object.DataSource{
+		Name:          "datasource",
+		ObjectsHost:   "localhost",
+		ObjectsPort:   9078,
+		ApiKey:        "access",
+		ApiSecret:     "secret",
+		ObjectsSecure: false,
+		ObjectsBucket: "bucket",
+	}
+
+	// mockClient, err := mockDatasource.CreateClient()
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	c.CreateClientsForDataSource("datasource", mockDatasource)
+	c.aliases["datasource"] = sourceAlias{
+		dataSource: "localhost:9078",
+		bucket:     "bucket",
+	}
+
+	// coreClient, _ := minio.NewCore("localhost:9078", "access", "secret", false)
+	// c.Clients = map[string]*minio.Core{
+	// 	"datasource": coreClient,
+	// }
+	// c.dsBuckets = map[string]string{
+	// 	"datasource": "bucket",
+	// }
+	// c.dsEncrypted = map[string]bool{
+	// 	"datasource": true,
+	// }
+	return c
 }

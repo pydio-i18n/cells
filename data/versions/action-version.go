@@ -25,6 +25,8 @@ import (
 	"fmt"
 	"path"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/golang/protobuf/ptypes"
 	"github.com/micro/go-micro/client"
 	"github.com/pkg/errors"
@@ -71,7 +73,7 @@ var (
 
 func getRouter() *nodes.Router {
 	if router == nil {
-		router = nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true, WatchRegistry: true})
+		router = compose.NewStandardRouter(nodes.RouterOptions{AdminView: true, WatchRegistry: true})
 	}
 	return router
 }

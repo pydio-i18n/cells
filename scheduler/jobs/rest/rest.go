@@ -23,6 +23,8 @@ package rest
 import (
 	"fmt"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	json "github.com/pydio/cells/x/jsonx"
 
 	"github.com/emicklei/go-restful"
@@ -52,7 +54,7 @@ var (
 
 func getRouter() *nodes.Router {
 	if router == nil {
-		router = nodes.NewStandardRouter(nodes.RouterOptions{WatchRegistry: true})
+		router = compose.NewStandardRouter(nodes.RouterOptions{WatchRegistry: true})
 	}
 	return router
 }

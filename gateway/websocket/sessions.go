@@ -25,6 +25,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/pydio/cells/common/nodes/abstract"
+
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/nodes"
 	context2 "github.com/pydio/cells/common/utils/context"
@@ -60,7 +62,7 @@ const LimiterBurst = 20
 func updateSessionFromClaims(session *melody.Session, claims claim.Claims, pool nodes.SourcesPool) {
 
 	ctx := context.WithValue(context.Background(), claim.ContextKey, claims)
-	vNodeResolver := nodes.GetVirtualNodesManager().GetResolver(pool, true)
+	vNodeResolver := abstract.GetVirtualNodesManager().GetResolver(pool, true)
 	accessList, err := permissions.AccessListFromContextClaims(ctx)
 	if err != nil {
 		log.Logger(ctx).Error("Error while setting workspaces in session", zap.Error(err))

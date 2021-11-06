@@ -5,6 +5,10 @@ import (
 	"path"
 	"time"
 
+	"github.com/pydio/cells/common/nodes/abstract"
+
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/micro/go-micro/client"
 
 	"github.com/pydio/cells/common/auth"
@@ -111,11 +115,11 @@ func (c *CleanUserDataAction) Run(ctx context.Context, channels *actions.Runnabl
 		tp = jobs.EvaluateFieldStr(ctx, input, tp)
 	}
 
-	router := nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true, SynchronousTasks: true})
+	router := compose.NewStandardRouter(nodes.RouterOptions{AdminView: true, SynchronousTasks: true})
 	clientsPool := router.GetClientsPool()
 	var cleaned bool
 	// For the moment, just rename personal folder to user UUID to collision with new user with same Login
-	vNodesManager := nodes.GetVirtualNodesManager()
+	vNodesManager := abstract.GetVirtualNodesManager()
 	for _, vNode := range vNodesManager.ListNodes() {
 		onDelete, ok := vNode.MetaStore["onDelete"]
 		if !ok || onDelete != "rename-uuid" {

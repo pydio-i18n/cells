@@ -25,6 +25,8 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/plugins"
 
@@ -46,7 +48,7 @@ func init() {
 			service.RouterDependencies(),
 			service.Description("DAV Gateway to tree service"),
 			service.WithHTTP(func() http.Handler {
-				davRouter = nodes.NewStandardRouter(nodes.RouterOptions{
+				davRouter = compose.NewStandardRouter(nodes.RouterOptions{
 					WatchRegistry:    true,
 					AuditEvent:       true,
 					SynchronousCache: true,

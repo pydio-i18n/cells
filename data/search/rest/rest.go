@@ -22,8 +22,11 @@
 package rest
 
 import (
-	"context"
 	"strings"
+
+	"github.com/pydio/cells/common/nodes/compose"
+
+	"github.com/pydio/cells/common/nodes/acl"
 
 	"github.com/emicklei/go-restful"
 	"go.uber.org/zap"
@@ -56,7 +59,7 @@ func (s *Handler) Filter() func(string) string {
 
 func (s *Handler) getRouter() *nodes.Router {
 	if s.router == nil {
-		s.router = nodes.NewStandardRouter(nodes.RouterOptions{WatchRegistry: true, AuditEvent: false})
+		s.router = compose.NewStandardRouter(nodes.RouterOptions{WatchRegistry: true, AuditEvent: false})
 	}
 	return s.router
 }
@@ -116,7 +119,9 @@ func (s *Handler) Nodes(req *restful.Request, rsp *restful.Response) {
 			// Fill a context with current user info
 			// (Let inputFilter apply the various necessary middlewares).
 			loaderCtx, _, _ := inputFilter(ctx, &tree.Node{Path: ""}, "tmp")
-			userWorkspaces = nodes.UserWorkspacesFromContext(loaderCtx)
+			if accessList, ok := acl.FromContext(loaderCtx); ok {
+				userWorkspaces = accessList.Workspaces
+			}
 			for _, w := range userWorkspaces {
 				if len(passedWorkspaceSlug) > 0 && w.Slug != passedWorkspaceSlug {
 					continue
@@ -133,7 +138,7 @@ func (s *Handler) Nodes(req *restful.Request, rsp *restful.Response) {
 		query.PathPrefix = []string{}
 
 		var e error
-		ctx = context.WithValue(ctx, nodes.CtxKeepAccessListKey{}, true)
+		ctx = acl.WithPresetACL(ctx, nil) // Just set the key, acl is already set
 		for _, p := range prefixes {
 			rootNode := &tree.Node{Path: p}
 			ctx, rootNode, e = inputFilter(ctx, rootNode, "search-"+p)

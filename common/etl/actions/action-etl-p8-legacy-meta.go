@@ -28,6 +28,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pydio/cells/common/nodes/abstract"
+
+	"github.com/pydio/cells/common/nodes/compose"
+
+	"github.com/pydio/cells/common/nodes/acl"
+
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
 	"github.com/micro/go-micro/client"
@@ -92,7 +98,7 @@ func (c *MigratePydioMetaAction) GetName() string {
 // GetRouter returns an initialized router
 func (c *MigratePydioMetaAction) GetRouter() *nodes.Router {
 	if c.router == nil {
-		c.router = nodes.NewStandardRouter(nodes.RouterOptions{})
+		c.router = compose.NewStandardRouter(nodes.RouterOptions{})
 	}
 	return c.router
 }
@@ -305,7 +311,7 @@ func (c *MigratePydioMetaAction) WorkspaceHasTemplatePath(ctx context.Context, w
 		r, e := treeClient.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Uuid: a.NodeID}})
 		if e == nil && r != nil {
 			return false, nil
-		} else if _, ok := nodes.GetVirtualNodesManager().ByUuid(a.NodeID); ok {
+		} else if _, ok := abstract.GetVirtualNodesManager().ByUuid(a.NodeID); ok {
 			return true, nil
 		} else {
 			return false, fmt.Errorf("cannot find root nodes")
@@ -323,15 +329,14 @@ func ComputeContextForUser(ctx context.Context, name string, user *idm.User) (co
 			return nil, e
 		}
 		userCtx = context.WithValue(ctx, common.PydioContextUserKey, name)
-		userCtx = context.WithValue(userCtx, nodes.CtxUserAccessListKey{}, accessList)
+		userCtx = acl.WithPresetACL(userCtx, accessList)
 	} else {
 		accessList, e := permissions.AccessListFromRoles(ctx, user.Roles, false, true)
 		if e != nil {
 			return nil, e
 		}
 		userCtx = context.WithValue(ctx, common.PydioContextUserKey, user.Login)
-		userCtx = context.WithValue(userCtx, nodes.CtxUserAccessListKey{}, accessList)
+		userCtx = acl.WithPresetACL(userCtx, accessList)
 	}
-	userCtx = context.WithValue(userCtx, nodes.CtxKeepAccessListKey{}, true)
 	return userCtx, nil
 }

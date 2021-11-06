@@ -27,6 +27,8 @@ type Adapter interface {
 
 // RouterOptions holds configuration flags to pass to a router constructor easily.
 type RouterOptions struct {
+	CoreClient func(pool SourcesPool) Client
+
 	AdminView          bool
 	WatchRegistry      bool
 	LogReadEvents      bool
@@ -37,7 +39,7 @@ type RouterOptions struct {
 	SynchronousTasks bool
 
 	Wrappers []Adapter
-	pool     SourcesPool
+	Pool     SourcesPool
 }
 
 func NewClient(opts ...Option) Client {
@@ -46,10 +48,11 @@ func NewClient(opts ...Option) Client {
 		o(&options)
 	}
 
-	options.pool = NewClientsPool(options.WatchRegistry)
+	options.Pool = NewClientsPool(options.WatchRegistry)
 
 	var client Client
-	client = &Executor{}
+
+	client = options.CoreClient(options.Pool)
 
 	// wrap in reverse
 	for i := len(options.Wrappers); i > 0; i-- {
@@ -57,6 +60,35 @@ func NewClient(opts ...Option) Client {
 	}
 
 	return client
+}
+
+func RichClient(opts ...Option) *Router {
+	options := RouterOptions{}
+	for _, o := range opts {
+		o(&options)
+	}
+
+	options.Pool = NewClientsPool(options.WatchRegistry)
+
+	var client Client
+
+	client = options.CoreClient(options.Pool)
+
+	// wrap in reverse
+	for i := len(options.Wrappers); i > 0; i-- {
+		client = options.Wrappers[i-1].Adapt(client, options)
+	}
+	router := &Router{
+		handlers: []Client{client},
+		pool:     options.Pool,
+	}
+	return router
+}
+
+func WithCore(init func(pool SourcesPool) Client) Option {
+	return func(options *RouterOptions) {
+		options.CoreClient = init
+	}
 }
 
 func AsAdmin() Option {

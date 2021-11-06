@@ -4,13 +4,14 @@ import (
 	"context"
 	"strings"
 
+	"github.com/pydio/cells/common/nodes/abstract"
+
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
 
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/log"
 	defaults "github.com/pydio/cells/common/micro"
-	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/registry"
@@ -34,7 +35,7 @@ func (h *WorkspaceHandler) loadRootNodesForWorkspaces(ctx context.Context, wsUUI
 		return e
 	}
 	defer c.Close()
-	vManager := nodes.GetVirtualNodesManager()
+	vManager := abstract.GetVirtualNodesManager()
 	localCache := make(map[string]*tree.Node)
 	for uuid, ws := range wss {
 		aa, o := wsAcls[uuid]

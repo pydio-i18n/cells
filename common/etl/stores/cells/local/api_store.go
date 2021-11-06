@@ -26,6 +26,10 @@ import (
 	"path"
 	"strings"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
+	"github.com/pydio/cells/common/nodes/acl"
+
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
 	"github.com/micro/go-micro/errors"
@@ -490,8 +494,7 @@ func (apiStore *ApiStore) GetUserInfo(ctx context.Context, userName string, para
 		}
 		usrCtx := auth.WithImpersonate(ctx, user)
 		usrCtx = context.WithValue(usrCtx, common.PydioContextUserKey, userName)
-		usrCtx = context.WithValue(usrCtx, nodes.CtxUserAccessListKey{}, access)
-		usrCtx = context.WithValue(usrCtx, nodes.CtxKeepAccessListKey{}, true)
+		usrCtx = acl.WithPresetACL(usrCtx, access)
 		loaded.ctx = usrCtx
 		apiStore.loadedUsers[user.Login] = loaded
 	}
@@ -694,7 +697,7 @@ func (apiStore *ApiStore) loadWorkspacesSlugs(ctx context.Context) (map[string]s
 
 func (apiStore *ApiStore) getRouter() *nodes.Router {
 	if apiStore.router == nil {
-		apiStore.router = nodes.NewStandardRouter(nodes.RouterOptions{})
+		apiStore.router = compose.NewStandardRouter(nodes.RouterOptions{})
 	}
 	return apiStore.router
 }

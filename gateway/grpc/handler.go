@@ -6,6 +6,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/micro/go-micro/errors"
 
 	"github.com/pydio/cells/common/nodes"
@@ -184,7 +186,7 @@ func (t *TreeHandler) getRouter() nodes.Client {
 	if t.router != nil {
 		return t.router
 	}
-	t.router = nodes.NewStandardRouter(nodes.RouterOptions{
+	t.router = compose.NewStandardRouter(nodes.RouterOptions{
 		AdminView:        false,
 		WatchRegistry:    true,
 		LogReadEvents:    false,

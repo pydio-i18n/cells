@@ -94,8 +94,8 @@ func extractDSFlat(ctx context.Context, handler Client, sourceNode, targetNode *
 	return
 }
 
-// is403 checks if error is not nil and has code 403
-func is403(e error) bool {
+// Is403 checks if error is not nil and has code 403
+func Is403(e error) bool {
 	if e == nil {
 		return false
 	}
@@ -351,7 +351,7 @@ func CopyMoveNodes(ctx context.Context, router Client, sourceNode *tree.Node, ta
 					defer wg.Done()
 				}()
 				e := processCopyMove(ctx, router, session, move, crossDs, sourceDs, targetDs, sourceFlat, targetFlat, false, childNode, prefixPathSrc, prefixPathTarget, targetDsPath, logger, publishError, statusChan, progress, tFunc...)
-				if is403(e) {
+				if Is403(e) {
 					childrenMoved++
 					taskLogger.Info("-- Ignoring " + childNode.Path + " (" + e.Error() + ")")
 				} else if e != nil {
@@ -370,7 +370,7 @@ func CopyMoveNodes(ctx context.Context, router Client, sourceNode *tree.Node, ta
 		if lastNode != nil {
 			// Now process very last node
 			e := processCopyMove(ctx, router, session, move, crossDs, sourceDs, targetDs, sourceFlat, targetFlat, true, lastNode, prefixPathSrc, prefixPathTarget, targetDsPath, logger, publishError, statusChan, progress, tFunc...)
-			if is403(e) {
+			if Is403(e) {
 				childrenMoved++
 				taskLogger.Info("-- Ignoring " + lastNode.Path + " (" + e.Error() + ")")
 			} else if e != nil {
@@ -538,7 +538,7 @@ func processCopyMove(ctx context.Context, handler Client, session string, move, 
 			Metadata: meta,
 			Progress: progress,
 		})
-		if is403(e) {
+		if Is403(e) {
 			logger.Warn("-- Copy Ignored", zap.Error(e), zap.Any("from", childNode.Path), zap.Any("to", targetPath))
 			return e
 		}
@@ -571,7 +571,7 @@ func processCopyMove(ctx context.Context, handler Client, session string, move, 
 					log.Logger(ctx).Error("---- Could not Revert", zap.Error(revertErr), justCopied.Zap())
 				}
 			}
-			if is403(moveErr) {
+			if Is403(moveErr) {
 				moveErr = fmt.Errorf("some original objects are not allowed to be deleted") // replace by a non-403 to trigger error
 			} else {
 				publishError(sourceDs, childNode.Path)

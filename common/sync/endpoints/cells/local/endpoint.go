@@ -25,6 +25,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/pborman/uuid"
 	"github.com/pkg/errors"
 
@@ -72,7 +74,7 @@ func NewLocal(root string, options cells.Options) *Local {
 		},
 	}
 	l.Factory = &localRouterFactory{
-		router: nodes.NewStandardRouter(nodes.RouterOptions{
+		router: compose.NewStandardRouter(nodes.RouterOptions{
 			WatchRegistry:    true,
 			AdminView:        true,
 			SynchronousTasks: true,

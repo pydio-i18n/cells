@@ -32,12 +32,12 @@ import (
 // ListNodesWithCallback performs a ListNodes request and applied callback with optional filters. This hides the complexity of streams handling.
 func (v *Router) ListNodesWithCallback(ctx context.Context, request *tree.ListNodesRequest, callback WalkFunc, ignoreCbError bool, filters ...WalkFilter) error {
 
-	return handlerListNodesWithCallback(v, ctx, request, callback, ignoreCbError, filters...)
+	return HandlerListNodesWithCallback(v, ctx, request, callback, ignoreCbError, filters...)
 
 }
 
-// handlerListNodesWithCallback is a generic implementation of ListNodesWithCallback for any Client. Used by Router, Client and HandlerMock
-func handlerListNodesWithCallback(v Client, ctx context.Context, request *tree.ListNodesRequest, callback WalkFunc, ignoreCbError bool, filters ...WalkFilter) error {
+// HandlerListNodesWithCallback is a generic implementation of ListNodesWithCallback for any Client. Used by Router, Client and HandlerMock
+func HandlerListNodesWithCallback(v Client, ctx context.Context, request *tree.ListNodesRequest, callback WalkFunc, ignoreCbError bool, filters ...WalkFilter) error {
 	r, e := v.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Path: request.Node.Path}})
 	if e != nil {
 		return e

@@ -27,13 +27,14 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/pydio/cells/common/nodes/archive"
+
 	"github.com/micro/go-micro/client"
 	"github.com/micro/go-micro/errors"
 
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/forms"
 	"github.com/pydio/cells/common/log"
-	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/scheduler/actions"
@@ -160,7 +161,7 @@ func (ex *ExtractAction) Run(ctx context.Context, channels *actions.RunnableChan
 		return input.WithError(e), e
 	}
 
-	reader := &nodes.ArchiveReader{
+	reader := &archive.ArchiveReader{
 		Router: handler,
 	}
 	var err error

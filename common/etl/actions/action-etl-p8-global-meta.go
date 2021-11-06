@@ -27,6 +27,8 @@ import (
 	"path"
 	"strings"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	json "github.com/pydio/cells/x/jsonx"
 
 	"github.com/pydio/cells/common/forms"
@@ -95,7 +97,7 @@ func (c *MigrateGlobalMetaAction) GetName() string {
 // GetRouter returns an initialized router
 func (c *MigrateGlobalMetaAction) GetRouter() *nodes.Router {
 	if c.router == nil {
-		c.router = nodes.NewStandardRouter(nodes.RouterOptions{})
+		c.router = compose.NewStandardRouter(nodes.RouterOptions{})
 	}
 	return c.router
 }

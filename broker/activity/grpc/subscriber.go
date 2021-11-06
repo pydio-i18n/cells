@@ -27,6 +27,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/pydio/cells/common/nodes/abstract"
+
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
 	"github.com/micro/go-micro/errors"
@@ -227,7 +229,7 @@ func (e *MicroEventsSubscriber) HandleNodeChange(ctx context.Context, msg *tree.
 
 func (e *MicroEventsSubscriber) vNodeResolver(ctx context.Context, n *tree.Node) (*tree.Node, bool) {
 	pool := nodes.NewClientsPool(false)
-	return nodes.GetVirtualNodesManager().GetResolver(pool, false)(ctx, n)
+	return abstract.GetVirtualNodesManager().GetResolver(pool, false)(ctx, n)
 }
 
 func (e *MicroEventsSubscriber) HandleIdmChange(ctx context.Context, msg *idm.ChangeEvent) error {

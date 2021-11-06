@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/micro/go-micro/errors"
 
 	"github.com/pydio/cells/common/config"
@@ -57,7 +59,7 @@ func CheckLinkOptionsAgainstConfigs(ctx context.Context, link *rest.ShareLink, w
 }
 
 func CheckCellOptionsAgainstConfigs(ctx context.Context, request *rest.PutCellRequest) error {
-	router := nodes.NewRouterEventFilter(nodes.RouterOptions{})
+	router := compose.NewRouterEventFilter(nodes.RouterOptions{})
 	acl, e := permissions.AccessListFromContextClaims(ctx)
 	if e != nil {
 		return e

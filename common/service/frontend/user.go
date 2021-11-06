@@ -25,6 +25,8 @@ import (
 	"encoding/base64"
 	"strings"
 
+	"github.com/pydio/cells/common/nodes/abstract"
+
 	json "github.com/pydio/cells/x/jsonx"
 
 	"go.uber.org/zap"
@@ -33,7 +35,6 @@ import (
 	"github.com/pydio/cells/common/auth/claim"
 	"github.com/pydio/cells/common/config"
 	"github.com/pydio/cells/common/log"
-	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/utils/i18n"
 	"github.com/pydio/cells/common/utils/permissions"
@@ -339,7 +340,7 @@ func (u *User) publishWorkspaces(status RequestStatus, pool *PluginsPool) (works
 	}
 
 	// Used to detect "personal files"-like workspace
-	vNodeManager := nodes.GetVirtualNodesManager()
+	vNodeManager := abstract.GetVirtualNodesManager()
 
 	for _, ws := range u.Workspaces {
 		repo := &Crepo{

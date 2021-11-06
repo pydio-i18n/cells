@@ -27,6 +27,8 @@ import (
 	"path"
 	"time"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/pborman/uuid"
 	"github.com/spf13/cobra"
 
@@ -61,7 +63,7 @@ DESCRIPTION
 			cmd.Help()
 			return
 		}
-		router := nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true})
+		router := compose.NewStandardRouter(nodes.RouterOptions{AdminView: true})
 		c := auth.WithImpersonate(context.Background(), &idm.User{Login: benchUser})
 		for i := 0; i < benchNumber; i++ {
 			u := uuid.New()

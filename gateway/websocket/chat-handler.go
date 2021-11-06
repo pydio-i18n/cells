@@ -28,6 +28,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/pydio/cells/common/nodes"
 	servicecontext "github.com/pydio/cells/common/service/context"
 
@@ -445,7 +447,7 @@ func (c *ChatHandler) auth(session *melody.Session, room *chat.ChatRoom) (bool, 
 
 		// Check node is readable and writeable
 		if uuidRouter == nil {
-			uuidRouter = nodes.NewUuidRouter(nodes.RouterOptions{})
+			uuidRouter = compose.NewUuidRouter(nodes.RouterOptions{})
 		}
 		resp, e := uuidRouter.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Uuid: room.RoomTypeObject}})
 		if e != nil {

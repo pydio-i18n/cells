@@ -25,6 +25,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/emicklei/go-restful"
 	"github.com/micro/go-micro/errors"
 	"github.com/pborman/uuid"
@@ -256,7 +258,7 @@ func (a *TokenHandler) GenerateDocumentAccessToken(req *restful.Request, resp *r
 		return
 	}
 	ctx := req.Request.Context()
-	router := nodes.NewStandardRouter(nodes.RouterOptions{})
+	router := compose.NewStandardRouter(nodes.RouterOptions{})
 	readResp, e := router.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Path: datRequest.Path}})
 	if e != nil {
 		service.RestErrorDetect(req, resp, e)

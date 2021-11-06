@@ -24,6 +24,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/emicklei/go-restful"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
@@ -189,7 +191,7 @@ func (h *SharesHandler) ListSharedResources(req *restful.Request, rsp *restful.R
 func (h *SharesHandler) LoadAdminRootNodes(ctx context.Context, detectedRoots []string) (rootNodes map[string]*tree.Node) {
 
 	rootNodes = make(map[string]*tree.Node)
-	router := nodes.NewUuidRouter(nodes.RouterOptions{AdminView: true})
+	router := compose.NewUuidRouter(nodes.RouterOptions{AdminView: true})
 	metaClient := tree.NewNodeProviderClient(common.ServiceGrpcNamespace_+common.ServiceMeta, defaults.NewClient())
 	for _, rootId := range detectedRoots {
 		request := &tree.ReadNodeRequest{Node: &tree.Node{Uuid: rootId}}

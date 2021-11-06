@@ -26,6 +26,8 @@ import (
 	"path"
 	"strings"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	json "github.com/pydio/cells/x/jsonx"
 
 	"github.com/emicklei/go-restful"
@@ -136,7 +138,7 @@ func (s *UserMetaHandler) UpdateUserMeta(req *restful.Request, rsp *restful.Resp
 		return
 	}
 	var loadUuids []string
-	router := nodes.NewUuidRouter(nodes.RouterOptions{})
+	router := compose.NewUuidRouter(nodes.RouterOptions{})
 
 	// First check if the namespaces are globally accessible
 	for _, meta := range input.MetaDatas {
@@ -255,7 +257,7 @@ func (s *UserMetaHandler) UserBookmarks(req *restful.Request, rsp *restful.Respo
 	searchRequest := &idm.SearchUserMetaRequest{
 		Namespace: namespace.ReservedNamespaceBookmark,
 	}
-	router := nodes.NewUuidRouter(nodes.RouterOptions{})
+	router := compose.NewUuidRouter(nodes.RouterOptions{})
 	ctx := req.Request.Context()
 	output, e := s.PerformSearchMetaRequest(ctx, searchRequest)
 	if e != nil {

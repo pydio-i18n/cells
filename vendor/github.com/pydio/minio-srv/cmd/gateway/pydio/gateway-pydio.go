@@ -19,6 +19,7 @@ package pydio
 import (
 	"context"
 	"errors"
+	"github.com/pydio/cells/common/nodes/compose"
 	"io"
 	"net/http"
 	"strings"
@@ -76,7 +77,7 @@ func (p *Pydio) Name() string {
 // NewGatewayLayer returns a new  ObjectLayer.
 func (p *Pydio) NewGatewayLayer(creds auth.Credentials) (minio.ObjectLayer, error) {
 	o := &pydioObjects{}
-	o.Router = nodes.NewStandardRouter(nodes.RouterOptions{WatchRegistry: true, LogReadEvents: true, AuditEvent: true})
+	o.Router = compose.NewStandardRouter(nodes.RouterOptions{WatchRegistry: true, LogReadEvents: true, AuditEvent: true})
 	return o, nil
 }
 

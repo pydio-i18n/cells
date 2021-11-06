@@ -28,6 +28,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/micro/protobuf/jsonpb"
 	"github.com/ory/ladon"
 	"github.com/ory/ladon/manager/memory"
@@ -39,7 +41,6 @@ import (
 	"github.com/pydio/cells/common/auth"
 	"github.com/pydio/cells/common/auth/claim"
 	"github.com/pydio/cells/common/log"
-	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/activity"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/jobs"
@@ -51,7 +52,7 @@ import (
 
 type WebsocketHandler struct {
 	Websocket   *melody.Melody
-	EventRouter *nodes.RouterEventFilter
+	EventRouter *compose.RouterEventFilter
 
 	batcherLock   *sync.Mutex
 	batchers      map[string]*NodeEventsBatcher

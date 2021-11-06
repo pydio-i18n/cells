@@ -129,7 +129,7 @@ func (l *wrappingStreamer) Recv() (*tree.WrappingStreamerResponse, error) {
 		return nil, io.EOF
 	}
 
-	// Getting the next message size
+	// Getting the Next message size
 	size := make([]byte, 2)
 	if _, err := l.r.Read(size); err != nil {
 		return nil, err

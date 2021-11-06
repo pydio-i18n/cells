@@ -25,6 +25,8 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang/protobuf/proto"
 	"github.com/micro/go-micro/broker"
@@ -75,7 +77,7 @@ func init() {
 				ws = websocket.NewWebSocketHandler(ctx)
 				chat = websocket.NewChatHandler(ctx)
 
-				ws.EventRouter = nodes.NewRouterEventFilter(nodes.RouterOptions{WatchRegistry: true})
+				ws.EventRouter = compose.NewRouterEventFilter(nodes.RouterOptions{WatchRegistry: true})
 
 				gin.SetMode(gin.ReleaseMode)
 				gin.DisableConsoleColor()

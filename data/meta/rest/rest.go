@@ -28,6 +28,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	json "github.com/pydio/cells/x/jsonx"
 
 	"github.com/emicklei/go-restful"
@@ -336,7 +338,8 @@ func (h *Handler) DeleteMeta(req *restful.Request, resp *restful.Response) {
 
 func (h *Handler) GetRouter() *nodes.Router {
 	if h.router == nil {
-		h.router = nodes.NewStandardRouter(nodes.RouterOptions{WatchRegistry: true, AuditEvent: true})
+		//h.router = compose.NewStandardRouter(nodes.RouterOptions{WatchRegistry: true, AuditEvent: true})
+		h.router = nodes.RichClient(compose.PathComposer(nodes.WithAuditEventsLogging(), nodes.WithRegistryWatch())...)
 	}
 	return h.router
 }

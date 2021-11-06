@@ -23,6 +23,8 @@ package versions
 import (
 	"context"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/micro/go-micro/client"
 	"go.uber.org/zap"
 
@@ -72,7 +74,7 @@ func (c *PruneVersionsAction) GetName() string {
 // Init passes the parameters to a newly created PruneVersionsAction.
 func (c *PruneVersionsAction) Init(job *jobs.Job, cl client.Client, action *jobs.Action) error {
 
-	router := nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true})
+	router := compose.NewStandardRouter(nodes.RouterOptions{AdminView: true})
 	c.Pool = router.GetClientsPool()
 	c.Handler = router
 	return nil

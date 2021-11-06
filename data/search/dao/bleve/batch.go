@@ -29,6 +29,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/blevesearch/bleve"
 	"go.uber.org/zap"
 
@@ -189,14 +191,14 @@ func (b *Batch) NamespacesProvider() *meta.NamespacesProvider {
 
 func (b *Batch) getUuidRouter() nodes.Client {
 	if b.uuidRouter == nil {
-		b.uuidRouter = nodes.NewUuidRouter(nodes.RouterOptions{AdminView: true, WatchRegistry: true})
+		b.uuidRouter = compose.NewUuidRouter(nodes.RouterOptions{AdminView: true, WatchRegistry: true})
 	}
 	return b.uuidRouter
 }
 
 func (b *Batch) getStdRouter() nodes.Client {
 	if b.stdRouter == nil {
-		b.stdRouter = nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true, WatchRegistry: true})
+		b.stdRouter = compose.NewStandardRouter(nodes.RouterOptions{AdminView: true, WatchRegistry: true})
 	}
 	return b.stdRouter
 }

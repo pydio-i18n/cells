@@ -27,7 +27,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/pydio/cells/common/nodes"
+	"github.com/pydio/cells/common/nodes/archive"
 
 	"github.com/micro/go-micro/client"
 	"go.uber.org/zap"
@@ -149,7 +149,7 @@ func (c *CompressAction) Run(ctx context.Context, channels *actions.RunnableChan
 	}
 	ctx = c2
 	// Assume Target is root node sibling
-	compressor := &nodes.ArchiveWriter{
+	compressor := &archive.ArchiveWriter{
 		Router: handler,
 	}
 	if c.filter != nil {

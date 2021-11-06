@@ -31,6 +31,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/micro/go-micro/client"
 	"github.com/micro/go-micro/errors"
 	"go.uber.org/zap"
@@ -111,7 +113,7 @@ func (w *WGetAction) Init(job *jobs.Job, cl client.Client, action *jobs.Action) 
 	} else {
 		return errors.BadRequest(common.ServiceTasks, "missing parameter url in Action")
 	}
-	w.Router = nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true})
+	w.Router = compose.NewStandardRouter(nodes.RouterOptions{AdminView: true})
 	return nil
 }
 

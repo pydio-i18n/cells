@@ -25,6 +25,8 @@ import (
 	"io"
 	"strings"
 
+	"github.com/pydio/cells/common/nodes/abstract"
+
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
 	"github.com/micro/go-micro/errors"
@@ -143,7 +145,7 @@ func (a *Handler) CheckNode(ctx context.Context, nodeID string, action *idm.ACLA
 	}
 
 	// Update Access List with resolved virtual nodes
-	virtualManager := nodes.GetVirtualNodesManager()
+	virtualManager := abstract.GetVirtualNodesManager()
 	cPool := nodes.NewClientsPool(false)
 	for _, vNode := range virtualManager.ListNodes() {
 		if aclNodeMask, has := accessList.GetNodesBitmasks()[vNode.Uuid]; has {

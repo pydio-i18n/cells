@@ -37,7 +37,6 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/pkg/errors"
 	"github.com/pydio/minio-go"
 	"go.uber.org/zap/zapcore"
 
@@ -46,7 +45,6 @@ import (
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/object"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/utils/permissions"
 )
 
 const (
@@ -62,11 +60,6 @@ var (
 
 // These keys may be enriched in Context depending on the middleware
 type (
-	CtxUserAccessListKey struct{}
-	ctxAdminContextKey   struct{}
-	ctxBranchInfoKey     struct{}
-	CtxKeepAccessListKey struct{}
-
 	LoadedSource struct {
 		object.DataSource
 		Client *minio.Core
@@ -119,91 +112,6 @@ type Client interface {
 
 	SetNextHandler(h Client)
 	SetClientsPool(p SourcesPool)
-}
-
-func WithBranchInfo(ctx context.Context, identifier string, branchInfo BranchInfo, reset ...bool) context.Context {
-	//log.Logger(ctx).Error("branchInfo", zap.Any("branchInfo", branchInfo))
-	value := ctx.Value(ctxBranchInfoKey{})
-	var data map[string]BranchInfo
-	if value != nil && len(reset) == 0 {
-		data = value.(map[string]BranchInfo)
-	} else {
-		data = make(map[string]BranchInfo)
-	}
-	data[identifier] = branchInfo
-	return context.WithValue(ctx, ctxBranchInfoKey{}, data)
-}
-
-func GetBranchInfo(ctx context.Context, identifier string) (BranchInfo, bool) {
-	value := ctx.Value(ctxBranchInfoKey{})
-	if value != nil {
-		data := value.(map[string]BranchInfo)
-		if info, ok := data[identifier]; ok {
-			return info, true
-		}
-	}
-	return BranchInfo{}, false
-}
-
-func UserWorkspacesFromContext(ctx context.Context) map[string]*idm.Workspace {
-	if value := ctx.Value(CtxUserAccessListKey{}); value != nil {
-		accessList := value.(*permissions.AccessList)
-		return accessList.Workspaces
-	} else {
-		return make(map[string]*idm.Workspace)
-	}
-}
-
-func AccessListFromContext(ctx context.Context) (*permissions.AccessList, error) {
-	if value := ctx.Value(CtxUserAccessListKey{}); value != nil {
-		accessList := value.(*permissions.AccessList)
-		return accessList, nil
-	} else {
-		return nil, errors.New("Cannot find access list in context")
-	}
-}
-
-func AncestorsListFromContext(ctx context.Context, node *tree.Node, identifier string, p SourcesPool, orParents bool) (updatedContext context.Context, parentsList []*tree.Node, e error) {
-
-	branchInfo, hasBranchInfo := GetBranchInfo(ctx, identifier)
-	if hasBranchInfo && branchInfo.AncestorsList != nil {
-		if ancestors, ok := branchInfo.AncestorsList[node.Path]; ok {
-			return ctx, ancestors, nil
-		}
-	}
-	searchFunc := BuildAncestorsList
-	n := node.Clone()
-	if orParents {
-		n.Uuid = "" // Make sure to look by path
-		searchFunc = BuildAncestorsListOrParent
-	}
-	parents, err := searchFunc(ctx, p.GetTreeClient(), n)
-	if err != nil {
-		return ctx, nil, err
-	}
-
-	if hasBranchInfo {
-		if branchInfo.AncestorsList == nil {
-			branchInfo.AncestorsList = make(map[string][]*tree.Node, 1)
-		}
-		// Make sure to detect ws_root
-		for _, rootId := range branchInfo.RootUUIDs {
-			for i := 0; i < len(parents); i++ {
-				if parents[i].Uuid == rootId {
-					cloneNode := parents[i].Clone()
-					cloneNode.SetMeta(common.MetaFlagWorkspaceRoot, "true")
-					parents[i] = cloneNode
-				}
-			}
-		}
-		branchInfo.AncestorsList[node.Path] = parents
-		ctx = WithBranchInfo(ctx, identifier, branchInfo)
-	}
-	if orParents && len(parents) > 0 && parents[0].Path != n.Path {
-		parents = append([]*tree.Node{n}, parents...)
-	}
-	return ctx, parents, nil
-
 }
 
 // IsInternal check if either datasource is internal or branch has Binary flag

@@ -27,6 +27,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/pborman/uuid"
 
 	"github.com/micro/go-micro/client"
@@ -91,7 +93,7 @@ func (c *OnDeleteVersionsAction) GetName() string {
 // Init passes the parameters to a newly created PruneVersionsAction.
 func (c *OnDeleteVersionsAction) Init(job *jobs.Job, cl client.Client, action *jobs.Action) error {
 
-	router := nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true})
+	router := compose.NewStandardRouter(nodes.RouterOptions{AdminView: true})
 	c.Pool = router.GetClientsPool()
 	c.Handler = router
 	var ok bool

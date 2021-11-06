@@ -27,6 +27,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
+	"github.com/pydio/cells/common/nodes/acl"
+
 	"github.com/emicklei/go-restful"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
@@ -67,7 +71,7 @@ var (
 
 func getClient() tree.NodeProviderClient {
 	if providerClient == nil {
-		providerClient = nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true, BrowseVirtualNodes: true, AuditEvent: false})
+		providerClient = compose.NewStandardRouter(nodes.RouterOptions{AdminView: true, BrowseVirtualNodes: true, AuditEvent: false})
 	}
 	return providerClient
 }
@@ -347,7 +351,7 @@ func (h *Handler) DeleteNodes(req *restful.Request, resp *restful.Response) {
 
 	cli := jobs.NewJobServiceClient(registry.GetClient(common.ServiceJobs))
 	moveLabel := T("Jobs.User.MoveRecycle")
-	fullPathRouter := nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true})
+	fullPathRouter := compose.NewStandardRouter(nodes.RouterOptions{AdminView: true})
 	for recyclePath, selectedPaths := range deleteJobs.RecycleMoves {
 
 		// Create recycle bins now, to make sure user is notified correctly
@@ -534,7 +538,7 @@ func (h *Handler) RestoreNodes(req *restful.Request, resp *restful.Response) {
 			if e != nil {
 				return e
 			}
-			accessList := ctx.Value(nodes.CtxUserAccessListKey{}).(*permissions.AccessList)
+			accessList := acl.MustFromContext(ctx)
 			if !accessList.CanWrite(ctx, ancestors...) {
 				return errors.Forbidden("node.not.writeable", "Original location is not writable")
 			}

@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/pydio/cells/common/nodes/abstract"
+
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
 	"github.com/gosimple/slug"
@@ -31,9 +35,9 @@ import (
 func LoadDetectedRootNodes(ctx context.Context, detectedRoots []string) (rootNodes map[string]*tree.Node) {
 
 	rootNodes = make(map[string]*tree.Node)
-	router := nodes.NewUuidRouter(nodes.RouterOptions{})
+	router := compose.NewUuidRouter(nodes.RouterOptions{})
 	metaClient := tree.NewNodeProviderClient(common.ServiceGrpcNamespace_+common.ServiceMeta, defaults.NewClient())
-	eventFilter := nodes.NewRouterEventFilter(nodes.RouterOptions{AdminView: false})
+	eventFilter := compose.NewRouterEventFilter(nodes.RouterOptions{AdminView: false})
 	accessList, _ := permissions.AccessListFromContextClaims(ctx)
 	for _, rootId := range detectedRoots {
 		request := &tree.ReadNodeRequest{Node: &tree.Node{Uuid: rootId}}
@@ -74,7 +78,7 @@ func LoadDetectedRootNodes(ctx context.Context, detectedRoots []string) (rootNod
 func ParseRootNodes(ctx context.Context, shareRequest *rest.PutCellRequest) (*tree.Node, bool, error) {
 
 	var createdNode *tree.Node
-	router := nodes.NewStandardRouter(nodes.RouterOptions{})
+	router := compose.NewStandardRouter(nodes.RouterOptions{})
 	for i, n := range shareRequest.Room.RootNodes {
 		r, e := router.ReadNode(ctx, &tree.ReadNodeRequest{Node: n})
 		if e != nil {
@@ -88,8 +92,8 @@ func ParseRootNodes(ctx context.Context, shareRequest *rest.PutCellRequest) (*tr
 	}
 	if shareRequest.CreateEmptyRoot {
 
-		manager := nodes.GetVirtualNodesManager()
-		internalRouter := nodes.NewStandardRouter(nodes.RouterOptions{WatchRegistry: false, AdminView: true})
+		manager := abstract.GetVirtualNodesManager()
+		internalRouter := compose.NewStandardRouter(nodes.RouterOptions{WatchRegistry: false, AdminView: true})
 		if root, exists := manager.ByUuid("cells"); exists {
 			parentNode, err := manager.ResolveInContext(ctx, root, internalRouter.GetClientsPool(), true)
 			if err != nil {
@@ -220,8 +224,8 @@ func DetectInheritedPolicy(ctx context.Context, roots []*tree.Node, loadedParent
 // .pydio hidden files when they are folders.
 func DeleteRootNodeRecursively(ctx context.Context, ownerName string, roomNode *tree.Node) error {
 
-	manager := nodes.GetVirtualNodesManager()
-	router := nodes.NewStandardRouter(nodes.RouterOptions{WatchRegistry: false, AdminView: true})
+	manager := abstract.GetVirtualNodesManager()
+	router := compose.NewStandardRouter(nodes.RouterOptions{WatchRegistry: false, AdminView: true})
 	if root, exists := manager.ByUuid("cells"); exists {
 		parentNode, err := manager.ResolveInContext(ctx, root, router.GetClientsPool(), true)
 		if err != nil {
@@ -262,7 +266,7 @@ func DeleteRootNodeRecursively(ctx context.Context, ownerName string, roomNode *
 // link permissions do not try to set the Upload mode.
 func CheckLinkRootNodes(ctx context.Context, link *rest.ShareLink) (workspaces []*tree.WorkspaceRelativePath, files, folders bool, e error) {
 
-	router := nodes.NewUuidRouter(nodes.RouterOptions{})
+	router := compose.NewUuidRouter(nodes.RouterOptions{})
 	var hasReadonly bool
 	for i, r := range link.RootNodes {
 		resp, er := router.ReadNode(ctx, &tree.ReadNodeRequest{Node: r})
@@ -298,7 +302,7 @@ func CheckLinkRootNodes(ctx context.Context, link *rest.ShareLink) (workspaces [
 }
 
 func RootsParentWorkspaces(ctx context.Context, rr []*tree.Node) (ww []*tree.WorkspaceRelativePath, e error) {
-	router := nodes.NewUuidRouter(nodes.RouterOptions{})
+	router := compose.NewUuidRouter(nodes.RouterOptions{})
 	for _, r := range rr {
 		if r.HasMetaKey("CellNode") {
 			continue

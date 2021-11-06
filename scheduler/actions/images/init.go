@@ -26,6 +26,8 @@ import (
 	"path"
 	"time"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/tree"
@@ -59,7 +61,7 @@ var (
 // getRouter provides a singleton-initialized StandardRouter in AdminView.
 func getRouter() *nodes.Router {
 	if router == nil {
-		router = nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true, WatchRegistry: true})
+		router = compose.NewStandardRouter(nodes.RouterOptions{AdminView: true, WatchRegistry: true})
 	}
 	return router
 }

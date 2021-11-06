@@ -24,6 +24,8 @@ import (
 	"context"
 	"net/url"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/emicklei/go-restful"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -45,12 +47,12 @@ import (
 
 // ActivityHandler responds to activity REST requests
 type ActivityHandler struct {
-	router *nodes.RouterEventFilter
+	router *compose.RouterEventFilter
 }
 
 func NewActivityHandler() *ActivityHandler {
 	return &ActivityHandler{
-		router: nodes.NewRouterEventFilter(nodes.RouterOptions{WatchRegistry: true}),
+		router: compose.NewRouterEventFilter(nodes.RouterOptions{WatchRegistry: true}),
 	}
 }
 

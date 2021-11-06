@@ -3,6 +3,8 @@ package tools
 import (
 	"context"
 
+	"github.com/pydio/cells/common/nodes/compose"
+
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/auth"
 	"github.com/pydio/cells/common/nodes"
@@ -34,7 +36,7 @@ func (s *ScopedRouterConsumer) GetHandler(ctx context.Context) (context.Context,
 		return ctx, s.presetClient, nil
 	}
 	if s.owner == common.PydioSystemUsername || !s.ownerScope {
-		return ctx, nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true}), nil
+		return ctx, compose.NewStandardRouter(nodes.RouterOptions{AdminView: true}), nil
 	} else {
 		if u, claims := permissions.FindUserNameInContext(ctx); u != s.owner || claims.Name != s.owner {
 			if user, e := permissions.SearchUniqueUser(ctx, s.owner, ""); e != nil {
@@ -43,6 +45,6 @@ func (s *ScopedRouterConsumer) GetHandler(ctx context.Context) (context.Context,
 				ctx = auth.WithImpersonate(ctx, user)
 			}
 		}
-		return ctx, nodes.NewStandardRouter(nodes.RouterOptions{}), nil
+		return ctx, compose.NewStandardRouter(nodes.RouterOptions{}), nil
 	}
 }
