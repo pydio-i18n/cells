@@ -7,6 +7,7 @@ import (
 
 type Service interface{
 	Name() string
+	Version() string
 	Nodes() []Node
 	Tags() []string
 
@@ -21,6 +22,9 @@ type service struct {
 
 func (s *service) Name() string {
 	return s.s.Name
+}
+func (s *service) Version() string {
+	return s.s.Version
 }
 func (s *service) Nodes() []Node{
 	return toNode(s.s.Nodes)

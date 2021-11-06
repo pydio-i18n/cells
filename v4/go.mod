@@ -25,7 +25,6 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/micro/go-micro v1.18.0
 	github.com/micro/micro/v3 v3.6.0
-	github.com/minio/minio v0.0.0-20211103064834-9f3c151c3c20
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/ory/hydra v1.10.7
 	github.com/ory/ladon v1.2.0
@@ -65,13 +64,23 @@ require (
 	github.com/ajvb/kala v0.8.4
 	github.com/allegro/bigcache v1.2.1
 	github.com/c2fo/testify v0.0.0-20150827203832-fba96363964a // indirect
+	github.com/caddyserver/caddy/v2 v2.4.5
 	github.com/gobwas/glob v0.2.3
+	github.com/gorilla/sessions v1.2.1 // indirect
+	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/karrick/godirwalk v1.16.1
+	github.com/lucas-clemente/quic-go v0.24.0 // indirect
 	github.com/nicksnyder/go-i18n v1.10.0
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rjeczalik/notify v0.9.2
+	github.com/smartystreets/assertions v1.1.1 // indirect
 	github.com/spf13/afero v1.6.0
 	github.com/stretchr/testify v1.7.0
+	github.com/tidwall/gjson v1.10.2 // indirect
+	github.com/tinylib/msgp v1.1.7-0.20211026165309-e818a1881b0e // indirect
 	github.com/twmb/murmur3 v1.1.6 // indirect
+	go.uber.org/multierr v1.7.0 // indirect
+	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0 // indirect
 )

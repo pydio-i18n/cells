@@ -16,21 +16,22 @@ package cmd
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/log"
-	"go.uber.org/zap"
+	"github.com/pydio/cells/v4/common/plugins"
 	"net"
 	"net/http"
 	"sync"
 
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
-
-	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
+	"go.uber.org/zap"
+
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/service/generic"
 )
 
 // startCmd represents the start command
-var startCmd = &cobra.Command{
+var StartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
@@ -69,22 +70,30 @@ to quickly create a Cobra application.`,
 			log.Fatal("error listening", zap.Error(err))
 		}
 
-		srvHTTP := &http.Server{}
-
+		srvHTTP := http.NewServeMux()
 		ctx = context.WithValue(ctx, "httpServerKey", srvHTTP)
+
+		srvGeneric := generic.NewGenericServer(ctx)
+
+		ctx = context.WithValue(ctx, "genericServerKey", srvGeneric)
 
 		plugins.Init(ctx, "main")
 
 		wg := &sync.WaitGroup{}
-		wg.Add(2)
+		wg.Add(3)
 
 		go func() {
-			srvHTTP.Serve(lisHTTP)
+			http.Serve(lisHTTP, srvHTTP)
 			wg.Done()
 		}()
 
 		go func() {
 			srvg.Serve(lis)
+			wg.Done()
+		}()
+
+		go func() {
+			srvGeneric.Serve()
 			wg.Done()
 		}()
 
@@ -94,7 +103,7 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	RootCmd.AddCommand(startCmd)
+	RootCmd.AddCommand(StartCmd)
 
 	// Here you will define your flags and configuration settings.
 

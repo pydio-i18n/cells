@@ -7,7 +7,11 @@ import (
 	_ "github.com/pydio/cells/v4/discovery/config/web"
 
 	_ "github.com/pydio/cells/v4/discovery/registry"
-	_ "github.com/pydio/cells/v4/discovery/health"
+	_ "github.com/pydio/cells/v4/discovery/health/grpc"
+	_ "github.com/pydio/cells/v4/discovery/health/generic"
+	_ "github.com/pydio/cells/v4/discovery/health/http"
+
+	// _ "github.com/pydio/cells/v4/gateway/proxy"
 )
 
 func main() {

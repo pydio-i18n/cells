@@ -30,8 +30,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/caddyserver/caddy"
-	"github.com/caddyserver/caddy/caddyhttp/httpserver"
+	"github.com/caddyserver/caddy/v2"
+	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/micro/micro/v3/service/broker"
 	"github.com/micro/micro/v3/service/registry"
 	"go.uber.org/zap"
@@ -59,9 +59,10 @@ var (
 )
 
 func init() {
-	caddy.AppName = common.PackageLabel
-	caddy.AppVersion = common.Version().String()
-	httpserver.GracefulTimeout = 30 * time.Second
+	// TODO v4 verify this
+	// caddy.AppName = common.PackageLabel
+	// caddy.AppVersion = common.Version().String()
+	// httpserver.GracefulTimeout = 30 * time.Second
 	dirOnce = &sync.Once{}
 
 	go watchRestart()
@@ -250,7 +251,7 @@ func internalURLFromServices(name string, uri ...string) string {
 
 	for _, service := range services {
 		for _, node := range service.Nodes {
-			res = append(res, fmt.Sprintf("%s:%d%s", node.Address, node.Port, strings.Join(uri, "")))
+			res = append(res, fmt.Sprintf("%s%s", node.Address, strings.Join(uri, "")))
 		}
 	}
 

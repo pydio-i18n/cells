@@ -47,12 +47,13 @@ func WithWeb(handler func() WebHandler) ServiceOption {
 	return func(o *ServiceOptions) {
 		ctx := o.Context
 
-		srv, ok := ctx.Value("httpServerKey").(*http.Server)
+		mux, ok := ctx.Value("httpServerKey").(*http.ServeMux)
 		if !ok {
 			// log.Println("Context does not contain server key")
 			return
 		}
 
+		// TODO v4
 		// if rateLimit, err := strconv.Atoi(os.Getenv("WEB_RATE_LIMIT")); err == nil {
 		// 	opts = append(opts, micro.WrapHandler(limiter.NewHandlerWrapper(rateLimit)))
 		//}
@@ -69,7 +70,7 @@ func WithWeb(handler func() WebHandler) ServiceOption {
 		ws := new(restful.WebService)
 		ws.Consumes(restful.MIME_JSON, "application/x-www-form-urlencoded", "multipart/form-data")
 		ws.Produces(restful.MIME_JSON, restful.MIME_OCTET, restful.MIME_XML)
-		ws.Path(rootPath)
+		// ws.Path(rootPath)
 
 		h := handler()
 		swaggerTags := h.SwaggerTags()
@@ -135,7 +136,7 @@ func WithWeb(handler func() WebHandler) ServiceOption {
 
 		wrapped = cors.Default().Handler(wrapped)
 
-		srv.Handler = wrapped
+		mux.Handle(ws.RootPath(), wrapped)
 
 		return
 	}

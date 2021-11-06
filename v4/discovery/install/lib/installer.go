@@ -23,17 +23,13 @@ package lib
 
 import (
 	"context"
-	"net/url"
 
-
-
-	"github.com/pborman/uuid"
-	"github.com/minio/minio"
+	//minio "github.com/pydio/minio-go"
 	"go.uber.org/zap"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/install"
+	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 const (
@@ -124,7 +120,7 @@ func PerformCheck(ctx context.Context, name string, c *install.InstallConfig) *i
 		result.JsonResult = string(data)
 
 	case "S3_KEYS":
-		endpoint := "s3.amazonaws.com"
+		/*endpoint := "s3.amazonaws.com"
 		secure := true
 		if c.GetDsS3Custom() != "" {
 			if u, e := url.Parse(c.GetDsS3Custom()); e != nil {
@@ -165,60 +161,65 @@ func PerformCheck(ctx context.Context, name string, c *install.InstallConfig) *i
 		dd, _ := json.Marshal(data)
 		result.JsonResult = string(dd)
 
+		*/
+
 	case "S3_BUCKETS":
-		endpoint := "s3.amazonaws.com"
-		secure := true
-		if c.GetDsS3Custom() != "" {
-			if u, e := url.Parse(c.GetDsS3Custom()); e != nil {
-				wrapError(e)
-				break
-			} else {
-				endpoint = u.Host
-				if u.Scheme == "http" {
-					secure = false
+		/*
+			endpoint := "s3.amazonaws.com"
+			secure := true
+			if c.GetDsS3Custom() != "" {
+				if u, e := url.Parse(c.GetDsS3Custom()); e != nil {
+					wrapError(e)
+					break
+				} else {
+					endpoint = u.Host
+					if u.Scheme == "http" {
+						secure = false
+					}
 				}
 			}
-		}
-		mc, e := minio.NewCore(endpoint, c.GetDsS3ApiKey(), c.GetDsS3ApiSecret(), secure)
-		if e != nil {
-			wrapError(e)
-			break
-		}
-		// Check if buckets can be created
-		data := make(map[string]interface{})
-		buckets := make(map[string]struct{})
-		if bb, er := mc.ListBuckets(); er != nil {
-			wrapError(er)
-			break
-		} else {
-			for _, b := range bb {
-				buckets[b.Name] = struct{}{}
-			}
-		}
-		toCheck := []string{
-			c.GetDsS3BucketDefault(),
-			c.GetDsS3BucketPersonal(),
-			c.GetDsS3BucketCells(),
-			c.GetDsS3BucketBinaries(),
-			c.GetDsS3BucketThumbs(),
-			c.GetDsS3BucketVersions(),
-		}
-		var created []string
-		for _, check := range toCheck {
-			if _, ok := buckets[check]; ok { // already exists
-				continue
-			}
-			if e := mc.MakeBucket(check, c.GetDsS3CustomRegion()); e != nil {
+			mc, e := minio.NewCore(endpoint, c.GetDsS3ApiKey(), c.GetDsS3ApiSecret(), secure)
+			if e != nil {
 				wrapError(e)
 				break
-			} else {
-				created = append(created, check)
 			}
-		}
-		result.Success = true
-		data["bucketsCreated"] = created
-		dd, _ := json.Marshal(data)
-		result.JsonResult = string(dd)
+			// Check if buckets can be created
+			data := make(map[string]interface{})
+			buckets := make(map[string]struct{})
+			if bb, er := mc.ListBuckets(); er != nil {
+				wrapError(er)
+				break
+			} else {
+				for _, b := range bb {
+					buckets[b.Name] = struct{}{}
+				}
+			}
+			toCheck := []string{
+				c.GetDsS3BucketDefault(),
+				c.GetDsS3BucketPersonal(),
+				c.GetDsS3BucketCells(),
+				c.GetDsS3BucketBinaries(),
+				c.GetDsS3BucketThumbs(),
+				c.GetDsS3BucketVersions(),
+			}
+			var created []string
+			for _, check := range toCheck {
+				if _, ok := buckets[check]; ok { // already exists
+					continue
+				}
+				if e := mc.MakeBucket(check, c.GetDsS3CustomRegion()); e != nil {
+					wrapError(e)
+					break
+				} else {
+					created = append(created, check)
+				}
+			}
+			result.Success = true
+			data["bucketsCreated"] = created
+			dd, _ := json.Marshal(data)
+			result.JsonResult = string(dd)
+
+		*/
 
 	default:
 		result.Success = false

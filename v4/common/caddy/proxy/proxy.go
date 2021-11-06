@@ -34,7 +34,6 @@ import (
 	"github.com/caddyserver/caddy/caddyfile"
 	"github.com/caddyserver/caddy/caddyhttp/httpserver"
 	"github.com/caddyserver/caddy/caddyhttp/proxy"
-	microregistry "github.com/micro/micro/v3/service/registry"
 
 	"github.com/pydio/cells/v4/common/registry"
 )
@@ -129,19 +128,20 @@ func NewRegistryUpstreams(c caddyfile.Dispenser, host string) ([]proxy.Upstream,
 			return upstreams, c.ArgErr()
 		}
 
-		services, _ := registry.GetRunningService(upstream.name)
+		services, _ := registry.ListServices()
 		for _, service := range services {
-			for _, node := range service.RunningNodes() {
+			for _, node := range service.Nodes() {
 				host, err := upstream.newHost(service.Name(), service.Version(), node)
 				if err != nil {
 					continue
 				}
 				upstream.lock.Lock()
-				upstream.hosts[node.Id] = host
+				upstream.hosts[node.Id()] = host
 				upstream.lock.Unlock()
 			}
 		}
 
+		/*
 		go func() {
 			w, err := registry.Watch()
 			if err != nil {
@@ -177,6 +177,8 @@ func NewRegistryUpstreams(c caddyfile.Dispenser, host string) ([]proxy.Upstream,
 				}
 			}
 		}()
+
+		 */
 
 		upstreams = append(upstreams, upstream)
 	}
@@ -225,14 +227,25 @@ func (r *registryUpstream) GetHostCount() int {
 	return len(r.hosts)
 }
 
+// Gets the number of upstream hosts.
+func (r *registryUpstream) GetFallbackDelay() time.Duration {
+	return 0
+}
+
+// Gets the number of upstream hosts.
+func (r *registryUpstream) GetTimeout() time.Duration {
+	return 0
+}
+
+
 // Stops the upstream from proxying requests to shutdown goroutines cleanly.
 func (r *registryUpstream) Stop() error {
 	close(r.stop)
 	return nil
 }
 
-func (r *registryUpstream) newHost(name string, version string, node *microregistry.Node) (*proxy.UpstreamHost, error) {
-	host := fmt.Sprintf("%s://%s:%d%s", r.Scheme, node.Address, node.Port, r.WithPathPrefix)
+func (r *registryUpstream) newHost(name string, version string, node registry.Node) (*proxy.UpstreamHost, error) {
+	host := fmt.Sprintf("%s://%s%s", r.Scheme, node.Address(), r.WithPathPrefix)
 
 	uh := &proxy.UpstreamHost{
 		Name:              host,
@@ -250,30 +263,30 @@ func (r *registryUpstream) newHost(name string, version string, node *microregis
 				}
 				if atomic.LoadInt32(&uh.Unhealthy) != 0 {
 					fmt.Println("Considering service unhealthy ", name)
-					microregistry.Deregister(&microregistry.Service{
+					/*registry.Deregister(&microregistry.Service{
 						Name:    name,
 						Version: version,
 						Nodes: []*microregistry.Node{
 							node,
 						},
-					})
+					})*/
 					return true
 				}
 				if atomic.LoadInt32(&uh.Fails) >= r.MaxFails {
 					fmt.Println("Considering service max fails ", name)
-					microregistry.Deregister(&microregistry.Service{
+					/*microregistry.Deregister(&microregistry.Service{
 						Name:    name,
 						Version: version,
 						Nodes: []*microregistry.Node{
 							node,
 						},
-					})
+					})*/
 					return true
 				}
 
 				return false
 			}
-		}(r, node.Id),
+		}(r, node.Id()),
 		WithoutPathPrefix: r.WithoutPathPrefix,
 		MaxConns:          r.MaxConns,
 		HealthCheckResult: atomic.Value{},
@@ -284,7 +297,7 @@ func (r *registryUpstream) newHost(name string, version string, node *microregis
 		return nil, err
 	}
 
-	uh.ReverseProxy = proxy.NewSingleHostReverseProxy(baseURL, uh.WithoutPathPrefix, r.KeepAlive)
+	uh.ReverseProxy = proxy.NewSingleHostReverseProxy(baseURL, uh.WithoutPathPrefix, r.KeepAlive, 0, 0)
 	if r.insecureSkipVerify {
 		uh.ReverseProxy.UseInsecureTransport()
 	}
