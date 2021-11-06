@@ -31,7 +31,6 @@ import (
 	"github.com/micro/go-micro/client"
 	"github.com/micro/go-micro/errors"
 	"github.com/pborman/uuid"
-	"github.com/pydio/minio-go"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/common"
@@ -184,10 +183,10 @@ func (f *FlatStorageHandler) MultipartPutObjectPart(ctx context.Context, target 
 	return f.Next.MultipartPutObjectPart(ctx, target, uploadID, partNumberMarker, reader, requestData)
 }
 
-func (f *FlatStorageHandler) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.S3ObjectInfo, error) {
+func (f *FlatStorageHandler) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.ObjectInfo, error) {
 	if nodes.IsFlatStorage(ctx, "in") {
 		if e := f.resolveUUID(ctx, target); e != nil {
-			return models.S3ObjectInfo{}, e
+			return models.ObjectInfo{}, e
 		}
 	}
 	info, e := f.Next.MultipartComplete(ctx, target, uploadID, uploadedParts)
@@ -294,18 +293,19 @@ func (f *FlatStorageHandler) recomputeETag(ctx context.Context, identifier strin
 	copyMeta := map[string]string{
 		common.XAmzMetaDirective: "REPLACE",
 	}
-	statOpts := minio.StatObjectOptions{}
-	getOpts := minio.GetObjectOptions{}
+	//statOpts := minio.StatObjectOptions{}
+	//getOpts := minio.GetObjectOptions{}
 	if meta, ok := context2.MinioMetaFromContext(ctx); ok {
 		for k, v := range meta {
-			statOpts.Set(k, v)
-			getOpts.Set(k, v)
+			//statOpts.Set(k, v)
+			//getOpts.Set(k, v)
 			copyMeta[k] = v
 		}
 	}
 
 	// Load current metadata
-	objectInfo, e := src.Client.StatObject(src.ObjectsBucket, node.GetUuid(), statOpts)
+	mm, _ := context2.MinioMetaFromContext(ctx)
+	objectInfo, e := src.Client.StatObject(src.ObjectsBucket, node.GetUuid(), mm)
 	if e != nil {
 		return "", e
 	}
@@ -317,7 +317,8 @@ func (f *FlatStorageHandler) recomputeETag(ctx context.Context, identifier strin
 
 		// Cannot CopyObject on itself for files bigger than 5GB - compute Md5 and store it as metadata instead
 		// Not necessary for real minio on fs (but required for Minio as S3 gateway or real S3)
-		readCloser, _, e := src.Client.GetObject(src.ObjectsBucket, node.GetUuid(), getOpts)
+		mm2, _ := context2.MinioMetaFromContext(ctx)
+		readCloser, _, e := src.Client.GetObject(src.ObjectsBucket, node.GetUuid(), mm2)
 		if e != nil {
 			return "", e
 		}
@@ -328,7 +329,8 @@ func (f *FlatStorageHandler) recomputeETag(ctx context.Context, identifier strin
 		}
 		checksum := fmt.Sprintf("%x", h.Sum(nil))
 		copyMeta[common.XAmzMetaContentMd5] = checksum
-		err := s3.CopyObjectMultipart(context.Background(), src.Client, objectInfo, src.ObjectsBucket, objectInfo.Key, src.ObjectsBucket, objectInfo.Key, copyMeta, nil)
+		//err := s3.CopyObjectMultipart(context.Background(), src.Client, objectInfo, src.ObjectsBucket, objectInfo.Key, src.ObjectsBucket, objectInfo.Key, copyMeta, nil)
+		err := fmt.Errorf("notimplemented")
 		return checksum, err
 
 	} else {

@@ -27,7 +27,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pydio/minio-go"
+	"github.com/pydio/cells/common/nodes/objects/mc"
 
 	"github.com/golang/protobuf/proto"
 	microregistry "github.com/micro/go-micro/registry"
@@ -75,7 +75,7 @@ func NewSource(data *object.DataSource) (LoadedSource, error) {
 	loaded := LoadedSource{}
 	loaded.DataSource = *data
 	var err error
-	loaded.Client, err = minio.NewCore(data.BuildUrl(), data.GetApiKey(), data.GetApiSecret(), data.GetObjectsSecure())
+	loaded.Client, err = mc.New(data.BuildUrl(), data.GetApiKey(), data.GetApiSecret(), data.GetObjectsSecure())
 	return loaded, err
 }
 

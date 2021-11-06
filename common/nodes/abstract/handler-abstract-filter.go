@@ -335,10 +335,10 @@ func (v *AbstractBranchFilter) MultipartCreate(ctx context.Context, node *tree.N
 	return v.Next.MultipartCreate(ctx, filtered, requestData)
 }
 
-func (v *AbstractBranchFilter) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.S3ObjectInfo, error) {
+func (v *AbstractBranchFilter) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.ObjectInfo, error) {
 	ctx, filtered, err := v.InputMethod(ctx, target, "in")
 	if err != nil {
-		return models.S3ObjectInfo{}, err
+		return models.ObjectInfo{}, err
 	}
 	return v.Next.MultipartComplete(ctx, filtered, uploadID, uploadedParts)
 }

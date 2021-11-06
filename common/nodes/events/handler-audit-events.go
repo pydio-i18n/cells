@@ -235,7 +235,7 @@ func (h *HandlerAuditEvent) MultipartPutObjectPart(ctx context.Context, target *
 	return h.Next.MultipartPutObjectPart(ctx, target, uploadID, partNumberMarker, reader, requestData)
 }
 
-func (h *HandlerAuditEvent) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.S3ObjectInfo, error) {
+func (h *HandlerAuditEvent) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.ObjectInfo, error) {
 	oi, e := h.Next.MultipartComplete(ctx, target, uploadID, uploadedParts)
 	if e != nil {
 		return oi, e

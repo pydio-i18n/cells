@@ -287,7 +287,7 @@ func (s *SynchronousCacheHandler) PutObject(ctx context.Context, node *tree.Node
 	return w, e
 }
 
-func (s *SynchronousCacheHandler) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.S3ObjectInfo, error) {
+func (s *SynchronousCacheHandler) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.ObjectInfo, error) {
 	log.Logger(ctx).Info("[SynchronousCache] MultipartComplete", target.Zap())
 	o, e := s.Next.MultipartComplete(ctx, target, uploadID, uploadedParts)
 	if e == nil {

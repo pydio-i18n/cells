@@ -32,6 +32,7 @@ import (
 
 	"github.com/micro/go-micro/client"
 	errors2 "github.com/micro/go-micro/errors"
+
 	"github.com/pydio/cells/common/log"
 	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/tree"
@@ -230,10 +231,10 @@ func (h *HandlerMock) MultipartAbort(ctx context.Context, target *tree.Node, upl
 	return nil
 }
 
-func (h *HandlerMock) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.S3ObjectInfo, error) {
+func (h *HandlerMock) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.ObjectInfo, error) {
 	h.Nodes["in"] = target
 	h.Context = ctx
-	return models.S3ObjectInfo{}, nil
+	return models.ObjectInfo{}, nil
 }
 
 func (h *HandlerMock) MultipartListObjectParts(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, maxParts int) (models.ListObjectPartsResult, error) {

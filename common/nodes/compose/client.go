@@ -153,7 +153,7 @@ func (v *clientImpl) MultipartAbort(ctx context.Context, target *tree.Node, uplo
 	return v.handler.MultipartAbort(ctx, target, uploadID, requestData)
 }
 
-func (v *clientImpl) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.S3ObjectInfo, error) {
+func (v *clientImpl) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.ObjectInfo, error) {
 	return v.handler.MultipartComplete(ctx, target, uploadID, uploadedParts)
 }
 

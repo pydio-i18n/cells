@@ -24,16 +24,16 @@ import (
 	"context"
 
 	"github.com/micro/go-micro/client"
-	"github.com/pydio/minio-go"
 
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/config"
+	"github.com/pydio/cells/common/nodes/objects/mc"
 	"github.com/pydio/cells/common/proto/object"
 	"github.com/pydio/cells/x/configx"
 )
 
 // GetGenericStoreClient creates a *minio.Core client for a given binary store.
-func GetGenericStoreClient(ctx context.Context, storeNamespace string, microClient client.Client) (client *minio.Core, bucket string, e error) {
+func GetGenericStoreClient(ctx context.Context, storeNamespace string, microClient client.Client) (client StorageClient, bucket string, e error) {
 
 	var dataSource string
 	var err error
@@ -50,7 +50,7 @@ func GetGenericStoreClient(ctx context.Context, storeNamespace string, microClie
 
 	source := response.DataSource
 
-	client, err = minio.NewCore(source.BuildUrl(), source.GetApiKey(), source.GetApiSecret(), source.GetObjectsSecure())
+	client, err = mc.New(source.BuildUrl(), source.GetApiKey(), source.GetApiSecret(), source.GetObjectsSecure())
 	return client, bucket, err
 
 }

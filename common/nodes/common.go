@@ -36,7 +36,6 @@ import (
 	"io"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/pydio/minio-go"
 	"go.uber.org/zap/zapcore"
 
 	"github.com/pydio/cells/common/nodes/models"
@@ -60,7 +59,7 @@ var (
 type (
 	LoadedSource struct {
 		object.DataSource
-		Client *minio.Core
+		Client StorageClient
 	}
 
 	SourcesPool interface {
@@ -99,7 +98,7 @@ type Handler interface {
 	MultipartCreate(ctx context.Context, target *tree.Node, requestData *models.MultipartRequestData) (string, error)
 	MultipartPutObjectPart(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, reader io.Reader, requestData *models.PutRequestData) (models.MultipartObjectPart, error)
 	MultipartAbort(ctx context.Context, target *tree.Node, uploadID string, requestData *models.MultipartRequestData) error
-	MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.S3ObjectInfo, error)
+	MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.ObjectInfo, error)
 
 	MultipartList(ctx context.Context, prefix string, requestData *models.MultipartRequestData) (models.ListMultipartUploadsResult, error)
 	MultipartListObjectParts(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, maxParts int) (models.ListObjectPartsResult, error)

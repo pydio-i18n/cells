@@ -31,7 +31,6 @@ import (
 
 	"github.com/micro/go-micro/client"
 	"github.com/micro/go-micro/errors"
-	"github.com/pydio/minio-go"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/common"
@@ -101,13 +100,16 @@ func (a *BinaryStoreHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequ
 			return nil, e
 		}
 		s3client := source.Client
-		statOpts := minio.StatObjectOptions{}
-		if meta, mOk := context2.MinioMetaFromContext(ctx); mOk {
-			for k, v := range meta {
-				statOpts.Set(k, v)
+		/*
+			statOpts := minio.StatObjectOptions{}
+			if meta, mOk := context2.MinioMetaFromContext(ctx); mOk {
+				for k, v := range meta {
+					statOpts.Set(k, v)
+				}
 			}
-		}
-		objectInfo, err := s3client.StatObject(source.ObjectsBucket, path.Base(in.Node.Path), statOpts)
+		*/
+		mm, _ := context2.MinioMetaFromContext(ctx)
+		objectInfo, err := s3client.StatObject(source.ObjectsBucket, path.Base(in.Node.Path), mm)
 		if err != nil {
 			return nil, err
 		}

@@ -170,10 +170,10 @@ func (a *AbstractHandler) MultipartPutObjectPart(ctx context.Context, target *tr
 	return a.Next.MultipartPutObjectPart(ctx, target, uploadID, partNumberMarker, reader, requestData)
 }
 
-func (a *AbstractHandler) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.S3ObjectInfo, error) {
+func (a *AbstractHandler) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.ObjectInfo, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
-		return models.S3ObjectInfo{}, err
+		return models.ObjectInfo{}, err
 	}
 	return a.Next.MultipartComplete(ctx, target, uploadID, uploadedParts)
 }

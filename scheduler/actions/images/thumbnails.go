@@ -37,7 +37,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/micro/go-micro/client"
 	"github.com/pkg/errors"
-	"github.com/pydio/minio-go"
 	"go.uber.org/zap"
 	"golang.org/x/image/colornames"
 
@@ -283,7 +282,7 @@ func (t *ThumbnailExtractor) writeSizeFromSrc(ctx context.Context, img image.Ima
 	localTest := false
 	localFolder := ""
 
-	var thumbsClient *minio.Core
+	var thumbsClient nodes.StorageClient
 	var thumbsBucket string
 	objectName := fmt.Sprintf("%s-%d.jpg", node.Uuid, targetSize)
 
@@ -301,14 +300,17 @@ func (t *ThumbnailExtractor) writeSizeFromSrc(ctx context.Context, img image.Ima
 			return false, e
 		}
 
-		opts := minio.StatObjectOptions{}
-		if meta, mOk := context2.MinioMetaFromContext(ctx); mOk {
-			for k, v := range meta {
-				opts.Set(k, v)
+		/*
+			opts := minio.StatObjectOptions{}
+			if meta, mOk := context2.MinioMetaFromContext(ctx); mOk {
+				for k, v := range meta {
+					opts.Set(k, v)
+				}
 			}
-		}
+		*/
 		// First Check if thumb already exists with same original etag
-		oi, check := thumbsClient.StatObject(thumbsBucket, objectName, opts)
+		meta, _ := context2.MinioMetaFromContext(ctx)
+		oi, check := thumbsClient.StatObject(thumbsBucket, objectName, meta)
 		logger.Debug("Object Info", zap.Any("object", oi), zap.Error(check))
 		if check == nil {
 			foundOriginal := oi.Metadata.Get("X-Amz-Meta-Original-Etag")
