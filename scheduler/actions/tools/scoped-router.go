@@ -14,11 +14,11 @@ import (
 type ScopedRouterConsumer struct {
 	owner        string
 	ownerScope   bool
-	presetClient nodes.Client
+	presetClient nodes.Handler
 }
 
-// PresetHandler sets a ready to use views.Client
-func (s *ScopedRouterConsumer) PresetHandler(h nodes.Client) {
+// PresetHandler sets a ready to use views.Handler
+func (s *ScopedRouterConsumer) PresetHandler(h nodes.Handler) {
 	s.presetClient = h
 }
 
@@ -30,13 +30,13 @@ func (s *ScopedRouterConsumer) ParseScope(owner string, params map[string]string
 	}
 }
 
-// GetHandler lazy initialize an views.Client depending on the scope
-func (s *ScopedRouterConsumer) GetHandler(ctx context.Context) (context.Context, nodes.Client, error) {
+// GetHandler lazy initialize an views.Handler depending on the scope
+func (s *ScopedRouterConsumer) GetHandler(ctx context.Context) (context.Context, nodes.Handler, error) {
 	if s.presetClient != nil {
 		return ctx, s.presetClient, nil
 	}
 	if s.owner == common.PydioSystemUsername || !s.ownerScope {
-		return ctx, compose.NewStandardRouter(nodes.RouterOptions{AdminView: true}), nil
+		return ctx, compose.PathClientAdmin(), nil
 	} else {
 		if u, claims := permissions.FindUserNameInContext(ctx); u != s.owner || claims.Name != s.owner {
 			if user, e := permissions.SearchUniqueUser(ctx, s.owner, ""); e != nil {
@@ -45,6 +45,6 @@ func (s *ScopedRouterConsumer) GetHandler(ctx context.Context) (context.Context,
 				ctx = auth.WithImpersonate(ctx, user)
 			}
 		}
-		return ctx, compose.NewStandardRouter(nodes.RouterOptions{}), nil
+		return ctx, compose.PathClient(), nil
 	}
 }

@@ -40,7 +40,6 @@ import (
 	"github.com/pydio/cells/common/auth"
 	"github.com/pydio/cells/common/log"
 	defaults "github.com/pydio/cells/common/micro"
-	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/docstore"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/rest"
@@ -138,7 +137,7 @@ func (s *UserMetaHandler) UpdateUserMeta(req *restful.Request, rsp *restful.Resp
 		return
 	}
 	var loadUuids []string
-	router := compose.NewUuidRouter(nodes.RouterOptions{})
+	router := compose.NewClient(compose.UuidComposer()...)
 
 	// First check if the namespaces are globally accessible
 	for _, meta := range input.MetaDatas {
@@ -257,7 +256,7 @@ func (s *UserMetaHandler) UserBookmarks(req *restful.Request, rsp *restful.Respo
 	searchRequest := &idm.SearchUserMetaRequest{
 		Namespace: namespace.ReservedNamespaceBookmark,
 	}
-	router := compose.NewUuidRouter(nodes.RouterOptions{})
+	router := compose.NewClient(compose.UuidComposer()...)
 	ctx := req.Request.Context()
 	output, e := s.PerformSearchMetaRequest(ctx, searchRequest)
 	if e != nil {

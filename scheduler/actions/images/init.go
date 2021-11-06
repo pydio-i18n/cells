@@ -55,13 +55,16 @@ func init() {
 }
 
 var (
-	router *nodes.Router
+	router nodes.Client
 )
 
 // getRouter provides a singleton-initialized StandardRouter in AdminView.
-func getRouter() *nodes.Router {
+func getRouter() nodes.Client {
 	if router == nil {
-		router = compose.NewStandardRouter(nodes.RouterOptions{AdminView: true, WatchRegistry: true})
+		router = compose.PathClient(
+			nodes.AsAdmin(),
+			nodes.WithRegistryWatch(),
+		)
 	}
 	return router
 }

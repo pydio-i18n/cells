@@ -66,8 +66,8 @@ func GetSessionID(ctx context.Context) (string, bool) {
 	return res, ok
 }
 
-func extractDSFlat(ctx context.Context, handler Client, sourceNode, targetNode *tree.Node) (innerFlat, srcFlat, targetFlat bool) {
-	if router, ok := handler.(*Router); ok {
+func extractDSFlat(ctx context.Context, handler Handler, sourceNode, targetNode *tree.Node) (innerFlat, srcFlat, targetFlat bool) {
+	if router, ok := handler.(Client); ok {
 		// We passed a router, call is external, use WrapCallback
 		router.WrapCallback(func(inputFilter NodeFilter, outputFilter NodeFilter) error {
 			srcCtx, _, _ := inputFilter(ctx, sourceNode, "from")
@@ -82,7 +82,7 @@ func extractDSFlat(ctx context.Context, handler Client, sourceNode, targetNode *
 			return nil
 		})
 	} else {
-		// We passed a Client, we are already in the routing stack, contexts should be loaded
+		// We passed a Handler, we are already in the routing stack, contexts should be loaded
 		srcDS, _ := GetBranchInfo(ctx, "from")
 		tgtDS, _ := GetBranchInfo(ctx, "to")
 		if srcDS.Name == tgtDS.Name && srcDS.FlatStorage {
@@ -105,7 +105,7 @@ func Is403(e error) bool {
 // CopyMoveNodes performs a recursive copy or move operation of a node to a new location. It can be inter- or intra-datasources.
 // It will eventually pass contextual metadata like X-Pydio-Session (to batch event inside the SYNC) or X-Pydio-Move (to
 // reconcile creates and deletes when move is done between two differing datasources).
-func CopyMoveNodes(ctx context.Context, router Client, sourceNode *tree.Node, targetNode *tree.Node, move bool, isTask bool, statusChan chan string, progressChan chan float32, tFunc ...i18n.TranslateFunc) (oErr error) {
+func CopyMoveNodes(ctx context.Context, router Handler, sourceNode *tree.Node, targetNode *tree.Node, move bool, isTask bool, statusChan chan string, progressChan chan float32, tFunc ...i18n.TranslateFunc) (oErr error) {
 
 	innerFlat, sourceFlat, targetFlat := extractDSFlat(ctx, router, sourceNode, targetNode)
 
@@ -495,7 +495,7 @@ func copyMoveStatusKey(keyPath string, move bool, tFunc ...i18n.TranslateFunc) s
 	return status
 }
 
-func processCopyMove(ctx context.Context, handler Client, session string, move, crossDs bool, sourceDs, targetDs string, sourceFlat, targetFlat, closeSession bool, childNode *tree.Node, prefixPathSrc, prefixPathTarget, targetDsPath string, logger *zap.Logger, publishError func(string, string), statusChan chan string, progress io.Reader, tFunc ...i18n.TranslateFunc) error {
+func processCopyMove(ctx context.Context, handler Handler, session string, move, crossDs bool, sourceDs, targetDs string, sourceFlat, targetFlat, closeSession bool, childNode *tree.Node, prefixPathSrc, prefixPathTarget, targetDsPath string, logger *zap.Logger, publishError func(string, string), statusChan chan string, progress io.Reader, tFunc ...i18n.TranslateFunc) error {
 
 	childPath := childNode.Path
 	relativePath := strings.TrimPrefix(childPath, prefixPathSrc+"/")

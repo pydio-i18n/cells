@@ -36,7 +36,7 @@ import (
 )
 
 var (
-	davRouter *nodes.Router
+	davRouter nodes.Client
 )
 
 func init() {
@@ -48,12 +48,12 @@ func init() {
 			service.RouterDependencies(),
 			service.Description("DAV Gateway to tree service"),
 			service.WithHTTP(func() http.Handler {
-				davRouter = compose.NewStandardRouter(nodes.RouterOptions{
-					WatchRegistry:    true,
-					AuditEvent:       true,
-					SynchronousCache: true,
-					SynchronousTasks: true,
-				})
+				davRouter = compose.PathClient(
+					nodes.WithRegistryWatch(),
+					nodes.WithAuditEventsLogging(),
+					nodes.WithSynchronousCaching(),
+					nodes.WithSynchronousTasks(),
+				)
 				// handler := newHandler(s.Options().Context, davRouter)
 				handler := newHandler(context.TODO(), davRouter)
 				handler = servicecontext.HttpMetaExtractorWrapper(handler)

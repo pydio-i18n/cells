@@ -80,7 +80,7 @@ func download(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	read, err := viewsRouter.GetObject(r.Context(), n, &models.GetRequestData{StartOffset: 0, Length: -1})
+	read, err := client.GetObject(r.Context(), n, &models.GetRequestData{StartOffset: 0, Length: -1})
 	if err != nil {
 		log.Logger(r.Context()).Error("cannot get object", zap.Error(err))
 		w.WriteHeader(http.StatusInternalServerError)
@@ -115,7 +115,7 @@ func uploadStream(w http.ResponseWriter, r *http.Request) {
 		size, _ = strconv.ParseInt(h[0], 10, 64)
 	}
 
-	written, err := viewsRouter.PutObject(r.Context(), n, r.Body, &models.PutRequestData{
+	written, err := client.PutObject(r.Context(), n, r.Body, &models.PutRequestData{
 		Size: size,
 	})
 	if err != nil {
@@ -175,7 +175,7 @@ func findNodeFromRequest(r *http.Request) (*tree.Node, error) {
 	}
 
 	// Now go through all the authorization mechanisms
-	resp, err := viewsRouter.ReadNode(r.Context(), &tree.ReadNodeRequest{
+	resp, err := client.ReadNode(r.Context(), &tree.ReadNodeRequest{
 		Node: &tree.Node{Uuid: uuid},
 	})
 	if err != nil {

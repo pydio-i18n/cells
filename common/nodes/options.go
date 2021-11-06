@@ -22,12 +22,12 @@ package nodes
 
 type Option func(options *RouterOptions)
 type Adapter interface {
-	Adapt(h Client, options RouterOptions) Client
+	Adapt(h Handler, options RouterOptions) Handler
 }
 
 // RouterOptions holds configuration flags to pass to a router constructor easily.
 type RouterOptions struct {
-	CoreClient func(pool SourcesPool) Client
+	CoreClient func(pool SourcesPool) Handler
 
 	AdminView          bool
 	WatchRegistry      bool
@@ -42,50 +42,7 @@ type RouterOptions struct {
 	Pool     SourcesPool
 }
 
-func NewClient(opts ...Option) Client {
-	options := RouterOptions{}
-	for _, o := range opts {
-		o(&options)
-	}
-
-	options.Pool = NewClientsPool(options.WatchRegistry)
-
-	var client Client
-
-	client = options.CoreClient(options.Pool)
-
-	// wrap in reverse
-	for i := len(options.Wrappers); i > 0; i-- {
-		client = options.Wrappers[i-1].Adapt(client, options)
-	}
-
-	return client
-}
-
-func RichClient(opts ...Option) *Router {
-	options := RouterOptions{}
-	for _, o := range opts {
-		o(&options)
-	}
-
-	options.Pool = NewClientsPool(options.WatchRegistry)
-
-	var client Client
-
-	client = options.CoreClient(options.Pool)
-
-	// wrap in reverse
-	for i := len(options.Wrappers); i > 0; i-- {
-		client = options.Wrappers[i-1].Adapt(client, options)
-	}
-	router := &Router{
-		handlers: []Client{client},
-		pool:     options.Pool,
-	}
-	return router
-}
-
-func WithCore(init func(pool SourcesPool) Client) Option {
+func WithCore(init func(pool SourcesPool) Handler) Option {
 	return func(options *RouterOptions) {
 		options.CoreClient = init
 	}

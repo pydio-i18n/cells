@@ -77,7 +77,7 @@ func init() {
 				ws = websocket.NewWebSocketHandler(ctx)
 				chat = websocket.NewChatHandler(ctx)
 
-				ws.EventRouter = compose.NewRouterEventFilter(nodes.RouterOptions{WatchRegistry: true})
+				ws.EventRouter = compose.ReverseClient(nodes.WithRegistryWatch())
 
 				gin.SetMode(gin.ReleaseMode)
 				gin.DisableConsoleColor()

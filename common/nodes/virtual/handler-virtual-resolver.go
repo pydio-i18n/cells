@@ -42,7 +42,7 @@ type VirtualNodesResolver struct {
 	abstract.AbstractBranchFilter
 }
 
-func (h *VirtualNodesResolver) Adapt(c nodes.Client, options nodes.RouterOptions) nodes.Client {
+func (h *VirtualNodesResolver) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	h.Next = c
 	h.ClientsPool = options.Pool
 	return h

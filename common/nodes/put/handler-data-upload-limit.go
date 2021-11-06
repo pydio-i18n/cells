@@ -54,7 +54,7 @@ type UploadLimitFilter struct {
 	abstract.AbstractHandler
 }
 
-func (h *UploadLimitFilter) Adapt(c nodes.Client, options nodes.RouterOptions) nodes.Client {
+func (h *UploadLimitFilter) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	h.Next = c
 	h.ClientsPool = options.Pool
 	return h

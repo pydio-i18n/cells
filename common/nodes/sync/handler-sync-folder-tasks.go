@@ -51,7 +51,7 @@ type SyncFolderTasksHandler struct {
 	abstract.AbstractHandler
 }
 
-func (h *SyncFolderTasksHandler) Adapt(c nodes.Client, options nodes.RouterOptions) nodes.Client {
+func (h *SyncFolderTasksHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	h.Next = c
 	h.ClientsPool = options.Pool
 	return h

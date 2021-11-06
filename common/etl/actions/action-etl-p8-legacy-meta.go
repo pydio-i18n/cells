@@ -58,7 +58,7 @@ import (
 type MigratePydioMetaAction struct {
 	metaMapping map[string]string
 	cellAdmin   string
-	router      *nodes.Router
+	router      nodes.Client
 }
 
 var (
@@ -96,9 +96,9 @@ func (c *MigratePydioMetaAction) GetName() string {
 }
 
 // GetRouter returns an initialized router
-func (c *MigratePydioMetaAction) GetRouter() *nodes.Router {
+func (c *MigratePydioMetaAction) GetRouter() nodes.Client {
 	if c.router == nil {
-		c.router = compose.NewStandardRouter(nodes.RouterOptions{})
+		c.router = compose.PathClient()
 	}
 	return c.router
 }

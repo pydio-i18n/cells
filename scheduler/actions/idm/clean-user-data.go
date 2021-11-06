@@ -115,7 +115,10 @@ func (c *CleanUserDataAction) Run(ctx context.Context, channels *actions.Runnabl
 		tp = jobs.EvaluateFieldStr(ctx, input, tp)
 	}
 
-	router := compose.NewStandardRouter(nodes.RouterOptions{AdminView: true, SynchronousTasks: true})
+	router := compose.PathClient(
+		nodes.AsAdmin(),
+		nodes.WithSynchronousTasks(),
+	)
 	clientsPool := router.GetClientsPool()
 	var cleaned bool
 	// For the moment, just rename personal folder to user UUID to collision with new user with same Login

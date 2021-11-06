@@ -50,7 +50,7 @@ type VersionHandler struct {
 	versionClient tree.NodeVersionerClient
 }
 
-func (h *VersionHandler) Adapt(c nodes.Client, options nodes.RouterOptions) nodes.Client {
+func (h *VersionHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	h.Next = c
 	h.ClientsPool = options.Pool
 	return h

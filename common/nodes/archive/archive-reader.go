@@ -48,7 +48,7 @@ import (
 )
 
 type ArchiveReader struct {
-	Router nodes.Client
+	Router nodes.Handler
 }
 
 const UnCompressThreshold = int64(100)

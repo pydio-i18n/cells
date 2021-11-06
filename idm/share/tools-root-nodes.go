@@ -35,9 +35,9 @@ import (
 func LoadDetectedRootNodes(ctx context.Context, detectedRoots []string) (rootNodes map[string]*tree.Node) {
 
 	rootNodes = make(map[string]*tree.Node)
-	router := compose.NewUuidRouter(nodes.RouterOptions{})
+	router := compose.NewClient(compose.UuidComposer()...)
 	metaClient := tree.NewNodeProviderClient(common.ServiceGrpcNamespace_+common.ServiceMeta, defaults.NewClient())
-	eventFilter := compose.NewRouterEventFilter(nodes.RouterOptions{AdminView: false})
+	eventFilter := compose.ReverseClient(nodes.AsAdmin())
 	accessList, _ := permissions.AccessListFromContextClaims(ctx)
 	for _, rootId := range detectedRoots {
 		request := &tree.ReadNodeRequest{Node: &tree.Node{Uuid: rootId}}
@@ -78,7 +78,7 @@ func LoadDetectedRootNodes(ctx context.Context, detectedRoots []string) (rootNod
 func ParseRootNodes(ctx context.Context, shareRequest *rest.PutCellRequest) (*tree.Node, bool, error) {
 
 	var createdNode *tree.Node
-	router := compose.NewStandardRouter(nodes.RouterOptions{})
+	router := compose.PathClient()
 	for i, n := range shareRequest.Room.RootNodes {
 		r, e := router.ReadNode(ctx, &tree.ReadNodeRequest{Node: n})
 		if e != nil {
@@ -93,7 +93,7 @@ func ParseRootNodes(ctx context.Context, shareRequest *rest.PutCellRequest) (*tr
 	if shareRequest.CreateEmptyRoot {
 
 		manager := abstract.GetVirtualNodesManager()
-		internalRouter := compose.NewStandardRouter(nodes.RouterOptions{WatchRegistry: false, AdminView: true})
+		internalRouter := compose.PathClientAdmin()
 		if root, exists := manager.ByUuid("cells"); exists {
 			parentNode, err := manager.ResolveInContext(ctx, root, internalRouter.GetClientsPool(), true)
 			if err != nil {
@@ -225,7 +225,7 @@ func DetectInheritedPolicy(ctx context.Context, roots []*tree.Node, loadedParent
 func DeleteRootNodeRecursively(ctx context.Context, ownerName string, roomNode *tree.Node) error {
 
 	manager := abstract.GetVirtualNodesManager()
-	router := compose.NewStandardRouter(nodes.RouterOptions{WatchRegistry: false, AdminView: true})
+	router := compose.PathClientAdmin()
 	if root, exists := manager.ByUuid("cells"); exists {
 		parentNode, err := manager.ResolveInContext(ctx, root, router.GetClientsPool(), true)
 		if err != nil {
@@ -266,7 +266,7 @@ func DeleteRootNodeRecursively(ctx context.Context, ownerName string, roomNode *
 // link permissions do not try to set the Upload mode.
 func CheckLinkRootNodes(ctx context.Context, link *rest.ShareLink) (workspaces []*tree.WorkspaceRelativePath, files, folders bool, e error) {
 
-	router := compose.NewUuidRouter(nodes.RouterOptions{})
+	router := compose.NewClient(compose.UuidComposer()...)
 	var hasReadonly bool
 	for i, r := range link.RootNodes {
 		resp, er := router.ReadNode(ctx, &tree.ReadNodeRequest{Node: r})
@@ -302,7 +302,7 @@ func CheckLinkRootNodes(ctx context.Context, link *rest.ShareLink) (workspaces [
 }
 
 func RootsParentWorkspaces(ctx context.Context, rr []*tree.Node) (ww []*tree.WorkspaceRelativePath, e error) {
-	router := compose.NewUuidRouter(nodes.RouterOptions{})
+	router := compose.NewClient(compose.UuidComposer()...)
 	for _, r := range rr {
 		if r.HasMetaKey("CellNode") {
 			continue

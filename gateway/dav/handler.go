@@ -56,7 +56,7 @@ func logRequest(handler http.Handler) http.Handler {
 	})
 }
 
-func newHandler(ctx context.Context, router *nodes.Router) http.Handler {
+func newHandler(ctx context.Context, router nodes.Client) http.Handler {
 
 	basicAuthenticator := auth.NewBasicAuthenticator("Cells DAV", time.Duration(10*time.Minute))
 

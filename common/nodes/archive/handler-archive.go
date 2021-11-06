@@ -60,7 +60,7 @@ type ArchiveHandler struct {
 	selectionProvider selectionProvider
 }
 
-func (a *ArchiveHandler) Adapt(h nodes.Client, options nodes.RouterOptions) nodes.Client {
+func (a *ArchiveHandler) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	a.Next = h
 	a.ClientsPool = options.Pool
 	return a

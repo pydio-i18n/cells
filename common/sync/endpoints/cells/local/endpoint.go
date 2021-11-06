@@ -74,11 +74,11 @@ func NewLocal(root string, options cells.Options) *Local {
 		},
 	}
 	l.Factory = &localRouterFactory{
-		router: compose.NewStandardRouter(nodes.RouterOptions{
-			WatchRegistry:    true,
-			AdminView:        true,
-			SynchronousTasks: true,
-		}),
+		router: compose.PathClient(
+			nodes.WithRegistryWatch(),
+			nodes.AsAdmin(),
+			nodes.WithSynchronousTasks(),
+		),
 	}
 	l.Source = l
 	l.GlobalCtx = servicecontext.WithServiceName(context.Background(), "endpoint.cells.local")
@@ -98,7 +98,7 @@ func (l *Local) GetEndpointInfo() model.EndpointInfo {
 
 // localRouterFactory implements the clientProviderFactory interface
 type localRouterFactory struct {
-	router nodes.Client
+	router nodes.Handler
 }
 
 // GetNodeProviderClient returns a usable context and the internal Router

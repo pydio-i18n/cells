@@ -216,7 +216,7 @@ func (c *CopyMoveAction) Run(ctx context.Context, channels *actions.RunnableChan
 
 }
 
-func (c *CopyMoveAction) suffixPathIfNecessary(ctx context.Context, cli nodes.Client, targetNode *tree.Node) {
+func (c *CopyMoveAction) suffixPathIfNecessary(ctx context.Context, cli nodes.Handler, targetNode *tree.Node) {
 	// Look for registered child locks : children that are currently in creation
 	pNode := &tree.Node{Path: path.Dir(targetNode.Path)}
 	compares := make(map[string]struct{})

@@ -23,8 +23,6 @@ package versions
 import (
 	"context"
 
-	"github.com/pydio/cells/common/nodes/compose"
-
 	"github.com/micro/go-micro/client"
 	"go.uber.org/zap"
 
@@ -45,7 +43,7 @@ var (
 )
 
 type PruneVersionsAction struct {
-	Handler nodes.Client
+	Handler nodes.Handler
 	Pool    nodes.SourcesPool
 }
 
@@ -74,9 +72,8 @@ func (c *PruneVersionsAction) GetName() string {
 // Init passes the parameters to a newly created PruneVersionsAction.
 func (c *PruneVersionsAction) Init(job *jobs.Job, cl client.Client, action *jobs.Action) error {
 
-	router := compose.NewStandardRouter(nodes.RouterOptions{AdminView: true})
-	c.Pool = router.GetClientsPool()
-	c.Handler = router
+	c.Pool = getRouter().GetClientsPool()
+	c.Handler = getRouter()
 	return nil
 }
 
@@ -106,7 +103,7 @@ func (c *PruneVersionsAction) Run(ctx context.Context, channels *actions.Runnabl
 	if response, err := versionClient.PruneVersions(ctx, &tree.PruneVersionsRequest{AllDeletedNodes: true}); err == nil {
 		for _, version := range response.DeletedVersions {
 			deleteNode := version.GetLocation()
-			_, err := c.Handler.DeleteNode(ctx, &tree.DeleteNodeRequest{Node: deleteNode}) // source.Client.RemoveObjectWithContext(ctx, source.ObjectsBucket, versionFileId)
+			_, err := c.Handler.DeleteNode(ctx, &tree.DeleteNodeRequest{Node: deleteNode}) // source.Handler.RemoveObjectWithContext(ctx, source.ObjectsBucket, versionFileId)
 			if err != nil {
 				log.TasksLogger(ctx).Error("Error while trying to remove file "+deleteNode.Uuid, zap.String("fileId", deleteNode.Uuid), zap.Error(err))
 			} else {

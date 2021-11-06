@@ -300,9 +300,12 @@ func (p *ClientsPool) CreateClientsForDataSource(dataSourceName string, dataSour
 	return nil
 }
 
-func MakeFakeClientsPool() *ClientsPool {
+func MakeFakeClientsPool(tc tree.NodeProviderClient, tw tree.NodeReceiverClient) *ClientsPool {
 	IsUnitTestEnv = true
 	c := NewClientsPool(false)
+
+	c.treeClient = tc
+	c.treeClientWrite = tw
 
 	mockDatasource := &object.DataSource{
 		Name:          "datasource",

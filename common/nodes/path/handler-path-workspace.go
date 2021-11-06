@@ -52,7 +52,7 @@ type PathWorkspaceHandler struct {
 	abstract.AbstractBranchFilter
 }
 
-func (h *PathWorkspaceHandler) Adapt(c nodes.Client, options nodes.RouterOptions) nodes.Client {
+func (h *PathWorkspaceHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	h.Next = c
 	h.ClientsPool = options.Pool
 	return h

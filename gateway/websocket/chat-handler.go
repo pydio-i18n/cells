@@ -431,7 +431,7 @@ func (c *ChatHandler) removeUserFromRoom(room *chat.ChatRoom, userName string) b
 	return found
 }
 
-var uuidRouter *nodes.Router
+var uuidRouter nodes.Client
 
 // auth check authorization for the room. perm can be "join" or "post"
 func (c *ChatHandler) auth(session *melody.Session, room *chat.ChatRoom) (bool, error) {
@@ -447,7 +447,7 @@ func (c *ChatHandler) auth(session *melody.Session, room *chat.ChatRoom) (bool, 
 
 		// Check node is readable and writeable
 		if uuidRouter == nil {
-			uuidRouter = compose.NewUuidRouter(nodes.RouterOptions{})
+			uuidRouter = compose.NewClient(compose.UuidComposer()...)
 		}
 		resp, e := uuidRouter.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Uuid: room.RoomTypeObject}})
 		if e != nil {

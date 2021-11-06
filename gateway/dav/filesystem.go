@@ -48,7 +48,7 @@ import (
 type FileSystem struct {
 	mu     sync.Mutex
 	Debug  bool
-	Router *nodes.Router
+	Router nodes.Client
 }
 
 type FileInfo struct {

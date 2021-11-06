@@ -25,16 +25,15 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/pydio/cells/common/nodes/compose"
-
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/nodes"
+	"github.com/pydio/cells/common/nodes/compose"
 	"github.com/pydio/cells/common/plugins"
 	"github.com/pydio/cells/common/service"
 )
 
 var (
-	viewsRouter *nodes.Router
+	client nodes.Client
 )
 
 func init() {
@@ -46,8 +45,7 @@ func init() {
 			service.RouterDependencies(),
 			service.Description("WOPI REST Gateway to tree service"),
 			service.WithHTTP(func() http.Handler {
-				viewsRouter = compose.NewUuidRouter(nodes.RouterOptions{WatchRegistry: true, AuditEvent: true})
-
+				client = compose.NewClient(compose.UuidComposer(nodes.WithRegistryWatch(), nodes.WithAuditEventsLogging())...)
 				return NewRouter()
 			}),
 		)

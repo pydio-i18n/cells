@@ -27,8 +27,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pydio/cells/common/nodes/compose"
-
 	"github.com/pborman/uuid"
 
 	"github.com/micro/go-micro/client"
@@ -49,7 +47,7 @@ var (
 )
 
 type OnDeleteVersionsAction struct {
-	Handler    nodes.Client
+	Handler    nodes.Handler
 	Pool       nodes.SourcesPool
 	rootFolder string
 }
@@ -93,9 +91,8 @@ func (c *OnDeleteVersionsAction) GetName() string {
 // Init passes the parameters to a newly created PruneVersionsAction.
 func (c *OnDeleteVersionsAction) Init(job *jobs.Job, cl client.Client, action *jobs.Action) error {
 
-	router := compose.NewStandardRouter(nodes.RouterOptions{AdminView: true})
-	c.Pool = router.GetClientsPool()
-	c.Handler = router
+	c.Handler = getRouter()
+	c.Pool = getRouter().GetClientsPool()
 	var ok bool
 	if c.rootFolder, ok = action.Parameters["rootFolder"]; !ok {
 		c.rootFolder = "$DELETED"

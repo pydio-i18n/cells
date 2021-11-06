@@ -229,7 +229,7 @@ func (e *Executor) GetObject(ctx context.Context, node *tree.Node, requestData *
 	}
 
 	if requestData.StartOffset == 0 && requestData.Length == -1 {
-		logger.Debug("[Client exec] Target Object Size is", zap.Any("object", sObject))
+		logger.Debug("[Handler exec] Target Object Size is", zap.Any("object", sObject))
 		//		requestData.Length = sObject.Size
 	}
 	if requestData.StartOffset >= 0 && requestData.Length >= 0 {
@@ -280,7 +280,7 @@ func (e *Executor) CopyObject(ctx context.Context, from *tree.Node, to *tree.Nod
 	destInfo, ok := nodes.GetBranchInfo(ctx, "to")
 	srcInfo, ok2 := nodes.GetBranchInfo(ctx, "from")
 	if !ok || !ok2 {
-		return 0, errors.InternalServerError(nodes.VIEWS_LIBRARY_NAME, "Cannot find Client for src or dest")
+		return 0, errors.InternalServerError(nodes.VIEWS_LIBRARY_NAME, "Cannot find Handler for src or dest")
 	}
 	destClient := destInfo.Client
 	srcClient := srcInfo.Client

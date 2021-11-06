@@ -47,12 +47,12 @@ import (
 
 // ActivityHandler responds to activity REST requests
 type ActivityHandler struct {
-	router *compose.RouterEventFilter
+	router *compose.Reverse
 }
 
 func NewActivityHandler() *ActivityHandler {
 	return &ActivityHandler{
-		router: compose.NewRouterEventFilter(nodes.RouterOptions{WatchRegistry: true}),
+		router: compose.ReverseClient(nodes.WithRegistryWatch()),
 	}
 }
 

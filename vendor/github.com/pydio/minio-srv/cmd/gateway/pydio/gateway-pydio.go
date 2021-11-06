@@ -66,7 +66,7 @@ type Pydio struct{}
 // s3Objects implements gateway for Minio and S3 compatible object storage servers.
 type pydioObjects struct {
 	minio.GatewayUnsupported
-	Router *nodes.Router
+	Router nodes.Client
 }
 
 // Name returns the unique name of the gateway.
@@ -77,7 +77,11 @@ func (p *Pydio) Name() string {
 // NewGatewayLayer returns a new  ObjectLayer.
 func (p *Pydio) NewGatewayLayer(creds auth.Credentials) (minio.ObjectLayer, error) {
 	o := &pydioObjects{}
-	o.Router = compose.NewStandardRouter(nodes.RouterOptions{WatchRegistry: true, LogReadEvents: true, AuditEvent: true})
+	o.Router = compose.PathClient(
+		nodes.WithRegistryWatch(),
+		nodes.WithReadEventsLogging(),
+		nodes.WithAuditEventsLogging(),
+	)
 	return o, nil
 }
 
@@ -86,7 +90,7 @@ func (p *Pydio) Production() bool {
 	return true
 }
 
-// Client for 'minio gateway azure' command line.
+// Handler for 'minio gateway azure' command line.
 func pydioGatewayMain(ctx *cli.Context) {
 	minio.StartGateway(ctx, &Pydio{})
 }

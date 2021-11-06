@@ -50,9 +50,9 @@ import (
 )
 
 var (
-	vManager      *VirtualNodesManager
-	vManagerCache *cache.Cache
-	AdminClient   *nodes.Router
+	vManager            *VirtualNodesManager
+	vManagerCache       *cache.Cache
+	AdminClientProvider func() nodes.Client
 )
 
 // VirtualNodesManager keeps an internal list of virtual nodes.
@@ -188,13 +188,14 @@ func (m *VirtualNodesManager) ResolveInContext(ctx context.Context, vNode *tree.
 		if createResp, err := clientsPool.GetTreeClientWrite().CreateNode(ctx, &tree.CreateNodeRequest{Node: resolved}); err != nil {
 			return nil, err
 		} else {
-			if AdminClient == nil {
+			if AdminClientProvider == nil {
 				log.Logger(ctx).Error("OUPS, VirtualNodesManager AdminClient is empty ! ")
 				return nil, fmt.Errorf("cancel create")
 			}
 			resolved = createResp.GetNode()
 			isFlat := false
-			if bI, e := AdminClient.BranchInfoForNode(ctx, resolved); e == nil {
+			client := AdminClientProvider()
+			if bI, e := client.BranchInfoForNode(ctx, resolved); e == nil {
 				isFlat = bI.FlatStorage
 			}
 			if !isFlat {
@@ -205,7 +206,7 @@ func (m *VirtualNodesManager) ResolveInContext(ctx context.Context, vNode *tree.
 				newNode.MetaStore = make(map[string]string) // Reset metastore !
 				newNode.Uuid = ""
 				createCtx := context2.WithAdditionalMetadata(ctx, map[string]string{common.PydioContextUserKey: common.PydioSystemUsername})
-				if _, pE := AdminClient.PutObject(createCtx, newNode, strings.NewReader(nodeUuid), &models.PutRequestData{Size: int64(len(nodeUuid))}); pE != nil {
+				if _, pE := client.PutObject(createCtx, newNode, strings.NewReader(nodeUuid), &models.PutRequestData{Size: int64(len(nodeUuid))}); pE != nil {
 					log.Logger(ctx).Warn("Creating hidden file for resolved node (may not be required)", newNode.Zap("resolved"), zap.Error(pE))
 				}
 			}

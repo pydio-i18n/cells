@@ -40,7 +40,7 @@ import (
 	"github.com/pydio/cells/common/proto/tree"
 )
 
-// AbstractBranchFilter is a ready-made Client that can be used by all handlers that just modify the path in one way
+// AbstractBranchFilter is a ready-made Handler that can be used by all handlers that just modify the path in one way
 // or another before forwarding calls to Next handler.
 type AbstractBranchFilter struct {
 	AbstractHandler

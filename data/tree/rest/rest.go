@@ -71,7 +71,10 @@ var (
 
 func getClient() tree.NodeProviderClient {
 	if providerClient == nil {
-		providerClient = compose.NewStandardRouter(nodes.RouterOptions{AdminView: true, BrowseVirtualNodes: true, AuditEvent: false})
+		providerClient = compose.PathClient(
+			nodes.AsAdmin(),
+			nodes.WithVirtualNodesBrowsing(),
+		)
 	}
 	return providerClient
 }
@@ -351,7 +354,7 @@ func (h *Handler) DeleteNodes(req *restful.Request, resp *restful.Response) {
 
 	cli := jobs.NewJobServiceClient(registry.GetClient(common.ServiceJobs))
 	moveLabel := T("Jobs.User.MoveRecycle")
-	fullPathRouter := compose.NewStandardRouter(nodes.RouterOptions{AdminView: true})
+	fullPathRouter := compose.PathClientAdmin()
 	for recyclePath, selectedPaths := range deleteJobs.RecycleMoves {
 
 		// Create recycle bins now, to make sure user is notified correctly

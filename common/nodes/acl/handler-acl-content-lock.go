@@ -46,7 +46,7 @@ type AclContentLockFilter struct {
 	abstract.AbstractHandler
 }
 
-func (a *AclContentLockFilter) Adapt(h nodes.Client, options nodes.RouterOptions) nodes.Client {
+func (a *AclContentLockFilter) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	a.Next = h
 	a.ClientsPool = options.Pool
 	return a

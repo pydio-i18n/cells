@@ -39,7 +39,7 @@ import (
 )
 
 type ArchiveWriter struct {
-	Router nodes.Client
+	Router nodes.Handler
 
 	// Optional filter when listing nodes to build the archive
 	WalkFilter nodes.WalkFilter

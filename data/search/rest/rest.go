@@ -43,7 +43,7 @@ import (
 )
 
 type Handler struct {
-	router *nodes.Router
+	router nodes.Client
 	client tree.SearcherClient
 }
 
@@ -57,9 +57,9 @@ func (s *Handler) Filter() func(string) string {
 	return nil
 }
 
-func (s *Handler) getRouter() *nodes.Router {
+func (s *Handler) getRouter() nodes.Client {
 	if s.router == nil {
-		s.router = compose.NewStandardRouter(nodes.RouterOptions{WatchRegistry: true, AuditEvent: false})
+		s.router = compose.PathClient(nodes.WithRegistryWatch())
 	}
 	return s.router
 }

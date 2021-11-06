@@ -49,12 +49,12 @@ import (
 )
 
 var (
-	router *nodes.Router
+	router nodes.Client
 )
 
-func getRouter() *nodes.Router {
+func getRouter() nodes.Client {
 	if router == nil {
-		router = compose.NewStandardRouter(nodes.RouterOptions{WatchRegistry: true})
+		router = compose.PathClient(nodes.WithRegistryWatch())
 	}
 	return router
 }

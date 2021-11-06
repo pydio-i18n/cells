@@ -36,13 +36,17 @@ import (
 	"github.com/pydio/cells/common/nodes/virtual"
 )
 
-func init() {
-	// abstract.AdminClient = NewStandardRouter(nodes.RouterOptions{AdminView: true, WatchRegistry: true})
+func PathClient(oo ...nodes.Option) nodes.Client {
+	return NewClient(PathComposer(oo...)...)
+}
+
+func PathClientAdmin() nodes.Client {
+	return NewClient(PathComposer(nodes.AsAdmin())...)
 }
 
 func PathComposer(oo ...nodes.Option) []nodes.Option {
 	return append(oo,
-		nodes.WithCore(func(pool nodes.SourcesPool) nodes.Client {
+		nodes.WithCore(func(pool nodes.SourcesPool) nodes.Handler {
 			exe := &core.Executor{}
 			exe.SetClientsPool(pool)
 			return exe
@@ -74,9 +78,10 @@ func PathComposer(oo ...nodes.Option) []nodes.Option {
 }
 
 // NewStandardRouter returns a new configured instance of the default standard router.
-func NewStandardRouter(options nodes.RouterOptions) *nodes.Router {
+/*
+func NewStandardRouter(options nodes.RouterOptions) nodes.Client {
 
-	handlers := []nodes.Client{
+	handlers := []nodes.Handler{
 		acl.NewAccessListHandler(options.AdminView),
 		&binaries.BinaryStoreHandler{
 			StoreName:      common.PydioThumbstoreNamespace, // Direct access to dedicated Bucket for thumbnails
@@ -133,3 +138,4 @@ func NewStandardRouter(options nodes.RouterOptions) *nodes.Router {
 
 	return nodes.NewRouter(pool, handlers)
 }
+*/

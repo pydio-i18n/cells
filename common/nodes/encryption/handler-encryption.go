@@ -57,7 +57,7 @@ type EncryptionHandler struct {
 	nodeKeyManagerClient encryption.NodeKeyManagerClient
 }
 
-func (e *EncryptionHandler) Adapt(h nodes.Client, options nodes.RouterOptions) nodes.Client {
+func (e *EncryptionHandler) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	e.Next = h
 	e.ClientsPool = options.Pool
 	return e
@@ -89,7 +89,7 @@ func (e *EncryptionHandler) GetObject(ctx context.Context, node *tree.Node, requ
 			Node: node,
 		})
 		if readErr != nil {
-			return nil, errors.NotFound("views.Client.encryption", "failed to get node UUID: %s", readErr)
+			return nil, errors.NotFound("views.Handler.encryption", "failed to get node UUID: %s", readErr)
 		}
 		clone.Uuid = rsp.Node.Uuid
 		clone.Size = rsp.Node.Size
@@ -300,7 +300,7 @@ func (e *EncryptionHandler) CopyObject(ctx context.Context, from *tree.Node, to 
 	srcInfo, ok2 := nodes.GetBranchInfo(ctx, "from")
 	destInfo, ok := nodes.GetBranchInfo(ctx, "to")
 	if !ok || !ok2 {
-		return 0, errors.InternalServerError("views.handler.encryption.CopyObject", "Cannot find Client for src or dest")
+		return 0, errors.InternalServerError("views.handler.encryption.CopyObject", "Cannot find Handler for src or dest")
 	}
 	readCtx := nodes.WithBranchInfo(ctx, "in", srcInfo, true)
 	writeCtx := nodes.WithBranchInfo(ctx, "in", destInfo, true)

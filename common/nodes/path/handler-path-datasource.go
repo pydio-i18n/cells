@@ -55,7 +55,7 @@ type PathDataSourceHandler struct {
 	abstract.AbstractBranchFilter
 }
 
-func (h *PathDataSourceHandler) Adapt(c nodes.Client, options nodes.RouterOptions) nodes.Client {
+func (h *PathDataSourceHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	h.Next = c
 	h.ClientsPool = options.Pool
 	return h

@@ -28,7 +28,6 @@ import (
 	"github.com/golang/protobuf/proto"
 
 	"github.com/pydio/cells/common/log"
-	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/activity"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/tree"
@@ -36,7 +35,7 @@ import (
 )
 
 var (
-	router *compose.RouterEventFilter
+	router *compose.Reverse
 )
 
 // CountCollection is a simple container for N activities.
@@ -147,9 +146,9 @@ func getOrCreateWorkspaceCollection(workspace *idm.Workspace, grouped map[string
 	return wsColl
 }
 
-func getRouter() *compose.RouterEventFilter {
+func getRouter() *compose.Reverse {
 	if router == nil {
-		router = compose.NewRouterEventFilter(nodes.RouterOptions{})
+		router = compose.ReverseClient()
 	}
 	return router
 }

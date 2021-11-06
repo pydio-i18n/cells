@@ -38,30 +38,19 @@ func testMkFileResources() (*PutHandler, context.Context, *nodes.HandlerMock) {
 
 	// Create dummy client pool
 	nodes.IsUnitTestEnv = true
-	pool := nodes.NewClientsPool(false)
-	pool.treeClient = &tree.NodeProviderMock{
+	tc := &tree.NodeProviderMock{
 		Nodes: map[string]tree.Node{"existing/node": tree.Node{
 			Uuid: "found-uuid",
 			Path: "existing/node",
 		}},
 	}
-	pool.treeClientWrite = &tree.NodeReceiverMock{}
-
-	// pool := &ClientsPool{
-	// 	Clients:     make(map[string]*minio.Core),
-	// 	dsBuckets:   make(map[string]string),
-	// 	dsEncrypted: make(map[string]bool),
-	// 	aliases:     make(map[string]sourceAlias),
-	// 	treeClient:&tree.NodeProviderMock{
-	// 		Nodes: map[string]string{"existing/node": "found-uuid"},
-	// 	},
-	// 	treeClientWrite:&tree.NodeReceiverMock{},
-	// }
+	tw := &tree.NodeReceiverMock{}
+	pool := nodes.MakeFakeClientsPool(tc, tw)
 
 	// create dummy handler
 	h := &PutHandler{}
 	mock := nodes.NewHandlerMock()
-	h.SetNextHandler(mock)
+	h.Next = mock
 	h.SetClientsPool(pool)
 
 	ctx := context.Background()

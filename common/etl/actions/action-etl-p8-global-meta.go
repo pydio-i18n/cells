@@ -62,7 +62,7 @@ type MigrateGlobalMetaAction struct {
 	mapping          map[string]string
 
 	cellAdmin string
-	router    *nodes.Router
+	router    nodes.Client
 	slugs     map[string]string
 }
 
@@ -95,9 +95,9 @@ func (c *MigrateGlobalMetaAction) GetName() string {
 }
 
 // GetRouter returns an initialized router
-func (c *MigrateGlobalMetaAction) GetRouter() *nodes.Router {
+func (c *MigrateGlobalMetaAction) GetRouter() nodes.Client {
 	if c.router == nil {
-		c.router = compose.NewStandardRouter(nodes.RouterOptions{})
+		c.router = compose.PathClient()
 	}
 	return c.router
 }

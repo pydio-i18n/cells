@@ -59,7 +59,7 @@ func CheckLinkOptionsAgainstConfigs(ctx context.Context, link *rest.ShareLink, w
 }
 
 func CheckCellOptionsAgainstConfigs(ctx context.Context, request *rest.PutCellRequest) error {
-	router := compose.NewRouterEventFilter(nodes.RouterOptions{})
+	router := compose.ReverseClient()
 	acl, e := permissions.AccessListFromContextClaims(ctx)
 	if e != nil {
 		return e

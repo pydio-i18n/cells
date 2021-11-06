@@ -44,7 +44,7 @@ var (
 	wrapperError = "WRAPPER_ERROR"
 )
 
-func emptyFakeWrapper() (nodes.Client, *nodes.HandlerMock) {
+func emptyFakeWrapper() (nodes.Handler, *nodes.HandlerMock) {
 
 	fakeWrapperHandler := &FakeWrapperHandler{}
 	fakeWrapperHandler.CtxWrapper = func(ctx context.Context) (context.Context, error) {
@@ -57,7 +57,7 @@ func emptyFakeWrapper() (nodes.Client, *nodes.HandlerMock) {
 	return fakeWrapperHandler, mock
 }
 
-func errorFakeWrapper() (nodes.Client, *nodes.HandlerMock) {
+func errorFakeWrapper() (nodes.Handler, *nodes.HandlerMock) {
 
 	fakeWrapperHandler := &FakeWrapperHandler{}
 	fakeWrapperHandler.CtxWrapper = func(ctx context.Context) (context.Context, error) {
@@ -69,9 +69,9 @@ func errorFakeWrapper() (nodes.Client, *nodes.HandlerMock) {
 	return fakeWrapperHandler, mock
 }
 
-type methodTester func(nodes.Client) error
+type methodTester func(nodes.Handler) error
 
-func testMethod(tester methodTester) (nodes.Client, *nodes.HandlerMock, error) {
+func testMethod(tester methodTester) (nodes.Handler, *nodes.HandlerMock, error) {
 
 	fakeWrapperHandler, mock := emptyFakeWrapper()
 	errorWrapperHandler, _ := errorFakeWrapper()
@@ -101,7 +101,7 @@ func TestWrapper(t *testing.T) {
 
 	Convey("Test wrapper on ReadNode", t, func() {
 
-		_, mock, errTest := testMethod(func(h nodes.Client) error {
+		_, mock, errTest := testMethod(func(h nodes.Handler) error {
 			_, e := h.ReadNode(context.Background(), &tree.ReadNodeRequest{Node: &tree.Node{Path: "/test"}})
 			return e
 		})
@@ -118,7 +118,7 @@ func TestWrapper(t *testing.T) {
 
 	Convey("Test wrapper on ListNodes", t, func() {
 
-		_, mock, errTest := testMethod(func(h nodes.Client) error {
+		_, mock, errTest := testMethod(func(h nodes.Handler) error {
 			_, e := h.ListNodes(context.Background(), &tree.ListNodesRequest{Node: &tree.Node{Path: "/test"}})
 			return e
 		})
@@ -135,7 +135,7 @@ func TestWrapper(t *testing.T) {
 
 	Convey("Test wrapper on CreateNode", t, func() {
 
-		_, mock, errTest := testMethod(func(h nodes.Client) error {
+		_, mock, errTest := testMethod(func(h nodes.Handler) error {
 			_, e := h.CreateNode(context.Background(), &tree.CreateNodeRequest{Node: &tree.Node{Path: "/test"}})
 			return e
 		})
@@ -152,7 +152,7 @@ func TestWrapper(t *testing.T) {
 
 	Convey("Test wrapper on DeleteNode", t, func() {
 
-		_, mock, errTest := testMethod(func(h nodes.Client) error {
+		_, mock, errTest := testMethod(func(h nodes.Handler) error {
 			_, e := h.DeleteNode(context.Background(), &tree.DeleteNodeRequest{Node: &tree.Node{Path: "/test"}})
 			return e
 		})
@@ -169,7 +169,7 @@ func TestWrapper(t *testing.T) {
 
 	Convey("Test wrapper on UpdateNode", t, func() {
 
-		_, mock, errTest := testMethod(func(h nodes.Client) error {
+		_, mock, errTest := testMethod(func(h nodes.Handler) error {
 			_, e := h.UpdateNode(context.Background(), &tree.UpdateNodeRequest{
 				From: &tree.Node{Path: "/test"},
 				To:   &tree.Node{Path: "/test2"},
@@ -190,7 +190,7 @@ func TestWrapper(t *testing.T) {
 
 	Convey("Test wrapper on GetObject", t, func() {
 
-		_, mock, errTest := testMethod(func(h nodes.Client) error {
+		_, mock, errTest := testMethod(func(h nodes.Handler) error {
 			_, e := h.GetObject(context.Background(), &tree.Node{Path: "/test"}, &models.GetRequestData{})
 			return e
 		})
@@ -207,7 +207,7 @@ func TestWrapper(t *testing.T) {
 
 	Convey("Test wrapper on PutObject", t, func() {
 
-		_, mock, errTest := testMethod(func(h nodes.Client) error {
+		_, mock, errTest := testMethod(func(h nodes.Handler) error {
 			_, e := h.PutObject(context.Background(), &tree.Node{Path: "/test"}, strings.NewReader("hello"), &models.PutRequestData{})
 			return e
 		})
@@ -224,7 +224,7 @@ func TestWrapper(t *testing.T) {
 
 	Convey("Test wrapper on CopyObject", t, func() {
 
-		_, mock, errTest := testMethod(func(h nodes.Client) error {
+		_, mock, errTest := testMethod(func(h nodes.Handler) error {
 			_, e := h.CopyObject(context.Background(), &tree.Node{Path: "/test1"}, &tree.Node{Path: "/test2"}, &models.CopyRequestData{})
 			return e
 		})
@@ -242,7 +242,7 @@ func TestWrapper(t *testing.T) {
 
 	Convey("Test wrapper on MultipartCreate", t, func() {
 
-		_, mock, errTest := testMethod(func(h nodes.Client) error {
+		_, mock, errTest := testMethod(func(h nodes.Handler) error {
 			_, e := h.MultipartCreate(context.Background(), &tree.Node{Path: "/test"}, &models.MultipartRequestData{})
 			return e
 		})
@@ -259,7 +259,7 @@ func TestWrapper(t *testing.T) {
 
 	Convey("Test wrapper on MultipartAbort", t, func() {
 
-		_, mock, errTest := testMethod(func(h nodes.Client) error {
+		_, mock, errTest := testMethod(func(h nodes.Handler) error {
 			return h.MultipartAbort(context.Background(), &tree.Node{Path: "/test"}, "upload", &models.MultipartRequestData{})
 		})
 
@@ -275,7 +275,7 @@ func TestWrapper(t *testing.T) {
 
 	Convey("Test wrapper on MultipartComplete", t, func() {
 
-		_, mock, errTest := testMethod(func(h nodes.Client) error {
+		_, mock, errTest := testMethod(func(h nodes.Handler) error {
 			_, e := h.MultipartComplete(context.Background(), &tree.Node{Path: "/test"}, "upload", []models.MultipartObjectPart{})
 			return e
 		})
@@ -292,7 +292,7 @@ func TestWrapper(t *testing.T) {
 
 	Convey("Test wrapper on MultipartList", t, func() {
 
-		_, mock, errTest := testMethod(func(h nodes.Client) error {
+		_, mock, errTest := testMethod(func(h nodes.Handler) error {
 			_, e := h.MultipartList(context.Background(), "/test", &models.MultipartRequestData{})
 			return e
 		})
@@ -307,7 +307,7 @@ func TestWrapper(t *testing.T) {
 
 	Convey("Test wrapper on MultipartListObjectParts", t, func() {
 
-		_, mock, errTest := testMethod(func(h nodes.Client) error {
+		_, mock, errTest := testMethod(func(h nodes.Handler) error {
 			_, e := h.MultipartListObjectParts(context.Background(), &tree.Node{Path: "/test"}, "upload", 0, 0)
 			return e
 		})

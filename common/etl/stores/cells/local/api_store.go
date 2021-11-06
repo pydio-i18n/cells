@@ -70,7 +70,7 @@ type syncShareLoadedUser struct {
 type ApiStore struct {
 	// Cached data
 	slugsCache  map[string]string
-	router      *nodes.Router
+	router      nodes.Client
 	loadedUsers map[string]*syncShareLoadedUser
 }
 
@@ -695,9 +695,9 @@ func (apiStore *ApiStore) loadWorkspacesSlugs(ctx context.Context) (map[string]s
 	return apiStore.slugsCache, nil
 }
 
-func (apiStore *ApiStore) getRouter() *nodes.Router {
+func (apiStore *ApiStore) getRouter() nodes.Client {
 	if apiStore.router == nil {
-		apiStore.router = compose.NewStandardRouter(nodes.RouterOptions{})
+		apiStore.router = compose.PathClient()
 	}
 	return apiStore.router
 }

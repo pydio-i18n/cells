@@ -28,9 +28,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pydio/cells/common/nodes"
-	"github.com/pydio/cells/common/utils/meta"
-
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/analysis/analyzer/keyword"
 	"github.com/blevesearch/bleve/analysis/analyzer/standard"
@@ -42,7 +39,9 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/tree"
+	"github.com/pydio/cells/common/utils/meta"
 
 	_ "github.com/blevesearch/bleve/analysis/lang/ar"
 	_ "github.com/blevesearch/bleve/analysis/lang/bg"
@@ -86,7 +85,7 @@ var (
 )
 
 type BleveServer struct {
-	Router       nodes.Client
+	Router       nodes.Handler
 	Engine       bleve.Index
 	IndexContent bool
 

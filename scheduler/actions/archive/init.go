@@ -45,7 +45,7 @@ func init() {
 
 }
 
-func computeTargetName(ctx context.Context, handler nodes.Client, dirPath string, base string, extension ...string) string {
+func computeTargetName(ctx context.Context, handler nodes.Handler, dirPath string, base string, extension ...string) string {
 	ext := ""
 	if len(extension) > 0 {
 		ext = "." + extension[0]

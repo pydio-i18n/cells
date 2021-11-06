@@ -52,7 +52,7 @@ import (
 
 type WebsocketHandler struct {
 	Websocket   *melody.Melody
-	EventRouter *compose.RouterEventFilter
+	EventRouter *compose.Reverse
 
 	batcherLock   *sync.Mutex
 	batchers      map[string]*NodeEventsBatcher

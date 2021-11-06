@@ -33,7 +33,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/pydio/cells/common/auth"
-	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/tree"
@@ -63,7 +62,7 @@ DESCRIPTION
 			cmd.Help()
 			return
 		}
-		router := compose.NewStandardRouter(nodes.RouterOptions{AdminView: true})
+		router := compose.PathClientAdmin()
 		c := auth.WithImpersonate(context.Background(), &idm.User{Login: benchUser})
 		for i := 0; i < benchNumber; i++ {
 			u := uuid.New()

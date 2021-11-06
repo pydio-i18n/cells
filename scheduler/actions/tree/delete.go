@@ -149,7 +149,7 @@ func (c *DeleteAction) Run(ctx context.Context, channels *actions.RunnableChanne
 
 	var isFlat bool
 	var firstLevelFolders []*tree.Node
-	if router, ok := cli.(*nodes.Router); ok {
+	if router, ok := cli.(nodes.Client); ok {
 		if b, err := router.BranchInfoForNode(ctx, sourceNode); err == nil {
 			isFlat = b.FlatStorage
 		} else {

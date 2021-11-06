@@ -43,7 +43,7 @@ type AccessListHandler struct {
 	abstract.AbstractHandler
 }
 
-func (a *AccessListHandler) Adapt(h nodes.Client, options nodes.RouterOptions) nodes.Client {
+func (a *AccessListHandler) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	a.Next = h
 	a.ClientsPool = options.Pool
 	return a

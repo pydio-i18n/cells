@@ -25,13 +25,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pydio/cells/common/nodes/abstract"
-
 	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/common/log"
 	"github.com/pydio/cells/common/nodes"
+	"github.com/pydio/cells/common/nodes/abstract"
 	"github.com/pydio/cells/common/nodes/acl"
 	"github.com/pydio/cells/common/nodes/archive"
 	"github.com/pydio/cells/common/nodes/core"
@@ -39,22 +38,46 @@ import (
 	"github.com/pydio/cells/common/nodes/path"
 	"github.com/pydio/cells/common/nodes/put"
 	"github.com/pydio/cells/common/nodes/version"
-	"github.com/pydio/cells/common/nodes/virtual"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/utils/permissions"
 )
 
-// RouterEventFilter is an extended Router used mainly to filter events sent from inside to outside the application
-type RouterEventFilter struct {
-	nodes.Router
+// Reverse is an extended clientImpl used mainly to filter events sent from inside to outside the application
+type Reverse struct {
+	nodes.Client
 	rootsCache *cache.Cache
 }
 
-// NewRouterEventFilter creates a new EventFilter properly initialized
-func NewRouterEventFilter(options nodes.RouterOptions) *RouterEventFilter {
+func ReverseClient(oo ...nodes.Option) *Reverse {
+	opts := append(oo,
+		nodes.WithCore(func(pool nodes.SourcesPool) nodes.Handler {
+			exe := &core.Executor{}
+			exe.SetClientsPool(pool)
+			return exe
+		}),
+		acl.WithAccessList(),
+		path.WithWorkspace(),
+		path.WithMultipleRoots(),
+		path.WithRootResolver(),
+		path.WithDatasource(),
+		archive.WithArchives(),
+		put.WithPutInterceptor(),
+		version.WithVersions(),
+		encryption.WithEncryption(),
+	)
+	cl := newClient(opts...)
+	return &Reverse{
+		Client:     cl,
+		rootsCache: cache.New(120*time.Second, 10*time.Minute),
+	}
+}
 
-	handlers := []nodes.Client{
+// NewRouterEventFilter creates a new EventFilter properly initialized
+/*
+func NewRouterEventFilter(options nodes.RouterOptions) *Reverse {
+
+	handlers := []nodes.Handler{
 		acl.NewAccessListHandler(options.AdminView),
 		path.NewPathWorkspaceHandler(),
 		path.NewPathMultipleRootsHandler(),
@@ -66,23 +89,25 @@ func NewRouterEventFilter(options nodes.RouterOptions) *RouterEventFilter {
 		path.NewWorkspaceRootResolver(),
 		path.NewPathDataSourceHandler(),
 		archive.NewArchiveHandler(),     // Catch "GET" request on folder.zip and create archive on-demand
-		&put.PutHandler{},               // Client adding a node precreation on PUT file request
-		&encryption.EncryptionHandler{}, // Client retrieve encryption materials from encryption service
+		&put.PutHandler{},               // Handler adding a node precreation on PUT file request
+		&encryption.EncryptionHandler{}, // Handler retrieve encryption materials from encryption service
 		&version.VersionHandler{},
 		&core.Executor{},
 	)
 	pool := nodes.NewClientsPool(options.WatchRegistry)
-	r := nodes.NewRouter(pool, handlers)
-	re := &RouterEventFilter{
-		Router:     *r,
+	r := NewRouter(pool, handlers)
+	re := &Reverse{
+		Client:     r,
 		rootsCache: cache.New(120*time.Second, 10*time.Minute),
 	}
 	return re
 
 }
 
+*/
+
 // WorkspaceCanSeeNode will check workspaces roots to see if a node in below one of them
-func (r *RouterEventFilter) WorkspaceCanSeeNode(ctx context.Context, accessList *permissions.AccessList, workspace *idm.Workspace, node *tree.Node) (*tree.Node, bool) {
+func (r *Reverse) WorkspaceCanSeeNode(ctx context.Context, accessList *permissions.AccessList, workspace *idm.Workspace, node *tree.Node) (*tree.Node, bool) {
 	if node == nil {
 		return node, false
 	}
@@ -118,7 +143,7 @@ func (r *RouterEventFilter) WorkspaceCanSeeNode(ctx context.Context, accessList 
 				_, newNode, _ = outputFilter(ctx, newNode, "in")
 				return nil
 			})
-			log.Logger(ctx).Debug("Router Filtered node", zap.String("rootPath", parent.Path), zap.String("workspace", workspace.Label), zap.String("from", node.Path), zap.String("to", newNode.Path))
+			log.Logger(ctx).Debug("clientImpl Filtered node", zap.String("rootPath", parent.Path), zap.String("workspace", workspace.Label), zap.String("from", node.Path), zap.String("to", newNode.Path))
 			return newNode, true
 		}
 	}
@@ -126,7 +151,7 @@ func (r *RouterEventFilter) WorkspaceCanSeeNode(ctx context.Context, accessList 
 }
 
 // NodeIsChildOfRoot compares pathes between possible parent and child
-func (r *RouterEventFilter) NodeIsChildOfRoot(ctx context.Context, node *tree.Node, rootId string) (*tree.Node, bool) {
+func (r *Reverse) NodeIsChildOfRoot(ctx context.Context, node *tree.Node, rootId string) (*tree.Node, bool) {
 
 	vManager := abstract.GetVirtualNodesManager()
 	if virtualNode, exists := vManager.ByUuid(rootId); exists {
@@ -144,7 +169,7 @@ func (r *RouterEventFilter) NodeIsChildOfRoot(ctx context.Context, node *tree.No
 }
 
 // getRoot provides a loaded root node from the cache or from the treeClient
-func (r *RouterEventFilter) getRoot(ctx context.Context, rootId string) *tree.Node {
+func (r *Reverse) getRoot(ctx context.Context, rootId string) *tree.Node {
 
 	if node, ok := r.rootsCache.Get(rootId); ok {
 		return node.(*tree.Node)

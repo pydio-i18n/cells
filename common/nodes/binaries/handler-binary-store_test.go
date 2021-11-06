@@ -39,7 +39,7 @@ var (
 	testBinaryStoreName = "store"
 )
 
-func getStoreTestMock() (nodes.Client, *nodes.HandlerMock) {
+func getStoreTestMock() (nodes.Handler, *nodes.HandlerMock) {
 	mock := nodes.NewHandlerMock()
 	handler := &BinaryStoreHandler{
 		StoreName: testBinaryStoreName,

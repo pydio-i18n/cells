@@ -60,7 +60,7 @@ type FlatStorageHandler struct {
 	abstract.AbstractHandler
 }
 
-func (f *FlatStorageHandler) Adapt(h nodes.Client, options nodes.RouterOptions) nodes.Client {
+func (f *FlatStorageHandler) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	f.Next = h
 	f.ClientsPool = options.Pool
 	return f

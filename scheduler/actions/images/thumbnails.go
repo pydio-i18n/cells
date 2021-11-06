@@ -79,7 +79,7 @@ type ThumbnailsMeta struct {
 }
 
 type ThumbnailExtractor struct {
-	//Router     views.Client
+	//Router     views.Handler
 	thumbSizes map[string]int
 	metaClient tree.NodeReceiverClient
 	Client     client.Client

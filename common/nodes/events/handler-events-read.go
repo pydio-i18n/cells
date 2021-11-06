@@ -56,7 +56,7 @@ type HandlerEventRead struct {
 	abstract.AbstractHandler
 }
 
-func (h *HandlerEventRead) Adapt(c nodes.Client, options nodes.RouterOptions) nodes.Client {
+func (h *HandlerEventRead) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	h.Next = c
 	h.ClientsPool = options.Pool
 	return h

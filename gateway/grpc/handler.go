@@ -15,7 +15,7 @@ import (
 )
 
 type TreeHandler struct {
-	router nodes.Client
+	router nodes.Handler
 }
 
 func (t *TreeHandler) fixMode(n *tree.Node) {
@@ -182,16 +182,13 @@ func (t *TreeHandler) DeleteNode(ctx context.Context, req *tree.DeleteNodeReques
 	return nil
 }
 
-func (t *TreeHandler) getRouter() nodes.Client {
+func (t *TreeHandler) getRouter() nodes.Handler {
 	if t.router != nil {
 		return t.router
 	}
-	t.router = compose.NewStandardRouter(nodes.RouterOptions{
-		AdminView:        false,
-		WatchRegistry:    true,
-		LogReadEvents:    false,
-		AuditEvent:       false,
-		SynchronousTasks: true,
-	})
+	t.router = compose.PathClient(
+		nodes.WithRegistryWatch(),
+		nodes.WithSynchronousTasks(),
+	)
 	return t.router
 }

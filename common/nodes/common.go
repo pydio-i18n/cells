@@ -34,13 +34,11 @@ package nodes
 import (
 	"context"
 	"io"
-	"strings"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/pydio/minio-go"
 	"go.uber.org/zap/zapcore"
 
-	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/object"
@@ -90,7 +88,7 @@ type NodesCallback func(inputFilter NodeFilter, outputFilter NodeFilter) error
 type WalkFunc func(ctx context.Context, node *tree.Node, err error) error
 type WalkFilter func(ctx context.Context, node *tree.Node) bool
 
-type Client interface {
+type Handler interface {
 	tree.NodeProviderClient
 	tree.NodeReceiverClient
 	tree.NodeChangesStreamerClient
@@ -110,7 +108,6 @@ type Client interface {
 	WrappedCanApply(srcCtx context.Context, targetCtx context.Context, operation *tree.NodeChangeEvent) error
 	ListNodesWithCallback(ctx context.Context, request *tree.ListNodesRequest, callback WalkFunc, ignoreCbError bool, filters ...WalkFilter) error
 
-	SetNextHandler(h Client)
 	SetClientsPool(p SourcesPool)
 }
 
@@ -132,8 +129,4 @@ func WithBucketName(s LoadedSource, bucket string) LoadedSource {
 
 func (s LoadedSource) MarshalLogObject(encoder zapcore.ObjectEncoder) error {
 	return encoder.AddObject("DataSource", &s.DataSource)
-}
-
-func WalkFilterSkipPydioHiddenFile(_ context.Context, node *tree.Node) bool {
-	return !strings.HasSuffix(node.Path, common.PydioSyncHiddenFile)
 }

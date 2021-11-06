@@ -48,7 +48,7 @@ type MultipleRootsHandler struct {
 	abstract.AbstractBranchFilter
 }
 
-func (h *MultipleRootsHandler) Adapt(c nodes.Client, options nodes.RouterOptions) nodes.Client {
+func (h *MultipleRootsHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	h.Next = c
 	h.ClientsPool = options.Pool
 	return h
@@ -167,7 +167,7 @@ func (m *MultipleRootsHandler) ListNodes(ctx context.Context, in *tree.ListNodes
 				localCtx := nodes.WithBranchInfo(ctx, "in", branch)
 				t, e := m.ReadNode(localCtx, &tree.ReadNodeRequest{Node: node})
 				if e != nil {
-					log.Logger(ctx).Error("[Client Multiple Root] Cannot read root node", zap.Error(e))
+					log.Logger(ctx).Error("[Handler Multiple Root] Cannot read root node", zap.Error(e))
 					continue
 				}
 				node = t.Node

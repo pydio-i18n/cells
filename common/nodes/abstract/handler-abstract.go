@@ -36,10 +36,10 @@ import (
 
 type ContextWrapper func(ctx context.Context) (context.Context, error)
 
-// AbstractHandler provides the simplest implementation of Client and forwards
+// AbstractHandler provides the simplest implementation of Handler and forwards
 // all calls to the Next handler
 type AbstractHandler struct {
-	Next        nodes.Client
+	Next        nodes.Handler
 	ClientsPool nodes.SourcesPool
 	CtxWrapper  ContextWrapper
 }
@@ -52,7 +52,7 @@ func (a *AbstractHandler) WrapContext(ctx context.Context) (context.Context, err
 	}
 }
 
-func (a *AbstractHandler) SetNextHandler(h nodes.Client) {
+func (a *AbstractHandler) SetNextHandler(h nodes.Handler) {
 	a.Next = h
 }
 

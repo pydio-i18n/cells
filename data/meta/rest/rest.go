@@ -47,7 +47,7 @@ import (
 )
 
 type Handler struct {
-	router *nodes.Router
+	router nodes.Client
 }
 
 // SwaggerTags list the names of the service tags declared in the swagger json implemented by this service
@@ -336,10 +336,9 @@ func (h *Handler) DeleteMeta(req *restful.Request, resp *restful.Response) {
 
 }
 
-func (h *Handler) GetRouter() *nodes.Router {
+func (h *Handler) GetRouter() nodes.Client {
 	if h.router == nil {
-		//h.router = compose.NewStandardRouter(nodes.RouterOptions{WatchRegistry: true, AuditEvent: true})
-		h.router = nodes.RichClient(compose.PathComposer(nodes.WithAuditEventsLogging(), nodes.WithRegistryWatch())...)
+		h.router = compose.NewClient(compose.PathComposer(nodes.WithAuditEventsLogging(), nodes.WithRegistryWatch())...)
 	}
 	return h.router
 }

@@ -29,8 +29,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pydio/cells/common/nodes/compose"
-
 	"github.com/blevesearch/bleve"
 	"go.uber.org/zap"
 
@@ -39,6 +37,7 @@ import (
 	"github.com/pydio/cells/common/auth/claim"
 	"github.com/pydio/cells/common/log"
 	"github.com/pydio/cells/common/nodes"
+	"github.com/pydio/cells/common/nodes/compose"
 	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/service/context"
@@ -53,8 +52,8 @@ type Batch struct {
 	nsProvider *meta.NamespacesProvider
 	options    BatchOptions
 	ctx        context.Context
-	uuidRouter nodes.Client
-	stdRouter  nodes.Client
+	uuidRouter nodes.Handler
+	stdRouter  nodes.Handler
 }
 
 type BatchOptions struct {
@@ -189,16 +188,16 @@ func (b *Batch) NamespacesProvider() *meta.NamespacesProvider {
 	return b.nsProvider
 }
 
-func (b *Batch) getUuidRouter() nodes.Client {
+func (b *Batch) getUuidRouter() nodes.Handler {
 	if b.uuidRouter == nil {
-		b.uuidRouter = compose.NewUuidRouter(nodes.RouterOptions{AdminView: true, WatchRegistry: true})
+		b.uuidRouter = compose.NewClient(compose.UuidComposer(nodes.AsAdmin(), nodes.WithRegistryWatch())...)
 	}
 	return b.uuidRouter
 }
 
-func (b *Batch) getStdRouter() nodes.Client {
+func (b *Batch) getStdRouter() nodes.Handler {
 	if b.stdRouter == nil {
-		b.stdRouter = compose.NewStandardRouter(nodes.RouterOptions{AdminView: true, WatchRegistry: true})
+		b.stdRouter = compose.NewClient(compose.PathComposer(nodes.AsAdmin(), nodes.WithRegistryWatch())...)
 	}
 	return b.stdRouter
 }

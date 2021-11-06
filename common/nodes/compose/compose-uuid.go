@@ -31,9 +31,13 @@ import (
 	"github.com/pydio/cells/common/nodes/version"
 )
 
-func UuidComposer() []nodes.Option {
-	return []nodes.Option{
-		nodes.WithCore(func(pool nodes.SourcesPool) nodes.Client {
+func UuidClient(oo ...nodes.Option) nodes.Client {
+	return NewClient(UuidComposer(oo...)...)
+}
+
+func UuidComposer(oo ...nodes.Option) []nodes.Option {
+	return append(oo,
+		nodes.WithCore(func(pool nodes.SourcesPool) nodes.Handler {
 			exe := &core.Executor{}
 			exe.SetClientsPool(pool)
 			return exe
@@ -53,14 +57,14 @@ func UuidComposer() []nodes.Option {
 		version.WithVersions(),
 		encryption.WithEncryption(),
 		core.WithFlatInterceptor(),
-	}
-
+	)
 }
 
-// NewUuidRouter returns a new configured instance of a router
+// newUuidRouter is the legacy constructor. Returns a new configured instance of a router
 // that relies on nodes UUID rather than the usual Node path.
-func NewUuidRouter(options nodes.RouterOptions) *nodes.Router {
-	handlers := []nodes.Client{
+/*
+func newUuidRouter(options nodes.RouterOptions) nodes.Client {
+	handlers := []nodes.Handler{
 		acl.NewAccessListHandler(options.AdminView),
 		uuid.NewUuidNodeHandler(),
 		uuid.NewUuidDataSourceHandler(),
@@ -88,3 +92,4 @@ func NewUuidRouter(options nodes.RouterOptions) *nodes.Router {
 	pool := nodes.NewClientsPool(options.WatchRegistry)
 	return nodes.NewRouter(pool, handlers)
 }
+*/

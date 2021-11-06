@@ -88,7 +88,7 @@ func makeFakeTestContext(identifier string, root ...*tree.Node) context.Context 
 
 func TestBranchTranslator_ReadNode(t *testing.T) {
 
-	pool := nodes.MakeFakeClientsPool()
+	pool := nodes.MakeFakeClientsPool(nil, nil)
 
 	Convey("Test Readnode without context", t, func() {
 
@@ -185,7 +185,7 @@ func TestBranchTranslator_ReadNode(t *testing.T) {
 
 func TestBranchTranslator_ListNodes(t *testing.T) {
 
-	pool := nodes.MakeFakeClientsPool()
+	pool := nodes.MakeFakeClientsPool(nil, nil)
 
 	Convey("Test ListNodes with user context", t, func() {
 
@@ -216,7 +216,7 @@ func TestBranchTranslator_ListNodes(t *testing.T) {
 
 func TestBranchTranslator_OtherMethods(t *testing.T) {
 
-	pool := nodes.MakeFakeClientsPool()
+	pool := nodes.MakeFakeClientsPool(nil, nil)
 
 	Convey("Test CreateNode", t, func() {
 

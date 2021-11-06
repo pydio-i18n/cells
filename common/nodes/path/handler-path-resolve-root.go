@@ -51,7 +51,7 @@ type WorkspaceRootResolver struct {
 	abstract.AbstractBranchFilter
 }
 
-func (h *WorkspaceRootResolver) Adapt(c nodes.Client, options nodes.RouterOptions) nodes.Client {
+func (h *WorkspaceRootResolver) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	h.Next = c
 	h.ClientsPool = options.Pool
 	return h

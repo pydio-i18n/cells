@@ -22,22 +22,18 @@ package nodes
 
 import (
 	"context"
+	"strings"
 	"time"
+
+	"github.com/pydio/cells/common"
 
 	"github.com/micro/go-micro/client"
 
 	"github.com/pydio/cells/common/proto/tree"
 )
 
-// ListNodesWithCallback performs a ListNodes request and applied callback with optional filters. This hides the complexity of streams handling.
-func (v *Router) ListNodesWithCallback(ctx context.Context, request *tree.ListNodesRequest, callback WalkFunc, ignoreCbError bool, filters ...WalkFilter) error {
-
-	return HandlerListNodesWithCallback(v, ctx, request, callback, ignoreCbError, filters...)
-
-}
-
-// HandlerListNodesWithCallback is a generic implementation of ListNodesWithCallback for any Client. Used by Router, Client and HandlerMock
-func HandlerListNodesWithCallback(v Client, ctx context.Context, request *tree.ListNodesRequest, callback WalkFunc, ignoreCbError bool, filters ...WalkFilter) error {
+// HandlerListNodesWithCallback is a generic implementation of ListNodesWithCallback for any Handler. Used by Client, Handler and HandlerMock
+func HandlerListNodesWithCallback(v Handler, ctx context.Context, request *tree.ListNodesRequest, callback WalkFunc, ignoreCbError bool, filters ...WalkFilter) error {
 	r, e := v.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Path: request.Node.Path}})
 	if e != nil {
 		return e
@@ -80,4 +76,9 @@ loop:
 		}
 	}
 	return nil
+}
+
+// WalkFilterSkipPydioHiddenFile is a preset filter ignoring PydioSyncHiddenFile entries
+func WalkFilterSkipPydioHiddenFile(_ context.Context, node *tree.Node) bool {
+	return !strings.HasSuffix(node.Path, common.PydioSyncHiddenFile)
 }

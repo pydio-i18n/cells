@@ -57,8 +57,6 @@ func (r MockReadCloser) Close() error {
 	return nil
 }
 
-func (h *HandlerMock) SetNextHandler(handler Client) {}
-
 func (h *HandlerMock) SetClientsPool(p SourcesPool) {}
 
 func (h *HandlerMock) ExecuteWrapped(inputFilter NodeFilter, outputFilter NodeFilter, provider NodesCallback) error {
