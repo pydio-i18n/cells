@@ -39,11 +39,11 @@ import (
 
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/sync/endpoints/memory"
 	"github.com/pydio/cells/common/sync/model"
 	context2 "github.com/pydio/cells/common/utils/context"
-	"github.com/pydio/cells/common/views/models"
 )
 
 type ObjectsClient interface {

@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pydio/minio-go"
 	"go.uber.org/zap/zapcore"
 
 	service "github.com/pydio/cells/common/service/proto"
@@ -52,12 +51,6 @@ const (
 // Builds the url used for clients
 func (d *DataSource) BuildUrl() string {
 	return fmt.Sprintf("%s:%d", d.ObjectsHost, d.ObjectsPort)
-}
-
-// Creates a Minio.Core client from the datasource parameters
-func (d *DataSource) CreateClient() (*minio.Core, error) {
-	return minio.NewCore(d.BuildUrl(), d.GetApiKey(), d.GetApiSecret(), d.GetObjectsSecure())
-
 }
 
 // BuildUrl builds the url used for clients

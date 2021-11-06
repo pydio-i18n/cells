@@ -39,6 +39,8 @@ import (
 	"github.com/pydio/cells/common/config"
 	"github.com/pydio/cells/common/log"
 	defaults "github.com/pydio/cells/common/micro"
+	"github.com/pydio/cells/common/nodes"
+	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/docstore"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/rest"
@@ -49,8 +51,6 @@ import (
 	"github.com/pydio/cells/common/utils/i18n"
 	"github.com/pydio/cells/common/utils/mtree"
 	"github.com/pydio/cells/common/utils/permissions"
-	"github.com/pydio/cells/common/views"
-	"github.com/pydio/cells/common/views/models"
 	rest_meta "github.com/pydio/cells/data/meta/rest"
 	"github.com/pydio/cells/data/templates"
 	"github.com/pydio/cells/scheduler/lang"
@@ -67,7 +67,7 @@ var (
 
 func getClient() tree.NodeProviderClient {
 	if providerClient == nil {
-		providerClient = views.NewStandardRouter(views.RouterOptions{AdminView: true, BrowseVirtualNodes: true, AuditEvent: false})
+		providerClient = nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true, BrowseVirtualNodes: true, AuditEvent: false})
 	}
 	return providerClient
 }
@@ -270,13 +270,13 @@ func (h *Handler) DeleteNodes(req *restful.Request, resp *restful.Response) {
 		} else {
 			node = read.Node
 		}
-		e := router.WrapCallback(func(inputFilter views.NodeFilter, outputFilter views.NodeFilter) error {
+		e := router.WrapCallback(func(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter) error {
 			ctx, filtered, _ := inputFilter(ctx, node, "in")
-			_, ancestors, e := views.AncestorsListFromContext(ctx, filtered, "in", router.GetClientsPool(), false)
+			_, ancestors, e := nodes.AncestorsListFromContext(ctx, filtered, "in", router.GetClientsPool(), false)
 			if e != nil {
 				return e
 			}
-			bi, ok := views.GetBranchInfo(ctx, "in")
+			bi, ok := nodes.GetBranchInfo(ctx, "in")
 			if !ok {
 				return fmt.Errorf("cannot find branch info for this node")
 			}
@@ -347,7 +347,7 @@ func (h *Handler) DeleteNodes(req *restful.Request, resp *restful.Response) {
 
 	cli := jobs.NewJobServiceClient(registry.GetClient(common.ServiceJobs))
 	moveLabel := T("Jobs.User.MoveRecycle")
-	fullPathRouter := views.NewStandardRouter(views.RouterOptions{AdminView: true})
+	fullPathRouter := nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true})
 	for recyclePath, selectedPaths := range deleteJobs.RecycleMoves {
 
 		// Create recycle bins now, to make sure user is notified correctly
@@ -507,7 +507,7 @@ func (h *Handler) RestoreNodes(req *restful.Request, resp *restful.Response) {
 	cli := jobs.NewJobServiceClient(registry.GetClient(common.ServiceJobs))
 	restoreTargets := make(map[string]struct{}, len(input.Nodes))
 
-	e := router.WrapCallback(func(inputFilter views.NodeFilter, outputFilter views.NodeFilter) error {
+	e := router.WrapCallback(func(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter) error {
 		for _, n := range input.Nodes {
 			ctx, filtered, _ := inputFilter(ctx, n, "in")
 			r, e := router.GetClientsPool().GetTreeClient().ReadNode(ctx, &tree.ReadNodeRequest{Node: filtered})
@@ -530,11 +530,11 @@ func (h *Handler) RestoreNodes(req *restful.Request, resp *restful.Response) {
 				moveLabel = T("Jobs.User.DirMove")
 			}
 			targetNode := &tree.Node{Path: originalFullPath}
-			_, ancestors, e := views.AncestorsListFromContext(ctx, targetNode, "in", router.GetClientsPool(), true)
+			_, ancestors, e := nodes.AncestorsListFromContext(ctx, targetNode, "in", router.GetClientsPool(), true)
 			if e != nil {
 				return e
 			}
-			accessList := ctx.Value(views.CtxUserAccessListKey{}).(*permissions.AccessList)
+			accessList := ctx.Value(nodes.CtxUserAccessListKey{}).(*permissions.AccessList)
 			if !accessList.CanWrite(ctx, ancestors...) {
 				return errors.Forbidden("node.not.writeable", "Original location is not writable")
 			}

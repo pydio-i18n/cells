@@ -39,19 +39,19 @@ import (
 	"github.com/pydio/cells/common/auth"
 	"github.com/pydio/cells/common/auth/claim"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/activity"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
 	service "github.com/pydio/cells/common/service/proto"
 	"github.com/pydio/cells/common/utils/permissions"
-	"github.com/pydio/cells/common/views"
 	json "github.com/pydio/cells/x/jsonx"
 )
 
 type WebsocketHandler struct {
 	Websocket   *melody.Melody
-	EventRouter *views.RouterEventFilter
+	EventRouter *nodes.RouterEventFilter
 
 	batcherLock   *sync.Mutex
 	batchers      map[string]*NodeEventsBatcher

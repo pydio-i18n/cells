@@ -26,6 +26,7 @@ import (
 	"fmt"
 
 	"github.com/pydio/cells/common"
+	"github.com/pydio/cells/common/nodes"
 	context2 "github.com/pydio/cells/common/utils/context"
 
 	"github.com/micro/go-micro/metadata"
@@ -39,7 +40,6 @@ import (
 	"github.com/pydio/cells/common/proto/tree"
 	servicecontext "github.com/pydio/cells/common/service/context"
 	"github.com/pydio/cells/common/utils/permissions"
-	"github.com/pydio/cells/common/views"
 )
 
 const (
@@ -57,10 +57,10 @@ const (
 const LimiterRate = 30
 const LimiterBurst = 20
 
-func updateSessionFromClaims(session *melody.Session, claims claim.Claims, pool views.SourcesPool) {
+func updateSessionFromClaims(session *melody.Session, claims claim.Claims, pool nodes.SourcesPool) {
 
 	ctx := context.WithValue(context.Background(), claim.ContextKey, claims)
-	vNodeResolver := views.GetVirtualNodesManager().GetResolver(pool, true)
+	vNodeResolver := nodes.GetVirtualNodesManager().GetResolver(pool, true)
 	accessList, err := permissions.AccessListFromContextClaims(ctx)
 	if err != nil {
 		log.Logger(ctx).Error("Error while setting workspaces in session", zap.Error(err))

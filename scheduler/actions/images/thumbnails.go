@@ -44,11 +44,11 @@ import (
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/forms"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes"
+	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
 	context2 "github.com/pydio/cells/common/utils/context"
-	"github.com/pydio/cells/common/views"
-	"github.com/pydio/cells/common/views/models"
 	"github.com/pydio/cells/scheduler/actions"
 	json "github.com/pydio/cells/x/jsonx"
 )
@@ -79,7 +79,7 @@ type ThumbnailsMeta struct {
 }
 
 type ThumbnailExtractor struct {
-	//Router     views.Handler
+	//Router     views.Client
 	thumbSizes map[string]int
 	metaClient tree.NodeReceiverClient
 	Client     client.Client
@@ -295,7 +295,7 @@ func (t *ThumbnailExtractor) writeSizeFromSrc(ctx context.Context, img image.Ima
 	if !localTest {
 
 		var e error
-		thumbsClient, thumbsBucket, e = views.GetGenericStoreClient(ctx, common.PydioThumbstoreNamespace, t.Client)
+		thumbsClient, thumbsBucket, e = nodes.GetGenericStoreClient(ctx, common.PydioThumbstoreNamespace, t.Client)
 		if e != nil {
 			logger.Error("Cannot find client for thumbstore", zap.Error(e))
 			return false, e

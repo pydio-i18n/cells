@@ -25,8 +25,8 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/jobs"
-	"github.com/pydio/cells/common/views"
 )
 
 func TestCompressAction_GetName(t *testing.T) {
@@ -45,7 +45,7 @@ func TestCompressAction_Init(t *testing.T) {
 
 		// Signals the environment that we are unit testing,
 		// so that we do not try to initialise the client pool.
-		views.IsUnitTestEnv = true
+		nodes.IsUnitTestEnv = true
 
 		// Test default parameters
 		e := action.Init(job, nil, &jobs.Action{})

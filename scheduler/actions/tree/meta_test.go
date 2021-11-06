@@ -26,9 +26,9 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/scheduler/actions"
 )
 
@@ -63,7 +63,7 @@ func TestMetaAction_Run(t *testing.T) {
 			},
 		}
 		metaAction.Init(job, nil, action)
-		mock := views.NewHandlerMock()
+		mock := nodes.NewHandlerMock()
 		metaAction.Client = mock
 		status := make(chan string)
 		progress := make(chan float32)

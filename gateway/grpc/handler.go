@@ -8,12 +8,12 @@ import (
 
 	"github.com/micro/go-micro/errors"
 
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views"
 )
 
 type TreeHandler struct {
-	router views.Handler
+	router nodes.Client
 }
 
 func (t *TreeHandler) fixMode(n *tree.Node) {
@@ -180,11 +180,11 @@ func (t *TreeHandler) DeleteNode(ctx context.Context, req *tree.DeleteNodeReques
 	return nil
 }
 
-func (t *TreeHandler) getRouter() views.Handler {
+func (t *TreeHandler) getRouter() nodes.Client {
 	if t.router != nil {
 		return t.router
 	}
-	t.router = views.NewStandardRouter(views.RouterOptions{
+	t.router = nodes.NewStandardRouter(nodes.RouterOptions{
 		AdminView:        false,
 		WatchRegistry:    true,
 		LogReadEvents:    false,

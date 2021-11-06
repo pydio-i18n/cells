@@ -31,10 +31,10 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/pydio/cells/common/auth"
+	"github.com/pydio/cells/common/nodes"
+	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views"
-	"github.com/pydio/cells/common/views/models"
 )
 
 var (
@@ -61,7 +61,7 @@ DESCRIPTION
 			cmd.Help()
 			return
 		}
-		router := views.NewStandardRouter(views.RouterOptions{AdminView: true})
+		router := nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true})
 		c := auth.WithImpersonate(context.Background(), &idm.User{Login: benchUser})
 		for i := 0; i < benchNumber; i++ {
 			u := uuid.New()

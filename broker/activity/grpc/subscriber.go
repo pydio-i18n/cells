@@ -38,6 +38,7 @@ import (
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/auth"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes"
 	activity2 "github.com/pydio/cells/common/proto/activity"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/tree"
@@ -46,7 +47,6 @@ import (
 	"github.com/pydio/cells/common/service/proto"
 	context2 "github.com/pydio/cells/common/utils/context"
 	"github.com/pydio/cells/common/utils/permissions"
-	"github.com/pydio/cells/common/views"
 )
 
 type MicroEventsSubscriber struct {
@@ -212,7 +212,7 @@ func (e *MicroEventsSubscriber) HandleNodeChange(ctx context.Context, msg *tree.
 			continue
 		}
 		userCtx := auth.WithImpersonate(ctx, user)
-		ancestors, ez := views.BuildAncestorsListOrParent(userCtx, e.getTreeClient(), loadedNode)
+		ancestors, ez := nodes.BuildAncestorsListOrParent(userCtx, e.getTreeClient(), loadedNode)
 		if ez != nil {
 			log.Logger(ctx).Error("Could not load ancestors list", zap.Error(er))
 			continue
@@ -226,8 +226,8 @@ func (e *MicroEventsSubscriber) HandleNodeChange(ctx context.Context, msg *tree.
 }
 
 func (e *MicroEventsSubscriber) vNodeResolver(ctx context.Context, n *tree.Node) (*tree.Node, bool) {
-	pool := views.NewClientsPool(false)
-	return views.GetVirtualNodesManager().GetResolver(pool, false)(ctx, n)
+	pool := nodes.NewClientsPool(false)
+	return nodes.GetVirtualNodesManager().GetResolver(pool, false)(ctx, n)
 }
 
 func (e *MicroEventsSubscriber) HandleIdmChange(ctx context.Context, msg *idm.ChangeEvent) error {

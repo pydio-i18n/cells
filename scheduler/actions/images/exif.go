@@ -37,9 +37,9 @@ import (
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/forms"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views/models"
 	"github.com/pydio/cells/scheduler/actions"
 )
 

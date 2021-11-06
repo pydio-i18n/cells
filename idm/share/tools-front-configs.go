@@ -7,11 +7,11 @@ import (
 	"github.com/micro/go-micro/errors"
 
 	"github.com/pydio/cells/common/config"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/rest"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/utils/permissions"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/x/configx"
 )
 
@@ -57,7 +57,7 @@ func CheckLinkOptionsAgainstConfigs(ctx context.Context, link *rest.ShareLink, w
 }
 
 func CheckCellOptionsAgainstConfigs(ctx context.Context, request *rest.PutCellRequest) error {
-	router := views.NewRouterEventFilter(views.RouterOptions{})
+	router := nodes.NewRouterEventFilter(nodes.RouterOptions{})
 	acl, e := permissions.AccessListFromContextClaims(ctx)
 	if e != nil {
 		return e
@@ -68,7 +68,7 @@ func CheckCellOptionsAgainstConfigs(ctx context.Context, request *rest.PutCellRe
 	}
 	options := defaultOptions()
 	aclWss := acl.Workspaces
-	return router.WrapCallback(func(inputFilter views.NodeFilter, outputFilter views.NodeFilter) error {
+	return router.WrapCallback(func(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter) error {
 		for _, n := range request.Room.RootNodes {
 			var files, folders bool
 			var wss []*idm.Workspace

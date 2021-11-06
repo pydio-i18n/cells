@@ -31,10 +31,10 @@ import (
 	"github.com/pydio/cells/common/forms"
 	"github.com/pydio/cells/common/log"
 	"github.com/pydio/cells/common/micro"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/object"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/scheduler/actions"
 )
 
@@ -43,8 +43,8 @@ var (
 )
 
 type PruneVersionsAction struct {
-	Handler views.Handler
-	Pool    views.SourcesPool
+	Handler nodes.Client
+	Pool    nodes.SourcesPool
 }
 
 func (c *PruneVersionsAction) GetDescription(lang ...string) actions.ActionDescription {
@@ -72,7 +72,7 @@ func (c *PruneVersionsAction) GetName() string {
 // Init passes the parameters to a newly created PruneVersionsAction.
 func (c *PruneVersionsAction) Init(job *jobs.Job, cl client.Client, action *jobs.Action) error {
 
-	router := views.NewStandardRouter(views.RouterOptions{AdminView: true})
+	router := nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true})
 	c.Pool = router.GetClientsPool()
 	c.Handler = router
 	return nil

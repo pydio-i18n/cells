@@ -36,8 +36,8 @@ import (
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/auth/claim"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views/models"
 	json "github.com/pydio/cells/x/jsonx"
 )
 

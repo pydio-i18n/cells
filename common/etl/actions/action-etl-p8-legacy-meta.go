@@ -37,14 +37,14 @@ import (
 	"github.com/pydio/cells/common/etl/models"
 	"github.com/pydio/cells/common/forms"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes"
+	models2 "github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/registry"
 	service "github.com/pydio/cells/common/service/proto"
 	"github.com/pydio/cells/common/utils/permissions"
-	"github.com/pydio/cells/common/views"
-	models2 "github.com/pydio/cells/common/views/models"
 	"github.com/pydio/cells/scheduler/actions"
 	json "github.com/pydio/cells/x/jsonx"
 )
@@ -52,7 +52,7 @@ import (
 type MigratePydioMetaAction struct {
 	metaMapping map[string]string
 	cellAdmin   string
-	router      *views.Router
+	router      *nodes.Router
 }
 
 var (
@@ -90,9 +90,9 @@ func (c *MigratePydioMetaAction) GetName() string {
 }
 
 // GetRouter returns an initialized router
-func (c *MigratePydioMetaAction) GetRouter() *views.Router {
+func (c *MigratePydioMetaAction) GetRouter() *nodes.Router {
 	if c.router == nil {
-		c.router = views.NewStandardRouter(views.RouterOptions{})
+		c.router = nodes.NewStandardRouter(nodes.RouterOptions{})
 	}
 	return c.router
 }
@@ -305,7 +305,7 @@ func (c *MigratePydioMetaAction) WorkspaceHasTemplatePath(ctx context.Context, w
 		r, e := treeClient.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Uuid: a.NodeID}})
 		if e == nil && r != nil {
 			return false, nil
-		} else if _, ok := views.GetVirtualNodesManager().ByUuid(a.NodeID); ok {
+		} else if _, ok := nodes.GetVirtualNodesManager().ByUuid(a.NodeID); ok {
 			return true, nil
 		} else {
 			return false, fmt.Errorf("cannot find root nodes")
@@ -323,15 +323,15 @@ func ComputeContextForUser(ctx context.Context, name string, user *idm.User) (co
 			return nil, e
 		}
 		userCtx = context.WithValue(ctx, common.PydioContextUserKey, name)
-		userCtx = context.WithValue(userCtx, views.CtxUserAccessListKey{}, accessList)
+		userCtx = context.WithValue(userCtx, nodes.CtxUserAccessListKey{}, accessList)
 	} else {
 		accessList, e := permissions.AccessListFromRoles(ctx, user.Roles, false, true)
 		if e != nil {
 			return nil, e
 		}
 		userCtx = context.WithValue(ctx, common.PydioContextUserKey, user.Login)
-		userCtx = context.WithValue(userCtx, views.CtxUserAccessListKey{}, accessList)
+		userCtx = context.WithValue(userCtx, nodes.CtxUserAccessListKey{}, accessList)
 	}
-	userCtx = context.WithValue(userCtx, views.CtxKeepAccessListKey{}, true)
+	userCtx = context.WithValue(userCtx, nodes.CtxKeepAccessListKey{}, true)
 	return userCtx, nil
 }

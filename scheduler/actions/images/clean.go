@@ -30,9 +30,9 @@ import (
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/forms"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/scheduler/actions"
 )
 
@@ -80,7 +80,7 @@ func (c *CleanThumbsTask) Run(ctx context.Context, channels *actions.RunnableCha
 		return input.WithIgnore(), nil
 	}
 
-	thumbsClient, thumbsBucket, e := views.GetGenericStoreClient(ctx, common.PydioThumbstoreNamespace, c.Client)
+	thumbsClient, thumbsBucket, e := nodes.GetGenericStoreClient(ctx, common.PydioThumbstoreNamespace, c.Client)
 	if e != nil {
 		log.Logger(ctx).Debug("Cannot get ThumbStoreClient", zap.Error(e), zap.Any("context", ctx))
 		return input.WithError(e), e

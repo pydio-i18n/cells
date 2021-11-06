@@ -27,8 +27,6 @@ import (
 
 	"github.com/pydio/cells/x/configx"
 
-	"github.com/pydio/cells/common/views"
-
 	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
 
@@ -36,6 +34,7 @@ import (
 	"github.com/pydio/cells/common/config"
 	"github.com/pydio/cells/common/log"
 	defaults "github.com/pydio/cells/common/micro"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/docstore"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/scheduler/actions"
@@ -100,7 +99,7 @@ func PolicyForNode(ctx context.Context, node *tree.Node) *tree.VersioningPolicy 
 
 // DataSourceForPolicy finds the LoadedSource for a given VersioningPolicy - Uses "DS: default"+"Bucket: versions" for
 // backward compatibility.
-func DataSourceForPolicy(ctx context.Context, policy *tree.VersioningPolicy) (views.LoadedSource, error) {
+func DataSourceForPolicy(ctx context.Context, policy *tree.VersioningPolicy) (nodes.LoadedSource, error) {
 	if policy.VersionsDataSourceName == "default" {
 		return getRouter().GetClientsPool().GetDataSourceInfo(common.PydioVersionsNamespace)
 	}
@@ -110,7 +109,7 @@ func DataSourceForPolicy(ctx context.Context, policy *tree.VersioningPolicy) (vi
 		}
 		return ls, nil
 	} else {
-		return views.LoadedSource{}, err
+		return nodes.LoadedSource{}, err
 	}
 }
 

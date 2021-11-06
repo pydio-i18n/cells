@@ -35,11 +35,11 @@ import (
 	"github.com/pydio/cells/common/forms"
 	"github.com/pydio/cells/common/log"
 	defaults "github.com/pydio/cells/common/micro"
+	"github.com/pydio/cells/common/nodes"
+	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/utils/i18n"
-	"github.com/pydio/cells/common/views"
-	"github.com/pydio/cells/common/views/models"
 	"github.com/pydio/cells/data/versions/lang"
 	"github.com/pydio/cells/scheduler/actions"
 )
@@ -66,12 +66,12 @@ func (c *VersionAction) GetParametersForm() *forms.Form {
 
 var (
 	versionActionName = "actions.versioning.create"
-	router            *views.Router
+	router            *nodes.Router
 )
 
-func getRouter() *views.Router {
+func getRouter() *nodes.Router {
 	if router == nil {
-		router = views.NewStandardRouter(views.RouterOptions{AdminView: true, WatchRegistry: true})
+		router = nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true, WatchRegistry: true})
 	}
 	return router
 }
@@ -127,8 +127,8 @@ func (c *VersionAction) Run(ctx context.Context, channels *actions.RunnableChann
 	}
 
 	// Prepare ctx with info about the target branch
-	branchInfo := views.BranchInfo{LoadedSource: source}
-	ctx = views.WithBranchInfo(ctx, "to", branchInfo)
+	branchInfo := nodes.BranchInfo{LoadedSource: source}
+	ctx = nodes.WithBranchInfo(ctx, "to", branchInfo)
 
 	sourceNode := node.Clone()
 
@@ -161,7 +161,7 @@ func (c *VersionAction) Run(ctx context.Context, channels *actions.RunnableChann
 		}
 		log.TasksLogger(ctx).Info(T("Job.Version.StatusMeta", resp.Version))
 		output.AppendOutput(&jobs.ActionOutput{Success: true})
-		ctx = views.WithBranchInfo(ctx, "in", branchInfo)
+		ctx = nodes.WithBranchInfo(ctx, "in", branchInfo)
 		for _, version := range response.PruneVersions {
 			_, errDel := getRouter().DeleteNode(ctx, &tree.DeleteNodeRequest{Node: version.GetLocation()})
 			if errDel != nil {

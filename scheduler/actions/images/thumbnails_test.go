@@ -32,9 +32,9 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/pydio/cells/common"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/scheduler/actions"
 )
 
@@ -80,7 +80,7 @@ func TestThumbnailExtractor_Run(t *testing.T) {
 			},
 		})
 		So(e, ShouldBeNil)
-		action.metaClient = views.NewHandlerMock()
+		action.metaClient = nodes.NewHandlerMock()
 
 		tmpDir := os.TempDir()
 		uuidNode := uuid.NewUUID().String()

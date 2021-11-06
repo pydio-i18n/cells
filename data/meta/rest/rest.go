@@ -36,16 +36,16 @@ import (
 
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/rest"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/registry"
 	"github.com/pydio/cells/common/service"
 	"github.com/pydio/cells/common/utils/meta"
-	"github.com/pydio/cells/common/views"
 )
 
 type Handler struct {
-	router *views.Router
+	router *nodes.Router
 }
 
 // SwaggerTags list the names of the service tags declared in the swagger json implemented by this service
@@ -209,7 +209,7 @@ func (h *Handler) GetBulkMeta(req *restful.Request, resp *restful.Response) {
 			fNode := folderNode.Clone()
 
 			if resp, e := h.GetRouter().ReadNode(ctx, &tree.ReadNodeRequest{Node: fNode}); e == nil {
-				er := h.GetRouter().WrapCallback(func(inputFilter views.NodeFilter, outputFilter views.NodeFilter) error {
+				er := h.GetRouter().WrapCallback(func(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter) error {
 					c, n, e := inputFilter(ctx, resp.Node, "in")
 					if e != nil {
 						return e
@@ -279,7 +279,7 @@ func (h *Handler) SetMeta(req *restful.Request, resp *restful.Response) {
 		}
 	}
 	ctx := req.Request.Context()
-	er := h.GetRouter().WrapCallback(func(inputFilter views.NodeFilter, outputFilter views.NodeFilter) error {
+	er := h.GetRouter().WrapCallback(func(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter) error {
 		ctx, node, _ = inputFilter(ctx, node, "in")
 
 		cli := tree.NewNodeReceiverClient(registry.GetClient(common.ServiceMeta))
@@ -317,7 +317,7 @@ func (h *Handler) DeleteMeta(req *restful.Request, resp *restful.Response) {
 	}
 
 	ctx := req.Request.Context()
-	er := h.GetRouter().WrapCallback(func(inputFilter views.NodeFilter, outputFilter views.NodeFilter) error {
+	er := h.GetRouter().WrapCallback(func(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter) error {
 		ctx, node, _ = inputFilter(ctx, node, "in")
 
 		cli := tree.NewNodeReceiverClient(registry.GetClient(common.ServiceMeta))
@@ -334,9 +334,9 @@ func (h *Handler) DeleteMeta(req *restful.Request, resp *restful.Response) {
 
 }
 
-func (h *Handler) GetRouter() *views.Router {
+func (h *Handler) GetRouter() *nodes.Router {
 	if h.router == nil {
-		h.router = views.NewStandardRouter(views.RouterOptions{WatchRegistry: true, AuditEvent: true})
+		h.router = nodes.NewStandardRouter(nodes.RouterOptions{WatchRegistry: true, AuditEvent: true})
 	}
 	return h.router
 }

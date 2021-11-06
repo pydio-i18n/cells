@@ -30,6 +30,7 @@ import (
 	"time"
 
 	"github.com/pydio/cells/common"
+	"github.com/pydio/cells/common/nodes"
 	servicecontext "github.com/pydio/cells/common/service/context"
 
 	"go.uber.org/zap"
@@ -38,7 +39,6 @@ import (
 	"github.com/pydio/cells/common/auth"
 	"github.com/pydio/cells/common/auth/claim"
 	"github.com/pydio/cells/common/log"
-	"github.com/pydio/cells/common/views"
 )
 
 type ValidUser struct {
@@ -56,7 +56,7 @@ func logRequest(handler http.Handler) http.Handler {
 	})
 }
 
-func newHandler(ctx context.Context, router *views.Router) http.Handler {
+func newHandler(ctx context.Context, router *nodes.Router) http.Handler {
 
 	basicAuthenticator := auth.NewBasicAuthenticator("Cells DAV", time.Duration(10*time.Minute))
 

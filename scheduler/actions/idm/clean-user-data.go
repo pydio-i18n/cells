@@ -10,10 +10,10 @@ import (
 	"github.com/pydio/cells/common/auth"
 	"github.com/pydio/cells/common/forms"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/service"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/scheduler/actions"
 )
 
@@ -111,11 +111,11 @@ func (c *CleanUserDataAction) Run(ctx context.Context, channels *actions.Runnabl
 		tp = jobs.EvaluateFieldStr(ctx, input, tp)
 	}
 
-	router := views.NewStandardRouter(views.RouterOptions{AdminView: true, SynchronousTasks: true})
+	router := nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true, SynchronousTasks: true})
 	clientsPool := router.GetClientsPool()
 	var cleaned bool
 	// For the moment, just rename personal folder to user UUID to collision with new user with same Login
-	vNodesManager := views.GetVirtualNodesManager()
+	vNodesManager := nodes.GetVirtualNodesManager()
 	for _, vNode := range vNodesManager.ListNodes() {
 		onDelete, ok := vNode.MetaStore["onDelete"]
 		if !ok || onDelete != "rename-uuid" {
@@ -161,7 +161,7 @@ func (c *CleanUserDataAction) Run(ctx context.Context, channels *actions.Runnabl
 		log.TasksLogger(ctx).Info("Moving personal folder for deleted user to " + targetNode.Path)
 		cleaned = true
 		// Make a Copy then Delete, to make sure UUID are changed and references are cleared
-		if e := views.CopyMoveNodes(ctx, router, realNode, targetNode, false, false, status, progress); e != nil {
+		if e := nodes.CopyMoveNodes(ctx, router, realNode, targetNode, false, false, status, progress); e != nil {
 			done <- true
 			return input.WithError(e), e
 		}

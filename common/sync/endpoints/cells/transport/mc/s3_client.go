@@ -29,10 +29,10 @@ import (
 
 	"github.com/pydio/minio-go"
 
+	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/sync/endpoints/cells/transport"
 	"github.com/pydio/cells/common/sync/endpoints/cells/transport/oidc"
-	"github.com/pydio/cells/common/views/models"
 )
 
 type S3Client struct {

@@ -34,6 +34,7 @@ import (
 	"github.com/pydio/cells/common/auth/claim"
 	"github.com/pydio/cells/common/log"
 	defaults "github.com/pydio/cells/common/micro"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/rest"
 	"github.com/pydio/cells/common/proto/tree"
@@ -41,7 +42,6 @@ import (
 	"github.com/pydio/cells/common/service"
 	service2 "github.com/pydio/cells/common/service/proto"
 	"github.com/pydio/cells/common/utils/permissions"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/idm/share"
 )
 
@@ -189,7 +189,7 @@ func (h *SharesHandler) ListSharedResources(req *restful.Request, rsp *restful.R
 func (h *SharesHandler) LoadAdminRootNodes(ctx context.Context, detectedRoots []string) (rootNodes map[string]*tree.Node) {
 
 	rootNodes = make(map[string]*tree.Node)
-	router := views.NewUuidRouter(views.RouterOptions{AdminView: true})
+	router := nodes.NewUuidRouter(nodes.RouterOptions{AdminView: true})
 	metaClient := tree.NewNodeProviderClient(common.ServiceGrpcNamespace_+common.ServiceMeta, defaults.NewClient())
 	for _, rootId := range detectedRoots {
 		request := &tree.ReadNodeRequest{Node: &tree.Node{Uuid: rootId}}

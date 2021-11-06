@@ -26,8 +26,8 @@ import (
 	"fmt"
 	"path"
 
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/scheduler/actions"
 )
 
@@ -45,7 +45,7 @@ func init() {
 
 }
 
-func computeTargetName(ctx context.Context, handler views.Handler, dirPath string, base string, extension ...string) string {
+func computeTargetName(ctx context.Context, handler nodes.Client, dirPath string, base string, extension ...string) string {
 	ext := ""
 	if len(extension) > 0 {
 		ext = "." + extension[0]

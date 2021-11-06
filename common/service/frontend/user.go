@@ -33,10 +33,10 @@ import (
 	"github.com/pydio/cells/common/auth/claim"
 	"github.com/pydio/cells/common/config"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/utils/i18n"
 	"github.com/pydio/cells/common/utils/permissions"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/x/configx"
 )
 
@@ -339,7 +339,7 @@ func (u *User) publishWorkspaces(status RequestStatus, pool *PluginsPool) (works
 	}
 
 	// Used to detect "personal files"-like workspace
-	vNodeManager := views.GetVirtualNodesManager()
+	vNodeManager := nodes.GetVirtualNodesManager()
 
 	for _, ws := range u.Workspaces {
 		repo := &Crepo{

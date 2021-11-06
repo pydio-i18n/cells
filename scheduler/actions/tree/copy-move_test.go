@@ -26,15 +26,15 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/scheduler/actions"
 )
 
 func init() {
 	// Ignore client pool for unit tests
-	views.IsUnitTestEnv = true
+	nodes.IsUnitTestEnv = true
 }
 
 func TestCopyMoveAction_GetName(t *testing.T) {
@@ -94,7 +94,7 @@ func TestCopyMoveAction_RunCopy(t *testing.T) {
 			Type:      tree.NodeType_LEAF,
 			MetaStore: map[string]string{"name": `"original"`},
 		}
-		mock := &views.HandlerMock{
+		mock := &nodes.HandlerMock{
 			Nodes: map[string]*tree.Node{"path/to/original": originalNode},
 		}
 		action.PresetHandler(mock)
@@ -137,7 +137,7 @@ func TestCopyMoveAction_RunCopyOnItself(t *testing.T) {
 			Type:      tree.NodeType_LEAF,
 			MetaStore: map[string]string{"name": `"original"`},
 		}
-		mock := &views.HandlerMock{
+		mock := &nodes.HandlerMock{
 			Nodes: map[string]*tree.Node{
 				"path":             {Path: "path", Type: tree.NodeType_COLLECTION},
 				"path/to":          {Path: "path/to", Type: tree.NodeType_COLLECTION},
@@ -189,7 +189,7 @@ func TestCopyMoveAction_RunMove(t *testing.T) {
 			Type:      tree.NodeType_LEAF,
 			MetaStore: map[string]string{"name": `"original"`},
 		}
-		mock := &views.HandlerMock{
+		mock := &nodes.HandlerMock{
 			Nodes: map[string]*tree.Node{"path/to/original": originalNode},
 		}
 		action.PresetHandler(mock)

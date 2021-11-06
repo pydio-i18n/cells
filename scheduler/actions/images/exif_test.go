@@ -32,16 +32,16 @@ import (
 
 	"github.com/pborman/uuid"
 	"github.com/pydio/cells/common"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/scheduler/actions"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func init() {
 	// Ignore client pool for unit tests
-	views.IsUnitTestEnv = true
+	nodes.IsUnitTestEnv = true
 }
 
 func TestExifProcessor_GetName(t *testing.T) {
@@ -72,7 +72,7 @@ func TestExifProcessor_Run(t *testing.T) {
 		// Test action without parameters
 		e := action.Init(job, nil, &jobs.Action{})
 		So(e, ShouldBeNil)
-		action.metaClient = views.NewHandlerMock()
+		action.metaClient = nodes.NewHandlerMock()
 
 		tmpDir := os.TempDir()
 		uuidNode := uuid.NewUUID().String()

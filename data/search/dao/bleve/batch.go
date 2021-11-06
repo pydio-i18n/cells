@@ -36,11 +36,11 @@ import (
 	"github.com/pydio/cells/common/auth"
 	"github.com/pydio/cells/common/auth/claim"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes"
+	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/service/context"
 	"github.com/pydio/cells/common/utils/meta"
-	"github.com/pydio/cells/common/views"
-	"github.com/pydio/cells/common/views/models"
 )
 
 // Batch avoids overflowing bleve index by batching indexation events (index/delete)
@@ -51,8 +51,8 @@ type Batch struct {
 	nsProvider *meta.NamespacesProvider
 	options    BatchOptions
 	ctx        context.Context
-	uuidRouter views.Handler
-	stdRouter  views.Handler
+	uuidRouter nodes.Client
+	stdRouter  nodes.Client
 }
 
 type BatchOptions struct {
@@ -187,16 +187,16 @@ func (b *Batch) NamespacesProvider() *meta.NamespacesProvider {
 	return b.nsProvider
 }
 
-func (b *Batch) getUuidRouter() views.Handler {
+func (b *Batch) getUuidRouter() nodes.Client {
 	if b.uuidRouter == nil {
-		b.uuidRouter = views.NewUuidRouter(views.RouterOptions{AdminView: true, WatchRegistry: true})
+		b.uuidRouter = nodes.NewUuidRouter(nodes.RouterOptions{AdminView: true, WatchRegistry: true})
 	}
 	return b.uuidRouter
 }
 
-func (b *Batch) getStdRouter() views.Handler {
+func (b *Batch) getStdRouter() nodes.Client {
 	if b.stdRouter == nil {
-		b.stdRouter = views.NewStandardRouter(views.RouterOptions{AdminView: true, WatchRegistry: true})
+		b.stdRouter = nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true, WatchRegistry: true})
 	}
 	return b.stdRouter
 }

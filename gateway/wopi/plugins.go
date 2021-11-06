@@ -26,13 +26,13 @@ import (
 	"net/http"
 
 	"github.com/pydio/cells/common"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/plugins"
 	"github.com/pydio/cells/common/service"
-	"github.com/pydio/cells/common/views"
 )
 
 var (
-	viewsRouter *views.Router
+	viewsRouter *nodes.Router
 )
 
 func init() {
@@ -44,7 +44,7 @@ func init() {
 			service.RouterDependencies(),
 			service.Description("WOPI REST Gateway to tree service"),
 			service.WithHTTP(func() http.Handler {
-				viewsRouter = views.NewUuidRouter(views.RouterOptions{WatchRegistry: true, AuditEvent: true})
+				viewsRouter = nodes.NewUuidRouter(nodes.RouterOptions{WatchRegistry: true, AuditEvent: true})
 
 				return NewRouter()
 			}),

@@ -34,6 +34,7 @@ import (
 	"github.com/pydio/cells/common/config"
 	"github.com/pydio/cells/common/log"
 	defaults "github.com/pydio/cells/common/micro"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/auth"
 	"github.com/pydio/cells/common/proto/docstore"
 	"github.com/pydio/cells/common/proto/idm"
@@ -44,7 +45,6 @@ import (
 	"github.com/pydio/cells/common/service"
 	"github.com/pydio/cells/common/utils/i18n"
 	"github.com/pydio/cells/common/utils/permissions"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/idm/oauth/lang"
 	json "github.com/pydio/cells/x/jsonx"
 )
@@ -256,7 +256,7 @@ func (a *TokenHandler) GenerateDocumentAccessToken(req *restful.Request, resp *r
 		return
 	}
 	ctx := req.Request.Context()
-	router := views.NewStandardRouter(views.RouterOptions{})
+	router := nodes.NewStandardRouter(nodes.RouterOptions{})
 	readResp, e := router.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Path: datRequest.Path}})
 	if e != nil {
 		service.RestErrorDetect(req, resp, e)

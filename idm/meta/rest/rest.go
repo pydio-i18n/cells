@@ -38,6 +38,7 @@ import (
 	"github.com/pydio/cells/common/auth"
 	"github.com/pydio/cells/common/log"
 	defaults "github.com/pydio/cells/common/micro"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/docstore"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/rest"
@@ -46,7 +47,6 @@ import (
 	serviceproto "github.com/pydio/cells/common/service/proto"
 	"github.com/pydio/cells/common/service/resources"
 	"github.com/pydio/cells/common/utils/permissions"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/idm/meta/namespace"
 )
 
@@ -136,7 +136,7 @@ func (s *UserMetaHandler) UpdateUserMeta(req *restful.Request, rsp *restful.Resp
 		return
 	}
 	var loadUuids []string
-	router := views.NewUuidRouter(views.RouterOptions{})
+	router := nodes.NewUuidRouter(nodes.RouterOptions{})
 
 	// First check if the namespaces are globally accessible
 	for _, meta := range input.MetaDatas {
@@ -255,7 +255,7 @@ func (s *UserMetaHandler) UserBookmarks(req *restful.Request, rsp *restful.Respo
 	searchRequest := &idm.SearchUserMetaRequest{
 		Namespace: namespace.ReservedNamespaceBookmark,
 	}
-	router := views.NewUuidRouter(views.RouterOptions{})
+	router := nodes.NewUuidRouter(nodes.RouterOptions{})
 	ctx := req.Request.Context()
 	output, e := s.PerformSearchMetaRequest(ctx, searchRequest)
 	if e != nil {

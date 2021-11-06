@@ -33,6 +33,7 @@ import (
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/config"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/activity"
 	"github.com/pydio/cells/common/proto/rest"
 	"github.com/pydio/cells/common/proto/tree"
@@ -40,17 +41,16 @@ import (
 	"github.com/pydio/cells/common/service"
 	"github.com/pydio/cells/common/utils/i18n"
 	"github.com/pydio/cells/common/utils/permissions"
-	"github.com/pydio/cells/common/views"
 )
 
 // ActivityHandler responds to activity REST requests
 type ActivityHandler struct {
-	router *views.RouterEventFilter
+	router *nodes.RouterEventFilter
 }
 
 func NewActivityHandler() *ActivityHandler {
 	return &ActivityHandler{
-		router: views.NewRouterEventFilter(views.RouterOptions{WatchRegistry: true}),
+		router: nodes.NewRouterEventFilter(nodes.RouterOptions{WatchRegistry: true}),
 	}
 }
 

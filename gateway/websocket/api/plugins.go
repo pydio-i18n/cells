@@ -32,6 +32,7 @@ import (
 
 	"github.com/pydio/cells/common"
 	defaults "github.com/pydio/cells/common/micro"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/plugins"
 	"github.com/pydio/cells/common/proto/activity"
 	chat2 "github.com/pydio/cells/common/proto/chat"
@@ -40,7 +41,6 @@ import (
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/service"
 	servicecontext "github.com/pydio/cells/common/service/context"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/gateway/websocket"
 )
 
@@ -75,7 +75,7 @@ func init() {
 				ws = websocket.NewWebSocketHandler(ctx)
 				chat = websocket.NewChatHandler(ctx)
 
-				ws.EventRouter = views.NewRouterEventFilter(views.RouterOptions{WatchRegistry: true})
+				ws.EventRouter = nodes.NewRouterEventFilter(nodes.RouterOptions{WatchRegistry: true})
 
 				gin.SetMode(gin.ReleaseMode)
 				gin.DisableConsoleColor()

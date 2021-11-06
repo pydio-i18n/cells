@@ -36,10 +36,10 @@ import (
 	"github.com/pydio/cells/common/config"
 	"github.com/pydio/cells/common/forms"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/utils/i18n"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/scheduler/actions"
 	"github.com/pydio/cells/scheduler/lang"
 )
@@ -149,7 +149,7 @@ func (c *DeleteAction) Run(ctx context.Context, channels *actions.RunnableChanne
 
 	var isFlat bool
 	var firstLevelFolders []*tree.Node
-	if router, ok := cli.(*views.Router); ok {
+	if router, ok := cli.(*nodes.Router); ok {
 		if b, err := router.BranchInfoForNode(ctx, sourceNode); err == nil {
 			isFlat = b.FlatStorage
 		} else {

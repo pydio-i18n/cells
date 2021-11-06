@@ -43,6 +43,8 @@ import (
 	"github.com/pydio/cells/common/config"
 	"github.com/pydio/cells/common/log"
 	defaults "github.com/pydio/cells/common/micro"
+	"github.com/pydio/cells/common/nodes"
+	"github.com/pydio/cells/common/nodes/models"
 	pauth "github.com/pydio/cells/common/proto/auth"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/rest"
@@ -51,8 +53,6 @@ import (
 	"github.com/pydio/cells/common/service/frontend"
 	"github.com/pydio/cells/common/service/resources"
 	"github.com/pydio/cells/common/utils/permissions"
-	"github.com/pydio/cells/common/views"
-	"github.com/pydio/cells/common/views/models"
 )
 
 const (
@@ -336,7 +336,7 @@ func (a *FrontendHandler) FrontServeBinary(req *restful.Request, rsp *restful.Re
 	binaryUuid := req.PathParameter("Uuid")
 	ctx := req.Request.Context()
 
-	router := views.NewStandardRouter(views.RouterOptions{WatchRegistry: false})
+	router := nodes.NewStandardRouter(nodes.RouterOptions{WatchRegistry: false})
 	var readNode *tree.Node
 	var extension string
 
@@ -409,7 +409,7 @@ func (a *FrontendHandler) FrontPutBinary(req *restful.Request, rsp *restful.Resp
 	ctxUser, ctxClaims := permissions.FindUserNameInContext(ctx)
 
 	log.Logger(ctx).Debug("Upload Binary", zap.String("type", binaryType), zap.Any("header", f2))
-	router := views.NewStandardRouter(views.RouterOptions{WatchRegistry: false})
+	router := nodes.NewStandardRouter(nodes.RouterOptions{WatchRegistry: false})
 	ctx = ctxWithoutCookies(ctx)
 
 	defer f1.Close()
@@ -486,7 +486,7 @@ func (a *FrontendHandler) FrontPutBinary(req *restful.Request, rsp *restful.Resp
 		}
 	} else if binaryType == "GLOBAL" {
 
-		router := views.NewStandardRouter(views.RouterOptions{WatchRegistry: false})
+		router := nodes.NewStandardRouter(nodes.RouterOptions{WatchRegistry: false})
 		node := &tree.Node{
 			Path: common.PydioDocstoreBinariesNamespace + "/global_binaries." + binaryId,
 		}

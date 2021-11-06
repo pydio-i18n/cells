@@ -27,15 +27,16 @@ import (
 	"path"
 	"strings"
 
+	"github.com/pydio/cells/common/nodes"
+
 	"github.com/micro/go-micro/client"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/common/forms"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views"
-	"github.com/pydio/cells/common/views/models"
 	"github.com/pydio/cells/scheduler/actions"
 	"github.com/pydio/cells/scheduler/actions/tools"
 	json "github.com/pydio/cells/x/jsonx"
@@ -139,7 +140,7 @@ func (c *CompressAction) Run(ctx context.Context, channels *actions.RunnableChan
 	if len(input.Nodes) == 0 {
 		return input.WithIgnore(), nil
 	}
-	nodes := input.Nodes
+	nn := input.Nodes
 	log.Logger(ctx).Debug("Compress to : " + c.Format)
 
 	c2, handler, e := c.GetHandler(ctx)
@@ -148,7 +149,7 @@ func (c *CompressAction) Run(ctx context.Context, channels *actions.RunnableChan
 	}
 	ctx = c2
 	// Assume Target is root node sibling
-	compressor := &views.ArchiveWriter{
+	compressor := &nodes.ArchiveWriter{
 		Router: handler,
 	}
 	if c.filter != nil {
@@ -160,10 +161,10 @@ func (c *CompressAction) Run(ctx context.Context, channels *actions.RunnableChan
 		}
 	}
 
-	dir := path.Dir(nodes[0].Path)
+	dir := path.Dir(nn[0].Path)
 	base := "Archive"
-	if len(nodes) == 1 {
-		base = path.Base(nodes[0].Path)
+	if len(nn) == 1 {
+		base = path.Base(nn[0].Path)
 	}
 	if c.TargetName != "" {
 		dir, base = path.Split(jobs.EvaluateFieldStr(ctx, input, c.TargetName))

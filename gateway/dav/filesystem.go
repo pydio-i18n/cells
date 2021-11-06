@@ -33,15 +33,14 @@ import (
 	"time"
 
 	"github.com/micro/go-micro/errors"
-	"github.com/pydio/minio-go"
 	"go.uber.org/zap"
 	"golang.org/x/net/webdav"
 
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes"
+	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views"
-	"github.com/pydio/cells/common/views/models"
 )
 
 // FileSystem is the pydio specific implementation of the generic webdav.FileSystem interface
@@ -49,7 +48,7 @@ import (
 type FileSystem struct {
 	mu     sync.Mutex
 	Debug  bool
-	Router *views.Router
+	Router *nodes.Router
 }
 
 type FileInfo struct {
@@ -243,7 +242,7 @@ func (f *File) ReadFrom(r io.Reader) (n int64, err error) {
 
 	log.Logger(f.ctx).Debug("READ FROM - starting effective dav parts upload for " + f.name + " with id " + multipartID)
 
-	partsInfo := make(map[int]minio.ObjectPart)
+	partsInfo := make(map[int]models.MultipartObjectPart)
 
 	// Write by part
 	var written int64
@@ -316,7 +315,7 @@ func (f *File) ReadFrom(r io.Reader) (n int64, err error) {
 	}
 
 	// Complete multipart write
-	completeParts := make([]minio.CompletePart, len(partsInfo))
+	completeParts := make([]models.MultipartObjectPart, len(partsInfo))
 	// Loop over total uploaded parts to save them in completeParts array before completing the multipart request.
 	for j := 1; j <= len(partsInfo); j++ {
 		part, ok := partsInfo[j]
@@ -326,9 +325,9 @@ func (f *File) ReadFrom(r io.Reader) (n int64, err error) {
 					log.Logger(f.ctx).Error("Error while deleting temporary node")
 				}
 			}
-			return written, minio.ErrInvalidArgument(fmt.Sprintf("Missing part number %d", j))
+			return written, fmt.Errorf("multipart - missing part number %d", j)
 		}
-		completeParts[j-1] = minio.CompletePart{
+		completeParts[j-1] = models.MultipartObjectPart{
 			ETag:       part.ETag,
 			PartNumber: part.PartNumber,
 		}

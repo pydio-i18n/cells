@@ -32,6 +32,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/registry"
 	service "github.com/pydio/cells/common/service/proto"
@@ -48,7 +49,6 @@ import (
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/utils/i18n"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/scheduler/actions"
 	"github.com/pydio/cells/scheduler/lang"
 )
@@ -198,7 +198,7 @@ func (c *CopyMoveAction) Run(ctx context.Context, channels *actions.RunnableChan
 	sourceNode = readR.Node
 	output := input
 
-	if e := views.CopyMoveNodes(ctx, cli, sourceNode, targetNode, c.move, true, channels.StatusMsg, channels.Progress, T); e != nil {
+	if e := nodes.CopyMoveNodes(ctx, cli, sourceNode, targetNode, c.move, true, channels.StatusMsg, channels.Progress, T); e != nil {
 		output = output.WithError(e)
 		return output, e
 	}
@@ -216,7 +216,7 @@ func (c *CopyMoveAction) Run(ctx context.Context, channels *actions.RunnableChan
 
 }
 
-func (c *CopyMoveAction) suffixPathIfNecessary(ctx context.Context, cli views.Handler, targetNode *tree.Node) {
+func (c *CopyMoveAction) suffixPathIfNecessary(ctx context.Context, cli nodes.Client, targetNode *tree.Node) {
 	// Look for registered child locks : children that are currently in creation
 	pNode := &tree.Node{Path: path.Dir(targetNode.Path)}
 	compares := make(map[string]struct{})

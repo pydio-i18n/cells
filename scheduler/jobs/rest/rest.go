@@ -36,23 +36,23 @@ import (
 	"github.com/pydio/cells/common/config"
 	"github.com/pydio/cells/common/log"
 	defaults "github.com/pydio/cells/common/micro"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/jobs"
 	log2 "github.com/pydio/cells/common/proto/log"
 	"github.com/pydio/cells/common/proto/rest"
 	"github.com/pydio/cells/common/registry"
 	"github.com/pydio/cells/common/service"
 	"github.com/pydio/cells/common/utils/i18n"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/scheduler/lang"
 )
 
 var (
-	router *views.Router
+	router *nodes.Router
 )
 
-func getRouter() *views.Router {
+func getRouter() *nodes.Router {
 	if router == nil {
-		router = views.NewStandardRouter(views.RouterOptions{WatchRegistry: true})
+		router = nodes.NewStandardRouter(nodes.RouterOptions{WatchRegistry: true})
 	}
 	return router
 }

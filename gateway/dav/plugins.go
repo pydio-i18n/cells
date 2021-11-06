@@ -25,16 +25,16 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/plugins"
 
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/service"
 	servicecontext "github.com/pydio/cells/common/service/context"
-	"github.com/pydio/cells/common/views"
 )
 
 var (
-	davRouter *views.Router
+	davRouter *nodes.Router
 )
 
 func init() {
@@ -46,7 +46,7 @@ func init() {
 			service.RouterDependencies(),
 			service.Description("DAV Gateway to tree service"),
 			service.WithHTTP(func() http.Handler {
-				davRouter = views.NewStandardRouter(views.RouterOptions{
+				davRouter = nodes.NewStandardRouter(nodes.RouterOptions{
 					WatchRegistry:    true,
 					AuditEvent:       true,
 					SynchronousCache: true,

@@ -38,10 +38,10 @@ import (
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/forms"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes"
+	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views"
-	"github.com/pydio/cells/common/views/models"
 	"github.com/pydio/cells/scheduler/actions"
 	json "github.com/pydio/cells/x/jsonx"
 )
@@ -52,7 +52,7 @@ var (
 
 // WGetAction performs a wget command with the provided URL
 type WGetAction struct {
-	Router     *views.Router
+	Router     *nodes.Router
 	SourceUrl  string
 	targetPath string
 }
@@ -111,7 +111,7 @@ func (w *WGetAction) Init(job *jobs.Job, cl client.Client, action *jobs.Action) 
 	} else {
 		return errors.BadRequest(common.ServiceTasks, "missing parameter url in Action")
 	}
-	w.Router = views.NewStandardRouter(views.RouterOptions{AdminView: true})
+	w.Router = nodes.NewStandardRouter(nodes.RouterOptions{AdminView: true})
 	return nil
 }
 

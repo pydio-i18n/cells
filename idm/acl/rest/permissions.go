@@ -35,11 +35,11 @@ import (
 	"github.com/pydio/cells/common/auth/claim"
 	"github.com/pydio/cells/common/log"
 	"github.com/pydio/cells/common/micro"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/service/proto"
 	"github.com/pydio/cells/common/utils/permissions"
-	"github.com/pydio/cells/common/views"
 )
 
 // WriteAllowed returns an error if the Write permission is not present in an acl
@@ -143,8 +143,8 @@ func (a *Handler) CheckNode(ctx context.Context, nodeID string, action *idm.ACLA
 	}
 
 	// Update Access List with resolved virtual nodes
-	virtualManager := views.GetVirtualNodesManager()
-	cPool := views.NewClientsPool(false)
+	virtualManager := nodes.GetVirtualNodesManager()
+	cPool := nodes.NewClientsPool(false)
 	for _, vNode := range virtualManager.ListNodes() {
 		if aclNodeMask, has := accessList.GetNodesBitmasks()[vNode.Uuid]; has {
 			if resolvedRoot, err := virtualManager.ResolveInContext(ctx, vNode, cPool, false); err == nil {

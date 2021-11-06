@@ -30,6 +30,7 @@ import (
 	"github.com/golang/protobuf/ptypes/any"
 	"github.com/micro/go-micro/errors"
 	"github.com/pydio/cells/common/config/source"
+	"github.com/pydio/cells/common/nodes"
 	protoconfig "github.com/pydio/config-srv/proto/config"
 	go_micro_os_config "github.com/pydio/go-os/config/proto"
 	"go.uber.org/zap"
@@ -47,7 +48,6 @@ import (
 	"github.com/pydio/cells/common/registry"
 	service "github.com/pydio/cells/common/service/proto"
 	"github.com/pydio/cells/common/utils/permissions"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/idm/share"
 )
 
@@ -66,7 +66,7 @@ type syncShareLoadedUser struct {
 type ApiStore struct {
 	// Cached data
 	slugsCache  map[string]string
-	router      *views.Router
+	router      *nodes.Router
 	loadedUsers map[string]*syncShareLoadedUser
 }
 
@@ -490,8 +490,8 @@ func (apiStore *ApiStore) GetUserInfo(ctx context.Context, userName string, para
 		}
 		usrCtx := auth.WithImpersonate(ctx, user)
 		usrCtx = context.WithValue(usrCtx, common.PydioContextUserKey, userName)
-		usrCtx = context.WithValue(usrCtx, views.CtxUserAccessListKey{}, access)
-		usrCtx = context.WithValue(usrCtx, views.CtxKeepAccessListKey{}, true)
+		usrCtx = context.WithValue(usrCtx, nodes.CtxUserAccessListKey{}, access)
+		usrCtx = context.WithValue(usrCtx, nodes.CtxKeepAccessListKey{}, true)
 		loaded.ctx = usrCtx
 		apiStore.loadedUsers[user.Login] = loaded
 	}
@@ -692,9 +692,9 @@ func (apiStore *ApiStore) loadWorkspacesSlugs(ctx context.Context) (map[string]s
 	return apiStore.slugsCache, nil
 }
 
-func (apiStore *ApiStore) getRouter() *views.Router {
+func (apiStore *ApiStore) getRouter() *nodes.Router {
 	if apiStore.router == nil {
-		apiStore.router = views.NewStandardRouter(views.RouterOptions{})
+		apiStore.router = nodes.NewStandardRouter(nodes.RouterOptions{})
 	}
 	return apiStore.router
 }

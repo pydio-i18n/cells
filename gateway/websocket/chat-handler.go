@@ -28,6 +28,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pydio/cells/common/nodes"
 	servicecontext "github.com/pydio/cells/common/service/context"
 
 	"github.com/micro/go-micro/metadata"
@@ -45,7 +46,6 @@ import (
 	defaults "github.com/pydio/cells/common/micro"
 	"github.com/pydio/cells/common/proto/chat"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views"
 	json "github.com/pydio/cells/x/jsonx"
 )
 
@@ -55,13 +55,13 @@ const (
 
 type ChatHandler struct {
 	Websocket *melody.Melody
-	Pool      views.SourcesPool
+	Pool      nodes.SourcesPool
 }
 
 // NewChatHandler creates a new ChatHandler
 func NewChatHandler(serviceCtx context.Context) *ChatHandler {
 	w := &ChatHandler{}
-	w.Pool = views.NewClientsPool(true)
+	w.Pool = nodes.NewClientsPool(true)
 	w.initHandlers(serviceCtx)
 	return w
 }
@@ -429,7 +429,7 @@ func (c *ChatHandler) removeUserFromRoom(room *chat.ChatRoom, userName string) b
 	return found
 }
 
-var uuidRouter *views.Router
+var uuidRouter *nodes.Router
 
 // auth check authorization for the room. perm can be "join" or "post"
 func (c *ChatHandler) auth(session *melody.Session, room *chat.ChatRoom) (bool, error) {
@@ -445,7 +445,7 @@ func (c *ChatHandler) auth(session *melody.Session, room *chat.ChatRoom) (bool, 
 
 		// Check node is readable and writeable
 		if uuidRouter == nil {
-			uuidRouter = views.NewUuidRouter(views.RouterOptions{})
+			uuidRouter = nodes.NewUuidRouter(nodes.RouterOptions{})
 		}
 		resp, e := uuidRouter.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Uuid: room.RoomTypeObject}})
 		if e != nil {

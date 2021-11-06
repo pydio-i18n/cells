@@ -32,12 +32,12 @@ import (
 	"github.com/pydio/cells/common/micro/broker"
 	"github.com/pydio/cells/common/micro/registry"
 	"github.com/pydio/cells/common/micro/transport/grpc"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/tree"
 	registry2 "github.com/pydio/cells/common/registry"
 	"github.com/pydio/cells/common/service/context"
 	"github.com/pydio/cells/common/sync/endpoints/cells"
 	"github.com/pydio/cells/common/sync/model"
-	"github.com/pydio/cells/common/views"
 )
 
 var (
@@ -72,7 +72,7 @@ func NewLocal(root string, options cells.Options) *Local {
 		},
 	}
 	l.Factory = &localRouterFactory{
-		router: views.NewStandardRouter(views.RouterOptions{
+		router: nodes.NewStandardRouter(nodes.RouterOptions{
 			WatchRegistry:    true,
 			AdminView:        true,
 			SynchronousTasks: true,
@@ -96,7 +96,7 @@ func (l *Local) GetEndpointInfo() model.EndpointInfo {
 
 // localRouterFactory implements the clientProviderFactory interface
 type localRouterFactory struct {
-	router views.Handler
+	router nodes.Client
 }
 
 // GetNodeProviderClient returns a usable context and the internal Router

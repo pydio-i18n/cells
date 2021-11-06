@@ -24,9 +24,9 @@ import (
 	"context"
 	"testing"
 
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/scheduler/actions"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -53,7 +53,7 @@ func TestDeleteAction_Run(t *testing.T) {
 		action := &DeleteAction{}
 		job := &jobs.Job{}
 		action.Init(job, nil, &jobs.Action{})
-		mock := &views.HandlerMock{
+		mock := &nodes.HandlerMock{
 			Nodes: map[string]*tree.Node{"/test": {Path: "/test", Type: tree.NodeType_LEAF}},
 		}
 		action.PresetHandler(mock)

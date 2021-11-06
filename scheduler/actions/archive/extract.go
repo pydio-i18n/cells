@@ -33,9 +33,9 @@ import (
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/forms"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/scheduler/actions"
 	"github.com/pydio/cells/scheduler/actions/tools"
 )
@@ -160,7 +160,7 @@ func (ex *ExtractAction) Run(ctx context.Context, channels *actions.RunnableChan
 		return input.WithError(e), e
 	}
 
-	reader := &views.ArchiveReader{
+	reader := &nodes.ArchiveReader{
 		Router: handler,
 	}
 	var err error

@@ -31,16 +31,16 @@ import (
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/log"
 	"github.com/pydio/cells/common/micro"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/rest"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/registry"
 	"github.com/pydio/cells/common/service"
-	"github.com/pydio/cells/common/views"
 )
 
 type Handler struct {
-	router *views.Router
+	router *nodes.Router
 	client tree.SearcherClient
 }
 
@@ -54,9 +54,9 @@ func (s *Handler) Filter() func(string) string {
 	return nil
 }
 
-func (s *Handler) getRouter() *views.Router {
+func (s *Handler) getRouter() *nodes.Router {
 	if s.router == nil {
-		s.router = views.NewStandardRouter(views.RouterOptions{WatchRegistry: true, AuditEvent: false})
+		s.router = nodes.NewStandardRouter(nodes.RouterOptions{WatchRegistry: true, AuditEvent: false})
 	}
 	return s.router
 }
@@ -85,7 +85,7 @@ func (s *Handler) Nodes(req *restful.Request, rsp *restful.Response) {
 
 	router := s.getRouter()
 
-	var nodes []*tree.Node
+	var nn []*tree.Node
 	var facets []*tree.SearchFacet
 	prefixes := []string{}
 	nodesPrefixes := map[string]string{}
@@ -105,7 +105,7 @@ func (s *Handler) Nodes(req *restful.Request, rsp *restful.Response) {
 		defer nodeStreamer.Close()
 	}
 
-	err := router.WrapCallback(func(inputFilter views.NodeFilter, outputFilter views.NodeFilter) error {
+	err := router.WrapCallback(func(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter) error {
 
 		var userWorkspaces map[string]*idm.Workspace
 		if len(passedPrefix) > 0 {
@@ -116,7 +116,7 @@ func (s *Handler) Nodes(req *restful.Request, rsp *restful.Response) {
 			// Fill a context with current user info
 			// (Let inputFilter apply the various necessary middlewares).
 			loaderCtx, _, _ := inputFilter(ctx, &tree.Node{Path: ""}, "tmp")
-			userWorkspaces = views.UserWorkspacesFromContext(loaderCtx)
+			userWorkspaces = nodes.UserWorkspacesFromContext(loaderCtx)
 			for _, w := range userWorkspaces {
 				if len(passedWorkspaceSlug) > 0 && w.Slug != passedWorkspaceSlug {
 					continue
@@ -133,7 +133,7 @@ func (s *Handler) Nodes(req *restful.Request, rsp *restful.Response) {
 		query.PathPrefix = []string{}
 
 		var e error
-		ctx = context.WithValue(ctx, views.CtxKeepAccessListKey{}, true)
+		ctx = context.WithValue(ctx, nodes.CtxKeepAccessListKey{}, true)
 		for _, p := range prefixes {
 			rootNode := &tree.Node{Path: p}
 			ctx, rootNode, e = inputFilter(ctx, rootNode, "search-"+p)
@@ -191,7 +191,7 @@ func (s *Handler) Nodes(req *restful.Request, rsp *restful.Response) {
 						}
 					}
 					//metaLoader.LoadMetas(ctx, filtered)
-					nodes = append(nodes, filtered.WithoutReservedMetas())
+					nn = append(nn, filtered.WithoutReservedMetas())
 				}
 			}
 		}
@@ -206,9 +206,9 @@ func (s *Handler) Nodes(req *restful.Request, rsp *restful.Response) {
 	}
 
 	result := &rest.SearchResults{
-		Results: nodes,
+		Results: nn,
 		Facets:  facets,
-		Total:   int32(len(nodes)),
+		Total:   int32(len(nn)),
 	}
 	rsp.WriteEntity(result)
 

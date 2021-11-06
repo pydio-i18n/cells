@@ -39,11 +39,11 @@ import (
 	"github.com/pydio/cells/common/config"
 	"github.com/pydio/cells/common/log"
 	defaults "github.com/pydio/cells/common/micro"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/registry"
 	"github.com/pydio/cells/common/utils/permissions"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/scheduler/lang"
 	json "github.com/pydio/cells/x/jsonx"
 )
@@ -62,7 +62,7 @@ func compress(ctx context.Context, selectedPaths []string, targetNodePath string
 	initialPaths := append([]string{}, selectedPaths...)
 	initialTarget := targetNodePath
 
-	err := theRouter.WrapCallback(func(inputFilter views.NodeFilter, outputFilter views.NodeFilter) error {
+	err := theRouter.WrapCallback(func(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter) error {
 
 		var targetSize int64
 		for _, p := range selectedPaths {
@@ -167,7 +167,7 @@ func extract(ctx context.Context, selectedNode string, targetPath string, format
 	T := lang.Bundle().GetTranslationFunc(languages...)
 	initialTargetPath := targetPath
 
-	err := getRouter().WrapCallback(func(inputFilter views.NodeFilter, outputFilter views.NodeFilter) error {
+	err := getRouter().WrapCallback(func(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter) error {
 
 		node := &tree.Node{Path: selectedNode}
 		srcCtx, node, nodeErr := inputFilter(ctx, node, "in")
@@ -265,7 +265,7 @@ func dirCopy(ctx context.Context, selectedPathes []string, targetNodePath string
 	ownerPaths = append(ownerPaths, selectedPathes...)
 	ownerTarget := targetNodePath
 
-	err := getRouter().WrapCallback(func(inputFilter views.NodeFilter, outputFilter views.NodeFilter) error {
+	err := getRouter().WrapCallback(func(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter) error {
 
 		var dir, base string
 		if targetIsParent {

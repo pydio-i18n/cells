@@ -30,6 +30,7 @@ import (
 	json "github.com/pydio/cells/x/jsonx"
 
 	"github.com/pydio/cells/common/forms"
+	"github.com/pydio/cells/common/nodes"
 
 	"github.com/pydio/cells/common/etl/stores/pydio8"
 
@@ -48,7 +49,6 @@ import (
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/registry"
 	service "github.com/pydio/cells/common/service/proto"
-	"github.com/pydio/cells/common/views"
 	"github.com/pydio/cells/scheduler/actions"
 )
 
@@ -60,7 +60,7 @@ type MigrateGlobalMetaAction struct {
 	mapping          map[string]string
 
 	cellAdmin string
-	router    *views.Router
+	router    *nodes.Router
 	slugs     map[string]string
 }
 
@@ -93,9 +93,9 @@ func (c *MigrateGlobalMetaAction) GetName() string {
 }
 
 // GetRouter returns an initialized router
-func (c *MigrateGlobalMetaAction) GetRouter() *views.Router {
+func (c *MigrateGlobalMetaAction) GetRouter() *nodes.Router {
 	if c.router == nil {
-		c.router = views.NewStandardRouter(views.RouterOptions{})
+		c.router = nodes.NewStandardRouter(nodes.RouterOptions{})
 	}
 	return c.router
 }

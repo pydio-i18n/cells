@@ -16,6 +16,7 @@ import (
 	"github.com/pydio/cells/common/auth/claim"
 	"github.com/pydio/cells/common/log"
 	"github.com/pydio/cells/common/micro"
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/proto/idm"
 	"github.com/pydio/cells/common/proto/jobs"
 	"github.com/pydio/cells/common/proto/rest"
@@ -23,7 +24,6 @@ import (
 	"github.com/pydio/cells/common/registry"
 	service "github.com/pydio/cells/common/service/proto"
 	"github.com/pydio/cells/common/utils/permissions"
-	"github.com/pydio/cells/common/views"
 )
 
 // LoadDetectedRootNodes find actual nodes in the tree, and enrich their metadata if they appear
@@ -31,9 +31,9 @@ import (
 func LoadDetectedRootNodes(ctx context.Context, detectedRoots []string) (rootNodes map[string]*tree.Node) {
 
 	rootNodes = make(map[string]*tree.Node)
-	router := views.NewUuidRouter(views.RouterOptions{})
+	router := nodes.NewUuidRouter(nodes.RouterOptions{})
 	metaClient := tree.NewNodeProviderClient(common.ServiceGrpcNamespace_+common.ServiceMeta, defaults.NewClient())
-	eventFilter := views.NewRouterEventFilter(views.RouterOptions{AdminView: false})
+	eventFilter := nodes.NewRouterEventFilter(nodes.RouterOptions{AdminView: false})
 	accessList, _ := permissions.AccessListFromContextClaims(ctx)
 	for _, rootId := range detectedRoots {
 		request := &tree.ReadNodeRequest{Node: &tree.Node{Uuid: rootId}}
@@ -74,7 +74,7 @@ func LoadDetectedRootNodes(ctx context.Context, detectedRoots []string) (rootNod
 func ParseRootNodes(ctx context.Context, shareRequest *rest.PutCellRequest) (*tree.Node, bool, error) {
 
 	var createdNode *tree.Node
-	router := views.NewStandardRouter(views.RouterOptions{})
+	router := nodes.NewStandardRouter(nodes.RouterOptions{})
 	for i, n := range shareRequest.Room.RootNodes {
 		r, e := router.ReadNode(ctx, &tree.ReadNodeRequest{Node: n})
 		if e != nil {
@@ -88,8 +88,8 @@ func ParseRootNodes(ctx context.Context, shareRequest *rest.PutCellRequest) (*tr
 	}
 	if shareRequest.CreateEmptyRoot {
 
-		manager := views.GetVirtualNodesManager()
-		internalRouter := views.NewStandardRouter(views.RouterOptions{WatchRegistry: false, AdminView: true})
+		manager := nodes.GetVirtualNodesManager()
+		internalRouter := nodes.NewStandardRouter(nodes.RouterOptions{WatchRegistry: false, AdminView: true})
 		if root, exists := manager.ByUuid("cells"); exists {
 			parentNode, err := manager.ResolveInContext(ctx, root, internalRouter.GetClientsPool(), true)
 			if err != nil {
@@ -220,8 +220,8 @@ func DetectInheritedPolicy(ctx context.Context, roots []*tree.Node, loadedParent
 // .pydio hidden files when they are folders.
 func DeleteRootNodeRecursively(ctx context.Context, ownerName string, roomNode *tree.Node) error {
 
-	manager := views.GetVirtualNodesManager()
-	router := views.NewStandardRouter(views.RouterOptions{WatchRegistry: false, AdminView: true})
+	manager := nodes.GetVirtualNodesManager()
+	router := nodes.NewStandardRouter(nodes.RouterOptions{WatchRegistry: false, AdminView: true})
 	if root, exists := manager.ByUuid("cells"); exists {
 		parentNode, err := manager.ResolveInContext(ctx, root, router.GetClientsPool(), true)
 		if err != nil {
@@ -262,7 +262,7 @@ func DeleteRootNodeRecursively(ctx context.Context, ownerName string, roomNode *
 // link permissions do not try to set the Upload mode.
 func CheckLinkRootNodes(ctx context.Context, link *rest.ShareLink) (workspaces []*tree.WorkspaceRelativePath, files, folders bool, e error) {
 
-	router := views.NewUuidRouter(views.RouterOptions{})
+	router := nodes.NewUuidRouter(nodes.RouterOptions{})
 	var hasReadonly bool
 	for i, r := range link.RootNodes {
 		resp, er := router.ReadNode(ctx, &tree.ReadNodeRequest{Node: r})
@@ -298,7 +298,7 @@ func CheckLinkRootNodes(ctx context.Context, link *rest.ShareLink) (workspaces [
 }
 
 func RootsParentWorkspaces(ctx context.Context, rr []*tree.Node) (ww []*tree.WorkspaceRelativePath, e error) {
-	router := views.NewUuidRouter(views.RouterOptions{})
+	router := nodes.NewUuidRouter(nodes.RouterOptions{})
 	for _, r := range rr {
 		if r.HasMetaKey("CellNode") {
 			continue

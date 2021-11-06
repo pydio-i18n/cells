@@ -28,6 +28,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pydio/cells/common/nodes"
 	"github.com/pydio/cells/common/utils/meta"
 
 	"github.com/blevesearch/bleve"
@@ -42,7 +43,6 @@ import (
 
 	"github.com/pydio/cells/common/log"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views"
 
 	_ "github.com/blevesearch/bleve/analysis/lang/ar"
 	_ "github.com/blevesearch/bleve/analysis/lang/bg"
@@ -86,7 +86,7 @@ var (
 )
 
 type BleveServer struct {
-	Router       views.Handler
+	Router       nodes.Client
 	Engine       bleve.Index
 	IndexContent bool
 

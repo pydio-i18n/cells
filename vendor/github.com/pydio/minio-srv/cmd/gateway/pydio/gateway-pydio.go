@@ -33,9 +33,9 @@ import (
 	"github.com/minio/cli"
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/log"
+	"github.com/pydio/cells/common/nodes"
+	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/tree"
-	"github.com/pydio/cells/common/views"
-	"github.com/pydio/cells/common/views/models"
 )
 
 const (
@@ -65,7 +65,7 @@ type Pydio struct{}
 // s3Objects implements gateway for Minio and S3 compatible object storage servers.
 type pydioObjects struct {
 	minio.GatewayUnsupported
-	Router *views.Router
+	Router *nodes.Router
 }
 
 // Name returns the unique name of the gateway.
@@ -76,7 +76,7 @@ func (p *Pydio) Name() string {
 // NewGatewayLayer returns a new  ObjectLayer.
 func (p *Pydio) NewGatewayLayer(creds auth.Credentials) (minio.ObjectLayer, error) {
 	o := &pydioObjects{}
-	o.Router = views.NewStandardRouter(views.RouterOptions{WatchRegistry: true, LogReadEvents: true, AuditEvent: true})
+	o.Router = nodes.NewStandardRouter(nodes.RouterOptions{WatchRegistry: true, LogReadEvents: true, AuditEvent: true})
 	return o, nil
 }
 
@@ -85,7 +85,7 @@ func (p *Pydio) Production() bool {
 	return true
 }
 
-// Handler for 'minio gateway azure' command line.
+// Client for 'minio gateway azure' command line.
 func pydioGatewayMain(ctx *cli.Context) {
 	minio.StartGateway(ctx, &Pydio{})
 }
@@ -447,7 +447,31 @@ func (l *pydioObjects) ListMultipartUploads(ctx context.Context, bucket string, 
 		ListMaxUploads:     maxUploads,
 	})
 	if err == nil {
-		return minio.FromMinioClientListMultipartsInfo(result), nil
+		res := minio.ListMultipartsInfo{
+			KeyMarker:          result.KeyMarker,
+			UploadIDMarker:     result.UploadIDMarker,
+			NextKeyMarker:      result.NextKeyMarker,
+			NextUploadIDMarker: result.NextUploadIDMarker,
+			MaxUploads:         int(result.MaxUploads),
+			IsTruncated:        result.IsTruncated,
+			Uploads:            make([]minio.MultipartInfo, len(result.Uploads)),
+			Prefix:             result.Prefix,
+			Delimiter:          result.Delimiter,
+			CommonPrefixes:     make([]string, len(result.CommonPrefixes)),
+			EncodingType:       result.EncodingType,
+		}
+		for i, u := range result.Uploads {
+			res.Uploads[i] = minio.MultipartInfo{
+				Object:       u.Key,
+				UploadID:     u.UploadID,
+				Initiated:    u.Initiated,
+				StorageClass: u.StorageClass,
+			}
+		}
+		for i, cp := range result.CommonPrefixes {
+			res.CommonPrefixes[i] = cp.Prefix
+		}
+		return res, nil
 	} else {
 		return lmi, err
 	}
@@ -501,7 +525,35 @@ func (l *pydioObjects) ListObjectParts(ctx context.Context, bucket string, objec
 	if err != nil {
 		return lpi, err
 	}
-	return minio.FromMinioClientListPartsInfo(result), nil
+
+	// Convert minio ObjectPart to PartInfo
+	fromMinioClientObjectParts := func(parts []models.MultipartObjectPart) []minio.PartInfo {
+		toParts := make([]minio.PartInfo, len(parts))
+		for i, part := range parts {
+			canonicalETag := strings.TrimPrefix(part.ETag, "\"")
+			canonicalETag = strings.TrimSuffix(canonicalETag, "\"")
+			toParts[i] = minio.PartInfo{
+				Size:         part.Size,
+				ETag:         part.ETag,
+				LastModified: part.LastModified,
+				PartNumber:   part.PartNumber,
+			}
+		}
+		return toParts
+	}
+
+	return minio.ListPartsInfo{
+		UploadID:             result.UploadID,
+		Bucket:               result.Bucket,
+		Object:               result.Key,
+		StorageClass:         "",
+		PartNumberMarker:     result.PartNumberMarker,
+		NextPartNumberMarker: result.NextPartNumberMarker,
+		MaxParts:             result.MaxParts,
+		IsTruncated:          result.IsTruncated,
+		EncodingType:         result.EncodingType,
+		Parts:                fromMinioClientObjectParts(result.ObjectParts),
+	}, nil
 
 }
 
@@ -513,10 +565,35 @@ func (l *pydioObjects) AbortMultipartUpload(ctx context.Context, bucket string, 
 }
 
 // CompleteMultipartUpload completes ongoing multipart upload and finalizes object
-func (l *pydioObjects) CompleteMultipartUpload(ctx context.Context, bucket string, object string, uploadID string, uploadedParts []minio.CompletePart) (oi minio.ObjectInfo, e error) {
+func (l *pydioObjects) CompleteMultipartUpload(ctx context.Context, bucket string, object string, uploadID string, uploadedParts []minio.CompletePart) (moi minio.ObjectInfo, e error) {
+	mParts := make([]models.MultipartObjectPart, len(uploadedParts))
+	for i, part := range uploadedParts {
+		mParts[i] = models.MultipartObjectPart{
+			PartNumber:   part.PartNumber,
+			ETag:         part.ETag,
+		}
+	}
+	oi, err := l.Router.MultipartComplete(ctx, &tree.Node{Path: object}, uploadID, mParts)
+	if err != nil {
+		return moi, err
+	}
 
-	out, err := l.Router.MultipartComplete(ctx, &tree.Node{Path: object}, uploadID, minio.ToMinioClientCompleteParts(uploadedParts))
-	return minio.FromMinioClientObjectInfo(bucket, out), err
+	userDefined := minio.FromMinioClientMetadata(oi.Metadata)
+	userDefined["Content-Type"] = oi.ContentType
+	canonicalETag := strings.TrimPrefix(oi.ETag, "\"")
+	canonicalETag = strings.TrimSuffix(canonicalETag, "\"")
+	moi = minio.ObjectInfo{
+		Bucket:          bucket,
+		Name:            oi.Key,
+		ModTime:         oi.LastModified,
+		Size:            oi.Size,
+		ETag:            canonicalETag,
+		UserDefined:     userDefined,
+		ContentType:     oi.ContentType,
+		ContentEncoding: oi.Metadata.Get("Content-Encoding"),
+		StorageClass:    oi.StorageClass,
+	}
+	return moi, err
 
 }
 
