@@ -27,14 +27,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pydio/cells/v4/common/proto/service"
-
-	"github.com/golang/protobuf/jsonpb"
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/any"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth/claim"
@@ -45,6 +42,7 @@ import (
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/docstore"
 	"github.com/pydio/cells/v4/common/proto/idm"
+	"github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
@@ -106,7 +104,7 @@ func (m *VirtualNodesManager) Load(forceReload ...bool) {
 		}
 		data := resp.Document.Data
 		node := tree.Node{}
-		er := jsonpb.UnmarshalString(data, &node)
+		er := protojson.Unmarshal([]byte(data), &node)
 		if er != nil {
 			log.Logger(context.Background()).Error("Cannot unmarshal data: "+data, zap.Error(er))
 		} else {
@@ -305,11 +303,11 @@ func (m *VirtualNodesManager) resolvePathWithClaims(ctx context.Context, vNode *
 func (m *VirtualNodesManager) copyRecycleRootAcl(ctx context.Context, vNode *tree.Node, resolved *tree.Node) error {
 	cl := idm.NewACLServiceClient(common.ServiceGrpcNamespace_+common.ServiceAcl, defaults.NewClient())
 	// Check if vNode has this flag set
-	q, _ := ptypes.MarshalAny(&idm.ACLSingleQuery{
+	q, _ := anypb.New(&idm.ACLSingleQuery{
 		NodeIDs: []string{vNode.Uuid},
 		Actions: []*idm.ACLAction{permissions.AclRecycleRoot},
 	})
-	st, e := cl.SearchACL(ctx, &idm.SearchACLRequest{Query: &service.Query{SubQueries: []*any.Any{q}}})
+	st, e := cl.SearchACL(ctx, &idm.SearchACLRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}})
 	if e != nil {
 		return e
 	}
