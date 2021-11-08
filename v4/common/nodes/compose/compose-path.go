@@ -27,6 +27,7 @@ import (
 	"github.com/pydio/cells/v4/common/nodes/archive"
 	"github.com/pydio/cells/v4/common/nodes/binaries"
 	"github.com/pydio/cells/v4/common/nodes/core"
+	"github.com/pydio/cells/v4/common/nodes/encryption"
 	"github.com/pydio/cells/v4/common/nodes/events"
 	"github.com/pydio/cells/v4/common/nodes/path"
 	"github.com/pydio/cells/v4/common/nodes/put"
@@ -71,7 +72,7 @@ func PathComposer(oo ...nodes.Option) []nodes.Option {
 		acl.WithQuota(),
 		sync.WithFolderTasks(), // options.SynchronousTasks
 		version.WithVersions(),
-		//encryption.WithEncryption(),
+		encryption.WithEncryption(),
 		core.WithFlatInterceptor(),
 	)
 }

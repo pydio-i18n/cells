@@ -25,6 +25,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pydio/cells/v4/common/nodes/encryption"
+
 	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
 
@@ -63,7 +65,7 @@ func ReverseClient(oo ...nodes.Option) *Reverse {
 		archive.WithArchives(),
 		put.WithPutInterceptor(),
 		version.WithVersions(),
-		//encryption.WithEncryption(),
+		encryption.WithEncryption(),
 	)
 	cl := newClient(opts...)
 	return &Reverse{

@@ -24,6 +24,7 @@ import (
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/acl"
 	"github.com/pydio/cells/v4/common/nodes/core"
+	"github.com/pydio/cells/v4/common/nodes/encryption"
 	"github.com/pydio/cells/v4/common/nodes/events"
 	"github.com/pydio/cells/v4/common/nodes/put"
 	"github.com/pydio/cells/v4/common/nodes/uuid"
@@ -54,7 +55,7 @@ func UuidComposer(oo ...nodes.Option) []nodes.Option {
 		acl.WithQuota(),
 
 		version.WithVersions(),
-		//encryption.WithEncryption(),
+		encryption.WithEncryption(),
 		core.WithFlatInterceptor(),
 	)
 }
