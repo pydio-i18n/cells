@@ -24,13 +24,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"google.golang.org/grpc"
 	"io"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 
-	"github.com/micro/micro/v3/service/client"
 	errors2 "github.com/micro/micro/v3/service/errors"
 
 	"github.com/pydio/cells/v4/common/log"
@@ -64,7 +64,7 @@ func (h *HandlerMock) ExecuteWrapped(inputFilter NodeFilter, outputFilter NodeFi
 	return provider(inputFilter, outputFilter)
 }
 
-func (h *HandlerMock) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...client.CallOption) (*tree.ReadNodeResponse, error) {
+func (h *HandlerMock) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	h.Nodes["in"] = in.Node
 	h.Context = ctx
 	if n, ok := h.Nodes[in.Node.Path]; ok {
@@ -73,14 +73,14 @@ func (h *HandlerMock) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, op
 	return nil, errors.New("Not Found")
 }
 
-func (h *HandlerMock) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (h *HandlerMock) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 	h.Nodes["in"] = in.Node
 	h.Context = ctx
 	streamer := NewWrappingStreamer()
 	if in.Ancestors {
 		if n, o := h.Nodes[in.Node.Path]; o {
 			go func() {
-				defer streamer.Close()
+				defer streamer.CloseSend()
 				streamer.Send(&tree.ListNodesResponse{Node: n})
 				pa := in.Node.Path
 				for {
@@ -96,12 +96,12 @@ func (h *HandlerMock) ListNodes(ctx context.Context, in *tree.ListNodesRequest, 
 				}
 			}()
 		} else {
-			streamer.Close()
+			streamer.CloseSend()
 			return nil, errors2.NotFound("not.found", "Node not found")
 		}
 	} else {
 		go func() {
-			defer streamer.Close()
+			defer streamer.CloseSend()
 			for _, n := range h.Nodes {
 				if strings.HasPrefix(n.Path, in.Node.Path+"/") {
 					streamer.Send(&tree.ListNodesResponse{Node: n})
@@ -113,14 +113,14 @@ func (h *HandlerMock) ListNodes(ctx context.Context, in *tree.ListNodesRequest, 
 	return streamer, nil
 }
 
-func (h *HandlerMock) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...client.CallOption) (*tree.CreateNodeResponse, error) {
+func (h *HandlerMock) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	log.Logger(ctx).Info("[MOCK] Create Node " + in.Node.Path)
 	h.Nodes["in"] = in.Node
 	h.Context = ctx
 	return nil, nil
 }
 
-func (h *HandlerMock) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...client.CallOption) (*tree.UpdateNodeResponse, error) {
+func (h *HandlerMock) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 	log.Logger(ctx).Info("[MOCK] Update Node " + in.From.Path + " to " + in.To.Path)
 	h.Nodes["from"] = in.From
 	h.Nodes["to"] = in.To
@@ -128,7 +128,7 @@ func (h *HandlerMock) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest
 	return nil, nil
 }
 
-func (h *HandlerMock) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...client.CallOption) (*tree.DeleteNodeResponse, error) {
+func (h *HandlerMock) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 	log.Logger(ctx).Info("[MOCK] Delete Node" + in.Node.Path)
 	h.Nodes["in"] = in.Node
 	delete(h.Nodes, in.Node.Path)
@@ -243,7 +243,7 @@ func (h *HandlerMock) MultipartListObjectParts(ctx context.Context, target *tree
 	return models.ListObjectPartsResult{}, nil
 }
 
-func (h *HandlerMock) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...client.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {
+func (h *HandlerMock) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...grpc.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {
 	return nil, fmt.Errorf("not.implemented")
 }
 

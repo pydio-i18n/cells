@@ -25,20 +25,17 @@ import (
 	"context"
 	"fmt"
 	"html/template"
-	"runtime"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/caddyserver/caddy/v2"
-	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
-	"github.com/micro/micro/v3/service/broker"
+	caddy "github.com/caddyserver/caddy/v2"
 	"github.com/micro/micro/v3/service/registry"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/caddy/hooks"
-	_ "github.com/pydio/cells/v4/common/caddy/proxy"
+	// _ "github.com/pydio/cells/v4/common/caddy/proxy"
 	"github.com/pydio/cells/v4/common/log"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 )
@@ -79,7 +76,7 @@ func watchRestart() {
 			if restartRequired {
 				log.Logger(context.Background()).Debug("Restarting Proxy Now")
 				restartRequired = false
-				restart()
+				// restart()
 			}
 		}
 	}
@@ -96,14 +93,14 @@ type Caddy struct {
 	caddyfile     string
 	caddytemplate *template.Template
 	player        hooks.TemplateFunc
-	instance      *caddy.Instance
+	// instance      *caddy.Instance
 }
 
 // Enable the caddy builder
 func Enable(caddyfile string, player hooks.TemplateFunc) {
-	dirOnce.Do(func() {
+	/* TODO v4 dirOnce.Do(func() {
 		httpserver.RegisterDevDirective("pydioproxy", "proxy")
-	})
+	})*/
 	caddytemplate, err := template.New("pydiocaddy").Funcs(FuncMap).Parse(caddyfile)
 	if err != nil {
 		log.Fatal("could not load template: ", zap.Error(err))
@@ -112,20 +109,6 @@ func Enable(caddyfile string, player hooks.TemplateFunc) {
 	mainCaddy.caddyfile = caddyfile
 	mainCaddy.caddytemplate = caddytemplate
 	mainCaddy.player = player
-
-	caddyLoader := func(serverType string) (caddy.Input, error) {
-		buf, err := mainCaddy.Play()
-		if err != nil {
-			return nil, err
-		}
-
-		return caddy.CaddyfileInput{
-			Contents:       buf.Bytes(),
-			ServerTypeName: serverType,
-		}, nil
-	}
-
-	caddy.SetDefaultCaddyfileLoader("http", caddy.LoaderFunc(caddyLoader))
 }
 
 // Get returns the currently enabled caddy builder
@@ -135,33 +118,32 @@ func Get() *Caddy {
 
 // Start caddy
 func Start() error {
-	// load caddyfile
-	caddyfile, err := caddy.LoadCaddyfile("http")
+	buf, err := mainCaddy.Play()
 	if err != nil {
 		return err
 	}
 
-	LastKnownCaddyFile = string(caddyfile.Body())
+	b := buf.Bytes()
 
-	// start caddy server
-	instance, err := caddy.Start(caddyfile)
-	if err != nil {
-		return err
-	}
+	caddy.Load(b, true)
 
-	mainCaddy.instance = instance
+	LastKnownCaddyFile = string(b)
+
 	return nil
 }
 
 func Stop() error {
-	instance := GetInstance()
-	instance.ShutdownCallbacks()
-	instance.Stop()
-
-	return nil
+	return caddy.Stop()
 }
 
 func StartWithFastRestart() (chan bool, error) {
+	c := make(chan bool, 1)
+
+	close(c)
+	return c, Start()
+}
+
+/* TODO v4 ?
 	c := make(chan bool, 1)
 	e := Start()
 	go func() {
@@ -175,6 +157,7 @@ func StartWithFastRestart() (chan bool, error) {
 	}()
 	return c, e
 }
+
 
 func restart() error {
 
@@ -221,14 +204,16 @@ func restart() error {
 
 	return nil
 }
+*/
 
 func (c *Caddy) Play() (*bytes.Buffer, error) {
 	return c.player()
 }
 
+/* TODO v4
 func GetInstance() *caddy.Instance {
 	return mainCaddy.instance
-}
+}*/
 
 func (c *Caddy) GetTemplate() *template.Template {
 	return c.caddytemplate

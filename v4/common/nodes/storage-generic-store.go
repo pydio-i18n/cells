@@ -25,6 +25,7 @@ import (
 
 	"github.com/micro/micro/v3/service/client"
 
+	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/proto/object"
@@ -34,14 +35,16 @@ import (
 // GetGenericStoreClient creates a *minio.Core client for a given binary store.
 func GetGenericStoreClient(ctx context.Context, storeNamespace string, microClient client.Client) (client StorageClient, bucket string, e error) {
 
-	var dataSource string
+	/* TODO v4
+	// var dataSource string
 	var err error
 	dataSource, bucket, err = GetGenericStoreClientConfig(storeNamespace)
 	if err != nil {
 		return nil, "", err
 	}
+	*/
 
-	s3endpointClient := object.NewDataSourceEndpointClient(common.ServiceGrpcNamespace_+common.ServiceDataSync_+dataSource, microClient)
+	s3endpointClient := object.NewDataSourceEndpointClient(defaults.NewClientConn())
 	response, err := s3endpointClient.GetDataSourceConfig(ctx, &object.GetDataSourceConfigRequest{})
 	if err != nil {
 		return nil, "", err

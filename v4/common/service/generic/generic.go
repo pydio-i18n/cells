@@ -1,13 +1,15 @@
 package generic
 
-import "context"
+import (
+	"context"
+)
 
 type Server interface {
 	Handle(Handler)
 	Serve() error
 }
 
-type Handler func(context.Context) error
+type Handler func(Server) error
 
 type genericServer struct {
 	ctx      context.Context
@@ -24,9 +26,7 @@ func (g *genericServer) Handle(h Handler) {
 
 func (g *genericServer) Serve() error {
 	for _, h := range g.handlers {
-		if err := h(g.ctx); err != nil {
-			return err
-		}
+		go h(g)
 	}
 
 	return nil

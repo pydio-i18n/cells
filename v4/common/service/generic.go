@@ -1,13 +1,11 @@
 package service
 
 import (
-	"context"
-
 	"github.com/pydio/cells/v4/common/service/generic"
 )
 
 // WithHTTP adds a http micro service handler to the current service
-func WithGeneric(f func(ctx context.Context) error) ServiceOption {
+func WithGeneric(f func(generic.Server) error) ServiceOption {
 	return func(o *ServiceOptions) {
 		ctx := o.Context
 

@@ -135,7 +135,7 @@ func CopyMoveNodes(ctx context.Context, router Handler, sourceNode *tree.Node, t
 			go func() {
 				<-time.After(10 * time.Second)
 				log.Logger(ctx).Info("Forcing close session " + session + " and unlock")
-				client.Publish(context.Background(), client.NewPublication(common.TopicIndexEvent, &tree.IndexEvent{
+				client.Publish(context.Background(), client.NewMessage(common.TopicIndexEvent, &tree.IndexEvent{
 					SessionForceClose: session,
 				}))
 				if locker != nil {
@@ -148,7 +148,7 @@ func CopyMoveNodes(ctx context.Context, router Handler, sourceNode *tree.Node, t
 	}()
 
 	publishError := func(dsName, errorPath string) {
-		client.Publish(context.Background(), client.NewPublication(common.TopicIndexEvent, &tree.IndexEvent{
+		client.Publish(context.Background(), client.NewMessage(common.TopicIndexEvent, &tree.IndexEvent{
 			ErrorDetected:  true,
 			DataSourceName: dsName,
 			ErrorPath:      errorPath,
@@ -241,7 +241,7 @@ func CopyMoveNodes(ctx context.Context, router Handler, sourceNode *tree.Node, t
 			return err
 		}
 		var children []*tree.Node
-		defer streamer.Close()
+		defer streamer.CloseSend()
 		var statErrors int
 		var foldersCount, fileCounts int
 

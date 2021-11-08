@@ -445,9 +445,11 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 
 	go func() {
 		<-restartDone
-		instance := caddy.GetInstance()
+		/* TODO v4 instance := caddy.GetInstance()
 		instance.Wait()
 		instanceDone <- struct{}{}
+		*/
+
 	}()
 
 	defer subscriber.Unsubscribe()

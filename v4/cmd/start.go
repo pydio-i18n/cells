@@ -16,17 +16,21 @@ package cmd
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/plugins"
+	"fmt"
 	"net"
 	"net/http"
+	"reflect"
 	"sync"
+	"time"
+
+	"github.com/pydio/cells/v4/common/plugins"
 
 	"github.com/spf13/cobra"
-	"google.golang.org/grpc"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/log"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/generic"
 )
 
@@ -98,6 +102,14 @@ to quickly create a Cobra application.`,
 		}()
 
 		log.Info("started")
+
+		<-time.After(1 * time.Second)
+
+		fmt.Println("grpc: ", srvg.GetServiceInfo())
+
+		v := reflect.ValueOf(srvHTTP).Elem()
+		fmt.Printf("routes: %v\n", v.FieldByName("m"))
+
 		wg.Wait()
 	},
 }

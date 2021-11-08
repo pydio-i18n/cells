@@ -30,8 +30,8 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
+	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	"github.com/pydio/cells/v4/common/registry"
 	context2 "github.com/pydio/cells/v4/common/utils/context"
 )
 
@@ -123,7 +123,7 @@ var mimeMetaClient tree.NodeReceiverClient
 
 func WrapReaderForMime(ctx context.Context, clone *tree.Node, reader io.Reader) io.Reader {
 	if mimeMetaClient == nil {
-		mimeMetaClient = tree.NewNodeReceiverClient(registry.GetClient(common.ServiceMeta))
+		mimeMetaClient = tree.NewNodeReceiverClient(defaults.NewClientConn())
 	}
 	bgCtx := context2.NewBackgroundWithMetaCopy(ctx)
 	return NewTeeMimeReader(reader, func(result *MimeResult) {

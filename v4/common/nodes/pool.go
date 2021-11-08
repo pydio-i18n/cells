@@ -23,7 +23,6 @@ package nodes
 import (
 	"context"
 	"fmt"
-	"strings"
 	"sync"
 	"time"
 
@@ -38,7 +37,6 @@ import (
 	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/x/configx"
 )
 
@@ -119,7 +117,7 @@ func (p *ClientsPool) GetTreeClient() tree.NodeProviderClient {
 	if p.treeClient != nil {
 		return p.treeClient
 	}
-	return tree.NewNodeProviderClient(common.ServiceGrpcNamespace_+common.ServiceTree, defaults.NewClient())
+	return tree.NewNodeProviderClient(defaults.NewClientConn())
 }
 
 // GetTreeClientWrite returns the internal NodeReceiverClient pointing to the TreeService.
@@ -127,7 +125,7 @@ func (p *ClientsPool) GetTreeClientWrite() tree.NodeReceiverClient {
 	if p.treeClientWrite != nil {
 		return p.treeClientWrite
 	}
-	return tree.NewNodeReceiverClient(common.ServiceGrpcNamespace_+common.ServiceTree, defaults.NewClient())
+	return tree.NewNodeReceiverClient(defaults.NewClientConn())
 }
 
 // GetDataSourceInfo tries to find information about a DataSource, eventually retrying as DataSource
@@ -201,11 +199,9 @@ func (p *ClientsPool) LoadDataSources() {
 	sources := config.Get("services", common.ServiceGrpcNamespace_+common.ServiceDataSync, "sources").StringArray()
 	sources = config.SourceNamesFiltered(sources)
 
-	cli := defaults.NewClient()
-
 	ctx := context.Background()
 	for _, source := range sources {
-		endpointClient := object.NewDataSourceEndpointClient(common.ServiceGrpcNamespace_+common.ServiceDataSync_+source, cli)
+		endpointClient := object.NewDataSourceEndpointClient(defaults.NewClientConn())
 		response, err := endpointClient.GetDataSourceConfig(ctx, &object.GetDataSourceConfigRequest{})
 		if err == nil && response.DataSource != nil {
 			log.Logger(ctx).Debug("Creating client for datasource " + source)
@@ -235,7 +231,7 @@ func (p *ClientsPool) registerAlternativeClient(namespace string) error {
 }
 
 func (p *ClientsPool) watchRegistry() {
-
+	/* TODO v4
 	watcher, err := registry.Watch()
 	p.watcher = watcher
 	if err != nil {
@@ -259,6 +255,8 @@ func (p *ClientsPool) watchRegistry() {
 			}
 		}
 	}
+
+	*/
 }
 
 func (p *ClientsPool) watchConfigChanges() {

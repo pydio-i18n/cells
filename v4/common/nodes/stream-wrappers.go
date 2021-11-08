@@ -21,8 +21,10 @@
 package nodes
 
 import (
+	"context"
 	"encoding/binary"
 	"fmt"
+	"google.golang.org/grpc/metadata"
 	"io"
 
 	"github.com/golang/protobuf/proto"
@@ -79,6 +81,21 @@ func newWrappingStreamer() *wrappingStreamer {
 		r:      r,
 		closed: false,
 	}
+}
+
+// TODO v4
+func (l *wrappingStreamer) Context() context.Context {
+	return context.TODO()
+}
+
+// TODO v4
+func (l *wrappingStreamer) Header() (metadata.MD, error) {
+	return nil, nil
+}
+
+// TODO v4
+func (l *wrappingStreamer) Trailer() metadata.MD {
+	return nil
 }
 
 func (l *wrappingStreamer) Send(in interface{}) error {
@@ -165,7 +182,7 @@ func (l *wrappingStreamer) RecvMsg(m interface{}) error {
 	return nil
 }
 
-func (l *wrappingStreamer) Close() error {
+func (l *wrappingStreamer) CloseSend() error {
 	l.closed = true
 	l.w.Close()
 	return nil

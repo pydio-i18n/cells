@@ -27,8 +27,6 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 
-	"github.com/micro/micro/v3/service/client"
-
 	"github.com/pydio/cells/v4/common/proto/tree"
 )
 
@@ -54,11 +52,15 @@ func HandlerListNodesWithCallback(v Handler, ctx context.Context, request *tree.
 		}
 	}
 
-	nodeClient, err := v.ListNodes(ctx, request, client.WithRequestTimeout(6*time.Hour))
+	// TODO v4 - check cancel timeout
+	ctx, cancel := context.WithTimeout(ctx, 6*time.Hour)
+	defer cancel()
+
+	nodeClient, err := v.ListNodes(ctx, request)
 	if err != nil {
 		return err
 	}
-	defer nodeClient.Close()
+	defer nodeClient.CloseSend()
 loop:
 	for {
 		clientResponse, err := nodeClient.Recv()

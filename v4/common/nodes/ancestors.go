@@ -69,7 +69,8 @@ func BuildAncestorsList(ctx context.Context, treeClient tree.NodeProviderClient,
 	if lErr != nil {
 		return parentUuids, lErr
 	}
-	defer ancestorStream.Close()
+	defer ancestorStream.CloseSend()
+	
 	for {
 		parent, e := ancestorStream.Recv()
 		if e != nil {
