@@ -41,7 +41,6 @@ import (
 	"github.com/pydio/cells/common/proto/object"
 	"github.com/pydio/cells/common/proto/tree"
 	context2 "github.com/pydio/cells/common/utils/context"
-	"github.com/pydio/cells/idm/key"
 )
 
 func WithEncryption() nodes.Option {
@@ -53,7 +52,7 @@ func WithEncryption() nodes.Option {
 //EncryptionHandler encryption node middleware
 type EncryptionHandler struct {
 	abstract.AbstractHandler
-	userKeyTool          key.UserKeyTool
+	userKeyTool          UserKeyTool
 	nodeKeyManagerClient encryption.NodeKeyManagerClient
 }
 
@@ -63,7 +62,7 @@ func (e *EncryptionHandler) Adapt(h nodes.Handler, options nodes.RouterOptions) 
 	return e
 }
 
-func (e *EncryptionHandler) SetUserKeyTool(keyTool key.UserKeyTool) {
+func (e *EncryptionHandler) SetUserKeyTool(keyTool UserKeyTool) {
 	e.userKeyTool = keyTool
 }
 
@@ -656,11 +655,11 @@ func (e *EncryptionHandler) createNodeInfo(ctx context.Context, node *tree.Node)
 	return info, nil
 }
 
-func (e *EncryptionHandler) getKeyProtectionTool(ctx context.Context) (key.UserKeyTool, error) {
+func (e *EncryptionHandler) getKeyProtectionTool(ctx context.Context) (UserKeyTool, error) {
 	tool := e.userKeyTool
 	var err error
 	if tool == nil {
-		tool, err = key.MasterKeyTool(ctx)
+		tool, err = MasterKeyTool(ctx)
 		if err != nil {
 			return nil, err
 		}

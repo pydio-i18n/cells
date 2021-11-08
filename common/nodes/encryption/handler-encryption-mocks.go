@@ -30,7 +30,6 @@ import (
 	"github.com/micro/go-micro/errors"
 	"github.com/pydio/cells/common/crypto"
 	"github.com/pydio/cells/common/proto/encryption"
-	"github.com/pydio/cells/idm/key"
 	json "github.com/pydio/cells/x/jsonx"
 )
 
@@ -299,7 +298,7 @@ type mockUserKeyTool struct {
 	key []byte
 }
 
-func NewMockUserKeyTool() key.UserKeyTool {
+func NewMockUserKeyTool() UserKeyTool {
 	keyByte := make([]byte, 16)
 	_, _ = rand.Read(keyByte)
 	return &mockUserKeyTool{
