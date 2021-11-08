@@ -23,12 +23,15 @@ package lib
 
 import (
 	"context"
+	"net/url"
 
-	//minio "github.com/pydio/minio-go"
 	"go.uber.org/zap"
 
+	"github.com/google/uuid"
 	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/proto/install"
+	"github.com/pydio/cells/v4/x/configx"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
@@ -120,7 +123,7 @@ func PerformCheck(ctx context.Context, name string, c *install.InstallConfig) *i
 		result.JsonResult = string(data)
 
 	case "S3_KEYS":
-		/*endpoint := "s3.amazonaws.com"
+		endpoint := "s3.amazonaws.com"
 		secure := true
 		if c.GetDsS3Custom() != "" {
 			if u, e := url.Parse(c.GetDsS3Custom()); e != nil {
@@ -133,7 +136,13 @@ func PerformCheck(ctx context.Context, name string, c *install.InstallConfig) *i
 				}
 			}
 		}
-		mc, e := minio.NewCore(endpoint, c.GetDsS3ApiKey(), c.GetDsS3ApiSecret(), secure)
+
+		cfData := configx.New()
+		cfData.Val("endpoint").Set(endpoint)
+		cfData.Val("key").Set(c.GetDsS3ApiKey())
+		cfData.Val("secret").Set(c.GetDsS3ApiSecret())
+		cfData.Val("secure").Set(secure)
+		mc, e := nodes.NewStorageClient(cfData)
 		if e != nil {
 			wrapError(e)
 			break
@@ -141,7 +150,7 @@ func PerformCheck(ctx context.Context, name string, c *install.InstallConfig) *i
 		// Check if buckets can be created
 		data := make(map[string]interface{})
 		var buckets []string
-		if bb, er := mc.ListBuckets(); er != nil {
+		if bb, er := mc.ListBucketsWithContext(ctx); er != nil {
 			wrapError(er)
 			break
 		} else {
@@ -150,9 +159,9 @@ func PerformCheck(ctx context.Context, name string, c *install.InstallConfig) *i
 			}
 		}
 		data["buckets"] = buckets
-		testBC := uuid.New()
-		if er := mc.MakeBucket(testBC, c.GetDsS3CustomRegion()); er == nil {
-			mc.RemoveBucket(testBC)
+		testBC := uuid.New().String()
+		if er := mc.MakeBucketWithContext(ctx, testBC, c.GetDsS3CustomRegion()); er == nil {
+			mc.RemoveBucketWithContext(ctx, testBC)
 			data["canCreate"] = true
 		} else {
 			data["canCreate"] = false
@@ -161,65 +170,66 @@ func PerformCheck(ctx context.Context, name string, c *install.InstallConfig) *i
 		dd, _ := json.Marshal(data)
 		result.JsonResult = string(dd)
 
-		*/
-
 	case "S3_BUCKETS":
-		/*
-			endpoint := "s3.amazonaws.com"
-			secure := true
-			if c.GetDsS3Custom() != "" {
-				if u, e := url.Parse(c.GetDsS3Custom()); e != nil {
-					wrapError(e)
-					break
-				} else {
-					endpoint = u.Host
-					if u.Scheme == "http" {
-						secure = false
-					}
-				}
-			}
-			mc, e := minio.NewCore(endpoint, c.GetDsS3ApiKey(), c.GetDsS3ApiSecret(), secure)
-			if e != nil {
+		endpoint := "s3.amazonaws.com"
+		secure := true
+		if c.GetDsS3Custom() != "" {
+			if u, e := url.Parse(c.GetDsS3Custom()); e != nil {
 				wrapError(e)
 				break
+			} else {
+				endpoint = u.Host
+				if u.Scheme == "http" {
+					secure = false
+				}
 			}
-			// Check if buckets can be created
-			data := make(map[string]interface{})
-			buckets := make(map[string]struct{})
-			if bb, er := mc.ListBuckets(); er != nil {
-				wrapError(er)
+		}
+
+		cfData := configx.New()
+		cfData.Val("endpoint").Set(endpoint)
+		cfData.Val("key").Set(c.GetDsS3ApiKey())
+		cfData.Val("secret").Set(c.GetDsS3ApiSecret())
+		cfData.Val("secure").Set(secure)
+		mc, e := nodes.NewStorageClient(cfData)
+		if e != nil {
+			wrapError(e)
+			break
+		}
+		// Check if buckets can be created
+		data := make(map[string]interface{})
+		buckets := make(map[string]struct{})
+		if bb, er := mc.ListBucketsWithContext(ctx); er != nil {
+			wrapError(er)
+			break
+		} else {
+			for _, b := range bb {
+				buckets[b.Name] = struct{}{}
+			}
+		}
+		toCheck := []string{
+			c.GetDsS3BucketDefault(),
+			c.GetDsS3BucketPersonal(),
+			c.GetDsS3BucketCells(),
+			c.GetDsS3BucketBinaries(),
+			c.GetDsS3BucketThumbs(),
+			c.GetDsS3BucketVersions(),
+		}
+		var created []string
+		for _, check := range toCheck {
+			if _, ok := buckets[check]; ok { // already exists
+				continue
+			}
+			if e := mc.MakeBucketWithContext(ctx, check, c.GetDsS3CustomRegion()); e != nil {
+				wrapError(e)
 				break
 			} else {
-				for _, b := range bb {
-					buckets[b.Name] = struct{}{}
-				}
+				created = append(created, check)
 			}
-			toCheck := []string{
-				c.GetDsS3BucketDefault(),
-				c.GetDsS3BucketPersonal(),
-				c.GetDsS3BucketCells(),
-				c.GetDsS3BucketBinaries(),
-				c.GetDsS3BucketThumbs(),
-				c.GetDsS3BucketVersions(),
-			}
-			var created []string
-			for _, check := range toCheck {
-				if _, ok := buckets[check]; ok { // already exists
-					continue
-				}
-				if e := mc.MakeBucket(check, c.GetDsS3CustomRegion()); e != nil {
-					wrapError(e)
-					break
-				} else {
-					created = append(created, check)
-				}
-			}
-			result.Success = true
-			data["bucketsCreated"] = created
-			dd, _ := json.Marshal(data)
-			result.JsonResult = string(dd)
-
-		*/
+		}
+		result.Success = true
+		data["bucketsCreated"] = created
+		dd, _ := json.Marshal(data)
+		result.JsonResult = string(dd)
 
 	default:
 		result.Success = false

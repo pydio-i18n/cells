@@ -67,8 +67,10 @@ require (
 	github.com/caddyserver/caddy/v2 v2.4.5
 	github.com/gobwas/glob v0.2.3
 	github.com/gorilla/sessions v1.2.1 // indirect
+	github.com/h2non/filetype v1.1.1
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/karrick/godirwalk v1.16.1
+	github.com/krolaw/zipstream v0.0.0-20180621105154-0a2661891f94
 	github.com/lucas-clemente/quic-go v0.24.0 // indirect
 	github.com/nicksnyder/go-i18n v1.10.0
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
