@@ -35,8 +35,8 @@ import (
 	"context"
 	"io"
 
-	"github.com/golang/protobuf/proto"
 	"go.uber.org/zap/zapcore"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/idm"

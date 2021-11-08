@@ -24,6 +24,7 @@ import (
 	"context"
 	"io"
 
+	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
@@ -71,7 +72,7 @@ func (h *HandlerEventRead) feedNodeUuid(ctx context.Context, node *tree.Node) er
 	return nil
 }
 
-func (h *HandlerEventRead) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (h *HandlerEventRead) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 	c, e := h.Next.ListNodes(ctx, in, opts...)
 	if branchInfo, ok := nodes.GetBranchInfo(ctx, "in"); ok && branchInfo.IsInternal() {
 		return c, e
@@ -86,7 +87,7 @@ func (h *HandlerEventRead) ListNodes(ctx context.Context, in *tree.ListNodesRequ
 		if node.Uuid != "" {
 			c := context2.WithMetaCopy(ctx)
 			go func() {
-				client.Publish(c, client.NewPublication(common.TopicTreeChanges, &tree.NodeChangeEvent{
+				client.Publish(c, client.NewMessage(common.TopicTreeChanges, &tree.NodeChangeEvent{
 					Type:   tree.NodeChangeEvent_READ,
 					Target: node,
 				}))
@@ -130,7 +131,7 @@ func (h *HandlerEventRead) GetObject(ctx context.Context, node *tree.Node, reque
 			}
 			c := context2.WithMetaCopy(ctx)
 			go func() {
-				client.Publish(c, client.NewPublication(common.TopicTreeChanges, &tree.NodeChangeEvent{
+				client.Publish(c, client.NewMessage(common.TopicTreeChanges, &tree.NodeChangeEvent{
 					Type:   tree.NodeChangeEvent_READ,
 					Target: eventNode,
 				}))
@@ -182,7 +183,7 @@ func (h *HandlerEventRead) sharedLinkWithDownloadLimit(ctx context.Context) (doc
 	if r, e := stream.Recv(); e == nil {
 		doc = r.Document
 	}
-	stream.Close()
+	stream.CloseSend()
 
 	if doc == nil {
 		// SEARCH WITH PRELOG_USER
@@ -195,7 +196,7 @@ func (h *HandlerEventRead) sharedLinkWithDownloadLimit(ctx context.Context) (doc
 		if r, e := stream2.Recv(); e == nil {
 			doc = r.Document
 		}
-		stream2.Close()
+		stream2.CloseSend()
 	}
 
 	if doc != nil {

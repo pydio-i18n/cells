@@ -28,8 +28,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/micro/micro/v3/service/client"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
@@ -132,7 +132,7 @@ func (v *AbstractBranchFilter) ExecuteWrapped(inputFilter nodes.NodeFilter, outp
 	return v.Next.ExecuteWrapped(wrappedIn, wrappedOut, provider)
 }
 
-func (v *AbstractBranchFilter) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...client.CallOption) (*tree.ReadNodeResponse, error) {
+func (v *AbstractBranchFilter) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	ctx, out, err := v.InputMethod(ctx, in.Node, "in")
 	if err != nil {
 		return nil, err
@@ -153,7 +153,7 @@ func (v *AbstractBranchFilter) ReadNode(ctx context.Context, in *tree.ReadNodeRe
 	return response, err
 }
 
-func (v *AbstractBranchFilter) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (streamer tree.NodeProvider_ListNodesClient, e error) {
+func (v *AbstractBranchFilter) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (streamer tree.NodeProvider_ListNodesClient, e error) {
 	ctx, out, err := v.InputMethod(ctx, in.Node, "in")
 	if err != nil {
 		return nil, err
@@ -166,8 +166,8 @@ func (v *AbstractBranchFilter) ListNodes(ctx context.Context, in *tree.ListNodes
 	}
 	s := nodes.NewWrappingStreamer()
 	go func() {
-		defer stream.Close()
-		defer s.Close()
+		defer stream.CloseSend()
+		defer s.CloseSend()
 		for {
 			resp, err := stream.Recv()
 			if err != nil {
@@ -190,7 +190,7 @@ func (v *AbstractBranchFilter) ListNodes(ctx context.Context, in *tree.ListNodes
 	return s, nil
 }
 
-func (v *AbstractBranchFilter) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...client.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {
+func (v *AbstractBranchFilter) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...grpc.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {
 
 	ctx, rootPathNode, err := v.InputMethod(ctx, &tree.Node{Path: in.RootPath}, "in")
 	if err != nil {
@@ -204,8 +204,8 @@ func (v *AbstractBranchFilter) StreamChanges(ctx context.Context, in *tree.Strea
 	}
 	s := nodes.NewChangesWrappingStreamer()
 	go func() {
-		defer stream.Close()
-		defer s.Close()
+		defer stream.CloseSend()
+		defer s.CloseSend()
 		for {
 			ev, err := stream.Recv()
 			if err != nil {
@@ -245,7 +245,7 @@ func (v *AbstractBranchFilter) StreamChanges(ctx context.Context, in *tree.Strea
 	return s, nil
 }
 
-func (v *AbstractBranchFilter) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...client.CallOption) (*tree.UpdateNodeResponse, error) {
+func (v *AbstractBranchFilter) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 	ctx, out, err := v.InputMethod(ctx, in.From, "from")
 	if err != nil {
 		return nil, err
@@ -267,7 +267,7 @@ func (v *AbstractBranchFilter) UpdateNode(ctx context.Context, in *tree.UpdateNo
 	return response, err
 }
 
-func (v *AbstractBranchFilter) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...client.CallOption) (*tree.DeleteNodeResponse, error) {
+func (v *AbstractBranchFilter) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 	ctx, out, err := v.InputMethod(ctx, in.Node, "in")
 	if err != nil {
 		return nil, err
@@ -277,7 +277,7 @@ func (v *AbstractBranchFilter) DeleteNode(ctx context.Context, in *tree.DeleteNo
 	return v.Next.DeleteNode(ctx, newReq, opts...)
 }
 
-func (v *AbstractBranchFilter) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...client.CallOption) (*tree.CreateNodeResponse, error) {
+func (v *AbstractBranchFilter) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	ctx, filtered, err := v.InputMethod(ctx, in.Node, "in")
 	if err != nil {
 		return nil, err

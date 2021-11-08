@@ -63,7 +63,7 @@ func TestArchiveHandler_WrappingStreamer(t *testing.T) {
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
-		defer s.Close()
+		defer s.CloseSend()
 		defer wg.Done()
 
 		for {
@@ -79,7 +79,7 @@ func TestArchiveHandler_WrappingStreamer(t *testing.T) {
 		So(err, ShouldBeNil)
 	})
 
-	s.Close()
+	s.CloseSend()
 	wg.Wait()
 }
 

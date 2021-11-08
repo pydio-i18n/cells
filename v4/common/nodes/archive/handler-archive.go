@@ -27,7 +27,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/client"
+	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
@@ -142,7 +142,7 @@ func (a *ArchiveHandler) GetObject(ctx context.Context, node *tree.Node, request
 }
 
 // ReadNode overrides the response of ReadNode to create a fake stat for archive file
-func (a *ArchiveHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...client.CallOption) (*tree.ReadNodeResponse, error) {
+func (a *ArchiveHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	originalPath := in.Node.Path
 
 	if ok, format, archivePath, innerPath := a.isArchivePath(originalPath); ok && len(innerPath) > 0 {
@@ -205,7 +205,7 @@ func (a *ArchiveHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest,
 	return response, err
 }
 
-func (a *ArchiveHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (a *ArchiveHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 
 	if ok, format, archivePath, innerPath := a.isArchivePath(in.Node.Path); ok {
 		extractor := &ArchiveReader{Router: a.Next}
@@ -219,7 +219,7 @@ func (a *ArchiveHandler) ListNodes(ctx context.Context, in *tree.ListNodesReques
 			archiveNode.Type = tree.NodeType_COLLECTION
 			streamer := nodes.NewWrappingStreamer()
 			go func() {
-				defer streamer.Close()
+				defer streamer.CloseSend()
 				log.Logger(ctx).Debug("[ARCHIVE:LISTNODE/READ]", zap.String("path", archiveNode.Path))
 				streamer.Send(&tree.ListNodesResponse{Node: archiveNode})
 			}()

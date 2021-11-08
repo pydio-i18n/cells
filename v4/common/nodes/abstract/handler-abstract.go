@@ -25,8 +25,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/micro/micro/v3/service/client"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes"
@@ -75,7 +75,7 @@ func (a *AbstractHandler) ExecuteWrapped(inputFilter nodes.NodeFilter, outputFil
 	return a.Next.ExecuteWrapped(wrappedIn, outputFilter, provider)
 }
 
-func (a *AbstractHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...client.CallOption) (*tree.ReadNodeResponse, error) {
+func (a *AbstractHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return nil, err
@@ -84,7 +84,7 @@ func (a *AbstractHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest
 	return a.Next.ReadNode(ctx, in, opts...)
 }
 
-func (a *AbstractHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (a *AbstractHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func (a *AbstractHandler) ListNodes(ctx context.Context, in *tree.ListNodesReque
 	return a.Next.ListNodes(ctx, in, opts...)
 }
 
-func (a *AbstractHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...client.CallOption) (*tree.CreateNodeResponse, error) {
+func (a *AbstractHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return nil, err
@@ -100,7 +100,7 @@ func (a *AbstractHandler) CreateNode(ctx context.Context, in *tree.CreateNodeReq
 	return a.Next.CreateNode(ctx, in, opts...)
 }
 
-func (a *AbstractHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...client.CallOption) (*tree.UpdateNodeResponse, error) {
+func (a *AbstractHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return nil, err
@@ -108,7 +108,7 @@ func (a *AbstractHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeReq
 	return a.Next.UpdateNode(ctx, in, opts...)
 }
 
-func (a *AbstractHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...client.CallOption) (*tree.DeleteNodeResponse, error) {
+func (a *AbstractHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return nil, err
@@ -116,7 +116,7 @@ func (a *AbstractHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeReq
 	return a.Next.DeleteNode(ctx, in, opts...)
 }
 
-func (a *AbstractHandler) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...client.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {
+func (a *AbstractHandler) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...grpc.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return nil, err

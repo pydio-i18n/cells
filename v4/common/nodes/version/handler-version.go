@@ -28,7 +28,7 @@ import (
 
 	"github.com/pydio/cells/v4/common/nodes"
 
-	"github.com/micro/micro/v3/service/client"
+	"google.golang.org/grpc"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -64,7 +64,7 @@ func (v *VersionHandler) getVersionClient() tree.NodeVersionerClient {
 }
 
 // ListNodes creates a list of nodes if the Versions are required
-func (v *VersionHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (v *VersionHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 	ctx, err := v.WrapContext(ctx)
 	if err != nil {
 		return nil, err
@@ -81,8 +81,8 @@ func (v *VersionHandler) ListNodes(ctx context.Context, in *tree.ListNodesReques
 			return streamer, er
 		}
 		go func() {
-			defer versionStream.Close()
-			defer streamer.Close()
+			defer versionStream.CloseSend()
+			defer streamer.CloseSend()
 
 			log.Logger(ctx).Debug("should list versions of object", zap.Any("node", resp.Node), zap.Error(er))
 			for {
@@ -114,7 +114,7 @@ func (v *VersionHandler) ListNodes(ctx context.Context, in *tree.ListNodesReques
 }
 
 // ReadNode retrieves information about a specific version
-func (v *VersionHandler) ReadNode(ctx context.Context, req *tree.ReadNodeRequest, opts ...client.CallOption) (*tree.ReadNodeResponse, error) {
+func (v *VersionHandler) ReadNode(ctx context.Context, req *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 
 	if vId := req.Node.GetStringMeta("versionId"); vId != "" {
 		// Load Info from Version Service?

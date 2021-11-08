@@ -53,19 +53,19 @@ func (a *AclLockFilter) Adapt(h nodes.Handler, options nodes.RouterOptions) node
 }
 
 // UpdateNode synchronously and recursively performs a Move operation of a node
-// func (h *AclLockFilter) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...client.CallOption) (*tree.CreateNodeResponse, error) {
+// func (h *AclLockFilter) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 // 	log.Logger(ctx).Info("Going through the create lock during operation")
 // 	return h.next.CreateNode(ctx, in, opts...)
 // }
 
 // // DeleteNode synchronously and recursively delete a node
-// func (h *AclLockFilter) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...client.CallOption) (*tree.DeleteNodeResponse, error) {
+// func (h *AclLockFilter) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 // 	log.Logger(ctx).Info("Going through the delete lock during operation")
 // 	return h.next.DeleteNode(ctx, in, opts...)
 // }
 
 // // UpdateNode synchronously and recursively performs a Move operation of a node
-// func (h *AclLockFilter) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...client.CallOption) (*tree.UpdateNodeResponse, error) {
+// func (h *AclLockFilter) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 // 	log.Logger(ctx).Info("Going through the update lock during operation")
 // 	return h.next.UpdateNode(ctx, in, opts...)
 // }

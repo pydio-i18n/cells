@@ -26,7 +26,6 @@ import (
 	"time"
 
 	"github.com/pydio/cells/v4/common"
-
 	"github.com/pydio/cells/v4/common/proto/tree"
 )
 

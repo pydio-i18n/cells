@@ -25,7 +25,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/micro/micro/v3/service/client"
+	"google.golang.org/grpc"
+
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/abstract"
 	"github.com/pydio/cells/v4/common/nodes/models"
@@ -96,28 +97,28 @@ func (v *clientImpl) ExecuteWrapped(_ nodes.NodeFilter, _ nodes.NodeFilter, prov
 	return v.handler.ExecuteWrapped(identity, identity, provider)
 }
 
-func (v *clientImpl) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...client.CallOption) (*tree.ReadNodeResponse, error) {
+func (v *clientImpl) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	h := v.handler
 
 	return h.ReadNode(ctx, in, opts...)
 }
 
-func (v *clientImpl) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (v *clientImpl) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 	h := v.handler
 	return h.ListNodes(ctx, in, opts...)
 }
 
-func (v *clientImpl) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...client.CallOption) (*tree.CreateNodeResponse, error) {
+func (v *clientImpl) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	h := v.handler
 	return h.CreateNode(ctx, in, opts...)
 }
 
-func (v *clientImpl) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...client.CallOption) (*tree.UpdateNodeResponse, error) {
+func (v *clientImpl) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 	h := v.handler
 	return h.UpdateNode(ctx, in, opts...)
 }
 
-func (v *clientImpl) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...client.CallOption) (*tree.DeleteNodeResponse, error) {
+func (v *clientImpl) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 	h := v.handler
 	return h.DeleteNode(ctx, in, opts...)
 }
@@ -161,7 +162,7 @@ func (v *clientImpl) MultipartListObjectParts(ctx context.Context, target *tree.
 	return v.handler.MultipartListObjectParts(ctx, target, uploadID, partNumberMarker, maxParts)
 }
 
-func (v *clientImpl) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...client.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {
+func (v *clientImpl) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...grpc.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {
 	return v.handler.StreamChanges(ctx, in, opts...)
 }
 

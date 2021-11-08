@@ -25,9 +25,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/micro/micro/v3/service/client"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
@@ -107,7 +107,7 @@ func (h *HandlerAuditEvent) PutObject(ctx context.Context, node *tree.Node, read
 }
 
 // ReadNode only forwards call to Next handler, it call too often to provide useful audit info.
-func (h *HandlerAuditEvent) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...client.CallOption) (*tree.ReadNodeResponse, error) {
+func (h *HandlerAuditEvent) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	response, e := h.Next.ReadNode(ctx, in, opts...)
 	return response, e
 
@@ -129,7 +129,7 @@ func (h *HandlerAuditEvent) ReadNode(ctx context.Context, in *tree.ReadNodeReque
 }
 
 // ListNodes logs an audit message on each call after having transferred the call to following handlers.
-func (h *HandlerAuditEvent) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (h *HandlerAuditEvent) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 	c, e := h.Next.ListNodes(ctx, in, opts...)
 	if e != nil {
 		return c, e
@@ -150,7 +150,7 @@ func (h *HandlerAuditEvent) ListNodes(ctx context.Context, in *tree.ListNodesReq
 }
 
 // CreateNode logs an audit message on each call after having transferred the call to following handlers.
-func (h *HandlerAuditEvent) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...client.CallOption) (*tree.CreateNodeResponse, error) {
+func (h *HandlerAuditEvent) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	response, e := h.Next.CreateNode(ctx, in, opts...)
 	if e != nil {
 		return response, e
@@ -170,7 +170,7 @@ func (h *HandlerAuditEvent) CreateNode(ctx context.Context, in *tree.CreateNodeR
 }
 
 // UpdateNode logs an audit message on each call after having transferred the call to following handlers.
-func (h *HandlerAuditEvent) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...client.CallOption) (*tree.UpdateNodeResponse, error) {
+func (h *HandlerAuditEvent) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 	response, e := h.Next.UpdateNode(ctx, in, opts...)
 	if e != nil {
 		return response, e
@@ -188,7 +188,7 @@ func (h *HandlerAuditEvent) UpdateNode(ctx context.Context, in *tree.UpdateNodeR
 }
 
 // DeleteNode logs an audit message on each call after having transferred the call to following handlers.
-func (h *HandlerAuditEvent) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...client.CallOption) (*tree.DeleteNodeResponse, error) {
+func (h *HandlerAuditEvent) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 	response, e := h.Next.DeleteNode(ctx, in, opts...)
 	if e != nil {
 		return response, e

@@ -25,12 +25,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pydio/cells/v4/common/nodes/abstract"
-
-	"github.com/micro/micro/v3/service/client"
+	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
+	"github.com/pydio/cells/v4/common/nodes/abstract"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes"
@@ -133,7 +132,7 @@ func (a *PathWorkspaceHandler) updateOutputBranch(ctx context.Context, node *tre
 	return ctx, node, nil
 }
 
-func (a *PathWorkspaceHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...client.CallOption) (*tree.ReadNodeResponse, error) {
+func (a *PathWorkspaceHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	_, _, err := a.updateBranchInfo(ctx, &tree.Node{Path: in.Node.Path}, "in")
 	if err != nil {
 		if err.Error() == (noWorkspaceInPath{}).Error() {
@@ -147,7 +146,7 @@ func (a *PathWorkspaceHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRe
 
 }
 
-func (a *PathWorkspaceHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (a *PathWorkspaceHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 	_, _, err := a.updateBranchInfo(ctx, &tree.Node{Path: in.Node.Path}, "in")
 	if err != nil {
 		// Real error
@@ -161,7 +160,7 @@ func (a *PathWorkspaceHandler) ListNodes(ctx context.Context, in *tree.ListNodes
 		}
 		streamer := nodes.NewWrappingStreamer()
 		go func() {
-			defer streamer.Close()
+			defer streamer.CloseSend()
 			wss := accessList.Workspaces
 			for wsId, wsPermissions := range accessList.GetAccessibleWorkspaces(ctx) {
 				ws, o := wss[wsId]

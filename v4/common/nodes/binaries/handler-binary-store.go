@@ -29,7 +29,7 @@ import (
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/abstract"
 
-	"github.com/micro/micro/v3/service/client"
+	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
@@ -80,17 +80,17 @@ func (a *BinaryStoreHandler) checkContextForAnonRead(ctx context.Context) error 
 }
 
 // ListNodes does not display content
-func (a *BinaryStoreHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (c tree.NodeProvider_ListNodesClient, e error) {
+func (a *BinaryStoreHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (c tree.NodeProvider_ListNodesClient, e error) {
 	if a.isStorePath(in.Node.Path) {
 		emptyStreamer := nodes.NewWrappingStreamer()
-		emptyStreamer.Close()
+		emptyStreamer.CloseSend()
 		return emptyStreamer, nil
 	}
 	return a.Next.ListNodes(ctx, in, opts...)
 }
 
 // ReadNode Node Info & Node Content : send by UUID,
-func (a *BinaryStoreHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...client.CallOption) (*tree.ReadNodeResponse, error) {
+func (a *BinaryStoreHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	if a.isStorePath(in.Node.Path) {
 		source, er := a.ClientsPool.GetDataSourceInfo(a.StoreName)
 		if er != nil {
@@ -167,21 +167,21 @@ func (a *BinaryStoreHandler) GetObject(ctx context.Context, node *tree.Node, req
 // THIS STORE IS NOT WRITEABLE
 ///////////////////////////////
 
-func (a *BinaryStoreHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...client.CallOption) (*tree.CreateNodeResponse, error) {
+func (a *BinaryStoreHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	if a.isStorePath(in.Node.Path) {
 		return nil, errors.Forbidden(nodes.VIEWS_LIBRARY_NAME, "Forbidden store")
 	}
 	return a.Next.CreateNode(ctx, in, opts...)
 }
 
-func (a *BinaryStoreHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...client.CallOption) (*tree.UpdateNodeResponse, error) {
+func (a *BinaryStoreHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 	if a.isStorePath(in.From.Path) || a.isStorePath(in.To.Path) {
 		return nil, errors.Forbidden(nodes.VIEWS_LIBRARY_NAME, "Forbidden store")
 	}
 	return a.Next.UpdateNode(ctx, in, opts...)
 }
 
-func (a *BinaryStoreHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...client.CallOption) (*tree.DeleteNodeResponse, error) {
+func (a *BinaryStoreHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 	var dsKey string
 	var source nodes.LoadedSource
 	if a.isStorePath(in.Node.Path) {

@@ -30,7 +30,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/client"
+	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
@@ -61,7 +61,7 @@ func (e *Executor) ExecuteWrapped(inputFilter nodes.NodeFilter, outputFilter nod
 
 }
 
-func (e *Executor) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...client.CallOption) (*tree.ReadNodeResponse, error) {
+func (e *Executor) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 
 	if in.ObjectStats {
 		info, ok := nodes.GetBranchInfo(ctx, "in")
@@ -109,12 +109,12 @@ func (e *Executor) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts 
 
 }
 
-func (e *Executor) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (e *Executor) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 	log.Logger(ctx).Debug("ROUTER LISTING WITH TREE CLIENT", zap.String("path", in.Node.Path))
 	return e.ClientsPool.GetTreeClient().ListNodes(ctx, in, opts...)
 }
 
-func (e *Executor) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...client.CallOption) (*tree.CreateNodeResponse, error) {
+func (e *Executor) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	node := in.Node
 	if !node.IsLeaf() {
 		dsPath := node.GetStringMeta(common.MetaNamespaceDatasourcePath)
@@ -158,11 +158,11 @@ func (e *Executor) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, o
 	return e.ClientsPool.GetTreeClientWrite().CreateNode(ctx, in, opts...)
 }
 
-func (e *Executor) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...client.CallOption) (*tree.UpdateNodeResponse, error) {
+func (e *Executor) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 	return e.ClientsPool.GetTreeClientWrite().UpdateNode(ctx, in, opts...)
 }
 
-func (e *Executor) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...client.CallOption) (*tree.DeleteNodeResponse, error) {
+func (e *Executor) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 	info, ok := nodes.GetBranchInfo(ctx, "in")
 	if !ok {
 		return nil, errors.BadRequest(nodes.VIEWS_LIBRARY_NAME, "Cannot find S3 client, did you insert a resolver middleware?")
@@ -555,7 +555,7 @@ func (e *Executor) MultipartListObjectParts(ctx context.Context, target *tree.No
 	return info.Client.ListObjectPartsWithContext(ctx, info.ObjectsBucket, s3Path, uploadID, partNumberMarker, maxParts)
 }
 
-func (e *Executor) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...client.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {
+func (e *Executor) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...grpc.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {
 
 	cli := tree.NewNodeChangesStreamerClient(registry.GetClient(common.ServiceTree))
 	return cli.StreamChanges(ctx, in, opts...)

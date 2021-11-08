@@ -29,7 +29,7 @@ import (
 
 	"github.com/allegro/bigcache"
 	"github.com/micro/micro/v3/service/broker"
-	"github.com/micro/micro/v3/service/client"
+	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
@@ -215,7 +215,7 @@ func (s *SynchronousCacheHandler) cacheDiff(ctx context.Context, path string) (*
 	return nil, false
 }
 
-func (s *SynchronousCacheHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...client.CallOption) (*tree.CreateNodeResponse, error) {
+func (s *SynchronousCacheHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	r, e := s.Next.CreateNode(ctx, in, opts...)
 	if e == nil {
 		s.cacheAdd(ctx, r.GetNode())
@@ -223,7 +223,7 @@ func (s *SynchronousCacheHandler) CreateNode(ctx context.Context, in *tree.Creat
 	return r, e
 }
 
-func (s *SynchronousCacheHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...client.CallOption) (*tree.DeleteNodeResponse, error) {
+func (s *SynchronousCacheHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 	r, e := s.Next.DeleteNode(ctx, in, opts...)
 	if e == nil {
 		s.cacheDel(ctx, in.GetNode())
@@ -231,7 +231,7 @@ func (s *SynchronousCacheHandler) DeleteNode(ctx context.Context, in *tree.Delet
 	return r, e
 }
 
-func (s *SynchronousCacheHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...client.CallOption) (*tree.UpdateNodeResponse, error) {
+func (s *SynchronousCacheHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 	resp, err := s.Next.UpdateNode(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -242,7 +242,7 @@ func (s *SynchronousCacheHandler) UpdateNode(ctx context.Context, in *tree.Updat
 	return resp, nil
 }
 
-func (s *SynchronousCacheHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (s *SynchronousCacheHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 	r, e := s.Next.ListNodes(ctx, in, opts...)
 	if e != nil {
 		if _, o := s.cacheGet(ctx, in.GetNode().GetPath()); o {
@@ -300,7 +300,7 @@ func (s *SynchronousCacheHandler) MultipartComplete(ctx context.Context, target 
 	return o, e
 }
 
-func (s *SynchronousCacheHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...client.CallOption) (*tree.ReadNodeResponse, error) {
+func (s *SynchronousCacheHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	resp, e := s.Next.ReadNode(ctx, in, opts...)
 	notFound := e != nil && (errors.Parse(e.Error()).Code == 404 || strings.Contains(e.Error(), " NotFound "))
 	tempo := e == nil && resp.Node.GetEtag() == "temporary"

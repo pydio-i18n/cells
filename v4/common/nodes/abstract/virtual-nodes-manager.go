@@ -93,7 +93,7 @@ func (m *VirtualNodesManager) Load(forceReload ...bool) {
 	if e != nil {
 		return
 	}
-	defer stream.Close()
+	defer stream.CloseSend()
 	for {
 		resp, err := stream.Recv()
 		if err != nil {
@@ -311,7 +311,7 @@ func (m *VirtualNodesManager) copyRecycleRootAcl(ctx context.Context, vNode *tre
 	if e != nil {
 		return e
 	}
-	defer st.Close()
+	defer st.CloseSend()
 	var has bool
 	for {
 		r, e := st.Recv()

@@ -28,11 +28,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth/claim"
@@ -68,7 +68,7 @@ func (a *AclQuotaFilter) Adapt(h nodes.Handler, options nodes.RouterOptions) nod
 }
 
 // ReadNode append quota info on workspace roots
-func (a *AclQuotaFilter) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...client.CallOption) (*tree.ReadNodeResponse, error) {
+func (a *AclQuotaFilter) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	resp, err := a.Next.ReadNode(ctx, in, opts...)
 	if err != nil {
 		return resp, err
@@ -318,7 +318,7 @@ func (a *AclQuotaFilter) QuotaForWorkspace(ctx context.Context, workspace *idm.W
 	roleValues := make(map[string]string)
 	detectedRoots := make(map[string]bool)
 
-	defer stream.Close()
+	defer stream.CloseSend()
 	for {
 		resp, e := stream.Recv()
 		if e != nil {

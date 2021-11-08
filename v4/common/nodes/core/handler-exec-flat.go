@@ -28,7 +28,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/micro/micro/v3/service/client"
+	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
 	"go.uber.org/zap"
@@ -65,7 +65,7 @@ func (f *FlatStorageHandler) Adapt(h nodes.Handler, options nodes.RouterOptions)
 }
 
 // CreateNode creates directly in index, but make sure not to override
-func (f *FlatStorageHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...client.CallOption) (*tree.CreateNodeResponse, error) {
+func (f *FlatStorageHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	if !nodes.IsFlatStorage(ctx, "in") || in.GetNode().IsLeaf() {
 		return f.Next.CreateNode(ctx, in, opts...)
 	}
@@ -84,7 +84,7 @@ func (f *FlatStorageHandler) CreateNode(ctx context.Context, in *tree.CreateNode
 	return cResp, cErr
 }
 
-func (f *FlatStorageHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...client.CallOption) (*tree.DeleteNodeResponse, error) {
+func (f *FlatStorageHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 	isFlat := nodes.IsFlatStorage(ctx, "in")
 	if isFlat && !in.GetNode().IsLeaf() {
 		return f.ClientsPool.GetTreeClientWrite().DeleteNode(ctx, in)

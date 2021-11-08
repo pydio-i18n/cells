@@ -25,7 +25,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/micro/micro/v3/service/client"
+	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/errors"
 
 	"github.com/pydio/cells/v4/common"
@@ -68,7 +68,7 @@ func (a *AclFilterHandler) skipContext(ctx context.Context, identifier ...string
 }
 
 // ReadNode checks if node is readable and forward to next middleware.
-func (a *AclFilterHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...client.CallOption) (*tree.ReadNodeResponse, error) {
+func (a *AclFilterHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	if a.skipContext(ctx) {
 		return a.Next.ReadNode(ctx, in, opts...)
 	}
@@ -106,7 +106,7 @@ func (a *AclFilterHandler) ReadNode(ctx context.Context, in *tree.ReadNodeReques
 }
 
 // ListNodes filters list results with ACLs permissions
-func (a *AclFilterHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (streamer tree.NodeProvider_ListNodesClient, e error) {
+func (a *AclFilterHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (streamer tree.NodeProvider_ListNodesClient, e error) {
 	if a.skipContext(ctx) {
 		return a.Next.ListNodes(ctx, in, opts...)
 	}
@@ -127,8 +127,8 @@ func (a *AclFilterHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequ
 	}
 	s := nodes.NewWrappingStreamer()
 	go func() {
-		defer stream.Close()
-		defer s.Close()
+		defer stream.CloseSend()
+		defer s.CloseSend()
 		for {
 			resp, err := stream.Recv()
 			if err != nil {
@@ -158,7 +158,7 @@ func (a *AclFilterHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequ
 	return s, nil
 }
 
-func (a *AclFilterHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...client.CallOption) (*tree.CreateNodeResponse, error) {
+func (a *AclFilterHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	if a.skipContext(ctx) {
 		return a.Next.CreateNode(ctx, in, opts...)
 	}
@@ -173,7 +173,7 @@ func (a *AclFilterHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRe
 	return a.Next.CreateNode(ctx, in, opts...)
 }
 
-func (a *AclFilterHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...client.CallOption) (*tree.UpdateNodeResponse, error) {
+func (a *AclFilterHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 	if a.skipContext(ctx) {
 		return a.Next.UpdateNode(ctx, in, opts...)
 	}
@@ -195,7 +195,7 @@ func (a *AclFilterHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRe
 	return a.Next.UpdateNode(ctx, in, opts...)
 }
 
-func (a *AclFilterHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...client.CallOption) (*tree.DeleteNodeResponse, error) {
+func (a *AclFilterHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 	if a.skipContext(ctx) {
 		return a.Next.DeleteNode(ctx, in, opts...)
 	}

@@ -26,7 +26,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/client"
+	"google.golang.org/grpc"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -56,7 +56,7 @@ func (h *SyncFolderTasksHandler) Adapt(c nodes.Handler, options nodes.RouterOpti
 }
 
 // DeleteNode synchronously and recursively delete a node
-func (h *SyncFolderTasksHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...client.CallOption) (*tree.DeleteNodeResponse, error) {
+func (h *SyncFolderTasksHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 
 	bi, _ := nodes.GetBranchInfo(ctx, "in")
 	isFlat := bi.FlatStorage
@@ -71,7 +71,7 @@ func (h *SyncFolderTasksHandler) DeleteNode(ctx context.Context, in *tree.Delete
 		if er != nil {
 			return nil, er
 		}
-		defer stream.Close()
+		defer stream.CloseSend()
 		for {
 			resp, e := stream.Recv()
 			if e != nil {
@@ -110,7 +110,7 @@ func (h *SyncFolderTasksHandler) DeleteNode(ctx context.Context, in *tree.Delete
 }
 
 // UpdateNode synchronously and recursively performs a Move operation of a node
-func (h *SyncFolderTasksHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...client.CallOption) (*tree.UpdateNodeResponse, error) {
+func (h *SyncFolderTasksHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 
 	source := in.From
 	target := in.To

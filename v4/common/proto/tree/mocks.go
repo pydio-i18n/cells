@@ -22,12 +22,12 @@ package tree
 
 import (
 	"context"
-	"github.com/micro/micro/v3/service/server"
 	"io"
 	"reflect"
 	"sort"
 
-	"github.com/micro/micro/v3/service/client"
+	"google.golang.org/grpc"
+	"github.com/micro/micro/v3/service/server"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/pydio/cells/v4/common"
 )
@@ -117,7 +117,7 @@ func NewNodeProviderMock(n map[string]Node) *NodeProviderMock {
 	}
 }
 
-func (m *NodeProviderMock) ReadNode(ctx context.Context, in *ReadNodeRequest, opts ...client.CallOption) (*ReadNodeResponse, error) {
+func (m *NodeProviderMock) ReadNode(ctx context.Context, in *ReadNodeRequest, opts ...grpc.CallOption) (*ReadNodeResponse, error) {
 	if in.Node.Path != "" {
 		if v, ok := m.Nodes[in.Node.Path]; ok {
 			resp := &ReadNodeResponse{
@@ -138,7 +138,7 @@ func (m *NodeProviderMock) ReadNode(ctx context.Context, in *ReadNodeRequest, op
 	return nil, errors.NotFound(common.ServiceDataIndex_, "Node not found")
 }
 
-func (m *NodeProviderMock) ListNodes(ctx context.Context, in *ListNodesRequest, opts ...client.CallOption) (NodeProvider_ListNodesStream, error) {
+func (m *NodeProviderMock) ListNodes(ctx context.Context, in *ListNodesRequest, opts ...grpc.CallOption) (NodeProvider_ListNodesStream, error) {
 	// Create fake stream
 	return &nodeProviderListNodesStream{stream: NewStreamerMock(m.Nodes)}, nil
 
@@ -148,7 +148,7 @@ type NodeReceiverMock struct {
 	Nodes map[string]Node
 }
 
-func (m *NodeReceiverMock) CreateNode(ctx context.Context, in *CreateNodeRequest, opts ...client.CallOption) (*CreateNodeResponse, error) {
+func (m *NodeReceiverMock) CreateNode(ctx context.Context, in *CreateNodeRequest, opts ...grpc.CallOption) (*CreateNodeResponse, error) {
 	if m.Nodes == nil {
 		m.Nodes = make(map[string]Node)
 	}
@@ -157,25 +157,25 @@ func (m *NodeReceiverMock) CreateNode(ctx context.Context, in *CreateNodeRequest
 	return &CreateNodeResponse{Node: in.Node}, nil
 }
 
-func (m *NodeReceiverMock) UpdateNode(ctx context.Context, in *UpdateNodeRequest, opts ...client.CallOption) (*UpdateNodeResponse, error) {
+func (m *NodeReceiverMock) UpdateNode(ctx context.Context, in *UpdateNodeRequest, opts ...grpc.CallOption) (*UpdateNodeResponse, error) {
 	return &UpdateNodeResponse{Success: true}, nil
 }
 
-func (m *NodeReceiverMock) DeleteNode(ctx context.Context, in *DeleteNodeRequest, opts ...client.CallOption) (*DeleteNodeResponse, error) {
+func (m *NodeReceiverMock) DeleteNode(ctx context.Context, in *DeleteNodeRequest, opts ...grpc.CallOption) (*DeleteNodeResponse, error) {
 	return &DeleteNodeResponse{Success: true}, nil
 }
 
 type SessionIndexerMock struct {
 }
 
-func (s *SessionIndexerMock) OpenSession(ctx context.Context, in *OpenSessionRequest, opts ...client.CallOption) (*OpenSessionResponse, error) {
+func (s *SessionIndexerMock) OpenSession(ctx context.Context, in *OpenSessionRequest, opts ...grpc.CallOption) (*OpenSessionResponse, error) {
 	return &OpenSessionResponse{Session: in.GetSession()}, nil
 }
 
-func (s *SessionIndexerMock) FlushSession(ctx context.Context, in *FlushSessionRequest, opts ...client.CallOption) (*FlushSessionResponse, error) {
+func (s *SessionIndexerMock) FlushSession(ctx context.Context, in *FlushSessionRequest, opts ...grpc.CallOption) (*FlushSessionResponse, error) {
 	return &FlushSessionResponse{}, nil
 }
 
-func (s *SessionIndexerMock) CloseSession(ctx context.Context, in *CloseSessionRequest, opts ...client.CallOption) (*CloseSessionResponse, error) {
+func (s *SessionIndexerMock) CloseSession(ctx context.Context, in *CloseSessionRequest, opts ...grpc.CallOption) (*CloseSessionResponse, error) {
 	return &CloseSessionResponse{}, nil
 }

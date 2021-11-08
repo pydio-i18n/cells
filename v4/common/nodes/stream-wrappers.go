@@ -24,10 +24,10 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
-	"google.golang.org/grpc/metadata"
 	"io"
 
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common/proto/tree"
 )

@@ -25,11 +25,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/pydio/cells/v4/common/nodes"
 
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/tree"
 )

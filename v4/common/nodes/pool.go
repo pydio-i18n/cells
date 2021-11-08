@@ -26,10 +26,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	microregistry "github.com/micro/micro/v3/service/registry"
 	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"

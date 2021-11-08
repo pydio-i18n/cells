@@ -63,7 +63,7 @@ func TestBinaryStoreHandler_ListNodes(t *testing.T) {
 		client, e := handler.ListNodes(context.Background(), &tree.ListNodesRequest{Node: &tree.Node{Path: "/test"}})
 		So(e, ShouldBeNil)
 		count := 0
-		defer client.Close()
+		defer client.CloseSend()
 		for {
 			_, e := client.Recv()
 			if e != nil {
@@ -78,7 +78,7 @@ func TestBinaryStoreHandler_ListNodes(t *testing.T) {
 	Convey("Test List inside store: should display nothing", t, func() {
 		client, e := handler.ListNodes(context.Background(), &tree.ListNodesRequest{Node: &tree.Node{Path: testBinaryStoreName}})
 		So(e, ShouldBeNil)
-		defer client.Close()
+		defer client.CloseSend()
 		count := 0
 		for {
 			_, e := client.Recv()

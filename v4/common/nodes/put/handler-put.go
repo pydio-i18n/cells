@@ -32,7 +32,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/client"
+	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 	"golang.org/x/text/unicode/norm"
@@ -177,7 +177,7 @@ func (m *PutHandler) createParentIfNotExist(ctx context.Context, node *tree.Node
 
 // CreateNode recursively creates parents if they do not already exist
 // Only applicable to COLLECTION inside a structured storage (need to create .pydio hidden files)
-func (m *PutHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...client.CallOption) (*tree.CreateNodeResponse, error) {
+func (m *PutHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	if info, ok := nodes.GetBranchInfo(ctx, "in"); ok && (info.FlatStorage || info.Binary || info.IsInternal()) || in.Node.IsLeaf() {
 		return m.Next.CreateNode(ctx, in, opts...)
 	}
