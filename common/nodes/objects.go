@@ -25,9 +25,15 @@ import (
 	"io"
 
 	"github.com/pydio/cells/common/nodes/models"
+	"github.com/pydio/cells/common/nodes/objects/mc"
+	"github.com/pydio/cells/x/configx"
 )
 
 type StorageClient interface {
+	ListBucketsWithContext(ctx context.Context) ([]models.BucketInfo, error)
+	MakeBucketWithContext(ctx context.Context, bucketName string, location string) (err error)
+	RemoveBucketWithContext(ctx context.Context, bucketName string) error
+
 	GetObject(bucketName, objectName string, opts models.ReadMeta) (io.ReadCloser, models.ObjectInfo, error)
 	GetObjectWithContext(ctx context.Context, bucketName, objectName string, opts models.ReadMeta) (io.ReadCloser, error)
 
@@ -61,4 +67,12 @@ type StorageClient interface {
 	//PutObjectPart(bucket, object, uploadID string, partID int, data io.Reader, size int64, md5Base64, sha256Hex string, sse encrypt.ServerSide) (minio.ObjectPart, error)
 	//AbortMultipartUpload(bucket, object, uploadID string) error
 
+}
+
+func NewStorageClient(cfg configx.Values) (StorageClient, error) {
+	ep := cfg.Val("endpoint").String()
+	key := cfg.Val("key").String()
+	secret := cfg.Val("secret").String()
+	secure := cfg.Val("secure").Bool()
+	return mc.New(ep, key, secret, secure)
 }

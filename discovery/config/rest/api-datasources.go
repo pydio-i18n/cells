@@ -28,6 +28,10 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/pydio/cells/common/nodes"
+
+	"github.com/pydio/cells/x/configx"
+
 	"github.com/pydio/cells/common/registry"
 
 	"github.com/pydio/cells/common/proto/jobs"
@@ -37,7 +41,6 @@ import (
 	"github.com/golang/protobuf/ptypes/any"
 	"github.com/micro/go-micro/client"
 	"github.com/pborman/uuid"
-	minio "github.com/pydio/minio-go"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/common"
@@ -52,7 +55,6 @@ import (
 	service2 "github.com/pydio/cells/common/service/proto"
 	"github.com/pydio/cells/common/utils/filesystem"
 	"github.com/pydio/cells/common/utils/permissions"
-	"github.com/pydio/minio-go/pkg/credentials"
 )
 
 /*********************
@@ -302,16 +304,21 @@ func (s *Handler) ListStorageBuckets(req *restful.Request, resp *restful.Respons
 	if sec := config.GetSecret(ds.ApiSecret).String(); sec != "" {
 		ds.ApiSecret = sec
 	}
-	mc, er := minio.New(host, ds.ApiKey, ds.ApiSecret, secure)
+
+	cfData := configx.New()
+	cfData.Val("endpoint").Set(host)
+	cfData.Val("key").Set(ds.ApiKey)
+	cfData.Val("secret").Set(ds.ApiSecret)
+	cfData.Val("secure").Set(secure)
 	if r, o := ds.StorageConfiguration[object.StorageKeyCustomRegion]; o && r != "" {
-		creds := credentials.NewStaticV4(ds.ApiKey, ds.ApiSecret, "")
-		mc, er = minio.NewWithCredentials(host, creds, secure, r)
+		cfData.Val("customRegion").Set(object.StorageKeyCustomRegion)
 	}
+	mc, er := nodes.NewStorageClient(cfData)
 	if er != nil {
 		service.RestErrorDetect(req, resp, er)
 		return
 	}
-	bb, er := mc.ListBuckets()
+	bb, er := mc.ListBucketsWithContext(context.Background())
 	if er != nil {
 		service.RestErrorDetect(req, resp, er)
 		return

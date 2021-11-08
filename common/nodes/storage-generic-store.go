@@ -27,7 +27,6 @@ import (
 
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/config"
-	"github.com/pydio/cells/common/nodes/objects/mc"
 	"github.com/pydio/cells/common/proto/object"
 	"github.com/pydio/cells/x/configx"
 )
@@ -50,7 +49,13 @@ func GetGenericStoreClient(ctx context.Context, storeNamespace string, microClie
 
 	source := response.DataSource
 
-	client, err = mc.New(source.BuildUrl(), source.GetApiKey(), source.GetApiSecret(), source.GetObjectsSecure())
+	cfData := configx.New()
+	cfData.Val("endpoint").Set(source.BuildUrl())
+	cfData.Val("key").Set(source.GetApiKey())
+	cfData.Val("secret").Set(source.GetApiSecret())
+	cfData.Val("secure").Set(source.GetObjectsSecure())
+	client, err = NewStorageClient(cfData)
+
 	return client, bucket, err
 
 }

@@ -29,22 +29,22 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pydio/cells/common/proto/sync"
-
-	"github.com/micro/go-micro/client"
-
 	"github.com/dustin/go-humanize"
 	"github.com/manifoldco/promptui"
+	"github.com/micro/go-micro/client"
 	"github.com/pborman/uuid"
 	"github.com/spf13/cobra"
 
 	"github.com/pydio/cells/common"
 	"github.com/pydio/cells/common/config"
+	"github.com/pydio/cells/common/nodes"
+	"github.com/pydio/cells/common/nodes/models"
 	"github.com/pydio/cells/common/proto/object"
+	"github.com/pydio/cells/common/proto/sync"
 	"github.com/pydio/cells/common/proto/tree"
 	"github.com/pydio/cells/common/registry"
 	context2 "github.com/pydio/cells/common/utils/context"
-	"github.com/pydio/minio-go"
+	"github.com/pydio/cells/x/configx"
 )
 
 var (
@@ -282,7 +282,7 @@ func migratePickDS() (source *object.DataSource, srcFmt, tgtFmt, srcBucket, tgtB
 	return
 }
 
-func migratePrepareClients(source *object.DataSource) (rootNode *tree.Node, idx tree.NodeProviderClient, mc *minio.Core, e error) {
+func migratePrepareClients(source *object.DataSource) (rootNode *tree.Node, idx tree.NodeProviderClient, mc nodes.StorageClient, e error) {
 
 	idx = tree.NewNodeProviderClient(registry.GetClient(common.ServiceDataIndex_ + source.Name))
 	r, er := idx.ReadNode(authCtx, &tree.ReadNodeRequest{Node: &tree.Node{Path: "/"}})
@@ -302,7 +302,12 @@ func migratePrepareClients(source *object.DataSource) (rootNode *tree.Node, idx 
 	if s := config.GetSecret(conf.ApiSecret).String(); s != "" {
 		apiSecret = s
 	}
-	mc, e = minio.NewCore(fmt.Sprintf("%s:%d", conf.RunningHost, conf.RunningPort), conf.ApiKey, apiSecret, conf.RunningSecure)
+	cfData := configx.New()
+	cfData.Val("endpoint").Set(fmt.Sprintf("%s:%d", conf.RunningHost, conf.RunningPort))
+	cfData.Val("key").Set(conf.ApiKey)
+	cfData.Val("secret").Set(apiSecret)
+	cfData.Val("secure").Set(conf.RunningSecure)
+	mc, e = nodes.NewStorageClient(cfData) // minio.NewCore(fmt.Sprintf("%s:%d", conf.RunningHost, conf.RunningPort), conf.ApiKey, apiSecret, conf.RunningSecure)
 	if e != nil {
 		return
 	}
@@ -310,18 +315,16 @@ func migratePrepareClients(source *object.DataSource) (rootNode *tree.Node, idx 
 	return
 }
 
-func migratePerformMigration(ctx context.Context, mc *minio.Core, idx tree.NodeProviderClient, src, tgt, tgtFmt string) (out []*tree.Node, ee error) {
+func migratePerformMigration(ctx context.Context, mc nodes.StorageClient, idx tree.NodeProviderClient, src, tgt, tgtFmt string) (out []*tree.Node, ee error) {
 
 	str, e := idx.ListNodes(ctx, &tree.ListNodesRequest{Node: &tree.Node{Path: "/"}, Recursive: true})
 	if e != nil {
 		return out, e
 	}
-	opts := minio.StatObjectOptions{}
 	mm := map[string]string{}
 	if meta, ok := context2.MinioMetaFromContext(ctx); ok {
 		for k, v := range meta {
 			mm[k] = v
-			opts.Set(k, v)
 		}
 	}
 	defer str.Close()
@@ -340,7 +343,7 @@ func migratePerformMigration(ctx context.Context, mc *minio.Core, idx tree.NodeP
 			tgtPath = strings.TrimLeft(n.GetPath(), "/")
 		}
 		if !isPydio && n.IsLeaf() {
-			_, e := mc.StatObject(src, srcPath, opts)
+			_, e := mc.StatObject(src, srcPath, mm)
 			if e != nil {
 				migrateLogger("[ERROR] Cannot stat object "+srcPath+": "+e.Error(), true)
 				return out, e
@@ -372,7 +375,7 @@ func migratePerformMigration(ctx context.Context, mc *minio.Core, idx tree.NodeP
 				fmt.Println("[DRY-RUN] Should create " + hiddenPath)
 				continue
 			}
-			_, e := mc.PutObjectWithContext(ctx, tgt, hiddenPath, strings.NewReader(n.GetUuid()), int64(len(n.GetUuid())), minio.PutObjectOptions{})
+			_, e := mc.PutObjectWithContext(ctx, tgt, hiddenPath, strings.NewReader(n.GetUuid()), int64(len(n.GetUuid())), models.PutMeta{})
 			if e != nil {
 				return out, fmt.Errorf("cannot re-create hidden %s (%s)", hiddenPath, e.Error())
 			} else {

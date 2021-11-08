@@ -22,6 +22,7 @@ package mc
 
 import (
 	"context"
+	"fmt"
 	"io"
 
 	"github.com/pydio/cells/common/nodes/models"
@@ -32,7 +33,11 @@ type Client struct {
 	mc *minio.Core
 }
 
-func New(endpoint, accessKey, secretKey string, secure bool) (*Client, error) {
+func New(endpoint, accessKey, secretKey string, secure bool, customRegion ...string) (*Client, error) {
+	if len(customRegion) > 0 {
+		// TODO v4
+		return nil, fmt.Errorf("custom region not supported yet")
+	}
 	c, err := minio.NewCore(endpoint, accessKey, secretKey, secure)
 	if err != nil {
 		return nil, err
@@ -40,6 +45,29 @@ func New(endpoint, accessKey, secretKey string, secure bool) (*Client, error) {
 	return &Client{
 		mc: c,
 	}, nil
+}
+
+func (c *Client) ListBucketsWithContext(ctx context.Context) ([]models.BucketInfo, error) {
+	bb, e := c.mc.ListBucketsWithContext(ctx)
+	if e != nil {
+		return nil, e
+	}
+	buckets := make([]models.BucketInfo, len(bb))
+	for i, b := range bb {
+		buckets[i] = models.BucketInfo{
+			Name:         b.Name,
+			CreationDate: b.CreationDate,
+		}
+	}
+	return buckets, nil
+}
+
+func (c *Client) MakeBucketWithContext(ctx context.Context, bucketName string, location string) (err error) {
+	return c.mc.MakeBucket(bucketName, location)
+}
+
+func (c *Client) RemoveBucketWithContext(ctx context.Context, bucketName string) error {
+	return c.mc.RemoveBucket(bucketName)
 }
 
 func (c *Client) GetObject(bucketName, objectName string, opts models.ReadMeta) (io.ReadCloser, models.ObjectInfo, error) {

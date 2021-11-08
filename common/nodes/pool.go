@@ -27,8 +27,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pydio/cells/common/nodes/objects/mc"
-
 	"github.com/golang/protobuf/proto"
 	microregistry "github.com/micro/go-micro/registry"
 	"github.com/patrickmn/go-cache"
@@ -75,7 +73,12 @@ func NewSource(data *object.DataSource) (LoadedSource, error) {
 	loaded := LoadedSource{}
 	loaded.DataSource = *data
 	var err error
-	loaded.Client, err = mc.New(data.BuildUrl(), data.GetApiKey(), data.GetApiSecret(), data.GetObjectsSecure())
+	cfData := configx.New()
+	cfData.Val("endpoint").Set(data.BuildUrl())
+	cfData.Val("key").Set(data.GetApiKey())
+	cfData.Val("secret").Set(data.GetApiSecret())
+	cfData.Val("secure").Set(data.GetObjectsSecure())
+	loaded.Client, err = NewStorageClient(cfData)
 	return loaded, err
 }
 

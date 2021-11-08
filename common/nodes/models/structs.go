@@ -80,6 +80,14 @@ type MultipartRequestData struct {
 	ListMaxUploads     int
 }
 
+// BucketInfo container for bucket metadata.
+type BucketInfo struct {
+	// The name of the bucket.
+	Name string
+	// Date the bucket was created.
+	CreationDate time.Time
+}
+
 // ObjectInfo container for object metadata.
 type ObjectInfo struct {
 	// An ETag is optionally set to md5sum of an object.  In case of multipart objects,
