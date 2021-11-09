@@ -34,7 +34,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/micro/go-micro/errors"
+	"github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
@@ -408,7 +408,7 @@ func (s *BoltSnapshot) LoadNode(ctx context.Context, path string, extendedStats 
 
 func (s *BoltSnapshot) GetEndpointInfo() model.EndpointInfo {
 	return model.EndpointInfo{
-		URI: "snapshot://" + s.name,
+		URI:                   "snapshot://" + s.name,
 		RequiresNormalization: false,
 		RequiresFoldersRescan: false,
 	}

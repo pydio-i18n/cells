@@ -75,7 +75,7 @@ func (c *conf) Val(path ...string) configx.Values {
 }
 
 func NewConfig() configx.Entrypoint {
-	cli := storage.NewStorageEndpointClient(common.ServiceStorageNamespace_+common.ServiceConfig, defaults.NewClient())
+	cli := storage.NewStorageEndpointClient(defaults.NewClientConn(common.ServiceConfig))
 	return &conf{
 		cli: cli,
 	}

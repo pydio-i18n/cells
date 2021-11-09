@@ -29,9 +29,9 @@ import (
 
 	"github.com/cskr/pubsub"
 	"github.com/golang/protobuf/ptypes"
-	"github.com/micro/go-micro/client"
-	"github.com/micro/go-micro/metadata"
-	"github.com/micro/go-micro/server"
+	"github.com/micro/micro/v3/service/client"
+	"github.com/micro/micro/v3/service/context/metadata"
+	"github.com/micro/micro/v3/service/server"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"

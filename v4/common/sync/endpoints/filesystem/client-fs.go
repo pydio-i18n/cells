@@ -37,7 +37,7 @@ import (
 	"sync"
 
 	"github.com/karrick/godirwalk"
-	errors2 "github.com/micro/go-micro/errors"
+	errors2 "github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
 	"github.com/rjeczalik/notify"
 	"github.com/spf13/afero"
@@ -233,7 +233,7 @@ func (c *FSClient) SetRefHashStore(source model.PathSyncSource) {
 func (c *FSClient) GetEndpointInfo() model.EndpointInfo {
 
 	return model.EndpointInfo{
-		URI: "fs://" + c.uriPath,
+		URI:                   "fs://" + c.uriPath,
 		RequiresFoldersRescan: true,
 		RequiresNormalization: runtime.GOOS == "darwin",
 		//		Ignores:               []string{common.PydioSyncHiddenFile},

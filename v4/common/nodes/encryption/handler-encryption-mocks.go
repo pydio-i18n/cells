@@ -24,10 +24,11 @@ import (
 	"context"
 	"crypto/rand"
 	"fmt"
-	"google.golang.org/grpc/metadata"
 	"strings"
 
-	"github.com/micro/go-micro/errors"
+	"google.golang.org/grpc/metadata"
+
+	"github.com/micro/micro/v3/service/errors"
 	"github.com/pydio/cells/v4/common/crypto"
 	"github.com/pydio/cells/v4/common/proto/encryption"
 	json "github.com/pydio/cells/v4/x/jsonx"

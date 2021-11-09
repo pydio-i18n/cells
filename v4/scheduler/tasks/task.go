@@ -25,7 +25,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/micro/go-micro/client"
+	"github.com/micro/micro/v3/service/client"
 	"github.com/pborman/uuid"
 	"google.golang.org/protobuf/proto"
 

@@ -25,7 +25,7 @@ import (
 	"strings"
 
 	"github.com/emicklei/go-restful"
-	"github.com/micro/go-micro/client"
+	"github.com/micro/micro/v3/service/client"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"

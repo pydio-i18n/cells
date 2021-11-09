@@ -24,7 +24,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/micro/go-micro/metadata"
+	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/pydio/cells/v4/common/proto/tree"
 )
 

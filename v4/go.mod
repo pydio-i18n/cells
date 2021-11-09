@@ -39,7 +39,6 @@ require (
 	github.com/lucas-clemente/quic-go v0.24.0 // indirect
 	github.com/manifoldco/promptui v0.8.0
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
-	github.com/micro/go-micro v1.18.0
 	github.com/micro/micro/v3 v3.6.0
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/nicksnyder/go-i18n v1.10.0

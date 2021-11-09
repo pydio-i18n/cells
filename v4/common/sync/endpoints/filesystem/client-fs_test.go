@@ -31,7 +31,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/micro/go-micro/errors"
+	"github.com/micro/micro/v3/service/errors"
 	"github.com/rjeczalik/notify"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/spf13/afero"

@@ -28,7 +28,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/go-micro/client"
+	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
 	"go.uber.org/zap"
