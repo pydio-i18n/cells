@@ -25,9 +25,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/micro/micro/v3/service/client"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
@@ -40,25 +40,25 @@ import (
 func WithAudit() nodes.Option {
 	return func(options *nodes.RouterOptions) {
 		if options.AuditEvent {
-			options.Wrappers = append(options.Wrappers, &HandlerAuditEvent{})
+			options.Wrappers = append(options.Wrappers, &HandlerAudit{})
 		}
 	}
 }
 
-// HandlerAuditEvent is responsible for auditing all events on Nodes
+// HandlerAudit is responsible for auditing all events on Nodes
 // as soon as the router's option flag "AuditEvent" is set to true.
-type HandlerAuditEvent struct {
-	abstract.AbstractHandler
+type HandlerAudit struct {
+	abstract.Handler
 }
 
-func (h *HandlerAuditEvent) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+func (h *HandlerAudit) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	h.Next = c
 	h.ClientsPool = options.Pool
 	return h
 }
 
 // GetObject logs an audit message on each GetObject Events after calling following handlers.
-func (h *HandlerAuditEvent) GetObject(ctx context.Context, node *tree.Node, requestData *models.GetRequestData) (io.ReadCloser, error) {
+func (h *HandlerAudit) GetObject(ctx context.Context, node *tree.Node, requestData *models.GetRequestData) (io.ReadCloser, error) {
 	auditer := log.Auditer(ctx)
 	reader, e := h.Next.GetObject(ctx, node, requestData)
 
@@ -81,7 +81,7 @@ func (h *HandlerAuditEvent) GetObject(ctx context.Context, node *tree.Node, requ
 }
 
 // PutObject logs an audit message after calling following handlers.
-func (h *HandlerAuditEvent) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
+func (h *HandlerAudit) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
 	auditer := log.Auditer(ctx)
 	written, e := h.Next.PutObject(ctx, node, reader, requestData)
 	if e != nil {
@@ -107,7 +107,7 @@ func (h *HandlerAuditEvent) PutObject(ctx context.Context, node *tree.Node, read
 }
 
 // ReadNode only forwards call to Next handler, it call too often to provide useful audit info.
-func (h *HandlerAuditEvent) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...client.CallOption) (*tree.ReadNodeResponse, error) {
+func (h *HandlerAudit) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	response, e := h.Next.ReadNode(ctx, in, opts...)
 	return response, e
 
@@ -129,7 +129,7 @@ func (h *HandlerAuditEvent) ReadNode(ctx context.Context, in *tree.ReadNodeReque
 }
 
 // ListNodes logs an audit message on each call after having transferred the call to following handlers.
-func (h *HandlerAuditEvent) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (h *HandlerAudit) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 	c, e := h.Next.ListNodes(ctx, in, opts...)
 	if e != nil {
 		return c, e
@@ -150,7 +150,7 @@ func (h *HandlerAuditEvent) ListNodes(ctx context.Context, in *tree.ListNodesReq
 }
 
 // CreateNode logs an audit message on each call after having transferred the call to following handlers.
-func (h *HandlerAuditEvent) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...client.CallOption) (*tree.CreateNodeResponse, error) {
+func (h *HandlerAudit) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	response, e := h.Next.CreateNode(ctx, in, opts...)
 	if e != nil {
 		return response, e
@@ -170,7 +170,7 @@ func (h *HandlerAuditEvent) CreateNode(ctx context.Context, in *tree.CreateNodeR
 }
 
 // UpdateNode logs an audit message on each call after having transferred the call to following handlers.
-func (h *HandlerAuditEvent) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...client.CallOption) (*tree.UpdateNodeResponse, error) {
+func (h *HandlerAudit) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 	response, e := h.Next.UpdateNode(ctx, in, opts...)
 	if e != nil {
 		return response, e
@@ -188,7 +188,7 @@ func (h *HandlerAuditEvent) UpdateNode(ctx context.Context, in *tree.UpdateNodeR
 }
 
 // DeleteNode logs an audit message on each call after having transferred the call to following handlers.
-func (h *HandlerAuditEvent) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...client.CallOption) (*tree.DeleteNodeResponse, error) {
+func (h *HandlerAudit) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 	response, e := h.Next.DeleteNode(ctx, in, opts...)
 	if e != nil {
 		return response, e
@@ -207,7 +207,7 @@ func (h *HandlerAuditEvent) DeleteNode(ctx context.Context, in *tree.DeleteNodeR
 	return response, e
 }
 
-func (h *HandlerAuditEvent) CopyObject(ctx context.Context, from *tree.Node, to *tree.Node, requestData *models.CopyRequestData) (int64, error) {
+func (h *HandlerAudit) CopyObject(ctx context.Context, from *tree.Node, to *tree.Node, requestData *models.CopyRequestData) (int64, error) {
 	size, e := h.Next.CopyObject(ctx, from, to, requestData)
 	if e != nil {
 		return size, e
@@ -226,15 +226,15 @@ func (h *HandlerAuditEvent) CopyObject(ctx context.Context, from *tree.Node, to 
 
 // Multi part upload management
 
-func (h *HandlerAuditEvent) MultipartCreate(ctx context.Context, target *tree.Node, requestData *models.MultipartRequestData) (string, error) {
+func (h *HandlerAudit) MultipartCreate(ctx context.Context, target *tree.Node, requestData *models.MultipartRequestData) (string, error) {
 	return h.Next.MultipartCreate(ctx, target, requestData)
 }
 
-func (h *HandlerAuditEvent) MultipartPutObjectPart(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, reader io.Reader, requestData *models.PutRequestData) (models.MultipartObjectPart, error) {
+func (h *HandlerAudit) MultipartPutObjectPart(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, reader io.Reader, requestData *models.PutRequestData) (models.MultipartObjectPart, error) {
 	return h.Next.MultipartPutObjectPart(ctx, target, uploadID, partNumberMarker, reader, requestData)
 }
 
-func (h *HandlerAuditEvent) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.ObjectInfo, error) {
+func (h *HandlerAudit) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.ObjectInfo, error) {
 	oi, e := h.Next.MultipartComplete(ctx, target, uploadID, uploadedParts)
 	if e != nil {
 		return oi, e
@@ -252,15 +252,15 @@ func (h *HandlerAuditEvent) MultipartComplete(ctx context.Context, target *tree.
 	return oi, e
 }
 
-func (h *HandlerAuditEvent) MultipartAbort(ctx context.Context, target *tree.Node, uploadID string, requestData *models.MultipartRequestData) error {
+func (h *HandlerAudit) MultipartAbort(ctx context.Context, target *tree.Node, uploadID string, requestData *models.MultipartRequestData) error {
 	return h.Next.MultipartAbort(ctx, target, uploadID, requestData)
 }
 
-func (h *HandlerAuditEvent) MultipartList(ctx context.Context, prefix string, requestData *models.MultipartRequestData) (models.ListMultipartUploadsResult, error) {
+func (h *HandlerAudit) MultipartList(ctx context.Context, prefix string, requestData *models.MultipartRequestData) (models.ListMultipartUploadsResult, error) {
 	return h.Next.MultipartList(ctx, prefix, requestData)
 }
 
-func (h *HandlerAuditEvent) MultipartListObjectParts(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, maxParts int) (models.ListObjectPartsResult, error) {
+func (h *HandlerAudit) MultipartListObjectParts(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, maxParts int) (models.ListObjectPartsResult, error) {
 	return h.Next.MultipartListObjectParts(ctx, target, uploadID, partNumberMarker, maxParts)
 }
 

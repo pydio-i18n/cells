@@ -25,7 +25,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/micro/micro/v3/service/client"
+	"google.golang.org/grpc"
+
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/abstract"
 	"github.com/pydio/cells/v4/common/nodes/models"
@@ -69,12 +70,12 @@ type clientImpl struct {
 	pool    nodes.SourcesPool
 }
 
-func (v *clientImpl) WrapCallback(provider nodes.NodesCallback) error {
+func (v *clientImpl) WrapCallback(provider nodes.CallbackFunc) error {
 	return v.ExecuteWrapped(nil, nil, provider)
 }
 
 func (v *clientImpl) BranchInfoForNode(ctx context.Context, node *tree.Node) (branch nodes.BranchInfo, err error) {
-	err = v.WrapCallback(func(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter) error {
+	err = v.WrapCallback(func(inputFilter nodes.FilterFunc, outputFilter nodes.FilterFunc) error {
 		updatedCtx, _, er := inputFilter(ctx, node, "in")
 		if er != nil {
 			return er
@@ -89,35 +90,35 @@ func (v *clientImpl) BranchInfoForNode(ctx context.Context, node *tree.Node) (br
 	return
 }
 
-func (v *clientImpl) ExecuteWrapped(_ nodes.NodeFilter, _ nodes.NodeFilter, provider nodes.NodesCallback) error {
+func (v *clientImpl) ExecuteWrapped(_ nodes.FilterFunc, _ nodes.FilterFunc, provider nodes.CallbackFunc) error {
 	identity := func(ctx context.Context, inputNode *tree.Node, identifier string) (context.Context, *tree.Node, error) {
 		return ctx, inputNode, nil
 	}
 	return v.handler.ExecuteWrapped(identity, identity, provider)
 }
 
-func (v *clientImpl) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...client.CallOption) (*tree.ReadNodeResponse, error) {
+func (v *clientImpl) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	h := v.handler
 
 	return h.ReadNode(ctx, in, opts...)
 }
 
-func (v *clientImpl) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (v *clientImpl) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 	h := v.handler
 	return h.ListNodes(ctx, in, opts...)
 }
 
-func (v *clientImpl) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...client.CallOption) (*tree.CreateNodeResponse, error) {
+func (v *clientImpl) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	h := v.handler
 	return h.CreateNode(ctx, in, opts...)
 }
 
-func (v *clientImpl) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...client.CallOption) (*tree.UpdateNodeResponse, error) {
+func (v *clientImpl) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 	h := v.handler
 	return h.UpdateNode(ctx, in, opts...)
 }
 
-func (v *clientImpl) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...client.CallOption) (*tree.DeleteNodeResponse, error) {
+func (v *clientImpl) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 	h := v.handler
 	return h.DeleteNode(ctx, in, opts...)
 }
@@ -161,7 +162,7 @@ func (v *clientImpl) MultipartListObjectParts(ctx context.Context, target *tree.
 	return v.handler.MultipartListObjectParts(ctx, target, uploadID, partNumberMarker, maxParts)
 }
 
-func (v *clientImpl) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...client.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {
+func (v *clientImpl) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...grpc.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {
 	return v.handler.StreamChanges(ctx, in, opts...)
 }
 
@@ -171,7 +172,7 @@ func (v *clientImpl) WrappedCanApply(srcCtx context.Context, targetCtx context.C
 
 func (v *clientImpl) CanApply(ctx context.Context, operation *tree.NodeChangeEvent) (*tree.NodeChangeEvent, error) {
 	var innerOperation *tree.NodeChangeEvent
-	e := v.WrapCallback(func(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter) error {
+	e := v.WrapCallback(func(inputFilter nodes.FilterFunc, outputFilter nodes.FilterFunc) error {
 		var sourceNode, targetNode *tree.Node
 		var sourceCtx, targetCtx context.Context
 		switch operation.Type {
@@ -210,7 +211,7 @@ func (v *clientImpl) GetClientsPool() nodes.SourcesPool {
 }
 
 // ListNodesWithCallback performs a ListNodes request and applied callback with optional filters. This hides the complexity of streams handling.
-func (v *clientImpl) ListNodesWithCallback(ctx context.Context, request *tree.ListNodesRequest, callback nodes.WalkFunc, ignoreCbError bool, filters ...nodes.WalkFilter) error {
+func (v *clientImpl) ListNodesWithCallback(ctx context.Context, request *tree.ListNodesRequest, callback nodes.WalkFunc, ignoreCbError bool, filters ...nodes.WalkFilterFunc) error {
 
 	return nodes.HandlerListNodesWithCallback(v, ctx, request, callback, ignoreCbError, filters...)
 

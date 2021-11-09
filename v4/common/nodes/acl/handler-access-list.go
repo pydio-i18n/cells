@@ -40,7 +40,7 @@ func WithAccessList() nodes.Option {
 
 // AccessListHandler appends permissions.AccessList to the context.
 type AccessListHandler struct {
-	abstract.AbstractHandler
+	abstract.Handler
 }
 
 func (a *AccessListHandler) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {

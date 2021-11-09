@@ -36,24 +36,24 @@ import (
 func WithContentLockFilter() nodes.Option {
 	return func(options *nodes.RouterOptions) {
 		if !options.AdminView {
-			options.Wrappers = append(options.Wrappers, &AclContentLockFilter{})
+			options.Wrappers = append(options.Wrappers, &ContentLockFilter{})
 		}
 	}
 }
 
-// AclContentLockFilter checks for user-defined content locks in the context AccessList.
-type AclContentLockFilter struct {
-	abstract.AbstractHandler
+// ContentLockFilter checks for user-defined content locks in the context AccessList.
+type ContentLockFilter struct {
+	abstract.Handler
 }
 
-func (a *AclContentLockFilter) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+func (a *ContentLockFilter) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	a.Next = h
 	a.ClientsPool = options.Pool
 	return a
 }
 
 // PutObject check locks before allowing Put operation.
-func (a *AclContentLockFilter) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
+func (a *ContentLockFilter) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
 	if branchInfo, ok := nodes.GetBranchInfo(ctx, "in"); ok && branchInfo.IsInternal() {
 		return a.Next.PutObject(ctx, node, reader, requestData)
 	}
@@ -63,7 +63,7 @@ func (a *AclContentLockFilter) PutObject(ctx context.Context, node *tree.Node, r
 	return a.Next.PutObject(ctx, node, reader, requestData)
 }
 
-func (a *AclContentLockFilter) MultipartCreate(ctx context.Context, target *tree.Node, requestData *models.MultipartRequestData) (string, error) {
+func (a *ContentLockFilter) MultipartCreate(ctx context.Context, target *tree.Node, requestData *models.MultipartRequestData) (string, error) {
 	if branchInfo, ok := nodes.GetBranchInfo(ctx, "in"); ok && branchInfo.IsInternal() {
 		return a.Next.MultipartCreate(ctx, target, requestData)
 	}
@@ -74,11 +74,11 @@ func (a *AclContentLockFilter) MultipartCreate(ctx context.Context, target *tree
 }
 
 // CopyObject should check: quota on CopyObject operation? Can we copy an object on top of an existing node?
-func (a *AclContentLockFilter) CopyObject(ctx context.Context, from *tree.Node, to *tree.Node, requestData *models.CopyRequestData) (int64, error) {
+func (a *ContentLockFilter) CopyObject(ctx context.Context, from *tree.Node, to *tree.Node, requestData *models.CopyRequestData) (int64, error) {
 	return a.Next.CopyObject(ctx, from, to, requestData)
 }
 
-func (a *AclContentLockFilter) WrappedCanApply(srcCtx context.Context, targetCtx context.Context, operation *tree.NodeChangeEvent) error {
+func (a *ContentLockFilter) WrappedCanApply(srcCtx context.Context, targetCtx context.Context, operation *tree.NodeChangeEvent) error {
 	var lockErr error
 	switch operation.GetType() {
 	case tree.NodeChangeEvent_CREATE, tree.NodeChangeEvent_UPDATE_CONTENT:

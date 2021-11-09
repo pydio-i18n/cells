@@ -26,12 +26,11 @@ import (
 	"time"
 
 	"github.com/pydio/cells/v4/common"
-
 	"github.com/pydio/cells/v4/common/proto/tree"
 )
 
 // HandlerListNodesWithCallback is a generic implementation of ListNodesWithCallback for any Handler. Used by Client, Handler and HandlerMock
-func HandlerListNodesWithCallback(v Handler, ctx context.Context, request *tree.ListNodesRequest, callback WalkFunc, ignoreCbError bool, filters ...WalkFilter) error {
+func HandlerListNodesWithCallback(v Handler, ctx context.Context, request *tree.ListNodesRequest, callback WalkFunc, ignoreCbError bool, filters ...WalkFilterFunc) error {
 	r, e := v.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Path: request.Node.Path}})
 	if e != nil {
 		return e

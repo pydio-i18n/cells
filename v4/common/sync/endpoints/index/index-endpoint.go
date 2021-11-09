@@ -53,7 +53,7 @@ type Client struct {
 func (i *Client) GetEndpointInfo() model.EndpointInfo {
 
 	return model.EndpointInfo{
-		URI: "index://" + i.dsName,
+		URI:                   "index://" + i.dsName,
 		RequiresFoldersRescan: false,
 		RequiresNormalization: false,
 	}
@@ -76,7 +76,7 @@ func (i *Client) Walk(walknFc model.WalkNodesFunc, root string, recursive bool) 
 	if e != nil {
 		return e
 	}
-	defer responseClient.Close()
+	defer responseClient.CloseSend()
 	for {
 		response, rErr := responseClient.Recv()
 		if rErr == io.EOF || rErr == io.ErrUnexpectedEOF || (rErr == nil && response == nil) {
@@ -189,7 +189,7 @@ func (i *Client) MoveNode(ctx context.Context, oldPath string, newPath string) (
 
 func (i *Client) StartSession(ctx context.Context, rootNode *tree.Node, silent bool) (*tree.IndexationSession, error) {
 	sess := &tree.IndexationSession{
-		Uuid:        uuid.New(),
+		Uuid:        uuid.New().String(),
 		Description: "Indexation",
 		RootNode:    rootNode,
 		Silent:      silent,

@@ -27,6 +27,7 @@ import (
 	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
@@ -45,23 +46,23 @@ import (
 func WithRead() nodes.Option {
 	return func(options *nodes.RouterOptions) {
 		if options.LogReadEvents {
-			options.Wrappers = append(options.Wrappers, &HandlerEventRead{})
+			options.Wrappers = append(options.Wrappers, &HandlerRead{})
 		}
 	}
 }
 
-// HandlerEventRead publishes events after reading files.
-type HandlerEventRead struct {
-	abstract.AbstractHandler
+// HandlerRead publishes events after reading files.
+type HandlerRead struct {
+	abstract.Handler
 }
 
-func (h *HandlerEventRead) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+func (h *HandlerRead) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	h.Next = c
 	h.ClientsPool = options.Pool
 	return h
 }
 
-func (h *HandlerEventRead) feedNodeUuid(ctx context.Context, node *tree.Node) error {
+func (h *HandlerRead) feedNodeUuid(ctx context.Context, node *tree.Node) error {
 	response, e := h.Next.ReadNode(ctx, &tree.ReadNodeRequest{Node: node})
 	if e != nil {
 		return e
@@ -71,7 +72,7 @@ func (h *HandlerEventRead) feedNodeUuid(ctx context.Context, node *tree.Node) er
 	return nil
 }
 
-func (h *HandlerEventRead) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (h *HandlerRead) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 	c, e := h.Next.ListNodes(ctx, in, opts...)
 	if branchInfo, ok := nodes.GetBranchInfo(ctx, "in"); ok && branchInfo.IsInternal() {
 		return c, e
@@ -80,13 +81,13 @@ func (h *HandlerEventRead) ListNodes(ctx context.Context, in *tree.ListNodesRequ
 		node := in.Node.Clone()
 		if node.Uuid == "" {
 			if e := h.feedNodeUuid(ctx, node); e != nil {
-				log.Logger(ctx).Error("HandlerEventRead did not find Uuid!", zap.Error(e))
+				log.Logger(ctx).Error("HandlerRead did not find Uuid!", zap.Error(e))
 			}
 		}
 		if node.Uuid != "" {
 			c := context2.WithMetaCopy(ctx)
 			go func() {
-				client.Publish(c, client.NewPublication(common.TopicTreeChanges, &tree.NodeChangeEvent{
+				client.Publish(c, client.NewMessage(common.TopicTreeChanges, &tree.NodeChangeEvent{
 					Type:   tree.NodeChangeEvent_READ,
 					Target: node,
 				}))
@@ -96,7 +97,7 @@ func (h *HandlerEventRead) ListNodes(ctx context.Context, in *tree.ListNodesRequ
 	return c, e
 }
 
-func (h *HandlerEventRead) GetObject(ctx context.Context, node *tree.Node, requestData *models.GetRequestData) (io.ReadCloser, error) {
+func (h *HandlerRead) GetObject(ctx context.Context, node *tree.Node, requestData *models.GetRequestData) (io.ReadCloser, error) {
 
 	logger := log.Logger(ctx)
 
@@ -120,7 +121,7 @@ func (h *HandlerEventRead) GetObject(ctx context.Context, node *tree.Node, reque
 		eventNode := node.Clone()
 		if eventNode.Uuid == "" {
 			if e := h.feedNodeUuid(ctx, eventNode); e != nil {
-				logger.Debug("HandlerEventRead did not find Uuid!", zap.Error(e))
+				logger.Debug("HandlerRead did not find Uuid!", zap.Error(e))
 			}
 		}
 		if eventNode.Uuid != "" {
@@ -130,7 +131,7 @@ func (h *HandlerEventRead) GetObject(ctx context.Context, node *tree.Node, reque
 			}
 			c := context2.WithMetaCopy(ctx)
 			go func() {
-				client.Publish(c, client.NewPublication(common.TopicTreeChanges, &tree.NodeChangeEvent{
+				client.Publish(c, client.NewMessage(common.TopicTreeChanges, &tree.NodeChangeEvent{
 					Type:   tree.NodeChangeEvent_READ,
 					Target: eventNode,
 				}))
@@ -142,7 +143,7 @@ func (h *HandlerEventRead) GetObject(ctx context.Context, node *tree.Node, reque
 				linkData.DownloadCount++
 				newData, _ := json.Marshal(linkData)
 				doc.Data = string(newData)
-				store := docstore.NewDocStoreClient(common.ServiceGrpcNamespace_+common.ServiceDocStore, defaults.NewClient())
+				store := docstore.NewDocStoreClient(defaults.NewClientConn(common.ServiceDocStore))
 				_, e3 := store.PutDocument(bgContext, &docstore.PutDocumentRequest{StoreID: common.DocStoreIdShares, DocumentID: doc.ID, Document: doc})
 				if e3 == nil {
 					logger.Debug("Updated share download count " + doc.ID)
@@ -157,7 +158,7 @@ func (h *HandlerEventRead) GetObject(ctx context.Context, node *tree.Node, reque
 
 }
 
-func (h *HandlerEventRead) sharedLinkWithDownloadLimit(ctx context.Context) (doc *docstore.Document, linkData *docstore.ShareDocument) {
+func (h *HandlerRead) sharedLinkWithDownloadLimit(ctx context.Context) (doc *docstore.Document, linkData *docstore.ShareDocument) {
 
 	userLogin, claims := permissions.FindUserNameInContext(ctx)
 	// TODO - Have the 'hidden' info directly in claims => could it be a profile instead ?
@@ -170,7 +171,7 @@ func (h *HandlerEventRead) sharedLinkWithDownloadLimit(ctx context.Context) (doc
 		return
 	}
 	// This is a unique hidden user - search corresponding link and update download number
-	store := docstore.NewDocStoreClient(common.ServiceGrpcNamespace_+common.ServiceDocStore, defaults.NewClient())
+	store := docstore.NewDocStoreClient(defaults.NewClientConn(common.ServiceDocStore))
 
 	// SEARCH WITH PRESET_LOGIN
 	stream, e := store.ListDocuments(bgContext, &docstore.ListDocumentsRequest{StoreID: common.DocStoreIdShares, Query: &docstore.DocumentQuery{
@@ -182,7 +183,7 @@ func (h *HandlerEventRead) sharedLinkWithDownloadLimit(ctx context.Context) (doc
 	if r, e := stream.Recv(); e == nil {
 		doc = r.Document
 	}
-	stream.Close()
+	stream.CloseSend()
 
 	if doc == nil {
 		// SEARCH WITH PRELOG_USER
@@ -195,7 +196,7 @@ func (h *HandlerEventRead) sharedLinkWithDownloadLimit(ctx context.Context) (doc
 		if r, e := stream2.Recv(); e == nil {
 			doc = r.Document
 		}
-		stream2.Close()
+		stream2.CloseSend()
 	}
 
 	if doc != nil {

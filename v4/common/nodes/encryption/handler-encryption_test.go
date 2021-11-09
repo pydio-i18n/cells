@@ -45,10 +45,10 @@ import (
 // For the record, below lines where in errors and have been violently
 // commented out without further thinking.
 
-func TestEncryptionHandler_GetObject(t *testing.T) {
+func TestHandler_GetObject(t *testing.T) {
 
-	handler := &EncryptionHandler{
-	// 		UserTools: &EncryptionClientMock{},
+	handler := &Handler{
+		// 		UserTools: &EncryptionClientMock{},
 	}
 	mock := nodes.NewHandlerMock()
 	mock.Nodes["test"] = &tree.Node{Path: "test"}
@@ -121,9 +121,9 @@ func TestEncryptionHandler_GetObject(t *testing.T) {
 
 }
 
-func TestEncryptionHandler_Encrypted(t *testing.T) {
-	handler := &EncryptionHandler{
-		AbstractHandler: abstract.AbstractHandler{
+func TestHandler_Encrypted(t *testing.T) {
+	handler := &Handler{
+		Handler: abstract.Handler{
 			Next: nodes.NewHandlerMock(),
 		},
 	}
@@ -239,7 +239,7 @@ func TestEncryptionHandler_Encrypted(t *testing.T) {
 	})
 }
 
-func TestRangeEncryptionHandler_Encrypted(t *testing.T) {
+func TestRangeHandler_Encrypted(t *testing.T) {
 
 	mock := nodes.NewHandlerMock()
 	dataFolder := filepath.Join(os.TempDir(), "cells", "tests", "encryption")
@@ -265,8 +265,8 @@ func TestRangeEncryptionHandler_Encrypted(t *testing.T) {
 	}
 	_ = file.Close()
 
-	handler := &EncryptionHandler{
-		AbstractHandler: abstract.AbstractHandler{
+	handler := &Handler{
+		Handler: abstract.Handler{
 			Next: nodes.NewHandlerMock(),
 		},
 	}

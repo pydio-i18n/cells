@@ -42,29 +42,29 @@ import (
 
 func WithWorkspace() nodes.Option {
 	return func(options *nodes.RouterOptions) {
-		options.Wrappers = append(options.Wrappers, NewUuidNodeHandler())
+		options.Wrappers = append(options.Wrappers, newWorkspaceHandler())
 	}
 }
 
-// UuidNodeHandler is an AbstractBranchFilter extracting workspace info based on node UUID.
-type UuidNodeHandler struct {
-	abstract.AbstractBranchFilter
+// WorkspaceHandler is an BranchFilter extracting workspace info based on node UUID.
+type WorkspaceHandler struct {
+	abstract.BranchFilter
 }
 
-func (h *UuidNodeHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+func (h *WorkspaceHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	h.Next = c
 	h.ClientsPool = options.Pool
 	return h
 }
 
-func NewUuidNodeHandler() *UuidNodeHandler {
-	u := &UuidNodeHandler{}
+func newWorkspaceHandler() *WorkspaceHandler {
+	u := &WorkspaceHandler{}
 	u.InputMethod = u.updateInputBranch
 	u.OutputMethod = u.updateOutputBranch
 	return u
 }
 
-func (h *UuidNodeHandler) updateInputBranch(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
+func (h *WorkspaceHandler) updateInputBranch(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
 
 	if info, alreadySet := nodes.GetBranchInfo(ctx, identifier); alreadySet && info.Client != nil {
 		return ctx, node, nil
@@ -124,7 +124,7 @@ func (h *UuidNodeHandler) updateInputBranch(ctx context.Context, node *tree.Node
 	return nodes.WithBranchInfo(ctx, identifier, branchInfo), node, nil
 }
 
-func (h *UuidNodeHandler) updateOutputBranch(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
+func (h *WorkspaceHandler) updateOutputBranch(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
 
 	var accessList *permissions.AccessList
 	var ok bool
@@ -155,7 +155,7 @@ func (h *UuidNodeHandler) updateOutputBranch(ctx context.Context, node *tree.Nod
 
 }
 
-func (h *UuidNodeHandler) relativePathToWsRoot(ctx context.Context, ws *idm.Workspace, nodeFullPath string, rootNodeId string) (string, error) {
+func (h *WorkspaceHandler) relativePathToWsRoot(ctx context.Context, ws *idm.Workspace, nodeFullPath string, rootNodeId string) (string, error) {
 
 	if resp, e := h.Next.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Uuid: rootNodeId}}); e == nil {
 		rootPath := resp.Node.Path

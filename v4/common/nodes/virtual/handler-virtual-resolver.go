@@ -37,19 +37,19 @@ func WithResolver() nodes.Option {
 	}
 }
 
-// VirtualNodesResolver dynamically resolves virtual nodes to their runtime value.
-type VirtualNodesResolver struct {
-	abstract.AbstractBranchFilter
+// ResolverHandler dynamically resolves virtual nodes to their runtime value.
+type ResolverHandler struct {
+	abstract.BranchFilter
 }
 
-func (h *VirtualNodesResolver) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	h.Next = c
-	h.ClientsPool = options.Pool
-	return h
+func (v *ResolverHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+	v.Next = c
+	v.ClientsPool = options.Pool
+	return v
 }
 
-func NewVirtualNodesHandler() *VirtualNodesResolver {
-	v := &VirtualNodesResolver{}
+func NewVirtualNodesHandler() *ResolverHandler {
+	v := &ResolverHandler{}
 	v.InputMethod = v.updateInput
 	v.OutputMethod = func(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
 		return ctx, node, nil
@@ -58,7 +58,7 @@ func NewVirtualNodesHandler() *VirtualNodesResolver {
 }
 
 // updateInput Updates BranchInfo and AccessList in context with resolved values for virtual nodes
-func (v *VirtualNodesResolver) updateInput(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
+func (v *ResolverHandler) updateInput(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
 
 	virtualManager := abstract.GetVirtualNodesManager()
 	if branchInfo, ok := nodes.GetBranchInfo(ctx, identifier); ok && !branchInfo.Binary && branchInfo.Root != nil {

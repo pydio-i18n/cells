@@ -24,9 +24,9 @@ import (
 	"context"
 	"strings"
 
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
@@ -45,13 +45,13 @@ func WithMultipleRoots() nodes.Option {
 
 // MultipleRootsHandler handle special case of multiple-roots workspaces.
 type MultipleRootsHandler struct {
-	abstract.AbstractBranchFilter
+	abstract.BranchFilter
 }
 
-func (h *MultipleRootsHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	h.Next = c
-	h.ClientsPool = options.Pool
-	return h
+func (m *MultipleRootsHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+	m.Next = c
+	m.ClientsPool = options.Pool
+	return m
 }
 
 func NewPathMultipleRootsHandler() *MultipleRootsHandler {
@@ -146,7 +146,7 @@ func (m *MultipleRootsHandler) updateOutputBranch(ctx context.Context, node *tre
 	return ctx, out, nil
 }
 
-func (m *MultipleRootsHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (m *MultipleRootsHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 
 	// First try, without modifying ctx & node
 	_, out, err := m.updateInputBranch(ctx, in.Node, "in")
@@ -159,7 +159,7 @@ func (m *MultipleRootsHandler) ListNodes(ctx context.Context, in *tree.ListNodes
 			return streamer, e
 		}
 		go func() {
-			defer streamer.Close()
+			defer streamer.CloseSend()
 			for rKey, rNode := range nn {
 				node := rNode.Clone()
 				node.Path = rKey
@@ -183,11 +183,11 @@ func (m *MultipleRootsHandler) ListNodes(ctx context.Context, in *tree.ListNodes
 		return streamer, nil
 	}
 	in.Node = out
-	return m.AbstractBranchFilter.ListNodes(ctx, in, opts...)
+	return m.BranchFilter.ListNodes(ctx, in, opts...)
 
 }
 
-func (m *MultipleRootsHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...client.CallOption) (*tree.ReadNodeResponse, error) {
+func (m *MultipleRootsHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 
 	// First try, without modifying ctx & node
 	_, out, err := m.updateInputBranch(ctx, in.Node, "in")
@@ -220,6 +220,6 @@ func (m *MultipleRootsHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRe
 		return &tree.ReadNodeResponse{Success: true, Node: fakeNode}, nil
 	}
 	in.Node = out
-	return m.AbstractBranchFilter.ReadNode(ctx, in, opts...)
+	return m.BranchFilter.ReadNode(ctx, in, opts...)
 
 }

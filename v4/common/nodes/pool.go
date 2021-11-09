@@ -23,13 +23,14 @@ package nodes
 import (
 	"context"
 	"fmt"
+	"go.uber.org/zap/zapcore"
 	"sync"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	microregistry "github.com/micro/micro/v3/service/registry"
 	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
@@ -49,6 +50,24 @@ var (
 type sourceAlias struct {
 	dataSource string
 	bucket     string
+}
+
+type LoadedSource struct {
+	object.DataSource
+	Client StorageClient
+}
+
+type SourcesPool interface {
+	Close()
+	GetTreeClient() tree.NodeProviderClient
+	GetTreeClientWrite() tree.NodeReceiverClient
+	GetDataSourceInfo(dsName string, retries ...int) (LoadedSource, error)
+	GetDataSources() map[string]LoadedSource
+	LoadDataSources()
+}
+
+func (s LoadedSource) MarshalLogObject(encoder zapcore.ObjectEncoder) error {
+	return encoder.AddObject("DataSource", &s.DataSource)
 }
 
 // ClientsPool is responsible for discovering available datasources and

@@ -22,10 +22,39 @@ package nodes
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/proto/idm"
+	"github.com/pydio/cells/v4/common/proto/object"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/proto/tree"
 )
+
+// These keys may be enriched in Context depending on the middleware
+type BranchInfo struct {
+	LoadedSource
+	idm.Workspace
+	Root              *tree.Node
+	Binary            bool
+	TransparentBinary bool
+	AncestorsList     map[string][]*tree.Node
+}
+
+// IsInternal check if either datasource is internal or branch has Binary flag
+func (b BranchInfo) IsInternal() bool {
+	return b.Binary || b.LoadedSource.IsInternal()
+}
+
+// WithBucketName creates a copy of a LoadedSource with a bucket name
+func WithBucketName(s LoadedSource, bucket string) LoadedSource {
+	out := LoadedSource{
+		Client: s.Client,
+	}
+	c := proto.Clone(&s.DataSource).(*object.DataSource)
+	c.ObjectsBucket = bucket
+	out.DataSource = *c
+	return out
+}
 
 type ctxBranchInfoKey struct{}
 

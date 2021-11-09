@@ -38,25 +38,25 @@ func WithDatasource() nodes.Option {
 	}
 }
 
-func NewUuidDataSourceHandler() *UuidDataSourceHandler {
-	bt := &UuidDataSourceHandler{}
+func NewUuidDataSourceHandler() *DataSourceHandler {
+	bt := &DataSourceHandler{}
 	bt.InputMethod = bt.updateInputBranch
 	bt.OutputMethod = bt.updateOutputNode
 	return bt
 }
 
-// UuidDataSourceHandler is an AbstractBranchFilter extracting datasource info based on node UUID.
-type UuidDataSourceHandler struct {
-	abstract.AbstractBranchFilter
+// DataSourceHandler is an BranchFilter extracting datasource info based on node UUID.
+type DataSourceHandler struct {
+	abstract.BranchFilter
 }
 
-func (h *UuidDataSourceHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	h.Next = c
-	h.ClientsPool = options.Pool
-	return h
+func (v *DataSourceHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+	v.Next = c
+	v.ClientsPool = options.Pool
+	return v
 }
 
-func (v *UuidDataSourceHandler) updateInputBranch(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
+func (v *DataSourceHandler) updateInputBranch(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
 
 	branchInfo, ok := nodes.GetBranchInfo(ctx, identifier)
 	if !ok {
@@ -84,7 +84,7 @@ func (v *UuidDataSourceHandler) updateInputBranch(ctx context.Context, node *tre
 
 }
 
-func (v *UuidDataSourceHandler) updateOutputNode(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
+func (v *DataSourceHandler) updateOutputNode(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
 
 	return ctx, node, nil
 

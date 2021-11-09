@@ -103,7 +103,9 @@ func (node *Node) SetMeta(namespace string, jsonMeta interface{}) (err error) {
 // or an empty string if the MetaData for this key is not defined
 func (node *Node) GetStringMeta(namespace string) string {
 	var value string
-	node.GetMeta(namespace, &value)
+	if e := node.GetMeta(namespace, &value); e != nil {
+		return ""
+	}
 	return value
 }
 
@@ -134,8 +136,9 @@ func (node *Node) AllMetaDeserialized(excludes map[string]struct{}) map[string]i
 			}
 		}
 		var data interface{}
-		node.GetMeta(k, &data)
-		m[k] = data
+		if e := node.GetMeta(k, &data); e == nil {
+			m[k] = data
+		}
 	}
 	return m
 }
@@ -184,7 +187,7 @@ func (node *Node) MarshalLogObject(encoder zapcore.ObjectEncoder) error {
 		encoder.AddInt64("Size", node.GetSize())
 	}
 	if node.MetaStore != nil {
-		encoder.AddReflected("MetaStore", node.MetaStore)
+		_ = encoder.AddReflected("MetaStore", node.MetaStore)
 	}
 	return nil
 }
@@ -237,10 +240,10 @@ func (log *ChangeLog) MarshalLogObject(encoder zapcore.ObjectEncoder) error {
 		encoder.AddInt64("Size", log.Size)
 	}
 	if log.Event != nil {
-		encoder.AddReflected("Event", log.Event)
+		_ = encoder.AddReflected("Event", log.Event)
 	}
 	if log.Location != nil {
-		encoder.AddReflected("Location", log.Location)
+		_ = encoder.AddReflected("Location", log.Location)
 	}
 	return nil
 }
@@ -280,7 +283,7 @@ func (policy *VersioningPolicy) MarshalLogObject(encoder zapcore.ObjectEncoder) 
 		encoder.AddInt64("MaxTotalSize", policy.MaxTotalSize)
 	}
 	if len(policy.KeepPeriods) > 0 {
-		encoder.AddReflected("Periods", policy.KeepPeriods)
+		_ = encoder.AddReflected("Periods", policy.KeepPeriods)
 	}
 	return nil
 }

@@ -24,7 +24,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"google.golang.org/grpc"
 	"io"
 	"os"
 	"path"
@@ -32,6 +31,7 @@ import (
 	"strings"
 
 	errors2 "github.com/micro/micro/v3/service/errors"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes/models"
@@ -60,7 +60,7 @@ func (r MockReadCloser) Close() error {
 
 func (h *HandlerMock) SetClientsPool(p SourcesPool) {}
 
-func (h *HandlerMock) ExecuteWrapped(inputFilter NodeFilter, outputFilter NodeFilter, provider NodesCallback) error {
+func (h *HandlerMock) ExecuteWrapped(inputFilter FilterFunc, outputFilter FilterFunc, provider CallbackFunc) error {
 	return provider(inputFilter, outputFilter)
 }
 
@@ -247,7 +247,7 @@ func (h *HandlerMock) StreamChanges(ctx context.Context, in *tree.StreamChangesR
 	return nil, fmt.Errorf("not.implemented")
 }
 
-func (h *HandlerMock) ListNodesWithCallback(ctx context.Context, request *tree.ListNodesRequest, callback WalkFunc, ignoreCbError bool, filters ...WalkFilter) error {
+func (h *HandlerMock) ListNodesWithCallback(ctx context.Context, request *tree.ListNodesRequest, callback WalkFunc, ignoreCbError bool, filters ...WalkFilterFunc) error {
 	return HandlerListNodesWithCallback(h, ctx, request, callback, ignoreCbError, filters...)
 }
 

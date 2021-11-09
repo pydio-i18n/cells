@@ -25,8 +25,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/micro/micro/v3/service/client"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes"
@@ -42,23 +42,23 @@ func WithBrowser() nodes.Option {
 	}
 }
 
-// VirtualNodesBrowser is used by admin mode to list virtual nodes instead of their resolved values.
-type VirtualNodesBrowser struct {
-	abstract.AbstractHandler
+// BrowserHandler is used by admin mode to list virtual nodes instead of their resolved values.
+type BrowserHandler struct {
+	abstract.Handler
 }
 
-func (h *VirtualNodesBrowser) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	h.Next = c
-	h.ClientsPool = options.Pool
-	return h
+func (v *BrowserHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+	v.Next = c
+	v.ClientsPool = options.Pool
+	return v
 }
 
-func NewVirtualNodesBrowser() *VirtualNodesBrowser {
-	return &VirtualNodesBrowser{}
+func NewVirtualNodesBrowser() *BrowserHandler {
+	return &BrowserHandler{}
 }
 
 // ReadNode creates a fake node if admin is reading info about a virtual node
-func (v *VirtualNodesBrowser) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...client.CallOption) (*tree.ReadNodeResponse, error) {
+func (v *BrowserHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 
 	if virtual, exists := abstract.GetVirtualNodesManager().ByPath(in.Node.Path); exists {
 		log.Logger(ctx).Debug("Virtual Node Browser, Found", zap.Any("found", virtual))
@@ -69,13 +69,13 @@ func (v *VirtualNodesBrowser) ReadNode(ctx context.Context, in *tree.ReadNodeReq
 }
 
 // ListNodes Append virtual nodes to the datasources list if admin is listing the root of the tree
-func (v *VirtualNodesBrowser) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...client.CallOption) (streamer tree.NodeProvider_ListNodesClient, e error) {
+func (v *BrowserHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (streamer tree.NodeProvider_ListNodesClient, e error) {
 
 	vManager := abstract.GetVirtualNodesManager()
 	if virtual, exists := vManager.ByPath(in.Node.Path); exists {
 		log.Logger(ctx).Debug("Virtual Node Browser, Found, send no children", zap.Any("found", virtual))
 		s := nodes.NewWrappingStreamer()
-		defer s.Close()
+		defer s.CloseSend()
 		return s, nil
 	}
 
@@ -90,8 +90,8 @@ func (v *VirtualNodesBrowser) ListNodes(ctx context.Context, in *tree.ListNodesR
 	s := nodes.NewWrappingStreamer()
 	go func() {
 		vManager.Load(true)
-		defer stream.Close()
-		defer s.Close()
+		defer stream.CloseSend()
+		defer s.CloseSend()
 		for {
 			resp, err := stream.Recv()
 			if err != nil {

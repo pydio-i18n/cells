@@ -24,13 +24,14 @@ import (
 	"context"
 	"crypto/rand"
 	"fmt"
+	"google.golang.org/grpc/metadata"
 	"strings"
 
-	"github.com/micro/go-micro/client"
 	"github.com/micro/go-micro/errors"
 	"github.com/pydio/cells/v4/common/crypto"
 	"github.com/pydio/cells/v4/common/proto/encryption"
 	json "github.com/pydio/cells/v4/x/jsonx"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -133,6 +134,26 @@ type mockSendBlockStreamClient struct {
 	outStream chan interface{}
 }
 
+func (sc *mockSendBlockStreamClient) CloseAndRecv() (*encryption.SetNodeInfoResponse, error) {
+	panic("implement me")
+}
+
+func (sc *mockSendBlockStreamClient) Header() (metadata.MD, error) {
+	panic("implement me")
+}
+
+func (sc *mockSendBlockStreamClient) Trailer() metadata.MD {
+	panic("implement me")
+}
+
+func (sc *mockSendBlockStreamClient) CloseSend() error {
+	return nil
+}
+
+func (sc *mockSendBlockStreamClient) Context() context.Context {
+	panic("implement me")
+}
+
 func (sc *mockSendBlockStreamClient) SendMsg(msg interface{}) error {
 	sc.outStream <- msg
 	return nil
@@ -165,7 +186,7 @@ func NewMockNodeKeyManagerClient() encryption.NodeKeyManagerClient {
 	}
 }
 
-func (m *mockNodeKeyManagerClient) GetNodeInfo(ctx context.Context, in *encryption.GetNodeInfoRequest, opts ...client.CallOption) (*encryption.GetNodeInfoResponse, error) {
+func (m *mockNodeKeyManagerClient) GetNodeInfo(ctx context.Context, in *encryption.GetNodeInfoRequest, opts ...grpc.CallOption) (*encryption.GetNodeInfoResponse, error) {
 
 	nodeKey, entryFound := m.keys[in.NodeId]
 	if !entryFound {
@@ -241,7 +262,7 @@ func (m *mockNodeKeyManagerClient) GetNodeInfo(ctx context.Context, in *encrypti
 	return rsp, nil
 }
 
-func (m *mockNodeKeyManagerClient) GetNodePlainSize(ctx context.Context, in *encryption.GetNodePlainSizeRequest, opts ...client.CallOption) (*encryption.GetNodePlainSizeResponse, error) {
+func (m *mockNodeKeyManagerClient) GetNodePlainSize(ctx context.Context, in *encryption.GetNodePlainSizeRequest, opts ...grpc.CallOption) (*encryption.GetNodePlainSizeResponse, error) {
 	out := &encryption.GetNodePlainSizeResponse{}
 
 	blocks, foundBlocks := m.blocks[in.NodeId]
@@ -254,17 +275,17 @@ func (m *mockNodeKeyManagerClient) GetNodePlainSize(ctx context.Context, in *enc
 	return out, nil
 }
 
-func (m *mockNodeKeyManagerClient) SetNodeInfo(ctx context.Context, opts ...client.CallOption) (encryption.NodeKeyManager_SetNodeInfoClient, error) {
+func (m *mockNodeKeyManagerClient) SetNodeInfo(ctx context.Context, opts ...grpc.CallOption) (encryption.NodeKeyManager_SetNodeInfoClient, error) {
 	stream := newMockSendInfoStream(m.keys, m.blocks)
 	go stream.exchange()
 	return stream.getClient(), nil
 }
 
-func (m *mockNodeKeyManagerClient) CopyNodeInfo(ctx context.Context, in *encryption.CopyNodeInfoRequest, opts ...client.CallOption) (*encryption.CopyNodeInfoResponse, error) {
+func (m *mockNodeKeyManagerClient) CopyNodeInfo(ctx context.Context, in *encryption.CopyNodeInfoRequest, opts ...grpc.CallOption) (*encryption.CopyNodeInfoResponse, error) {
 	return nil, nil
 }
 
-func (m *mockNodeKeyManagerClient) DeleteNode(ctx context.Context, in *encryption.DeleteNodeRequest, opts ...client.CallOption) (*encryption.DeleteNodeResponse, error) {
+func (m *mockNodeKeyManagerClient) DeleteNode(ctx context.Context, in *encryption.DeleteNodeRequest, opts ...grpc.CallOption) (*encryption.DeleteNodeResponse, error) {
 	var entriesToDelete []string
 
 	for entry := range m.keys {
@@ -279,14 +300,14 @@ func (m *mockNodeKeyManagerClient) DeleteNode(ctx context.Context, in *encryptio
 	return &encryption.DeleteNodeResponse{}, nil
 }
 
-func (m *mockNodeKeyManagerClient) DeleteNodeKey(ctx context.Context, in *encryption.DeleteNodeKeyRequest, opts ...client.CallOption) (*encryption.DeleteNodeKeyResponse, error) {
+func (m *mockNodeKeyManagerClient) DeleteNodeKey(ctx context.Context, in *encryption.DeleteNodeKeyRequest, opts ...grpc.CallOption) (*encryption.DeleteNodeKeyResponse, error) {
 	entry := fmt.Sprintf("%s:%s", in.UserId, in.NodeId)
 	delete(m.keys, entry)
 	delete(m.blocks, entry)
 	return &encryption.DeleteNodeKeyResponse{}, nil
 }
 
-func (m *mockNodeKeyManagerClient) DeleteNodeSharedKey(ctx context.Context, in *encryption.DeleteNodeSharedKeyRequest, opts ...client.CallOption) (*encryption.DeleteNodeSharedKeyResponse, error) {
+func (m *mockNodeKeyManagerClient) DeleteNodeSharedKey(ctx context.Context, in *encryption.DeleteNodeSharedKeyRequest, opts ...grpc.CallOption) (*encryption.DeleteNodeSharedKeyResponse, error) {
 	entry := fmt.Sprintf("shared:%s:%s", in.UserId, in.NodeId)
 	delete(m.keys, entry)
 	delete(m.blocks, entry)

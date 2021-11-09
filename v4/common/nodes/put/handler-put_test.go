@@ -25,16 +25,15 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/pydio/cells/v4/common/nodes"
-
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/tree"
 )
 
-func testMkFileResources() (*PutHandler, context.Context, *nodes.HandlerMock) {
+func testMkFileResources() (*Handler, context.Context, *nodes.HandlerMock) {
 
 	// Create dummy client pool
 	nodes.IsUnitTestEnv = true
@@ -48,7 +47,7 @@ func testMkFileResources() (*PutHandler, context.Context, *nodes.HandlerMock) {
 	pool := nodes.MakeFakeClientsPool(tc, tw)
 
 	// create dummy handler
-	h := &PutHandler{}
+	h := &Handler{}
 	mock := nodes.NewHandlerMock()
 	h.Next = mock
 	h.SetClientsPool(pool)
@@ -58,11 +57,11 @@ func testMkFileResources() (*PutHandler, context.Context, *nodes.HandlerMock) {
 	return h, ctx, mock
 }
 
-func TestMkfileHandler_GetOrCreatePutNode(t *testing.T) {
+func TestHandler_GetOrCreatePutNode(t *testing.T) {
 
 	h, ctx, _ := testMkFileResources()
 	Convey("getOrCreatePutNode", t, func() {
-		node, err, errFunc := h.getOrCreatePutNode(ctx, "existing/node", &models.PutRequestData{Size: 12})
+		node, errFunc, err := h.getOrCreatePutNode(ctx, "existing/node", &models.PutRequestData{Size: 12})
 		So(err, ShouldBeNil)
 		So(errFunc, ShouldBeNil)
 		So(node, ShouldNotBeNil)
@@ -71,7 +70,7 @@ func TestMkfileHandler_GetOrCreatePutNode(t *testing.T) {
 
 	Convey("getOrCreatePutNode", t, func() {
 
-		node, err, errFunc := h.getOrCreatePutNode(ctx, "other/node", &models.PutRequestData{Size: 12})
+		node, errFunc, err := h.getOrCreatePutNode(ctx, "other/node", &models.PutRequestData{Size: 12})
 		So(err, ShouldBeNil)
 		So(errFunc, ShouldNotBeNil)
 		So(node, ShouldNotBeNil)
@@ -83,7 +82,7 @@ func TestMkfileHandler_GetOrCreatePutNode(t *testing.T) {
 
 }
 
-func TestMkfileHandler_PutObject(t *testing.T) {
+func TestHandler_PutObject(t *testing.T) {
 
 	h, ctx, _ := testMkFileResources()
 	Convey("PutObject 1", t, func() {

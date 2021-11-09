@@ -30,6 +30,7 @@ import (
 	"github.com/pydio/cells/v4/common"
 )
 
+// PutRequestData passes content-specific information during uploads
 type PutRequestData struct {
 	Size              int64
 	Md5Sum            []byte
@@ -53,24 +54,74 @@ func (p *PutRequestData) MetaContentType() string {
 	return ""
 }
 
+// ReadMeta is an alias of map[string]string
+type ReadMeta map[string]string
+
+// PutMeta represents options specified by user for PutObject call
+type PutMeta struct {
+	UserMetadata            map[string]string
+	Progress                io.Reader
+	ContentType             string
+	ContentEncoding         string
+	ContentDisposition      string
+	ContentLanguage         string
+	CacheControl            string
+	NumThreads              uint
+	StorageClass            string
+	WebsiteRedirectLocation string
+}
+
+// SetRange - set the start and end offset of the object to be read.
+// See https://tools.ietf.org/html/rfc7233#section-3.1 for reference.
+func (o ReadMeta) SetRange(start, end int64) error {
+	switch {
+	case start == 0 && end < 0:
+		// Read last '-end' bytes. `bytes=-N`.
+		o["Range"] = fmt.Sprintf("bytes=%d", end)
+	case 0 < start && end == 0:
+		// Read everything starting from offset
+		// 'start'. `bytes=N-`.
+		o["Range"] = fmt.Sprintf("bytes=%d-", start)
+	case 0 <= start && start <= end:
+		// Read everything starting at 'start' till the
+		// 'end'. `bytes=N-M`
+		o["Range"] = fmt.Sprintf("bytes=%d-%d", start, end)
+	default:
+		// All other cases such as
+		// bytes=-3-
+		// bytes=5-3
+		// bytes=-2-4
+		// bytes=-3-0
+		// bytes=-3--2
+		// are invalid.
+		return fmt.Errorf(
+			"invalid range specified: start=%d end=%d",
+			start, end)
+	}
+	return nil
+}
+
 // ContentTypeUnknown checks if cType is empty or generic "application/octet-stream"
 func (p *PutRequestData) ContentTypeUnknown() bool {
 	cType := p.MetaContentType()
 	return cType == "" || cType == "application/octet-stream"
 }
 
+// GetRequestData passes optional Range instructions for reading file data
 type GetRequestData struct {
 	StartOffset int64
 	Length      int64
 	VersionId   string
 }
 
+// CopyRequestData can provide specific metadata, notably a version Id
 type CopyRequestData struct {
 	Metadata     map[string]string
 	SrcVersionId string
 	Progress     io.Reader
 }
 
+// MultipartRequestData is a metadata container for Multipart List Requests
 type MultipartRequestData struct {
 	Metadata map[string]string
 
@@ -207,6 +258,7 @@ type ListObjectPartsResult struct {
 	EncodingType string
 }
 
+// CommonPrefix is used as virtual folders in object storage
 type CommonPrefix struct {
 	Prefix string
 }
@@ -241,50 +293,4 @@ type ListBucketResult struct {
 	// next set of object keys.
 	NextMarker string
 	Prefix     string
-}
-
-type ReadMeta map[string]string
-
-// PutMeta represents options specified by user for PutObject call
-type PutMeta struct {
-	UserMetadata            map[string]string
-	Progress                io.Reader
-	ContentType             string
-	ContentEncoding         string
-	ContentDisposition      string
-	ContentLanguage         string
-	CacheControl            string
-	NumThreads              uint
-	StorageClass            string
-	WebsiteRedirectLocation string
-}
-
-// SetRange - set the start and end offset of the object to be read.
-// See https://tools.ietf.org/html/rfc7233#section-3.1 for reference.
-func (o ReadMeta) SetRange(start, end int64) error {
-	switch {
-	case start == 0 && end < 0:
-		// Read last '-end' bytes. `bytes=-N`.
-		o["Range"] = fmt.Sprintf("bytes=%d", end)
-	case 0 < start && end == 0:
-		// Read everything starting from offset
-		// 'start'. `bytes=N-`.
-		o["Range"] = fmt.Sprintf("bytes=%d-", start)
-	case 0 <= start && start <= end:
-		// Read everything starting at 'start' till the
-		// 'end'. `bytes=N-M`
-		o["Range"] = fmt.Sprintf("bytes=%d-%d", start, end)
-	default:
-		// All other cases such as
-		// bytes=-3-
-		// bytes=5-3
-		// bytes=-2-4
-		// bytes=-3-0
-		// bytes=-3--2
-		// are invalid.
-		return fmt.Errorf(
-			"invalid range specified: start=%d end=%d",
-			start, end)
-	}
-	return nil
 }

@@ -41,7 +41,7 @@ var (
 
 func getStoreTestMock() (nodes.Handler, *nodes.HandlerMock) {
 	mock := nodes.NewHandlerMock()
-	handler := &BinaryStoreHandler{
+	handler := &Handler{
 		StoreName: testBinaryStoreName,
 	}
 	handler.SetNextHandler(mock)
@@ -55,7 +55,7 @@ func getStoreTestMock() (nodes.Handler, *nodes.HandlerMock) {
 	return handler, mock
 }
 
-func TestBinaryStoreHandler_ListNodes(t *testing.T) {
+func TestHandler_ListNodes(t *testing.T) {
 
 	handler, _ := getStoreTestMock()
 
@@ -63,7 +63,7 @@ func TestBinaryStoreHandler_ListNodes(t *testing.T) {
 		client, e := handler.ListNodes(context.Background(), &tree.ListNodesRequest{Node: &tree.Node{Path: "/test"}})
 		So(e, ShouldBeNil)
 		count := 0
-		defer client.Close()
+		defer client.CloseSend()
 		for {
 			_, e := client.Recv()
 			if e != nil {
@@ -78,7 +78,7 @@ func TestBinaryStoreHandler_ListNodes(t *testing.T) {
 	Convey("Test List inside store: should display nothing", t, func() {
 		client, e := handler.ListNodes(context.Background(), &tree.ListNodesRequest{Node: &tree.Node{Path: testBinaryStoreName}})
 		So(e, ShouldBeNil)
-		defer client.Close()
+		defer client.CloseSend()
 		count := 0
 		for {
 			_, e := client.Recv()
@@ -91,7 +91,7 @@ func TestBinaryStoreHandler_ListNodes(t *testing.T) {
 	})
 }
 
-func TestBinaryStoreHandler_ReadNode(t *testing.T) {
+func TestHandler_ReadNode(t *testing.T) {
 
 	handler, mock := getStoreTestMock()
 
@@ -123,7 +123,7 @@ func TestBinaryStoreHandler_ReadNode(t *testing.T) {
 
 // }
 
-func TestBinaryStoreHandler_WriteOperations(t *testing.T) {
+func TestHandler_WriteOperations(t *testing.T) {
 
 	handler, _ := getStoreTestMock()
 	ctx := context.Background()
