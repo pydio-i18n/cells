@@ -30,7 +30,7 @@ var (
 )
 
 var (
-	stdvault Store
+	stdvault Store = std
 )
 
 // RegisterVaultKey adds a key to the configuration so that the value

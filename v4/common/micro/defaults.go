@@ -90,7 +90,7 @@ func NewClient(new ...client.Option) client.Client {
 }
 
 // NewClient returns a client attached to the defaults
-func NewClientConn() *grpc.ClientConn {
+func NewClientConn(serviceName string) *grpc.ClientConn {
 	conn, err := grpc.Dial(":8001", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		return nil

@@ -28,7 +28,7 @@ import (
 	"strconv"
 
 	"github.com/dchest/uniuri"
-	"github.com/gogo/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 	"github.com/pborman/uuid"
 
 	"github.com/pydio/cells/v4/common/config"
