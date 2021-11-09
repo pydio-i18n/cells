@@ -40,8 +40,10 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
+	mbroker "github.com/micro/micro/v3/service/broker"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/caddy"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
@@ -81,7 +83,14 @@ const (
 root * /Users/ghecquet/work/src/github.com/pydio/cells/v4/discovery/install/assets/src
 file_server
 
-reverse_proxy /install* :8002
+route /a/* {
+	uri strip_prefix /a
+	reverse_proxy localhost:8002
+}
+
+route /install* {
+	reverse_proxy /a* :8002
+}
 	 `
 )
 
@@ -455,25 +464,21 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 	cmd.Println(promptui.Styler(promptui.BGMagenta, promptui.FGWhite)("Listening to: " + proxyConf.GetBinds()[0]))
 	cmd.Println("")
 
-	/*
-		TODO v4
-		subscriber, err := broker.Subscribe(common.TopicProxyRestarted, func(p *broker.Message) error {
+	subscriber, err := broker.Subscribe(common.TopicProxyRestarted, func(p *mbroker.Message) error {
 
-			url := proxyConf.ReverseProxyURL
-			if url == "" {
-				url = proxyConf.GetDefaultBindURL()
-			}
+		url := proxyConf.ReverseProxyURL
+		if url == "" {
+			url = proxyConf.GetDefaultBindURL()
+		}
 
-			cmd.Println("")
-			cmd.Printf(promptui.Styler(promptui.BGMagenta, promptui.FGWhite)("Opening URL ") + promptui.Styler(promptui.BGMagenta, promptui.FGWhite, promptui.FGUnderline, promptui.FGBold)(url) + promptui.Styler(promptui.BGMagenta, promptui.FGWhite)(" in your browser. Please copy/paste it if the browser is not on the same machine."))
-			cmd.Println("")
+		cmd.Println("")
+		cmd.Printf(promptui.Styler(promptui.BGMagenta, promptui.FGWhite)("Opening URL ") + promptui.Styler(promptui.BGMagenta, promptui.FGWhite, promptui.FGUnderline, promptui.FGBold)(url) + promptui.Styler(promptui.BGMagenta, promptui.FGWhite)(" in your browser. Please copy/paste it if the browser is not on the same machine."))
+		cmd.Println("")
 
-			open(url)
+		open(url)
 
-			return nil
-		})
-
-	*/
+		return nil
+	})
 
 	if err != nil {
 		cmd.Print("Could not subscribe to broker: ", err)
@@ -491,7 +496,7 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 
 	}()
 
-	// TODO v4 defer subscriber.Unsubscribe()
+	defer subscriber.Unsubscribe()
 
 	select {
 	case <-instanceDone:

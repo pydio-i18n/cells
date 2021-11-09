@@ -2,6 +2,7 @@ version: v1
 directories:
   - activity
   - auth
+  - broker
   - ctl
   - docstore
   - encryption
