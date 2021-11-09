@@ -39,6 +39,7 @@ require (
 	github.com/krolaw/zipstream v0.0.0-20180621105154-0a2661891f94
 	github.com/lucas-clemente/quic-go v0.24.0 // indirect
 	github.com/manifoldco/promptui v0.8.0
+	github.com/matcornic/hermes/v2 v2.1.0 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/micro/micro/v3 v3.6.0
 	github.com/mwitkow/go-proto-validators v0.3.2
@@ -55,6 +56,8 @@ require (
 	github.com/rs/xid v1.3.0
 	github.com/rubenv/sql-migrate v0.0.0-20211023115951-9f02b1e13857
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
+	github.com/sendgrid/rest v2.6.5+incompatible // indirect
+	github.com/sendgrid/sendgrid-go v3.10.3+incompatible // indirect
 	github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0
 	github.com/smartystreets/assertions v1.1.1 // indirect
 	github.com/smartystreets/goconvey v1.6.4
@@ -88,6 +91,7 @@ require (
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0 // indirect
 	gopkg.in/doug-martin/goqu.v4 v4.2.0
+	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df // indirect
 	gopkg.in/gorp.v1 v1.7.2
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v2 v2.4.0
