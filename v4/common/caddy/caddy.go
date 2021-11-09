@@ -24,13 +24,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/caddyserver/caddy/v2/caddyconfig"
 	"html/template"
 	"strings"
 	"sync"
 	"time"
 
 	caddy "github.com/caddyserver/caddy/v2"
+	"github.com/caddyserver/caddy/v2/caddyconfig"
 	"github.com/micro/micro/v3/service/registry"
 	"go.uber.org/zap"
 

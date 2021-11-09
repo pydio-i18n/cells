@@ -1,0 +1,86 @@
+{
+  "AccessedBy": {
+    "other": "{{.Actor}} 访问权限"
+  },
+  "AccessedObject": {
+    "other": "{{.Object}}访问"
+  },
+  "AccessedObjectBy": {
+    "other": "{{.Object}} に {{.Actor}} 被访问"
+  },
+  "Cell": {
+    "other": "细胞"
+  },
+  "CreatedBy": {
+    "other": "{{.Actor}} 创建"
+  },
+  "CreatedObject": {
+    "other": "{{.Object}} 创建"
+  },
+  "CreatedObjectBy": {
+    "other": "{{.Object}} 由 {{.Actor}} 创建"
+  },
+  "DeletedBy": {
+    "other": "{{.Actor}} 删除"
+  },
+  "DeletedObject": {
+    "other": "{{.Object}}已删除"
+  },
+  "DeletedObjectBy": {
+    "other": "{{.Object}} 由 {{.Actor}} 删除"
+  },
+  "SharedWs": {
+    "other": "{{.Object}}共享"
+  },
+  "SharedWsWithYou": {
+    "other": "{{.Actor}}由{{.Object}}与你共享"
+  },
+  "DigestTitle": {
+    "other": "这是你的Pydio日志"
+  },
+  "Document": {
+    "other": "文件"
+  },
+  "Folder": {
+    "other": "文件夹"
+  },
+  "ModifiedBy": {
+    "other": "{{.Actor}} 修改"
+  },
+  "ModifiedObject": {
+    "other": "{{.Object}} 修改"
+  },
+  "ModifiedObjectBy": {
+    "other": "{{.Object}} 由 {{.Actor}} 修改"
+  },
+  "MetaModifiedBy": {
+    "other": "{{.Actor}}编辑了元数据"
+  },
+  "MetaModifiedObject": {
+    "other": "{{.Object}}修改了属性"
+  },
+  "MetaModifiedObjectBy": {
+    "other": "{{.Actor}}由 {{.Object}}修改了属性"
+  },
+  "CommentedBy": {
+    "other": "{{.Actor}}发表了评论"
+  },
+  "CommentedObject": {
+    "other": "{{.Object}}发表了评论"
+  },
+  "CommentedObjectBy": {
+    "other": "{{.Actor}}你 {{.Object}}发表了评论"
+  },
+  "MovedBy": {
+    "other": "{{.Actor}} 移动"
+  },
+  "MovedObject": {
+    "other": "{{.Object}} 移动"
+  },
+  "MovedObjectBy": {
+    "other": "{{.Object}} 由 {{.Actor}} 移动"
+  },
+  "Workspace": {
+    "other": "工作空间"
+  }
+}
