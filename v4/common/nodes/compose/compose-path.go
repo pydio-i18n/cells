@@ -52,8 +52,8 @@ func PathComposer(oo ...nodes.Option) []nodes.Option {
 			return exe
 		}),
 		acl.WithAccessList(),
-		binaries.WithBinaryStore(common.PydioThumbstoreNamespace, true, false, false),
-		binaries.WithBinaryStore(common.PydioDocstoreBinariesNamespace, false, true, true),
+		binaries.WithStore(common.PydioThumbstoreNamespace, true, false, false),
+		binaries.WithStore(common.PydioDocstoreBinariesNamespace, false, true, true),
 		archive.WithArchives(),
 		path.WithWorkspace(),
 		path.WithMultipleRoots(),
@@ -76,66 +76,3 @@ func PathComposer(oo ...nodes.Option) []nodes.Option {
 		core.WithFlatInterceptor(),
 	)
 }
-
-// NewStandardRouter returns a new configured instance of the default standard router.
-/*
-func NewStandardRouter(options nodes.RouterOptions) nodes.Client {
-
-	handlers := []nodes.Handler{
-		acl.NewAccessListHandler(options.AdminView),
-		&binaries.BinaryStoreHandler{
-			StoreName:      common.PydioThumbstoreNamespace, // Direct access to dedicated Bucket for thumbnails
-			TransparentGet: true,
-		},
-		&binaries.BinaryStoreHandler{
-			StoreName:     common.PydioDocstoreBinariesNamespace, // Direct access to dedicated Bucket for pydio binaries
-			AllowPut:      true,
-			AllowAnonRead: true,
-		},
-	}
-	handlers = append(handlers, archive.NewArchiveHandler())
-	handlers = append(handlers, path.NewPathWorkspaceHandler())
-	handlers = append(handlers, path.NewPathMultipleRootsHandler())
-	if !options.BrowseVirtualNodes && !options.AdminView {
-		handlers = append(handlers, virtual.NewVirtualNodesHandler())
-	}
-	if options.BrowseVirtualNodes {
-		handlers = append(handlers, virtual.NewVirtualNodesBrowser())
-	}
-	handlers = append(handlers, path.NewWorkspaceRootResolver())
-	handlers = append(handlers, path.NewPathDataSourceHandler())
-
-	if options.SynchronousCache {
-		handlers = append(handlers, sync.NewSynchronousCacheHandler())
-	}
-	if options.AuditEvent {
-		handlers = append(handlers, &events.HandlerAuditEvent{})
-	}
-	if !options.AdminView {
-		handlers = append(handlers, &acl.AclFilterHandler{})
-	}
-	if options.LogReadEvents {
-		handlers = append(handlers, &events.HandlerEventRead{})
-	}
-
-	handlers = append(handlers, &put.PutHandler{})
-	handlers = append(handlers, &acl.AclLockFilter{})
-	if !options.AdminView {
-		handlers = append(handlers, &put.UploadLimitFilter{})
-		handlers = append(handlers, &acl.AclContentLockFilter{})
-		handlers = append(handlers, &acl.AclQuotaFilter{})
-	}
-
-	if options.SynchronousTasks {
-		handlers = append(handlers, &sync.SyncFolderTasksHandler{})
-	}
-	handlers = append(handlers, &version.VersionHandler{})
-	handlers = append(handlers, &encryption.EncryptionHandler{})
-	handlers = append(handlers, &core.FlatStorageHandler{})
-	handlers = append(handlers, &core.Executor{})
-
-	pool := nodes.NewClientsPool(options.WatchRegistry)
-
-	return nodes.NewRouter(pool, handlers)
-}
-*/

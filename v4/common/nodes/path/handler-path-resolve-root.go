@@ -46,15 +46,15 @@ func NewWorkspaceRootResolver() *WorkspaceRootResolver {
 	return bt
 }
 
-// WorkspaceRootResolver is an AbstractBranchFilter finding workspace root(s) based on the path.
+// WorkspaceRootResolver is an BranchFilter finding workspace root(s) based on the path.
 type WorkspaceRootResolver struct {
-	abstract.AbstractBranchFilter
+	abstract.BranchFilter
 }
 
-func (h *WorkspaceRootResolver) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	h.Next = c
-	h.ClientsPool = options.Pool
-	return h
+func (v *WorkspaceRootResolver) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+	v.Next = c
+	v.ClientsPool = options.Pool
+	return v
 }
 
 func (v *WorkspaceRootResolver) updateInputBranch(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {

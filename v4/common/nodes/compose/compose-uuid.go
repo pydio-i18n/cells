@@ -59,37 +59,3 @@ func UuidComposer(oo ...nodes.Option) []nodes.Option {
 		core.WithFlatInterceptor(),
 	)
 }
-
-// newUuidRouter is the legacy constructor. Returns a new configured instance of a router
-// that relies on nodes UUID rather than the usual Node path.
-/*
-func newUuidRouter(options nodes.RouterOptions) nodes.Client {
-	handlers := []nodes.Handler{
-		acl.NewAccessListHandler(options.AdminView),
-		uuid.NewUuidNodeHandler(),
-		uuid.NewUuidDataSourceHandler(),
-	}
-
-	if options.AuditEvent {
-		handlers = append(handlers, &events.HandlerAuditEvent{})
-	}
-
-	if !options.AdminView {
-		handlers = append(handlers, &acl.AclFilterHandler{})
-	}
-	handlers = append(handlers, &put.PutHandler{}) // adds a node precreation on PUT file request
-	if !options.AdminView {
-		handlers = append(handlers, &put.UploadLimitFilter{})
-		handlers = append(handlers, &acl.AclLockFilter{})
-		handlers = append(handlers, &acl.AclContentLockFilter{})
-		handlers = append(handlers, &acl.AclQuotaFilter{})
-	}
-	handlers = append(handlers, &version.VersionHandler{})
-	handlers = append(handlers, &encryption.EncryptionHandler{}) // retrieves encryption materials from encryption service
-	handlers = append(handlers, &core.FlatStorageHandler{})
-	handlers = append(handlers, &core.Executor{})
-
-	pool := nodes.NewClientsPool(options.WatchRegistry)
-	return nodes.NewRouter(pool, handlers)
-}
-*/

@@ -41,7 +41,7 @@ var (
 
 func getStoreTestMock() (nodes.Handler, *nodes.HandlerMock) {
 	mock := nodes.NewHandlerMock()
-	handler := &BinaryStoreHandler{
+	handler := &Handler{
 		StoreName: testBinaryStoreName,
 	}
 	handler.SetNextHandler(mock)
@@ -55,7 +55,7 @@ func getStoreTestMock() (nodes.Handler, *nodes.HandlerMock) {
 	return handler, mock
 }
 
-func TestBinaryStoreHandler_ListNodes(t *testing.T) {
+func TestHandler_ListNodes(t *testing.T) {
 
 	handler, _ := getStoreTestMock()
 
@@ -91,7 +91,7 @@ func TestBinaryStoreHandler_ListNodes(t *testing.T) {
 	})
 }
 
-func TestBinaryStoreHandler_ReadNode(t *testing.T) {
+func TestHandler_ReadNode(t *testing.T) {
 
 	handler, mock := getStoreTestMock()
 
@@ -123,7 +123,7 @@ func TestBinaryStoreHandler_ReadNode(t *testing.T) {
 
 // }
 
-func TestBinaryStoreHandler_WriteOperations(t *testing.T) {
+func TestHandler_WriteOperations(t *testing.T) {
 
 	handler, _ := getStoreTestMock()
 	ctx := context.Background()

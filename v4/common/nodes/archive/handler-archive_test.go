@@ -57,7 +57,7 @@ func (m *mockSelectionProvider) deleteSelectionByUuid(ctx context.Context, selec
 	//delete(m.sel, selectionUuid)
 }
 
-func TestArchiveHandler_WrappingStreamer(t *testing.T) {
+func TestHandler_WrappingStreamer(t *testing.T) {
 	s := nodes.NewWrappingStreamer()
 
 	wg := &sync.WaitGroup{}
@@ -83,7 +83,7 @@ func TestArchiveHandler_WrappingStreamer(t *testing.T) {
 	wg.Wait()
 }
 
-func TestArchiveHandler_ReadNode(t *testing.T) {
+func TestHandler_ReadNode(t *testing.T) {
 
 	mock := nodes.NewHandlerMock()
 	mock.Nodes["path/folder"] = &tree.Node{Path: "path/folder", Type: tree.NodeType_COLLECTION}
@@ -94,7 +94,7 @@ func TestArchiveHandler_ReadNode(t *testing.T) {
 	selMock.sel["selection-uuid"] = append(selMock.sel["selection-uuid"], &tree.Node{Path: "path/folder/file1", Type: tree.NodeType_LEAF})
 	selMock.sel["selection-uuid"] = append(selMock.sel["selection-uuid"], &tree.Node{Path: "path/folder/file2", Type: tree.NodeType_LEAF})
 
-	zipHandler := &ArchiveHandler{
+	zipHandler := &Handler{
 		selectionProvider: selMock,
 	}
 	zipHandler.SetNextHandler(mock)
@@ -119,7 +119,7 @@ func TestArchiveHandler_ReadNode(t *testing.T) {
 
 }
 
-func TestArchiveHandler_GetObject(t *testing.T) {
+func TestHandler_GetObject(t *testing.T) {
 
 	mock := nodes.NewHandlerMock()
 	mock.Nodes["path/folder"] = &tree.Node{Path: "path/folder", Type: tree.NodeType_COLLECTION, Size: 30}
@@ -132,7 +132,7 @@ func TestArchiveHandler_GetObject(t *testing.T) {
 	selMock.sel["selection-uuid"] = append(selMock.sel["selection-uuid"], &tree.Node{Path: "path/folder/file1", Type: tree.NodeType_LEAF})
 	selMock.sel["selection-uuid"] = append(selMock.sel["selection-uuid"], &tree.Node{Path: "path/folder/file2", Type: tree.NodeType_LEAF})
 
-	zipHandler := &ArchiveHandler{
+	zipHandler := &Handler{
 		selectionProvider: selMock,
 	}
 	zipHandler.SetNextHandler(mock)
@@ -232,11 +232,11 @@ func TestArchiveHandler_GetObject(t *testing.T) {
 
 }
 
-func TestArchiveHandler_isArchivePath(t *testing.T) {
+func TestHandler_isArchivePath(t *testing.T) {
 
 	Convey("Test isArchivePath", t, func() {
 
-		a := &ArchiveHandler{}
+		a := &Handler{}
 		ok, format, archivePath, innerPath := a.isArchivePath("path/to/archive.zip/inner")
 		So(ok, ShouldBeTrue)
 		So(format, ShouldEqual, "zip")

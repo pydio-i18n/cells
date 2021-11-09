@@ -36,15 +36,15 @@ import (
 
 type ContextWrapper func(ctx context.Context) (context.Context, error)
 
-// AbstractHandler provides the simplest implementation of Handler and forwards
+// Handler provides the simplest implementation of Handler and forwards
 // all calls to the Next handler
-type AbstractHandler struct {
+type Handler struct {
 	Next        nodes.Handler
 	ClientsPool nodes.SourcesPool
 	CtxWrapper  ContextWrapper
 }
 
-func (a *AbstractHandler) WrapContext(ctx context.Context) (context.Context, error) {
+func (a *Handler) WrapContext(ctx context.Context) (context.Context, error) {
 	if a.CtxWrapper != nil {
 		return a.CtxWrapper(ctx)
 	} else {
@@ -52,15 +52,15 @@ func (a *AbstractHandler) WrapContext(ctx context.Context) (context.Context, err
 	}
 }
 
-func (a *AbstractHandler) SetNextHandler(h nodes.Handler) {
+func (a *Handler) SetNextHandler(h nodes.Handler) {
 	a.Next = h
 }
 
-func (a *AbstractHandler) SetClientsPool(p nodes.SourcesPool) {
+func (a *Handler) SetClientsPool(p nodes.SourcesPool) {
 	a.ClientsPool = p
 }
 
-func (a *AbstractHandler) ExecuteWrapped(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter, provider nodes.NodesCallback) error {
+func (a *Handler) ExecuteWrapped(inputFilter nodes.FilterFunc, outputFilter nodes.FilterFunc, provider nodes.CallbackFunc) error {
 	wrappedIn := func(ctx context.Context, inputNode *tree.Node, identifier string) (context.Context, *tree.Node, error) {
 		ctx, outputNode, err := inputFilter(ctx, inputNode, identifier)
 		if err != nil {
@@ -75,7 +75,7 @@ func (a *AbstractHandler) ExecuteWrapped(inputFilter nodes.NodeFilter, outputFil
 	return a.Next.ExecuteWrapped(wrappedIn, outputFilter, provider)
 }
 
-func (a *AbstractHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
+func (a *Handler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return nil, err
@@ -84,7 +84,7 @@ func (a *AbstractHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest
 	return a.Next.ReadNode(ctx, in, opts...)
 }
 
-func (a *AbstractHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (a *Handler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func (a *AbstractHandler) ListNodes(ctx context.Context, in *tree.ListNodesReque
 	return a.Next.ListNodes(ctx, in, opts...)
 }
 
-func (a *AbstractHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
+func (a *Handler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return nil, err
@@ -100,7 +100,7 @@ func (a *AbstractHandler) CreateNode(ctx context.Context, in *tree.CreateNodeReq
 	return a.Next.CreateNode(ctx, in, opts...)
 }
 
-func (a *AbstractHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
+func (a *Handler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return nil, err
@@ -108,7 +108,7 @@ func (a *AbstractHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeReq
 	return a.Next.UpdateNode(ctx, in, opts...)
 }
 
-func (a *AbstractHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
+func (a *Handler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return nil, err
@@ -116,7 +116,7 @@ func (a *AbstractHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeReq
 	return a.Next.DeleteNode(ctx, in, opts...)
 }
 
-func (a *AbstractHandler) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...grpc.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {
+func (a *Handler) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...grpc.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return nil, err
@@ -124,7 +124,7 @@ func (a *AbstractHandler) StreamChanges(ctx context.Context, in *tree.StreamChan
 	return a.Next.StreamChanges(ctx, in, opts...)
 }
 
-func (a *AbstractHandler) GetObject(ctx context.Context, node *tree.Node, requestData *models.GetRequestData) (io.ReadCloser, error) {
+func (a *Handler) GetObject(ctx context.Context, node *tree.Node, requestData *models.GetRequestData) (io.ReadCloser, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return nil, err
@@ -132,7 +132,7 @@ func (a *AbstractHandler) GetObject(ctx context.Context, node *tree.Node, reques
 	return a.Next.GetObject(ctx, node, requestData)
 }
 
-func (a *AbstractHandler) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
+func (a *Handler) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return 0, err
@@ -140,7 +140,7 @@ func (a *AbstractHandler) PutObject(ctx context.Context, node *tree.Node, reader
 	return a.Next.PutObject(ctx, node, reader, requestData)
 }
 
-func (a *AbstractHandler) CopyObject(ctx context.Context, from *tree.Node, to *tree.Node, requestData *models.CopyRequestData) (int64, error) {
+func (a *Handler) CopyObject(ctx context.Context, from *tree.Node, to *tree.Node, requestData *models.CopyRequestData) (int64, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return 0, err
@@ -148,13 +148,13 @@ func (a *AbstractHandler) CopyObject(ctx context.Context, from *tree.Node, to *t
 	return a.Next.CopyObject(ctx, from, to, requestData)
 }
 
-func (a *AbstractHandler) WrappedCanApply(srcCtx context.Context, targetCtx context.Context, operation *tree.NodeChangeEvent) error {
+func (a *Handler) WrappedCanApply(srcCtx context.Context, targetCtx context.Context, operation *tree.NodeChangeEvent) error {
 	return a.Next.WrappedCanApply(srcCtx, targetCtx, operation)
 }
 
 // Multi part upload management
 
-func (a *AbstractHandler) MultipartCreate(ctx context.Context, target *tree.Node, requestData *models.MultipartRequestData) (string, error) {
+func (a *Handler) MultipartCreate(ctx context.Context, target *tree.Node, requestData *models.MultipartRequestData) (string, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return "", err
@@ -162,7 +162,7 @@ func (a *AbstractHandler) MultipartCreate(ctx context.Context, target *tree.Node
 	return a.Next.MultipartCreate(ctx, target, requestData)
 }
 
-func (a *AbstractHandler) MultipartPutObjectPart(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, reader io.Reader, requestData *models.PutRequestData) (models.MultipartObjectPart, error) {
+func (a *Handler) MultipartPutObjectPart(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, reader io.Reader, requestData *models.PutRequestData) (models.MultipartObjectPart, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return models.MultipartObjectPart{PartNumber: partNumberMarker}, err
@@ -170,7 +170,7 @@ func (a *AbstractHandler) MultipartPutObjectPart(ctx context.Context, target *tr
 	return a.Next.MultipartPutObjectPart(ctx, target, uploadID, partNumberMarker, reader, requestData)
 }
 
-func (a *AbstractHandler) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.ObjectInfo, error) {
+func (a *Handler) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.ObjectInfo, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return models.ObjectInfo{}, err
@@ -178,7 +178,7 @@ func (a *AbstractHandler) MultipartComplete(ctx context.Context, target *tree.No
 	return a.Next.MultipartComplete(ctx, target, uploadID, uploadedParts)
 }
 
-func (a *AbstractHandler) MultipartAbort(ctx context.Context, target *tree.Node, uploadID string, requestData *models.MultipartRequestData) error {
+func (a *Handler) MultipartAbort(ctx context.Context, target *tree.Node, uploadID string, requestData *models.MultipartRequestData) error {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return err
@@ -186,7 +186,7 @@ func (a *AbstractHandler) MultipartAbort(ctx context.Context, target *tree.Node,
 	return a.Next.MultipartAbort(ctx, target, uploadID, requestData)
 }
 
-func (a *AbstractHandler) MultipartList(ctx context.Context, prefix string, requestData *models.MultipartRequestData) (models.ListMultipartUploadsResult, error) {
+func (a *Handler) MultipartList(ctx context.Context, prefix string, requestData *models.MultipartRequestData) (models.ListMultipartUploadsResult, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return models.ListMultipartUploadsResult{}, err
@@ -194,7 +194,7 @@ func (a *AbstractHandler) MultipartList(ctx context.Context, prefix string, requ
 	return a.Next.MultipartList(ctx, prefix, requestData)
 }
 
-func (a *AbstractHandler) MultipartListObjectParts(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, maxParts int) (models.ListObjectPartsResult, error) {
+func (a *Handler) MultipartListObjectParts(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, maxParts int) (models.ListObjectPartsResult, error) {
 	ctx, err := a.WrapContext(ctx)
 	if err != nil {
 		return models.ListObjectPartsResult{}, err
@@ -202,6 +202,6 @@ func (a *AbstractHandler) MultipartListObjectParts(ctx context.Context, target *
 	return a.Next.MultipartListObjectParts(ctx, target, uploadID, partNumberMarker, maxParts)
 }
 
-func (a *AbstractHandler) ListNodesWithCallback(ctx context.Context, request *tree.ListNodesRequest, callback nodes.WalkFunc, ignoreCbError bool, filters ...nodes.WalkFilter) error {
+func (a *Handler) ListNodesWithCallback(ctx context.Context, request *tree.ListNodesRequest, callback nodes.WalkFunc, ignoreCbError bool, filters ...nodes.WalkFilterFunc) error {
 	return nodes.HandlerListNodesWithCallback(a, ctx, request, callback, ignoreCbError, filters...)
 }

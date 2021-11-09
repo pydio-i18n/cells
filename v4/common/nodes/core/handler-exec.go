@@ -24,17 +24,18 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	defaults "github.com/pydio/cells/v4/common/micro"
 	"io"
 	"io/ioutil"
 	"path"
 	"strings"
 	"time"
 
-	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
@@ -42,7 +43,6 @@ import (
 	"github.com/pydio/cells/v4/common/nodes/abstract"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	"github.com/pydio/cells/v4/common/registry"
 	context2 "github.com/pydio/cells/v4/common/utils/context"
 )
 
@@ -52,10 +52,10 @@ var (
 
 // Executor is the final handler: it does not have a "Next" handler, but actually performs all requests.
 type Executor struct {
-	abstract.AbstractHandler
+	abstract.Handler
 }
 
-func (e *Executor) ExecuteWrapped(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter, provider nodes.NodesCallback) error {
+func (e *Executor) ExecuteWrapped(inputFilter nodes.FilterFunc, outputFilter nodes.FilterFunc, provider nodes.CallbackFunc) error {
 
 	return provider(inputFilter, outputFilter)
 
@@ -557,7 +557,7 @@ func (e *Executor) MultipartListObjectParts(ctx context.Context, target *tree.No
 
 func (e *Executor) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...grpc.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {
 
-	cli := tree.NewNodeChangesStreamerClient(registry.GetClient(common.ServiceTree))
+	cli := tree.NewNodeChangesStreamerClient(defaults.NewClientConn(common.ServiceTree))
 	return cli.StreamChanges(ctx, in, opts...)
 
 }

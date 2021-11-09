@@ -47,13 +47,13 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 )
 
-type ArchiveReader struct {
+type Reader struct {
 	Router nodes.Handler
 }
 
 const UnCompressThreshold = int64(100)
 
-func (a *ArchiveReader) openArchiveStream(ctx context.Context, archiveNode *tree.Node) (io.ReadCloser, error) {
+func (a *Reader) openArchiveStream(ctx context.Context, archiveNode *tree.Node) (io.ReadCloser, error) {
 
 	var archive io.ReadCloser
 	var openErr error
@@ -70,7 +70,7 @@ func (a *ArchiveReader) openArchiveStream(ctx context.Context, archiveNode *tree
 }
 
 // ListChildrenZip extracts all children from a zip archive
-func (a *ArchiveReader) ListChildrenZip(ctx context.Context, archiveNode *tree.Node, parentPath string, stat ...bool) ([]*tree.Node, error) {
+func (a *Reader) ListChildrenZip(ctx context.Context, archiveNode *tree.Node, parentPath string, stat ...bool) ([]*tree.Node, error) {
 
 	var results []*tree.Node
 
@@ -155,7 +155,7 @@ func (a *ArchiveReader) ListChildrenZip(ctx context.Context, archiveNode *tree.N
 }
 
 // StatChildZip finds information about a given entry of a zip archive (by its internal path)
-func (a *ArchiveReader) StatChildZip(ctx context.Context, archiveNode *tree.Node, innerPath string) (*tree.Node, error) {
+func (a *Reader) StatChildZip(ctx context.Context, archiveNode *tree.Node, innerPath string) (*tree.Node, error) {
 
 	nn, err := a.ListChildrenZip(ctx, archiveNode, innerPath, true)
 	if err != nil || len(nn) == 0 {
@@ -166,7 +166,7 @@ func (a *ArchiveReader) StatChildZip(ctx context.Context, archiveNode *tree.Node
 }
 
 // ReadChildZip reads content of a file contained in a zip archive
-func (a *ArchiveReader) ReadChildZip(ctx context.Context, archiveNode *tree.Node, innerPath string) (io.ReadCloser, error) {
+func (a *Reader) ReadChildZip(ctx context.Context, archiveNode *tree.Node, innerPath string) (io.ReadCloser, error) {
 
 	// We have to download whole archive to read its content
 	var archiveName string
@@ -210,7 +210,7 @@ func (a *ArchiveReader) ReadChildZip(ctx context.Context, archiveNode *tree.Node
 }
 
 // ExtractAllZip extracts all files contained in a zip archive to a given location
-func (a *ArchiveReader) ExtractAllZip(ctx context.Context, archiveNode *tree.Node, targetNode *tree.Node, logChannels ...chan string) error {
+func (a *Reader) ExtractAllZip(ctx context.Context, archiveNode *tree.Node, targetNode *tree.Node, logChannels ...chan string) error {
 
 	// We have to download whole archive to read its content
 	var archiveName string
@@ -298,7 +298,7 @@ func (a *ArchiveReader) ExtractAllZip(ctx context.Context, archiveNode *tree.Nod
 }
 
 // ListChildrenTar extracts all children from a tar/tar.gz archive
-func (a *ArchiveReader) ListChildrenTar(ctx context.Context, gzipFormat bool, archiveNode *tree.Node, parentPath string, stat ...bool) ([]*tree.Node, error) {
+func (a *Reader) ListChildrenTar(ctx context.Context, gzipFormat bool, archiveNode *tree.Node, parentPath string, stat ...bool) ([]*tree.Node, error) {
 
 	var results []*tree.Node
 
@@ -403,7 +403,7 @@ func (a *ArchiveReader) ListChildrenTar(ctx context.Context, gzipFormat bool, ar
 }
 
 // StatChildTar finds information about a given entry of a tar/tar.gz archive (by its internal path)
-func (a *ArchiveReader) StatChildTar(ctx context.Context, gzipFormat bool, archiveNode *tree.Node, innerPath string) (*tree.Node, error) {
+func (a *Reader) StatChildTar(ctx context.Context, gzipFormat bool, archiveNode *tree.Node, innerPath string) (*tree.Node, error) {
 
 	nn, err := a.ListChildrenTar(ctx, gzipFormat, archiveNode, innerPath, true)
 	if err != nil || len(nn) == 0 {
@@ -414,7 +414,7 @@ func (a *ArchiveReader) StatChildTar(ctx context.Context, gzipFormat bool, archi
 }
 
 // ReadChildTar reads content of a file contained in a tar/tar.gz archive
-func (a *ArchiveReader) ReadChildTar(ctx context.Context, gzipFormat bool, writer io.WriteCloser, archiveNode *tree.Node, innerPath string) (int64, error) {
+func (a *Reader) ReadChildTar(ctx context.Context, gzipFormat bool, writer io.WriteCloser, archiveNode *tree.Node, innerPath string) (int64, error) {
 
 	// We have to download whole archive to read its content
 	var inputStream io.ReadCloser
@@ -461,7 +461,7 @@ func (a *ArchiveReader) ReadChildTar(ctx context.Context, gzipFormat bool, write
 }
 
 // ExtractAllTar extracts all files contained in a tar/tar.gz archive to a given location
-func (a *ArchiveReader) ExtractAllTar(ctx context.Context, gzipFormat bool, archiveNode *tree.Node, targetNode *tree.Node, logChannels ...chan string) error {
+func (a *Reader) ExtractAllTar(ctx context.Context, gzipFormat bool, archiveNode *tree.Node, targetNode *tree.Node, logChannels ...chan string) error {
 
 	// We have to download whole archive to read its content
 	var inputStream io.ReadCloser

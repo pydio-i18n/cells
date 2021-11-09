@@ -25,17 +25,16 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/pydio/cells/v4/common/nodes"
-
 	"github.com/pkg/errors"
 	. "github.com/smartystreets/goconvey/convey"
 
+	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/tree"
 )
 
 type FakeWrapperHandler struct {
-	AbstractHandler
+	Handler
 }
 
 var (

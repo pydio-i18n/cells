@@ -32,10 +32,10 @@ import (
 	"strings"
 	"time"
 
-	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 	"golang.org/x/text/unicode/norm"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
@@ -47,20 +47,20 @@ import (
 
 func WithPutInterceptor() nodes.Option {
 	return func(options *nodes.RouterOptions) {
-		options.Wrappers = append(options.Wrappers, &PutHandler{})
+		options.Wrappers = append(options.Wrappers, &Handler{})
 	}
 }
 
-// PutHandler handles Put requests by creating temporary files in the index before forwarding data to the object service.
+// Handler handles Put requests by creating temporary files in the index before forwarding data to the object service.
 // This temporary entry is updated later on by the sync service, once the object is written. It is deleted if the Put operation fails.
-type PutHandler struct {
-	abstract.AbstractHandler
+type Handler struct {
+	abstract.Handler
 }
 
-func (h *PutHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	h.Next = c
-	h.ClientsPool = options.Pool
-	return h
+func (m *Handler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+	m.Next = c
+	m.ClientsPool = options.Pool
+	return m
 }
 
 type onCreateErrorFunc func()
@@ -82,7 +82,7 @@ func retryOnDuplicate(callback func() (*tree.CreateNodeResponse, error), retries
 // If it is an update, should send back the already existing node.
 // Returns the node, a flag to tell wether it is created or not, and eventually an error
 // The Put event will afterward update the index
-func (m *PutHandler) getOrCreatePutNode(ctx context.Context, nodePath string, requestData *models.PutRequestData) (*tree.Node, error, onCreateErrorFunc) {
+func (m *Handler) getOrCreatePutNode(ctx context.Context, nodePath string, requestData *models.PutRequestData) (*tree.Node, onCreateErrorFunc, error) {
 	treeReader := m.ClientsPool.GetTreeClient()
 	treeWriter := m.ClientsPool.GetTreeClientWrite()
 
@@ -114,7 +114,7 @@ func (m *PutHandler) getOrCreatePutNode(ctx context.Context, nodePath string, re
 		return treeWriter.CreateNode(ctx, &tree.CreateNodeRequest{Node: tmpNode})
 	})
 	if er != nil {
-		return nil, er, nil
+		return nil, nil, er
 	}
 	delNode := createResp.Node.Clone()
 	errorFunc := func() {
@@ -126,12 +126,12 @@ func (m *PutHandler) getOrCreatePutNode(ctx context.Context, nodePath string, re
 			log.Logger(ctx).Error("Error while trying to delete temporary node after upload failure", zap.Error(e), delNode.Zap())
 		}
 	}
-	return createResp.Node, nil, errorFunc
+	return createResp.Node, errorFunc, nil
 
 }
 
 // createParentIfNotExist Recursively create parents
-func (m *PutHandler) createParentIfNotExist(ctx context.Context, node *tree.Node) error {
+func (m *Handler) createParentIfNotExist(ctx context.Context, node *tree.Node) error {
 	parentNode := node.Clone()
 	parentNode.Path = path.Dir(node.Path)
 	if parentNode.Path == "/" || parentNode.Path == "" || parentNode.Path == "." {
@@ -177,7 +177,7 @@ func (m *PutHandler) createParentIfNotExist(ctx context.Context, node *tree.Node
 
 // CreateNode recursively creates parents if they do not already exist
 // Only applicable to COLLECTION inside a structured storage (need to create .pydio hidden files)
-func (m *PutHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
+func (m *Handler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	if info, ok := nodes.GetBranchInfo(ctx, "in"); ok && (info.FlatStorage || info.Binary || info.IsInternal()) || in.Node.IsLeaf() {
 		return m.Next.CreateNode(ctx, in, opts...)
 	}
@@ -187,7 +187,7 @@ func (m *PutHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest,
 	return m.Next.CreateNode(ctx, in, opts...)
 }
 
-func (m *PutHandler) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
+func (m *Handler) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
 	log.Logger(ctx).Debug("[HANDLER PUT] > Putting object", zap.String("UUID", node.Uuid), zap.String("Path", node.Path))
 
 	if branchInfo, ok := nodes.GetBranchInfo(ctx, "in"); ok && branchInfo.Binary {
@@ -223,7 +223,7 @@ func (m *PutHandler) PutObject(ctx context.Context, node *tree.Node, reader io.R
 
 	} else {
 		// PreCreate a node in the tree.
-		newNode, nodeErr, onErrorFunc := m.getOrCreatePutNode(ctx, node.Path, requestData)
+		newNode, onErrorFunc, nodeErr := m.getOrCreatePutNode(ctx, node.Path, requestData)
 		log.Logger(ctx).Debug("PreLoad or PreCreate Node in tree", zap.String("path", node.Path), zap.Any("node", newNode), zap.Error(nodeErr))
 		if nodeErr != nil {
 			return 0, nodeErr
@@ -251,7 +251,7 @@ func (m *PutHandler) PutObject(ctx context.Context, node *tree.Node, reader io.R
 
 // MultipartCreate registers a node in the virtual fs with size 0 and ETag: temporary
 // (we do not have the real size at this point because we are using streams.)
-func (m *PutHandler) MultipartCreate(ctx context.Context, node *tree.Node, requestData *models.MultipartRequestData) (string, error) {
+func (m *Handler) MultipartCreate(ctx context.Context, node *tree.Node, requestData *models.MultipartRequestData) (string, error) {
 	log.Logger(ctx).Debug("PUT - MULTIPART CREATE: before middle ware method")
 
 	// What is it? to be checked
@@ -268,7 +268,7 @@ func (m *PutHandler) MultipartCreate(ctx context.Context, node *tree.Node, reque
 		if metaSize, ok := requestData.Metadata[common.XAmzMetaClearSize]; ok {
 			size, _ = strconv.ParseInt(metaSize, 10, 64)
 		}
-		newNode, nodeErr, onErrorFunc := m.getOrCreatePutNode(ctx, node.Path, &models.PutRequestData{Size: size})
+		newNode, onErrorFunc, nodeErr := m.getOrCreatePutNode(ctx, node.Path, &models.PutRequestData{Size: size})
 		log.Logger(ctx).Debug("PreLoad or PreCreate Node in tree", zap.String("path", node.Path), zap.Any("node", newNode), zap.Error(nodeErr))
 		if nodeErr != nil {
 			if onErrorFunc != nil {
@@ -298,7 +298,7 @@ func (m *PutHandler) MultipartCreate(ctx context.Context, node *tree.Node, reque
 	return multipartId, err
 }
 
-func (m *PutHandler) MultipartAbort(ctx context.Context, target *tree.Node, uploadID string, requestData *models.MultipartRequestData) error {
+func (m *Handler) MultipartAbort(ctx context.Context, target *tree.Node, uploadID string, requestData *models.MultipartRequestData) error {
 
 	deleteTemporary := func() {
 		treeReader := m.ClientsPool.GetTreeClient()

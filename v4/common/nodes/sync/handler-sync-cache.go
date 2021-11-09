@@ -29,10 +29,10 @@ import (
 
 	"github.com/allegro/bigcache"
 	"github.com/micro/micro/v3/service/broker"
-	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
@@ -65,25 +65,25 @@ func NewCacheDiff() *cacheDiff {
 func WithCache() nodes.Option {
 	return func(options *nodes.RouterOptions) {
 		if options.SynchronousCache {
-			options.Wrappers = append(options.Wrappers, NewSynchronousCacheHandler())
+			options.Wrappers = append(options.Wrappers, newCacheHandler())
 		}
 	}
 }
 
-// SynchronousCacheHandler maintains a cache of the nodes during modifying operations to make listings more reactive.
+// CacheHandler maintains a cache of the nodes during modifying operations to make listings more reactive.
 // It is used by basic APIs (like WebDAV) for better visual performances and to create pseudo-synchronous APIs.
-type SynchronousCacheHandler struct {
-	abstract.AbstractHandler
+type CacheHandler struct {
+	abstract.Handler
 }
 
-func (h *SynchronousCacheHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	h.Next = c
-	h.ClientsPool = options.Pool
-	return h
+func (s *CacheHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+	s.Next = c
+	s.ClientsPool = options.Pool
+	return s
 }
 
-func NewSynchronousCacheHandler() *SynchronousCacheHandler {
-	s := &SynchronousCacheHandler{}
+func newCacheHandler() *CacheHandler {
+	s := &CacheHandler{}
 
 	if syncCache == nil {
 		c := bigcache.DefaultConfig(30 * time.Second)
@@ -93,11 +93,11 @@ func NewSynchronousCacheHandler() *SynchronousCacheHandler {
 		c.MaxEntrySize = 200
 		c.HardMaxCacheSize = 8
 		syncCache = cache.NewInstrumentedCache(nodes.VIEWS_LIBRARY_NAME, c)
-		defaults.Broker().Subscribe(common.TopicTreeChanges, func(publication broker.Publication) error {
+		defaults.Broker().Subscribe(common.TopicTreeChanges, func(publication *broker.Message) error {
 			var event tree.NodeChangeEvent
-			if e := proto.Unmarshal(publication.Message().Body, &event); e == nil && !event.Optimistic {
+			if e := proto.Unmarshal(publication.Body, &event); e == nil && !event.Optimistic {
 				if event.Type == tree.NodeChangeEvent_CREATE || event.Type == tree.NodeChangeEvent_UPDATE_PATH || event.Type == tree.NodeChangeEvent_DELETE {
-					ctx := metadata.NewContext(context.Background(), publication.Message().Header)
+					ctx := metadata.NewContext(context.Background(), publication.Header)
 					ctx = servicecontext.WithServiceName(ctx, nodes.VIEWS_LIBRARY_NAME)
 					s.cacheEvent(ctx, &event)
 				}
@@ -108,7 +108,7 @@ func NewSynchronousCacheHandler() *SynchronousCacheHandler {
 	return s
 }
 
-func (s *SynchronousCacheHandler) cacheEvent(ctx context.Context, event *tree.NodeChangeEvent) {
+func (s *CacheHandler) cacheEvent(ctx context.Context, event *tree.NodeChangeEvent) {
 	log.Logger(ctx).Debug("Event received", zap.Any("e", event))
 	var add, remove *tree.Node
 	switch event.Type {
@@ -154,7 +154,7 @@ func (s *SynchronousCacheHandler) cacheEvent(ctx context.Context, event *tree.No
 	}
 }
 
-func (s *SynchronousCacheHandler) cacheAdd(ctx context.Context, node *tree.Node) {
+func (s *CacheHandler) cacheAdd(ctx context.Context, node *tree.Node) {
 	d, _ := json.Marshal(node)
 	log.Logger(ctx).Debug("Storing node to cache", node.Zap())
 	syncCache.Set(cacheNodePrefix+node.GetPath(), d)
@@ -170,7 +170,7 @@ func (s *SynchronousCacheHandler) cacheAdd(ctx context.Context, node *tree.Node)
 	syncCache.Set(cacheDiffPrefix+dir, diffDat)
 }
 
-func (s *SynchronousCacheHandler) cacheDel(ctx context.Context, node *tree.Node) {
+func (s *CacheHandler) cacheDel(ctx context.Context, node *tree.Node) {
 	// Update diff
 	diff := NewCacheDiff()
 	p := node.GetPath()
@@ -193,7 +193,7 @@ func (s *SynchronousCacheHandler) cacheDel(ctx context.Context, node *tree.Node)
 	syncCache.Set(cacheDiffPrefix+dir, diffDat)
 }
 
-func (s *SynchronousCacheHandler) cacheGet(ctx context.Context, path string) (*tree.Node, bool) {
+func (s *CacheHandler) cacheGet(ctx context.Context, path string) (*tree.Node, bool) {
 	if c, o := syncCache.Get(cacheNodePrefix + path); o == nil {
 		var dir *tree.Node
 		if ee := json.Unmarshal(c, &dir); ee == nil {
@@ -203,7 +203,7 @@ func (s *SynchronousCacheHandler) cacheGet(ctx context.Context, path string) (*t
 	return nil, false
 }
 
-func (s *SynchronousCacheHandler) cacheDiff(ctx context.Context, path string) (*cacheDiff, bool) {
+func (s *CacheHandler) cacheDiff(ctx context.Context, path string) (*cacheDiff, bool) {
 	log.Logger(ctx).Debug("Looking for cacheDiff for " + path)
 	if c, o := syncCache.Get(cacheDiffPrefix + path); o == nil {
 		var diff *cacheDiff
@@ -215,7 +215,7 @@ func (s *SynchronousCacheHandler) cacheDiff(ctx context.Context, path string) (*
 	return nil, false
 }
 
-func (s *SynchronousCacheHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
+func (s *CacheHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	r, e := s.Next.CreateNode(ctx, in, opts...)
 	if e == nil {
 		s.cacheAdd(ctx, r.GetNode())
@@ -223,7 +223,7 @@ func (s *SynchronousCacheHandler) CreateNode(ctx context.Context, in *tree.Creat
 	return r, e
 }
 
-func (s *SynchronousCacheHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
+func (s *CacheHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 	r, e := s.Next.DeleteNode(ctx, in, opts...)
 	if e == nil {
 		s.cacheDel(ctx, in.GetNode())
@@ -231,7 +231,7 @@ func (s *SynchronousCacheHandler) DeleteNode(ctx context.Context, in *tree.Delet
 	return r, e
 }
 
-func (s *SynchronousCacheHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
+func (s *CacheHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 	resp, err := s.Next.UpdateNode(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -242,18 +242,18 @@ func (s *SynchronousCacheHandler) UpdateNode(ctx context.Context, in *tree.Updat
 	return resp, nil
 }
 
-func (s *SynchronousCacheHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (s *CacheHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 	r, e := s.Next.ListNodes(ctx, in, opts...)
 	if e != nil {
 		if _, o := s.cacheGet(ctx, in.GetNode().GetPath()); o {
 			emptyMock := nodes.NewWrappingStreamer()
-			go emptyMock.Close()
+			go emptyMock.CloseSend()
 			return emptyMock, nil
 		}
 	} else if diff, o := s.cacheDiff(ctx, in.GetNode().GetPath()); o {
 		wrap := nodes.NewWrappingStreamer()
 		go func() {
-			defer wrap.Close()
+			defer wrap.CloseSend()
 			for {
 				resp, e := r.Recv()
 				if e != nil {
@@ -277,7 +277,7 @@ func (s *SynchronousCacheHandler) ListNodes(ctx context.Context, in *tree.ListNo
 	return r, e
 }
 
-func (s *SynchronousCacheHandler) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
+func (s *CacheHandler) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
 	w, e := s.Next.PutObject(ctx, node, reader, requestData)
 	if e == nil {
 		newNode := node.Clone()
@@ -287,7 +287,7 @@ func (s *SynchronousCacheHandler) PutObject(ctx context.Context, node *tree.Node
 	return w, e
 }
 
-func (s *SynchronousCacheHandler) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.ObjectInfo, error) {
+func (s *CacheHandler) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.ObjectInfo, error) {
 	log.Logger(ctx).Info("[SynchronousCache] MultipartComplete", target.Zap())
 	o, e := s.Next.MultipartComplete(ctx, target, uploadID, uploadedParts)
 	if e == nil {
@@ -300,7 +300,7 @@ func (s *SynchronousCacheHandler) MultipartComplete(ctx context.Context, target 
 	return o, e
 }
 
-func (s *SynchronousCacheHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
+func (s *CacheHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	resp, e := s.Next.ReadNode(ctx, in, opts...)
 	notFound := e != nil && (errors.Parse(e.Error()).Code == 404 || strings.Contains(e.Error(), " NotFound "))
 	tempo := e == nil && resp.Node.GetEtag() == "temporary"

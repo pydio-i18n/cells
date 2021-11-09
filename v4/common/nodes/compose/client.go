@@ -70,12 +70,12 @@ type clientImpl struct {
 	pool    nodes.SourcesPool
 }
 
-func (v *clientImpl) WrapCallback(provider nodes.NodesCallback) error {
+func (v *clientImpl) WrapCallback(provider nodes.CallbackFunc) error {
 	return v.ExecuteWrapped(nil, nil, provider)
 }
 
 func (v *clientImpl) BranchInfoForNode(ctx context.Context, node *tree.Node) (branch nodes.BranchInfo, err error) {
-	err = v.WrapCallback(func(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter) error {
+	err = v.WrapCallback(func(inputFilter nodes.FilterFunc, outputFilter nodes.FilterFunc) error {
 		updatedCtx, _, er := inputFilter(ctx, node, "in")
 		if er != nil {
 			return er
@@ -90,7 +90,7 @@ func (v *clientImpl) BranchInfoForNode(ctx context.Context, node *tree.Node) (br
 	return
 }
 
-func (v *clientImpl) ExecuteWrapped(_ nodes.NodeFilter, _ nodes.NodeFilter, provider nodes.NodesCallback) error {
+func (v *clientImpl) ExecuteWrapped(_ nodes.FilterFunc, _ nodes.FilterFunc, provider nodes.CallbackFunc) error {
 	identity := func(ctx context.Context, inputNode *tree.Node, identifier string) (context.Context, *tree.Node, error) {
 		return ctx, inputNode, nil
 	}
@@ -172,7 +172,7 @@ func (v *clientImpl) WrappedCanApply(srcCtx context.Context, targetCtx context.C
 
 func (v *clientImpl) CanApply(ctx context.Context, operation *tree.NodeChangeEvent) (*tree.NodeChangeEvent, error) {
 	var innerOperation *tree.NodeChangeEvent
-	e := v.WrapCallback(func(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter) error {
+	e := v.WrapCallback(func(inputFilter nodes.FilterFunc, outputFilter nodes.FilterFunc) error {
 		var sourceNode, targetNode *tree.Node
 		var sourceCtx, targetCtx context.Context
 		switch operation.Type {
@@ -211,7 +211,7 @@ func (v *clientImpl) GetClientsPool() nodes.SourcesPool {
 }
 
 // ListNodesWithCallback performs a ListNodes request and applied callback with optional filters. This hides the complexity of streams handling.
-func (v *clientImpl) ListNodesWithCallback(ctx context.Context, request *tree.ListNodesRequest, callback nodes.WalkFunc, ignoreCbError bool, filters ...nodes.WalkFilter) error {
+func (v *clientImpl) ListNodesWithCallback(ctx context.Context, request *tree.ListNodesRequest, callback nodes.WalkFunc, ignoreCbError bool, filters ...nodes.WalkFilterFunc) error {
 
 	return nodes.HandlerListNodesWithCallback(v, ctx, request, callback, ignoreCbError, filters...)
 

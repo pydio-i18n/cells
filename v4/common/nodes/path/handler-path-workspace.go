@@ -25,14 +25,14 @@ import (
 	"fmt"
 	"strings"
 
-	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 
-	"github.com/pydio/cells/v4/common/nodes/abstract"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes"
+	"github.com/pydio/cells/v4/common/nodes/abstract"
 	"github.com/pydio/cells/v4/common/nodes/acl"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -42,19 +42,19 @@ import (
 
 func WithWorkspace() nodes.Option {
 	return func(options *nodes.RouterOptions) {
-		options.Wrappers = append(options.Wrappers, NewPathWorkspaceHandler())
+		options.Wrappers = append(options.Wrappers, newWorkspaceHandler())
 	}
 }
 
-// PathWorkspaceHandler is an AbstractBranchFilter extracting workspace and managing path inside the workspace.
-type PathWorkspaceHandler struct {
-	abstract.AbstractBranchFilter
+// WorkspaceHandler is an BranchFilter extracting workspace and managing path inside the workspace.
+type WorkspaceHandler struct {
+	abstract.BranchFilter
 }
 
-func (h *PathWorkspaceHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	h.Next = c
-	h.ClientsPool = options.Pool
-	return h
+func (a *WorkspaceHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+	a.Next = c
+	a.ClientsPool = options.Pool
+	return a
 }
 
 type noWorkspaceInPath struct{}
@@ -63,14 +63,14 @@ func (noWorkspaceInPath) Error() string {
 	return "no.workspace.in.path"
 }
 
-func NewPathWorkspaceHandler() *PathWorkspaceHandler {
-	u := &PathWorkspaceHandler{}
+func newWorkspaceHandler() *WorkspaceHandler {
+	u := &WorkspaceHandler{}
 	u.InputMethod = u.updateBranchInfo
 	u.OutputMethod = u.updateOutputBranch
 	return u
 }
 
-func (a *PathWorkspaceHandler) extractWs(ctx context.Context, node *tree.Node) (*idm.Workspace, bool, error) {
+func (a *WorkspaceHandler) extractWs(ctx context.Context, node *tree.Node) (*idm.Workspace, bool, error) {
 
 	// Admin context, fake workspace with root ROOT
 	if acl.HasAdminKey(ctx) {
@@ -103,7 +103,7 @@ func (a *PathWorkspaceHandler) extractWs(ctx context.Context, node *tree.Node) (
 	return nil, false, nil
 }
 
-func (a *PathWorkspaceHandler) updateBranchInfo(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
+func (a *WorkspaceHandler) updateBranchInfo(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
 	if info, alreadySet := nodes.GetBranchInfo(ctx, identifier); alreadySet && info.Client != nil {
 		return ctx, node, nil
 	}
@@ -122,7 +122,7 @@ func (a *PathWorkspaceHandler) updateBranchInfo(ctx context.Context, node *tree.
 	return ctx, node, noWorkspaceInPath{}
 }
 
-func (a *PathWorkspaceHandler) updateOutputBranch(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
+func (a *WorkspaceHandler) updateOutputBranch(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
 	// Prepend Slug to path
 	if info, set := nodes.GetBranchInfo(ctx, identifier); set && info.UUID != "ROOT" {
 		out := node.Clone()
@@ -132,7 +132,7 @@ func (a *PathWorkspaceHandler) updateOutputBranch(ctx context.Context, node *tre
 	return ctx, node, nil
 }
 
-func (a *PathWorkspaceHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
+func (a *WorkspaceHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	_, _, err := a.updateBranchInfo(ctx, &tree.Node{Path: in.Node.Path}, "in")
 	if err != nil {
 		if err.Error() == (noWorkspaceInPath{}).Error() {
@@ -142,11 +142,11 @@ func (a *PathWorkspaceHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRe
 			return nil, err
 		}
 	}
-	return a.AbstractBranchFilter.ReadNode(ctx, in, opts...)
+	return a.BranchFilter.ReadNode(ctx, in, opts...)
 
 }
 
-func (a *PathWorkspaceHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (a *WorkspaceHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 	_, _, err := a.updateBranchInfo(ctx, &tree.Node{Path: in.Node.Path}, "in")
 	if err != nil {
 		// Real error
@@ -209,5 +209,5 @@ func (a *PathWorkspaceHandler) ListNodes(ctx context.Context, in *tree.ListNodes
 		}()
 		return streamer, nil
 	}
-	return a.AbstractBranchFilter.ListNodes(ctx, in, opts...)
+	return a.BranchFilter.ListNodes(ctx, in, opts...)
 }

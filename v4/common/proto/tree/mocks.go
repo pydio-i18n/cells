@@ -22,14 +22,15 @@ package tree
 
 import (
 	"context"
+	"google.golang.org/grpc/metadata"
 	"io"
 	"reflect"
 	"sort"
 
-	"google.golang.org/grpc"
-	"github.com/micro/micro/v3/service/server"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/server"
 	"github.com/pydio/cells/v4/common"
+	"google.golang.org/grpc"
 )
 
 type ErrorThrower func(string, string, ...interface{}) error
@@ -50,7 +51,27 @@ type StreamerMock struct {
 	ch chan Node
 }
 
-func NewStreamerMock(nodes map[string]Node) server.Stream {
+func (m *StreamerMock) Header() (metadata.MD, error) {
+	panic("implement me")
+}
+
+func (m *StreamerMock) Trailer() metadata.MD {
+	panic("implement me")
+}
+
+func (m *StreamerMock) CloseSend() error {
+	panic("implement me")
+}
+
+func (m *StreamerMock) SendMsg(msg interface{}) error {
+	panic("implement me")
+}
+
+func (m *StreamerMock) RecvMsg(msg interface{}) error {
+	panic("implement me")
+}
+
+func NewStreamerMock(nodes map[string]Node) grpc.ClientStream {
 	ch := make(chan Node)
 
 	go func() {
@@ -138,9 +159,9 @@ func (m *NodeProviderMock) ReadNode(ctx context.Context, in *ReadNodeRequest, op
 	return nil, errors.NotFound(common.ServiceDataIndex_, "Node not found")
 }
 
-func (m *NodeProviderMock) ListNodes(ctx context.Context, in *ListNodesRequest, opts ...grpc.CallOption) (NodeProvider_ListNodesStream, error) {
+func (m *NodeProviderMock) ListNodes(ctx context.Context, in *ListNodesRequest, opts ...grpc.CallOption) (NodeProvider_ListNodesClient, error) {
 	// Create fake stream
-	return &nodeProviderListNodesStream{stream: NewStreamerMock(m.Nodes)}, nil
+	return &nodeProviderListNodesClient{ClientStream: NewStreamerMock(m.Nodes)}, nil
 
 }
 

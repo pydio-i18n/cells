@@ -97,7 +97,7 @@ func BuildAncestorsList(ctx context.Context, treeClient tree.NodeProviderClient,
 	return parentUuids, err
 }
 
-// BuildAncestorsListOrParent builds ancestors list when the node does not exists yet, by trying to find all existing parents.
+// BuildAncestorsListOrParent builds ancestors list when the node does not exist yet, by trying to find all existing parents.
 func BuildAncestorsListOrParent(ctx context.Context, treeClient tree.NodeProviderClient, node *tree.Node) (parentUuids []*tree.Node, err error) {
 	parents, err := BuildAncestorsList(ctx, treeClient, node)
 	nodePathParts := strings.Split(node.Path, "/")

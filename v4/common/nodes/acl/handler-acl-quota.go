@@ -31,8 +31,8 @@ import (
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
-	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth/claim"
@@ -50,25 +50,25 @@ import (
 func WithQuota() nodes.Option {
 	return func(options *nodes.RouterOptions) {
 		if !options.AdminView {
-			options.Wrappers = append(options.Wrappers, &AclQuotaFilter{})
+			options.Wrappers = append(options.Wrappers, &QuotaFilter{})
 		}
 	}
 }
 
-// AclQuotaFilter applies storage quota limitation on a per-workspace basis.
-type AclQuotaFilter struct {
-	abstract.AbstractHandler
+// QuotaFilter applies storage quota limitation on a per-workspace basis.
+type QuotaFilter struct {
+	abstract.Handler
 	readCache *cache.Cache
 }
 
-func (a *AclQuotaFilter) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+func (a *QuotaFilter) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	a.Next = h
 	a.ClientsPool = options.Pool
 	return a
 }
 
 // ReadNode append quota info on workspace roots
-func (a *AclQuotaFilter) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
+func (a *QuotaFilter) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	resp, err := a.Next.ReadNode(ctx, in, opts...)
 	if err != nil {
 		return resp, err
@@ -117,7 +117,7 @@ func (a *AclQuotaFilter) ReadNode(ctx context.Context, in *tree.ReadNodeRequest,
 }
 
 // PutObject checks quota on PutObject operation.
-func (a *AclQuotaFilter) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
+func (a *QuotaFilter) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
 
 	// Note : as the temporary file created by PutHandler is already in index,
 	// currentUsage ALREADY takes into account the input data size.
@@ -134,7 +134,7 @@ func (a *AclQuotaFilter) PutObject(ctx context.Context, node *tree.Node, reader 
 }
 
 // MultipartPutObjectPart checks quota on MultipartPutObjectPart.
-func (a *AclQuotaFilter) MultipartPutObjectPart(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, reader io.Reader, requestData *models.PutRequestData) (models.MultipartObjectPart, error) {
+func (a *QuotaFilter) MultipartPutObjectPart(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, reader io.Reader, requestData *models.PutRequestData) (models.MultipartObjectPart, error) {
 
 	if branchInfo, ok := nodes.GetBranchInfo(ctx, "in"); ok && !branchInfo.IsInternal() {
 		if maxQuota, currentUsage, err := a.ComputeQuota(ctx, &branchInfo.Workspace); err != nil {
@@ -148,7 +148,7 @@ func (a *AclQuotaFilter) MultipartPutObjectPart(ctx context.Context, target *tre
 }
 
 // CopyObject checks quota on CopyObject operation.
-func (a *AclQuotaFilter) CopyObject(ctx context.Context, from *tree.Node, to *tree.Node, requestData *models.CopyRequestData) (int64, error) {
+func (a *QuotaFilter) CopyObject(ctx context.Context, from *tree.Node, to *tree.Node, requestData *models.CopyRequestData) (int64, error) {
 
 	if branchInfo, ok := nodes.GetBranchInfo(ctx, "to"); ok && !branchInfo.IsInternal() {
 		if maxQuota, currentUsage, err := a.ComputeQuota(ctx, &branchInfo.Workspace); err != nil {
@@ -162,7 +162,7 @@ func (a *AclQuotaFilter) CopyObject(ctx context.Context, from *tree.Node, to *tr
 }
 
 // WrappedCanApply will perform checks on quota to make sure an operation is authorized
-func (a *AclQuotaFilter) WrappedCanApply(srcCtx context.Context, targetCtx context.Context, operation *tree.NodeChangeEvent) error {
+func (a *QuotaFilter) WrappedCanApply(srcCtx context.Context, targetCtx context.Context, operation *tree.NodeChangeEvent) error {
 	switch operation.GetType() {
 	case tree.NodeChangeEvent_CREATE:
 		targetNode := operation.GetTarget()
@@ -189,7 +189,7 @@ func (a *AclQuotaFilter) WrappedCanApply(srcCtx context.Context, targetCtx conte
 }
 
 // ComputeQuota finds quota and current usage for a given workspace
-func (a *AclQuotaFilter) ComputeQuota(ctx context.Context, workspace *idm.Workspace) (quota int64, usage int64, err error) {
+func (a *QuotaFilter) ComputeQuota(ctx context.Context, workspace *idm.Workspace) (quota int64, usage int64, err error) {
 
 	claims, ok := ctx.Value(claim.ContextKey).(claim.Claims)
 	if !ok {
@@ -235,7 +235,7 @@ func (a *AclQuotaFilter) ComputeQuota(ctx context.Context, workspace *idm.Worksp
 }
 
 // FindParentWorkspaces finds possible parents for the current workspace based on the RESOURCE_OWNER uuid.
-func (a *AclQuotaFilter) FindParentWorkspaces(ctx context.Context, workspace *idm.Workspace) (parentWorkspaces []*idm.Workspace, parentContext context.Context, err error) {
+func (a *QuotaFilter) FindParentWorkspaces(ctx context.Context, workspace *idm.Workspace) (parentWorkspaces []*idm.Workspace, parentContext context.Context, err error) {
 
 	var ownerUuid string
 	for _, p := range workspace.Policies {
@@ -279,7 +279,7 @@ func (a *AclQuotaFilter) FindParentWorkspaces(ctx context.Context, workspace *id
 		}
 	}
 
-	treeClient := tree.NewNodeProviderClient(common.ServiceGrpcNamespace_+common.ServiceTree, defaults.NewClient())
+	treeClient := tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceTree))
 	for _, root := range workspace.RootUUIDs {
 		if n, o := vResolver(ctx, &tree.Node{Uuid: root}); o {
 			root = n.Uuid
@@ -305,9 +305,9 @@ func (a *AclQuotaFilter) FindParentWorkspaces(ctx context.Context, workspace *id
 
 // QuotaForWorkspace finds quota and computes current usage from ACLs and Tree for a given workspace, in a specific context
 // given by the orderedRoles list.
-func (a *AclQuotaFilter) QuotaForWorkspace(ctx context.Context, workspace *idm.Workspace, orderedRoles []string) (maxQuota int64, currentUsage int64, err error) {
+func (a *QuotaFilter) QuotaForWorkspace(ctx context.Context, workspace *idm.Workspace, orderedRoles []string) (maxQuota int64, currentUsage int64, err error) {
 
-	aclClient := idm.NewACLServiceClient(common.ServiceGrpcNamespace_+common.ServiceAcl, defaults.NewClient())
+	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
 	q2, _ := anypb.New(&idm.ACLSingleQuery{WorkspaceIDs: []string{workspace.UUID}})
 	stream, er := aclClient.SearchACL(ctx, &idm.SearchACLRequest{Query: &service.Query{SubQueries: []*anypb.Any{q2}}})
 	if er != nil {
@@ -350,7 +350,7 @@ func (a *AclQuotaFilter) QuotaForWorkspace(ctx context.Context, workspace *idm.W
 
 	if maxQuota > 0 {
 		log.Logger(ctx).Debug("Found Quota", zap.Any("q", maxQuota), zap.Any("roots", detectedRoots))
-		treeClient := tree.NewNodeProviderClient(common.ServiceGrpcNamespace_+common.ServiceTree, defaults.NewClient())
+		treeClient := tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceTree))
 		resolver := abstract.GetVirtualNodesManager().GetResolver(a.ClientsPool, false)
 		for nodeId := range detectedRoots {
 			var rootNode *tree.Node

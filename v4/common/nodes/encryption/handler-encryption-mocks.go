@@ -24,13 +24,14 @@ import (
 	"context"
 	"crypto/rand"
 	"fmt"
+	"google.golang.org/grpc/metadata"
 	"strings"
 
-	"google.golang.org/grpc"
 	"github.com/micro/go-micro/errors"
 	"github.com/pydio/cells/v4/common/crypto"
 	"github.com/pydio/cells/v4/common/proto/encryption"
 	json "github.com/pydio/cells/v4/x/jsonx"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -131,6 +132,26 @@ func (sc *mockSetNodeInfoStream) Send(request *encryption.SetNodeInfoRequest) er
 type mockSendBlockStreamClient struct {
 	inStream  chan interface{}
 	outStream chan interface{}
+}
+
+func (sc *mockSendBlockStreamClient) CloseAndRecv() (*encryption.SetNodeInfoResponse, error) {
+	panic("implement me")
+}
+
+func (sc *mockSendBlockStreamClient) Header() (metadata.MD, error) {
+	panic("implement me")
+}
+
+func (sc *mockSendBlockStreamClient) Trailer() metadata.MD {
+	panic("implement me")
+}
+
+func (sc *mockSendBlockStreamClient) CloseSend() error {
+	panic("implement me")
+}
+
+func (sc *mockSendBlockStreamClient) Context() context.Context {
+	panic("implement me")
 }
 
 func (sc *mockSendBlockStreamClient) SendMsg(msg interface{}) error {

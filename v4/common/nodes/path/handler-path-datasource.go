@@ -37,29 +37,29 @@ import (
 
 func WithDatasource() nodes.Option {
 	return func(options *nodes.RouterOptions) {
-		options.Wrappers = append(options.Wrappers, NewPathDataSourceHandler())
+		options.Wrappers = append(options.Wrappers, newDataSourceHandler())
 	}
 }
 
-func NewPathDataSourceHandler() *PathDataSourceHandler {
-	bt := &PathDataSourceHandler{}
+func newDataSourceHandler() *DataSourceHandler {
+	bt := &DataSourceHandler{}
 	bt.InputMethod = bt.updateInputBranch
 	bt.OutputMethod = bt.updateOutputNode
 	return bt
 }
 
-// PathDataSourceHandler is an AbstractBranchFilter adding/extracting datasource name from the path.
-type PathDataSourceHandler struct {
-	abstract.AbstractBranchFilter
+// DataSourceHandler is an BranchFilter adding/extracting datasource name from the path.
+type DataSourceHandler struct {
+	abstract.BranchFilter
 }
 
-func (h *PathDataSourceHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	h.Next = c
-	h.ClientsPool = options.Pool
-	return h
+func (v *DataSourceHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+	v.Next = c
+	v.ClientsPool = options.Pool
+	return v
 }
 
-func (v *PathDataSourceHandler) updateInputBranch(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
+func (v *DataSourceHandler) updateInputBranch(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
 
 	branchInfo, ok := nodes.GetBranchInfo(ctx, identifier)
 	if !ok {
@@ -132,7 +132,7 @@ func (v *PathDataSourceHandler) updateInputBranch(ctx context.Context, node *tre
 
 }
 
-func (v *PathDataSourceHandler) updateOutputNode(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
+func (v *DataSourceHandler) updateOutputNode(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
 
 	// Reload DS info - may be necessary for outputFiltering case
 	if branchInfo, ok := nodes.GetBranchInfo(ctx, identifier); (!ok || branchInfo.Name == "") && node.GetStringMeta(common.MetaNamespaceDatasourceName) != "" {

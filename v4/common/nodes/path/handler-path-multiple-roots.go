@@ -24,9 +24,9 @@ import (
 	"context"
 	"strings"
 
-	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
@@ -45,13 +45,13 @@ func WithMultipleRoots() nodes.Option {
 
 // MultipleRootsHandler handle special case of multiple-roots workspaces.
 type MultipleRootsHandler struct {
-	abstract.AbstractBranchFilter
+	abstract.BranchFilter
 }
 
-func (h *MultipleRootsHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	h.Next = c
-	h.ClientsPool = options.Pool
-	return h
+func (m *MultipleRootsHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+	m.Next = c
+	m.ClientsPool = options.Pool
+	return m
 }
 
 func NewPathMultipleRootsHandler() *MultipleRootsHandler {
@@ -183,7 +183,7 @@ func (m *MultipleRootsHandler) ListNodes(ctx context.Context, in *tree.ListNodes
 		return streamer, nil
 	}
 	in.Node = out
-	return m.AbstractBranchFilter.ListNodes(ctx, in, opts...)
+	return m.BranchFilter.ListNodes(ctx, in, opts...)
 
 }
 
@@ -220,6 +220,6 @@ func (m *MultipleRootsHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRe
 		return &tree.ReadNodeResponse{Success: true, Node: fakeNode}, nil
 	}
 	in.Node = out
-	return m.AbstractBranchFilter.ReadNode(ctx, in, opts...)
+	return m.BranchFilter.ReadNode(ctx, in, opts...)
 
 }

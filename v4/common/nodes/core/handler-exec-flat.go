@@ -24,14 +24,15 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
+	defaults "github.com/pydio/cells/v4/common/micro"
 	"io"
 	"strconv"
 	"strings"
 
-	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
@@ -41,7 +42,6 @@ import (
 	"github.com/pydio/cells/v4/common/proto/encryption"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	"github.com/pydio/cells/v4/common/registry"
 	context2 "github.com/pydio/cells/v4/common/utils/context"
 )
 
@@ -55,7 +55,7 @@ var keyClient encryption.NodeKeyManagerClient
 
 // FlatStorageHandler intercepts request to a flat-storage
 type FlatStorageHandler struct {
-	abstract.AbstractHandler
+	abstract.Handler
 }
 
 func (f *FlatStorageHandler) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
@@ -348,7 +348,7 @@ func (f *FlatStorageHandler) recomputeETag(ctx context.Context, identifier strin
 
 func (f *FlatStorageHandler) encPlainSizeRecompute(ctx context.Context, nodeUUID, dsName string) (int64, error) {
 	if keyClient == nil {
-		keyClient = encryption.NewNodeKeyManagerClient(registry.GetClient(common.ServiceEncKey))
+		keyClient = encryption.NewNodeKeyManagerClient(defaults.NewClientConn(common.ServiceEncKey))
 	}
 	if resp, e := keyClient.GetNodePlainSize(ctx, &encryption.GetNodePlainSizeRequest{
 		NodeId: nodeUUID,

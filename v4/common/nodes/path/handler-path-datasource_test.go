@@ -37,7 +37,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 )
 
-func newTestHandlerBranchTranslator(pool *nodes.ClientsPool) (*PathDataSourceHandler, *nodes.HandlerMock) {
+func newTestHandlerBranchTranslator(pool *nodes.ClientsPool) (*DataSourceHandler, *nodes.HandlerMock) {
 
 	testRootNode := &tree.Node{
 		Uuid:      "root-node-uuid",
@@ -46,7 +46,7 @@ func newTestHandlerBranchTranslator(pool *nodes.ClientsPool) (*PathDataSourceHan
 	}
 	testRootNode.SetMeta(common.MetaNamespaceDatasourceName, "datasource")
 	testRootNode.SetMeta(common.MetaNamespaceDatasourcePath, "root")
-	b := NewPathDataSourceHandler()
+	b := newDataSourceHandler()
 	b.RootNodesCache = cache.New(1*time.Second, 10*time.Second)
 	b.RootNodesCache.Set("root-node-uuid", testRootNode, cache.DefaultExpiration)
 	mock := nodes.NewHandlerMock()
@@ -197,7 +197,7 @@ func TestBranchTranslator_ListNodes(t *testing.T) {
 			MetaStore: make(map[string]string),
 		}})
 		So(er, ShouldBeNil) // found
-		defer client.Close()
+		defer client.CloseSend()
 		for {
 			resp, e := client.Recv()
 			if e != nil {

@@ -85,7 +85,7 @@ func (m *VirtualNodesManager) Load(forceReload ...bool) {
 	}
 	log.Logger(context.Background()).Debug("Reloading virtual nodes to cache")
 	m.nodes = []*tree.Node{}
-	cli := docstore.NewDocStoreClient(common.ServiceGrpcNamespace_+common.ServiceDocStore, defaults.NewClient())
+	cli := docstore.NewDocStoreClient(defaults.NewClientConn(common.ServiceDocStore))
 	stream, e := cli.ListDocuments(context.Background(), &docstore.ListDocumentsRequest{
 		StoreID: common.DocStoreIdVirtualNodes,
 		Query:   &docstore.DocumentQuery{},
@@ -108,7 +108,7 @@ func (m *VirtualNodesManager) Load(forceReload ...bool) {
 		if er != nil {
 			log.Logger(context.Background()).Error("Cannot unmarshal data: "+data, zap.Error(er))
 		} else {
-			log.Logger(context.Background()).Debug("Loading virtual node: ", zap.Any("node", node))
+			log.Logger(context.Background()).Debug("Loading virtual node: ", zap.Any("node", &node))
 			m.nodes = append(m.nodes, &node)
 		}
 	}
@@ -301,7 +301,7 @@ func (m *VirtualNodesManager) resolvePathWithClaims(ctx context.Context, vNode *
 
 // copyRecycleRootAcl creates recycle_root ACL on newly created node
 func (m *VirtualNodesManager) copyRecycleRootAcl(ctx context.Context, vNode *tree.Node, resolved *tree.Node) error {
-	cl := idm.NewACLServiceClient(common.ServiceGrpcNamespace_+common.ServiceAcl, defaults.NewClient())
+	cl := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
 	// Check if vNode has this flag set
 	q, _ := anypb.New(&idm.ACLSingleQuery{
 		NodeIDs: []string{vNode.Uuid},
@@ -326,12 +326,11 @@ func (m *VirtualNodesManager) copyRecycleRootAcl(ctx context.Context, vNode *tre
 	if !has {
 		return nil
 	}
-	cl.CreateACL(ctx, &idm.CreateACLRequest{
+	_, er := cl.CreateACL(ctx, &idm.CreateACLRequest{
 		ACL: &idm.ACL{
 			NodeID: resolved.Uuid,
 			Action: permissions.AclRecycleRoot,
 		},
 	})
-
-	return nil
+	return er
 }

@@ -37,41 +37,41 @@ import (
 
 func WithLock() nodes.Option {
 	return func(options *nodes.RouterOptions) {
-		options.Wrappers = append(options.Wrappers, &AclLockFilter{})
+		options.Wrappers = append(options.Wrappers, &LockFilter{})
 	}
 }
 
-// AclLockFilter filters call by checking internal locks.
-type AclLockFilter struct {
-	abstract.AbstractHandler
+// LockFilter filters call by checking internal locks.
+type LockFilter struct {
+	abstract.Handler
 }
 
-func (a *AclLockFilter) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+func (a *LockFilter) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	a.Next = h
 	a.ClientsPool = options.Pool
 	return a
 }
 
 // UpdateNode synchronously and recursively performs a Move operation of a node
-// func (h *AclLockFilter) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
+// func (h *LockFilter) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 // 	log.Logger(ctx).Info("Going through the create lock during operation")
 // 	return h.next.CreateNode(ctx, in, opts...)
 // }
 
 // // DeleteNode synchronously and recursively delete a node
-// func (h *AclLockFilter) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
+// func (h *LockFilter) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 // 	log.Logger(ctx).Info("Going through the delete lock during operation")
 // 	return h.next.DeleteNode(ctx, in, opts...)
 // }
 
 // // UpdateNode synchronously and recursively performs a Move operation of a node
-// func (h *AclLockFilter) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
+// func (h *LockFilter) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 // 	log.Logger(ctx).Info("Going through the update lock during operation")
 // 	return h.next.UpdateNode(ctx, in, opts...)
 // }
 
 // PutObject check locks before allowing Put operation.
-func (a *AclLockFilter) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
+func (a *LockFilter) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
 	branchInfo, ok := nodes.GetBranchInfo(ctx, "in")
 	if !ok {
 		return a.Next.PutObject(ctx, node, reader, requestData)
@@ -82,19 +82,19 @@ func (a *AclLockFilter) PutObject(ctx context.Context, node *tree.Node, reader i
 		return 0, err
 	}
 
-	nodes := []*tree.Node{node}
+	nn := []*tree.Node{node}
 	for _, ancestorNodes := range branchInfo.AncestorsList {
-		nodes = append(nodes, ancestorNodes...)
+		nn = append(nn, ancestorNodes...)
 	}
 
-	if accessList.IsLocked(ctx, nodes...) {
+	if accessList.IsLocked(ctx, nn...) {
 		return 0, errors.New("parent.locked", "Node is currently locked", 423)
 	}
 
 	return a.Next.PutObject(ctx, node, reader, requestData)
 }
 
-func (a *AclLockFilter) MultipartCreate(ctx context.Context, node *tree.Node, requestData *models.MultipartRequestData) (string, error) {
+func (a *LockFilter) MultipartCreate(ctx context.Context, node *tree.Node, requestData *models.MultipartRequestData) (string, error) {
 	branchInfo, ok := nodes.GetBranchInfo(ctx, "in")
 	if !ok {
 		return a.Next.MultipartCreate(ctx, node, requestData)
@@ -105,12 +105,12 @@ func (a *AclLockFilter) MultipartCreate(ctx context.Context, node *tree.Node, re
 		return "", err
 	}
 
-	nodes := []*tree.Node{node}
+	nn := []*tree.Node{node}
 	for _, ancestorNodes := range branchInfo.AncestorsList {
-		nodes = append(nodes, ancestorNodes...)
+		nn = append(nn, ancestorNodes...)
 	}
 
-	if accessList.IsLocked(ctx, nodes...) {
+	if accessList.IsLocked(ctx, nn...) {
 		return "", errors.New("parent.locked", "Node is currently locked", 423)
 	}
 
@@ -119,7 +119,7 @@ func (a *AclLockFilter) MultipartCreate(ctx context.Context, node *tree.Node, re
 }
 
 // WrappedCanApply will perform checks on quota to make sure an operation is authorized
-func (a *AclLockFilter) WrappedCanApply(srcCtx context.Context, targetCtx context.Context, operation *tree.NodeChangeEvent) error {
+func (a *LockFilter) WrappedCanApply(srcCtx context.Context, targetCtx context.Context, operation *tree.NodeChangeEvent) error {
 
 	var node *tree.Node
 	var ctx context.Context
@@ -155,6 +155,6 @@ func (a *AclLockFilter) WrappedCanApply(srcCtx context.Context, targetCtx contex
 	return a.Next.WrappedCanApply(srcCtx, targetCtx, operation)
 }
 
-func (a *AclLockFilter) virtualResolver(ctx context.Context, node *tree.Node) (*tree.Node, bool) {
+func (a *LockFilter) virtualResolver(ctx context.Context, node *tree.Node) (*tree.Node, bool) {
 	return abstract.GetVirtualNodesManager().GetResolver(a.ClientsPool, false)(ctx, node)
 }

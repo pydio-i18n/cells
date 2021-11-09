@@ -37,14 +37,14 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 )
 
-type ArchiveWriter struct {
+type Writer struct {
 	Router nodes.Handler
 
 	// Optional filter when listing nodes to build the archive
-	WalkFilter nodes.WalkFilter
+	WalkFilter nodes.WalkFilterFunc
 }
 
-func (w *ArchiveWriter) commonRoot(nodes []*tree.Node) string {
+func (w *Writer) commonRoot(nodes []*tree.Node) string {
 
 	// TODO
 	// Assume nodes have same parent for now
@@ -57,7 +57,7 @@ func (w *ArchiveWriter) commonRoot(nodes []*tree.Node) string {
 }
 
 // ZipSelection creates a .zip archive from nodes selection
-func (w *ArchiveWriter) ZipSelection(ctx context.Context, output io.Writer, selection []*tree.Node, logsChannels ...chan string) (int64, error) {
+func (w *Writer) ZipSelection(ctx context.Context, output io.Writer, selection []*tree.Node, logsChannels ...chan string) (int64, error) {
 
 	z := zip.NewWriter(output)
 	defer z.Close()
@@ -76,7 +76,7 @@ func (w *ArchiveWriter) ZipSelection(ctx context.Context, output io.Writer, sele
 
 	log.Logger(ctx).Debug("ZipSelection", zap.String("parent", parentRoot), zap.Int("selection size", len(selection)))
 
-	filters := []nodes.WalkFilter{
+	filters := []nodes.WalkFilterFunc{
 		nodes.WalkFilterSkipPydioHiddenFile,
 		func(ctx context.Context, node *tree.Node) bool {
 			return node.Size > 0
@@ -152,7 +152,7 @@ func (w *ArchiveWriter) ZipSelection(ctx context.Context, output io.Writer, sele
 }
 
 // TarSelection creates a .tar or .tar.gz archive from nodes selection
-func (w *ArchiveWriter) TarSelection(ctx context.Context, output io.Writer, gzipFile bool, selection []*tree.Node, logsChannel ...chan string) (int64, error) {
+func (w *Writer) TarSelection(ctx context.Context, output io.Writer, gzipFile bool, selection []*tree.Node, logsChannel ...chan string) (int64, error) {
 
 	var tw *tar.Writer
 	var totalSizeWritten int64

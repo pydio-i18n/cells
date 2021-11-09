@@ -26,8 +26,8 @@ import (
 	"strings"
 	"time"
 
-	"google.golang.org/grpc"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
@@ -39,24 +39,24 @@ import (
 func WithFolderTasks() nodes.Option {
 	return func(options *nodes.RouterOptions) {
 		if options.SynchronousTasks {
-			options.Wrappers = append(options.Wrappers, &SyncFolderTasksHandler{})
+			options.Wrappers = append(options.Wrappers, &FolderTasksHandler{})
 		}
 	}
 }
 
-// SyncFolderTasksHandler is a handler implementing synchronous operations for moving or deleting folders
-type SyncFolderTasksHandler struct {
-	abstract.AbstractHandler
+// FolderTasksHandler is a handler implementing synchronous operations for moving or deleting folders
+type FolderTasksHandler struct {
+	abstract.Handler
 }
 
-func (h *SyncFolderTasksHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+func (h *FolderTasksHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	h.Next = c
 	h.ClientsPool = options.Pool
 	return h
 }
 
 // DeleteNode synchronously and recursively delete a node
-func (h *SyncFolderTasksHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
+func (h *FolderTasksHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 
 	bi, _ := nodes.GetBranchInfo(ctx, "in")
 	isFlat := bi.FlatStorage
@@ -110,7 +110,7 @@ func (h *SyncFolderTasksHandler) DeleteNode(ctx context.Context, in *tree.Delete
 }
 
 // UpdateNode synchronously and recursively performs a Move operation of a node
-func (h *SyncFolderTasksHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
+func (h *FolderTasksHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 
 	source := in.From
 	target := in.To
@@ -122,7 +122,7 @@ func (h *SyncFolderTasksHandler) UpdateNode(ctx context.Context, in *tree.Update
 		ctx = nodes.WithBranchInfo(ctx, "in", f)
 		// Make sure DATASOURCE_NAME is set
 		if source.GetStringMeta(common.MetaNamespaceDatasourceName) == "" {
-			log.Logger(ctx).Info("[SyncFolderTasksHandler] Updating DS name in Source")
+			log.Logger(ctx).Info("[FolderTasksHandler] Updating DS name in Source")
 			source.SetMeta(common.MetaNamespaceDatasourceName, f.Name)
 		}
 	}

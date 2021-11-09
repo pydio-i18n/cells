@@ -69,7 +69,7 @@ func GetSessionID(ctx context.Context) (string, bool) {
 func extractDSFlat(ctx context.Context, handler Handler, sourceNode, targetNode *tree.Node) (innerFlat, srcFlat, targetFlat bool) {
 	if router, ok := handler.(Client); ok {
 		// We passed a router, call is external, use WrapCallback
-		router.WrapCallback(func(inputFilter NodeFilter, outputFilter NodeFilter) error {
+		router.WrapCallback(func(inputFilter FilterFunc, outputFilter FilterFunc) error {
 			srcCtx, _, _ := inputFilter(ctx, sourceNode, "from")
 			tgtCtx, _, _ := inputFilter(ctx, targetNode, "to")
 			srcDS, _ := GetBranchInfo(srcCtx, "from")

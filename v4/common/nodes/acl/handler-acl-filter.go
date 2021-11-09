@@ -25,8 +25,8 @@ import (
 	"fmt"
 	"io"
 
-	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/errors"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/nodes"
@@ -42,23 +42,23 @@ var pathNotWriteable = errors.Forbidden("path.not.writeable", "path is not write
 func WithFilter() nodes.Option {
 	return func(options *nodes.RouterOptions) {
 		if !options.AdminView {
-			options.Wrappers = append(options.Wrappers, &AclFilterHandler{})
+			options.Wrappers = append(options.Wrappers, &FilterHandler{})
 		}
 	}
 }
 
-// AclFilterHandler checks for read/write permissions depending on the call using the context AccessList.
-type AclFilterHandler struct {
-	abstract.AbstractHandler
+// FilterHandler checks for read/write permissions depending on the call using the context AccessList.
+type FilterHandler struct {
+	abstract.Handler
 }
 
-func (a *AclFilterHandler) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+func (a *FilterHandler) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	a.Next = h
 	a.ClientsPool = options.Pool
 	return a
 }
 
-func (a *AclFilterHandler) skipContext(ctx context.Context, identifier ...string) bool {
+func (a *FilterHandler) skipContext(ctx context.Context, identifier ...string) bool {
 	id := "in"
 	if len(identifier) > 0 {
 		id = identifier[0]
@@ -68,7 +68,7 @@ func (a *AclFilterHandler) skipContext(ctx context.Context, identifier ...string
 }
 
 // ReadNode checks if node is readable and forward to next middleware.
-func (a *AclFilterHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
+func (a *FilterHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	if a.skipContext(ctx) {
 		return a.Next.ReadNode(ctx, in, opts...)
 	}
@@ -106,7 +106,7 @@ func (a *AclFilterHandler) ReadNode(ctx context.Context, in *tree.ReadNodeReques
 }
 
 // ListNodes filters list results with ACLs permissions
-func (a *AclFilterHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (streamer tree.NodeProvider_ListNodesClient, e error) {
+func (a *FilterHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (streamer tree.NodeProvider_ListNodesClient, e error) {
 	if a.skipContext(ctx) {
 		return a.Next.ListNodes(ctx, in, opts...)
 	}
@@ -158,7 +158,7 @@ func (a *AclFilterHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequ
 	return s, nil
 }
 
-func (a *AclFilterHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
+func (a *FilterHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	if a.skipContext(ctx) {
 		return a.Next.CreateNode(ctx, in, opts...)
 	}
@@ -173,7 +173,7 @@ func (a *AclFilterHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRe
 	return a.Next.CreateNode(ctx, in, opts...)
 }
 
-func (a *AclFilterHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
+func (a *FilterHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 	if a.skipContext(ctx) {
 		return a.Next.UpdateNode(ctx, in, opts...)
 	}
@@ -195,7 +195,7 @@ func (a *AclFilterHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRe
 	return a.Next.UpdateNode(ctx, in, opts...)
 }
 
-func (a *AclFilterHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
+func (a *FilterHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 	if a.skipContext(ctx) {
 		return a.Next.DeleteNode(ctx, in, opts...)
 	}
@@ -213,7 +213,7 @@ func (a *AclFilterHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRe
 	return a.Next.DeleteNode(ctx, in, opts...)
 }
 
-func (a *AclFilterHandler) GetObject(ctx context.Context, node *tree.Node, requestData *models.GetRequestData) (io.ReadCloser, error) {
+func (a *FilterHandler) GetObject(ctx context.Context, node *tree.Node, requestData *models.GetRequestData) (io.ReadCloser, error) {
 	if a.skipContext(ctx) {
 		return a.Next.GetObject(ctx, node, requestData)
 	}
@@ -232,7 +232,7 @@ func (a *AclFilterHandler) GetObject(ctx context.Context, node *tree.Node, reque
 	return a.Next.GetObject(ctx, node, requestData)
 }
 
-func (a *AclFilterHandler) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
+func (a *FilterHandler) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
 	if a.skipContext(ctx) {
 		return a.Next.PutObject(ctx, node, reader, requestData)
 	}
@@ -254,7 +254,7 @@ func (a *AclFilterHandler) PutObject(ctx context.Context, node *tree.Node, reade
 	return a.Next.PutObject(ctx, node, reader, requestData)
 }
 
-func (a *AclFilterHandler) MultipartCreate(ctx context.Context, node *tree.Node, requestData *models.MultipartRequestData) (string, error) {
+func (a *FilterHandler) MultipartCreate(ctx context.Context, node *tree.Node, requestData *models.MultipartRequestData) (string, error) {
 	if a.skipContext(ctx) {
 		return a.Next.MultipartCreate(ctx, node, requestData)
 	}
@@ -273,7 +273,7 @@ func (a *AclFilterHandler) MultipartCreate(ctx context.Context, node *tree.Node,
 	return a.Next.MultipartCreate(ctx, node, requestData)
 }
 
-func (a *AclFilterHandler) CopyObject(ctx context.Context, from *tree.Node, to *tree.Node, requestData *models.CopyRequestData) (int64, error) {
+func (a *FilterHandler) CopyObject(ctx context.Context, from *tree.Node, to *tree.Node, requestData *models.CopyRequestData) (int64, error) {
 	if a.skipContext(ctx) {
 		return a.Next.CopyObject(ctx, from, to, requestData)
 	}
@@ -302,7 +302,7 @@ func (a *AclFilterHandler) CopyObject(ctx context.Context, from *tree.Node, to *
 	return a.Next.CopyObject(ctx, from, to, requestData)
 }
 
-func (a *AclFilterHandler) WrappedCanApply(srcCtx context.Context, targetCtx context.Context, operation *tree.NodeChangeEvent) error {
+func (a *FilterHandler) WrappedCanApply(srcCtx context.Context, targetCtx context.Context, operation *tree.NodeChangeEvent) error {
 
 	var rwErr error
 	switch operation.GetType() {
@@ -343,7 +343,7 @@ func (a *AclFilterHandler) WrappedCanApply(srcCtx context.Context, targetCtx con
 	return a.Next.WrappedCanApply(srcCtx, targetCtx, operation)
 }
 
-func (a *AclFilterHandler) checkPerm(c context.Context, node *tree.Node, identifier string, orParents bool, read bool, write bool, explicitFlags ...permissions.BitmaskFlag) error {
+func (a *FilterHandler) checkPerm(c context.Context, node *tree.Node, identifier string, orParents bool, read bool, write bool, explicitFlags ...permissions.BitmaskFlag) error {
 
 	val := c.Value(ctxUserAccessListKey{})
 	if val == nil {
@@ -367,7 +367,7 @@ func (a *AclFilterHandler) checkPerm(c context.Context, node *tree.Node, identif
 
 }
 
-func (a *AclFilterHandler) recheckParents(c context.Context, originalError error, node *tree.Node, read, write bool) error {
+func (a *FilterHandler) recheckParents(c context.Context, originalError error, node *tree.Node, read, write bool) error {
 
 	if errors.Parse(originalError.Error()).Code != 404 {
 		return originalError

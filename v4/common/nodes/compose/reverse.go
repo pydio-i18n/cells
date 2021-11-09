@@ -74,39 +74,6 @@ func ReverseClient(oo ...nodes.Option) *Reverse {
 	}
 }
 
-// NewRouterEventFilter creates a new EventFilter properly initialized
-/*
-func NewRouterEventFilter(options nodes.RouterOptions) *Reverse {
-
-	handlers := []nodes.Handler{
-		acl.NewAccessListHandler(options.AdminView),
-		path.NewPathWorkspaceHandler(),
-		path.NewPathMultipleRootsHandler(),
-	}
-	if !options.AdminView {
-		handlers = append(handlers, virtual.NewVirtualNodesHandler())
-	}
-	handlers = append(handlers,
-		path.NewWorkspaceRootResolver(),
-		path.NewPathDataSourceHandler(),
-		archive.NewArchiveHandler(),     // Catch "GET" request on folder.zip and create archive on-demand
-		&put.PutHandler{},               // Handler adding a node precreation on PUT file request
-		&encryption.EncryptionHandler{}, // Handler retrieve encryption materials from encryption service
-		&version.VersionHandler{},
-		&core.Executor{},
-	)
-	pool := nodes.NewClientsPool(options.WatchRegistry)
-	r := NewRouter(pool, handlers)
-	re := &Reverse{
-		Client:     r,
-		rootsCache: cache.New(120*time.Second, 10*time.Minute),
-	}
-	return re
-
-}
-
-*/
-
 // WorkspaceCanSeeNode will check workspaces roots to see if a node in below one of them
 func (r *Reverse) WorkspaceCanSeeNode(ctx context.Context, accessList *permissions.AccessList, workspace *idm.Workspace, node *tree.Node) (*tree.Node, bool) {
 	if node == nil {
@@ -136,7 +103,7 @@ func (r *Reverse) WorkspaceCanSeeNode(ctx context.Context, accessList *permissio
 				}
 			}
 			newNode := node.Clone()
-			r.WrapCallback(func(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter) error {
+			r.WrapCallback(func(inputFilter nodes.FilterFunc, outputFilter nodes.FilterFunc) error {
 				branchInfo := nodes.BranchInfo{}
 				branchInfo.Workspace = *workspace
 				branchInfo.Root = parent

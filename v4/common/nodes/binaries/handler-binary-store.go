@@ -29,9 +29,9 @@ import (
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/abstract"
 
-	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
@@ -41,9 +41,9 @@ import (
 	context2 "github.com/pydio/cells/v4/common/utils/context"
 )
 
-func WithBinaryStore(name string, transparentGet, allowPut, allowAnonRead bool) nodes.Option {
+func WithStore(name string, transparentGet, allowPut, allowAnonRead bool) nodes.Option {
 	return func(options *nodes.RouterOptions) {
-		options.Wrappers = append(options.Wrappers, &BinaryStoreHandler{
+		options.Wrappers = append(options.Wrappers, &Handler{
 			StoreName:      name,
 			TransparentGet: transparentGet,
 			AllowPut:       allowPut,
@@ -52,27 +52,27 @@ func WithBinaryStore(name string, transparentGet, allowPut, allowAnonRead bool) 
 	}
 }
 
-// BinaryStoreHandler captures put/get calls to an internal storage
-type BinaryStoreHandler struct {
-	abstract.AbstractHandler
+// Handler captures put/get calls to an internal storage
+type Handler struct {
+	abstract.Handler
 	StoreName      string
 	TransparentGet bool
 	AllowPut       bool
 	AllowAnonRead  bool
 }
 
-func (a *BinaryStoreHandler) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+func (a *Handler) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	a.Next = h
 	a.ClientsPool = options.Pool
 	return a
 }
 
-func (a *BinaryStoreHandler) isStorePath(nodePath string) bool {
+func (a *Handler) isStorePath(nodePath string) bool {
 	parts := strings.Split(strings.Trim(nodePath, "/"), "/")
 	return len(parts) > 0 && parts[0] == a.StoreName
 }
 
-func (a *BinaryStoreHandler) checkContextForAnonRead(ctx context.Context) error {
+func (a *Handler) checkContextForAnonRead(ctx context.Context) error {
 	if u := ctx.Value(common.PydioContextUserKey); (u == nil || u == common.PydioS3AnonUsername) && !a.AllowAnonRead {
 		return errors.Forbidden(nodes.VIEWS_LIBRARY_NAME, "you are not allowed to access this content")
 	}
@@ -80,7 +80,7 @@ func (a *BinaryStoreHandler) checkContextForAnonRead(ctx context.Context) error 
 }
 
 // ListNodes does not display content
-func (a *BinaryStoreHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (c tree.NodeProvider_ListNodesClient, e error) {
+func (a *Handler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (c tree.NodeProvider_ListNodesClient, e error) {
 	if a.isStorePath(in.Node.Path) {
 		emptyStreamer := nodes.NewWrappingStreamer()
 		emptyStreamer.CloseSend()
@@ -90,7 +90,7 @@ func (a *BinaryStoreHandler) ListNodes(ctx context.Context, in *tree.ListNodesRe
 }
 
 // ReadNode Node Info & Node Content : send by UUID,
-func (a *BinaryStoreHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
+func (a *Handler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	if a.isStorePath(in.Node.Path) {
 		source, er := a.ClientsPool.GetDataSourceInfo(a.StoreName)
 		if er != nil {
@@ -139,7 +139,7 @@ func (a *BinaryStoreHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequ
 	return a.Next.ReadNode(ctx, in, opts...)
 }
 
-func (a *BinaryStoreHandler) GetObject(ctx context.Context, node *tree.Node, requestData *models.GetRequestData) (io.ReadCloser, error) {
+func (a *Handler) GetObject(ctx context.Context, node *tree.Node, requestData *models.GetRequestData) (io.ReadCloser, error) {
 	if a.isStorePath(node.Path) {
 		source, er := a.ClientsPool.GetDataSourceInfo(a.StoreName)
 		if e := a.checkContextForAnonRead(ctx); e != nil {
@@ -167,21 +167,21 @@ func (a *BinaryStoreHandler) GetObject(ctx context.Context, node *tree.Node, req
 // THIS STORE IS NOT WRITEABLE
 ///////////////////////////////
 
-func (a *BinaryStoreHandler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
+func (a *Handler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, opts ...grpc.CallOption) (*tree.CreateNodeResponse, error) {
 	if a.isStorePath(in.Node.Path) {
 		return nil, errors.Forbidden(nodes.VIEWS_LIBRARY_NAME, "Forbidden store")
 	}
 	return a.Next.CreateNode(ctx, in, opts...)
 }
 
-func (a *BinaryStoreHandler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
+func (a *Handler) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, opts ...grpc.CallOption) (*tree.UpdateNodeResponse, error) {
 	if a.isStorePath(in.From.Path) || a.isStorePath(in.To.Path) {
 		return nil, errors.Forbidden(nodes.VIEWS_LIBRARY_NAME, "Forbidden store")
 	}
 	return a.Next.UpdateNode(ctx, in, opts...)
 }
 
-func (a *BinaryStoreHandler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
+func (a *Handler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 	var dsKey string
 	var source nodes.LoadedSource
 	if a.isStorePath(in.Node.Path) {
@@ -211,7 +211,7 @@ func (a *BinaryStoreHandler) DeleteNode(ctx context.Context, in *tree.DeleteNode
 	return r, e
 }
 
-func (a *BinaryStoreHandler) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
+func (a *Handler) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
 	if a.isStorePath(node.Path) {
 		if !a.AllowPut {
 			return 0, errors.Forbidden(nodes.VIEWS_LIBRARY_NAME, "Forbidden store")
@@ -231,7 +231,7 @@ func (a *BinaryStoreHandler) PutObject(ctx context.Context, node *tree.Node, rea
 	return a.Next.PutObject(ctx, node, reader, requestData)
 }
 
-func (a *BinaryStoreHandler) CopyObject(ctx context.Context, from *tree.Node, to *tree.Node, requestData *models.CopyRequestData) (int64, error) {
+func (a *Handler) CopyObject(ctx context.Context, from *tree.Node, to *tree.Node, requestData *models.CopyRequestData) (int64, error) {
 	if a.isStorePath(from.Path) || a.isStorePath(to.Path) {
 		return 0, errors.Forbidden(nodes.VIEWS_LIBRARY_NAME, "Forbidden store")
 	}

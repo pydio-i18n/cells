@@ -28,8 +28,8 @@ import (
 
 	"github.com/pydio/cells/v4/common/nodes"
 
-	"google.golang.org/grpc"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
@@ -40,31 +40,31 @@ import (
 
 func WithVersions() nodes.Option {
 	return func(options *nodes.RouterOptions) {
-		options.Wrappers = append(options.Wrappers, &VersionHandler{})
+		options.Wrappers = append(options.Wrappers, &Handler{})
 	}
 }
 
-// VersionHandler capture ListNodes and GetObject calls to find existing nodes versions and retrieve them.
-type VersionHandler struct {
-	abstract.AbstractHandler
+// Handler capture ListNodes and GetObject calls to find existing nodes versions and retrieve them.
+type Handler struct {
+	abstract.Handler
 	versionClient tree.NodeVersionerClient
 }
 
-func (h *VersionHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	h.Next = c
-	h.ClientsPool = options.Pool
-	return h
+func (v *Handler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+	v.Next = c
+	v.ClientsPool = options.Pool
+	return v
 }
 
-func (v *VersionHandler) getVersionClient() tree.NodeVersionerClient {
+func (v *Handler) getVersionClient() tree.NodeVersionerClient {
 	if v.versionClient == nil {
-		v.versionClient = tree.NewNodeVersionerClient(common.ServiceGrpcNamespace_+common.ServiceVersions, defaults.NewClient())
+		v.versionClient = tree.NewNodeVersionerClient(defaults.NewClientConn(common.ServiceVersions))
 	}
 	return v.versionClient
 }
 
 // ListNodes creates a list of nodes if the Versions are required
-func (v *VersionHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (v *Handler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 	ctx, err := v.WrapContext(ctx)
 	if err != nil {
 		return nil, err
@@ -114,7 +114,7 @@ func (v *VersionHandler) ListNodes(ctx context.Context, in *tree.ListNodesReques
 }
 
 // ReadNode retrieves information about a specific version
-func (v *VersionHandler) ReadNode(ctx context.Context, req *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
+func (v *Handler) ReadNode(ctx context.Context, req *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 
 	if vId := req.Node.GetStringMeta("versionId"); vId != "" {
 		// Load Info from Version Service?
@@ -144,7 +144,7 @@ func (v *VersionHandler) ReadNode(ctx context.Context, req *tree.ReadNodeRequest
 }
 
 // GetObject redirects to Version Store if request contains a VersionID
-func (v *VersionHandler) GetObject(ctx context.Context, node *tree.Node, requestData *models.GetRequestData) (io.ReadCloser, error) {
+func (v *Handler) GetObject(ctx context.Context, node *tree.Node, requestData *models.GetRequestData) (io.ReadCloser, error) {
 	ctx, err := v.WrapContext(ctx)
 	if err != nil {
 		return nil, err
@@ -183,7 +183,7 @@ func (v *VersionHandler) GetObject(ctx context.Context, node *tree.Node, request
 }
 
 // CopyObject intercept request with a SrcVersionId to read original from Version Store
-func (v *VersionHandler) CopyObject(ctx context.Context, from *tree.Node, to *tree.Node, requestData *models.CopyRequestData) (int64, error) {
+func (v *Handler) CopyObject(ctx context.Context, from *tree.Node, to *tree.Node, requestData *models.CopyRequestData) (int64, error) {
 	ctx, err := v.WrapContext(ctx)
 	if err != nil {
 		return 0, err

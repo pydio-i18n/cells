@@ -27,9 +27,9 @@ import (
 	"strings"
 	"time"
 
-	"google.golang.org/grpc"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
@@ -54,32 +54,32 @@ type selectionProvider interface {
 	deleteSelectionByUuid(ctx context.Context, selectionUuid string)
 }
 
-// ArchiveHandler dynamically create archives when downloading folders and supports archive contents listing.
-type ArchiveHandler struct {
-	abstract.AbstractHandler
+// Handler dynamically create archives when downloading folders and supports archive contents listing.
+type Handler struct {
+	abstract.Handler
 	selectionProvider selectionProvider
 }
 
-func (a *ArchiveHandler) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
+func (a *Handler) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
 	a.Next = h
 	a.ClientsPool = options.Pool
 	return a
 }
 
-// NewArchiveHandler creates a new ArchiveHandler
-func NewArchiveHandler() *ArchiveHandler {
-	a := &ArchiveHandler{}
+// NewArchiveHandler creates a new Handler
+func NewArchiveHandler() *Handler {
+	a := &Handler{}
 	a.selectionProvider = a
 	return a
 }
 
 // GetObject overrides the response of GetObject if it is sent on a folder key : create an archive on-the-fly.
-func (a *ArchiveHandler) GetObject(ctx context.Context, node *tree.Node, requestData *models.GetRequestData) (io.ReadCloser, error) {
+func (a *Handler) GetObject(ctx context.Context, node *tree.Node, requestData *models.GetRequestData) (io.ReadCloser, error) {
 
 	originalPath := node.Path
 
 	if ok, format, archivePath, innerPath := a.isArchivePath(originalPath); ok && len(innerPath) > 0 {
-		extractor := &ArchiveReader{Router: a.Next}
+		extractor := &Reader{Router: a.Next}
 		statResp, _ := a.Next.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Path: archivePath}})
 		archiveNode := statResp.Node
 		log.Logger(ctx).Debug("[ARCHIVE:GET] "+archivePath+" -- "+innerPath, zap.Any("archiveNode", archiveNode))
@@ -142,12 +142,12 @@ func (a *ArchiveHandler) GetObject(ctx context.Context, node *tree.Node, request
 }
 
 // ReadNode overrides the response of ReadNode to create a fake stat for archive file
-func (a *ArchiveHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
+func (a *Handler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	originalPath := in.Node.Path
 
 	if ok, format, archivePath, innerPath := a.isArchivePath(originalPath); ok && len(innerPath) > 0 {
 		log.Logger(ctx).Debug("[ARCHIVE:READ] " + originalPath + " => " + archivePath + " -- " + innerPath)
-		extractor := &ArchiveReader{Router: a.Next}
+		extractor := &Reader{Router: a.Next}
 		statResp, _ := a.Next.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Path: archivePath}})
 		archiveNode := statResp.Node
 
@@ -205,10 +205,10 @@ func (a *ArchiveHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest,
 	return response, err
 }
 
-func (a *ArchiveHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
+func (a *Handler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (tree.NodeProvider_ListNodesClient, error) {
 
 	if ok, format, archivePath, innerPath := a.isArchivePath(in.Node.Path); ok {
-		extractor := &ArchiveReader{Router: a.Next}
+		extractor := &Reader{Router: a.Next}
 		statResp, e := a.Next.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Path: archivePath}})
 		if e != nil {
 			return nil, e
@@ -243,7 +243,7 @@ func (a *ArchiveHandler) ListNodes(ctx context.Context, in *tree.ListNodesReques
 			return streamer, err
 		}
 		go func() {
-			defer streamer.Close()
+			defer streamer.CloseSend()
 			for _, child := range children {
 				log.Logger(ctx).Debug("[ARCHIVE:LISTNODE]", zap.String("path", child.Path))
 				streamer.Send(&tree.ListNodesResponse{Node: child})
@@ -255,7 +255,7 @@ func (a *ArchiveHandler) ListNodes(ctx context.Context, in *tree.ListNodesReques
 	return a.Next.ListNodes(ctx, in, opts...)
 }
 
-func (a *ArchiveHandler) isArchivePath(nodePath string) (ok bool, format string, archivePath string, innerPath string) {
+func (a *Handler) isArchivePath(nodePath string) (ok bool, format string, archivePath string, innerPath string) {
 	formats := []string{"zip", "tar", "tar.gz"}
 	for _, f := range formats {
 		test := strings.SplitN(nodePath, "."+f+"/", 2)
@@ -269,7 +269,7 @@ func (a *ArchiveHandler) isArchivePath(nodePath string) (ok bool, format string,
 	return false, "", "", ""
 }
 
-func (a *ArchiveHandler) selectionFakeName(nodePath string) string {
+func (a *Handler) selectionFakeName(nodePath string) string {
 	if strings.HasSuffix(nodePath, "-selection.zip") || strings.HasSuffix(nodePath, "-selection.tar") || strings.HasSuffix(nodePath, "-selection.tar.gz") {
 		fName := path.Base(nodePath)
 		return strings.TrimSuffix(strings.TrimSuffix(strings.TrimSuffix(fName, "-selection.zip"), "-selection.tar.gz"), "-selection.tar")
@@ -277,7 +277,7 @@ func (a *ArchiveHandler) selectionFakeName(nodePath string) string {
 	return ""
 }
 
-func (a *ArchiveHandler) archiveFolderName(nodePath string) string {
+func (a *Handler) archiveFolderName(nodePath string) string {
 	if strings.HasSuffix(nodePath, ".zip") || strings.HasSuffix(nodePath, ".tar") || strings.HasSuffix(nodePath, ".tar.gz") {
 		fName := strings.TrimSuffix(strings.TrimSuffix(strings.TrimSuffix(nodePath, ".zip"), ".gz"), ".tar")
 		return strings.Trim(fName, "/")
@@ -285,7 +285,7 @@ func (a *ArchiveHandler) archiveFolderName(nodePath string) string {
 	return ""
 }
 
-func (a *ArchiveHandler) archiveFakeStat(ctx context.Context, nodePath string) (node *tree.Node, e error) {
+func (a *Handler) archiveFakeStat(ctx context.Context, nodePath string) (node *tree.Node, e error) {
 
 	if noExt := a.archiveFolderName(nodePath); noExt != "" {
 
@@ -305,7 +305,7 @@ func (a *ArchiveHandler) archiveFakeStat(ctx context.Context, nodePath string) (
 
 }
 
-func (a *ArchiveHandler) generateArchiveFromFolder(ctx context.Context, writer io.Writer, nodePath string) (bool, error) {
+func (a *Handler) generateArchiveFromFolder(ctx context.Context, writer io.Writer, nodePath string) (bool, error) {
 
 	if noExt := a.archiveFolderName(nodePath); noExt != "" {
 
@@ -321,9 +321,9 @@ func (a *ArchiveHandler) generateArchiveFromFolder(ctx context.Context, writer i
 }
 
 // generateArchiveFromSelection Create a zip/tar/tar.gz on the fly
-func (a *ArchiveHandler) generateArchiveFromSelection(ctx context.Context, writer io.Writer, selection []*tree.Node, format string) error {
+func (a *Handler) generateArchiveFromSelection(ctx context.Context, writer io.Writer, selection []*tree.Node, format string) error {
 
-	archiveWriter := &ArchiveWriter{
+	archiveWriter := &Writer{
 		Router: a,
 	}
 	var err error
@@ -343,10 +343,10 @@ func (a *ArchiveHandler) generateArchiveFromSelection(ctx context.Context, write
 }
 
 // getSelectionByUuid loads a selection stored in DocStore service by its id.
-func (a *ArchiveHandler) getSelectionByUuid(ctx context.Context, selectionUuid string) (bool, []*tree.Node, error) {
+func (a *Handler) getSelectionByUuid(ctx context.Context, selectionUuid string) (bool, []*tree.Node, error) {
 
 	var data []*tree.Node
-	dcClient := docstore.NewDocStoreClient(common.ServiceGrpcNamespace_+common.ServiceDocStore, defaults.NewClient())
+	dcClient := docstore.NewDocStoreClient(defaults.NewClientConn(common.ServiceDocStore))
 	if resp, e := dcClient.GetDocument(ctx, &docstore.GetDocumentRequest{
 		StoreID:    common.DocStoreIdSelections,
 		DocumentID: selectionUuid,
@@ -368,8 +368,8 @@ func (a *ArchiveHandler) getSelectionByUuid(ctx context.Context, selectionUuid s
 }
 
 // deleteSelectionByUuid Delete selection
-func (a *ArchiveHandler) deleteSelectionByUuid(ctx context.Context, selectionUuid string) {
-	dcClient := docstore.NewDocStoreClient(common.ServiceGrpcNamespace_+common.ServiceDocStore, defaults.NewClient())
+func (a *Handler) deleteSelectionByUuid(ctx context.Context, selectionUuid string) {
+	dcClient := docstore.NewDocStoreClient(defaults.NewClientConn(common.ServiceDocStore))
 	_, e := dcClient.DeleteDocuments(ctx, &docstore.DeleteDocumentsRequest{
 		StoreID:    common.DocStoreIdSelections,
 		DocumentID: selectionUuid,

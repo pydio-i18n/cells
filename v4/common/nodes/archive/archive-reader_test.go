@@ -74,7 +74,7 @@ func getTempArchive(formatOrName string) (*tree.Node, string, error) {
 	return archiveNode, tmpArchive, nil
 }
 
-func TestArchiveReader_ListChildren(t *testing.T) {
+func TestReader_ListChildren(t *testing.T) {
 
 	Convey("List Children Zip", t, func() {
 
@@ -82,7 +82,7 @@ func TestArchiveReader_ListChildren(t *testing.T) {
 		So(e, ShouldBeNil)
 		defer os.Remove(tmpArchive)
 
-		archiveReader := &ArchiveReader{
+		archiveReader := &Reader{
 			Router: nodes.NewHandlerMock(),
 		}
 
@@ -100,7 +100,7 @@ func TestArchiveReader_ListChildren(t *testing.T) {
 		So(e, ShouldBeNil)
 		defer os.Remove(tmpArchive)
 
-		archiveReader := &ArchiveReader{
+		archiveReader := &Reader{
 			Router: nodes.NewHandlerMock(),
 		}
 
@@ -124,7 +124,7 @@ func TestArchiveReader_ListChildren(t *testing.T) {
 		So(e, ShouldBeNil)
 		defer os.Remove(tmpArchive)
 
-		archiveReader := &ArchiveReader{
+		archiveReader := &Reader{
 			Router: nodes.NewHandlerMock(),
 		}
 
@@ -142,7 +142,7 @@ func TestArchiveReader_ListChildren(t *testing.T) {
 		So(e, ShouldBeNil)
 		defer os.Remove(tmpArchive)
 
-		archiveReader := &ArchiveReader{
+		archiveReader := &Reader{
 			Router: nodes.NewHandlerMock(),
 		}
 
@@ -160,7 +160,7 @@ func TestArchiveReader_ListChildren(t *testing.T) {
 		So(e, ShouldBeNil)
 		defer os.Remove(tmpArchive)
 
-		archiveReader := &ArchiveReader{
+		archiveReader := &Reader{
 			Router: nodes.NewHandlerMock(),
 		}
 
@@ -174,7 +174,7 @@ func TestArchiveReader_ListChildren(t *testing.T) {
 
 }
 
-func TestArchiveReader_StatChild(t *testing.T) {
+func TestReader_StatChild(t *testing.T) {
 
 	Convey("Stat Child Zip", t, func() {
 
@@ -182,7 +182,7 @@ func TestArchiveReader_StatChild(t *testing.T) {
 		So(e, ShouldBeNil)
 		defer os.Remove(tmpArchive)
 
-		archiveReader := &ArchiveReader{
+		archiveReader := &Reader{
 			Router: nodes.NewHandlerMock(),
 		}
 		{
@@ -217,7 +217,7 @@ func TestArchiveReader_StatChild(t *testing.T) {
 		So(e, ShouldBeNil)
 		defer os.Remove(tmpArchive)
 
-		archiveReader := &ArchiveReader{
+		archiveReader := &Reader{
 			Router: nodes.NewHandlerMock(),
 		}
 		{
@@ -237,7 +237,7 @@ func TestArchiveReader_StatChild(t *testing.T) {
 		So(e, ShouldBeNil)
 		defer os.Remove(tmpArchive)
 
-		archiveReader := &ArchiveReader{
+		archiveReader := &Reader{
 			Router: nodes.NewHandlerMock(),
 		}
 		{
@@ -273,7 +273,7 @@ func TestArchiveReader_StatChild(t *testing.T) {
 		So(e, ShouldBeNil)
 		defer os.Remove(tmpArchive)
 
-		archiveReader := &ArchiveReader{
+		archiveReader := &Reader{
 			Router: nodes.NewHandlerMock(),
 		}
 		{
@@ -309,7 +309,7 @@ func TestArchiveReader_StatChild(t *testing.T) {
 		So(e, ShouldBeNil)
 		defer os.Remove(tmpArchive)
 
-		archiveReader := &ArchiveReader{
+		archiveReader := &Reader{
 			Router: nodes.NewHandlerMock(),
 		}
 		{
@@ -326,7 +326,7 @@ func TestArchiveReader_StatChild(t *testing.T) {
 
 }
 
-func TestArchiveReader_ReadChild(t *testing.T) {
+func TestReader_ReadChild(t *testing.T) {
 
 	Convey("Read Child", t, func() {
 
@@ -334,7 +334,7 @@ func TestArchiveReader_ReadChild(t *testing.T) {
 		So(e, ShouldBeNil)
 		defer os.Remove(tmpArchive)
 
-		archiveReader := &ArchiveReader{
+		archiveReader := &Reader{
 			Router: nodes.NewHandlerMock(),
 		}
 
@@ -359,7 +359,7 @@ func TestArchiveReader_ReadChild(t *testing.T) {
 		So(e, ShouldBeNil)
 		defer os.Remove(tmpArchive)
 
-		archiveReader := &ArchiveReader{
+		archiveReader := &Reader{
 			Router: nodes.NewHandlerMock(),
 		}
 
@@ -380,7 +380,7 @@ func TestArchiveReader_ReadChild(t *testing.T) {
 		So(e, ShouldBeNil)
 		defer os.Remove(tmpArchive)
 
-		archiveReader := &ArchiveReader{
+		archiveReader := &Reader{
 			Router: nodes.NewHandlerMock(),
 		}
 
@@ -397,7 +397,7 @@ func TestArchiveReader_ReadChild(t *testing.T) {
 
 }
 
-func TestArchiveReader_ExtractAll(t *testing.T) {
+func TestReader_ExtractAll(t *testing.T) {
 
 	Convey("ExtractAllZip", t, func() {
 
@@ -405,7 +405,7 @@ func TestArchiveReader_ExtractAll(t *testing.T) {
 		So(e, ShouldBeNil)
 		defer os.Remove(tmpArchive)
 
-		archiveReader := &ArchiveReader{
+		archiveReader := &Reader{
 			Router: nodes.NewHandlerMock(),
 		}
 
@@ -422,7 +422,7 @@ func TestArchiveReader_ExtractAll(t *testing.T) {
 		So(e, ShouldBeNil)
 		defer os.Remove(tmpArchive)
 
-		archiveReader := &ArchiveReader{
+		archiveReader := &Reader{
 			Router: nodes.NewHandlerMock(),
 		}
 
@@ -439,7 +439,7 @@ func TestArchiveReader_ExtractAll(t *testing.T) {
 		So(e, ShouldBeNil)
 		defer os.Remove(tmpArchive)
 
-		archiveReader := &ArchiveReader{
+		archiveReader := &Reader{
 			Router: nodes.NewHandlerMock(),
 		}
 
