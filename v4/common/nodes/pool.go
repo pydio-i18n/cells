@@ -117,7 +117,7 @@ func (p *ClientsPool) GetTreeClient() tree.NodeProviderClient {
 	if p.treeClient != nil {
 		return p.treeClient
 	}
-	return tree.NewNodeProviderClient(defaults.NewClientConn())
+	return tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceTree))
 }
 
 // GetTreeClientWrite returns the internal NodeReceiverClient pointing to the TreeService.
@@ -125,7 +125,7 @@ func (p *ClientsPool) GetTreeClientWrite() tree.NodeReceiverClient {
 	if p.treeClientWrite != nil {
 		return p.treeClientWrite
 	}
-	return tree.NewNodeReceiverClient(defaults.NewClientConn())
+	return tree.NewNodeReceiverClient(defaults.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceTree))
 }
 
 // GetDataSourceInfo tries to find information about a DataSource, eventually retrying as DataSource
@@ -201,7 +201,7 @@ func (p *ClientsPool) LoadDataSources() {
 
 	ctx := context.Background()
 	for _, source := range sources {
-		endpointClient := object.NewDataSourceEndpointClient(defaults.NewClientConn())
+		endpointClient := object.NewDataSourceEndpointClient(defaults.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceDataSync_ + source))
 		response, err := endpointClient.GetDataSourceConfig(ctx, &object.GetDataSourceConfigRequest{})
 		if err == nil && response.DataSource != nil {
 			log.Logger(ctx).Debug("Creating client for datasource " + source)
