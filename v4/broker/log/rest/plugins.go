@@ -18,32 +18,28 @@
  * The latest code can be found at <https://pydio.com>.
  */
 
-package test
+// Package rest exposes a simple REST API for communicating with the GRPC package.
+package rest
 
-import json "github.com/pydio/cells/v4/x/jsonx"
+import (
+	"context"
 
-// NewTestResult creates a new TestResult
-func NewTestResult(testName string) *TestResult {
-	return &TestResult{
-		Pass: true,
-		Name: testName,
-	}
-}
+	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/service"
+)
 
-// Log appends message and json serialized version of objects in result
-func (t *TestResult) Log(msg string, objects ...interface{}) {
-	if len(objects) > 0 {
-		for _, o := range objects {
-			if jsonObj, e := json.Marshal(o); e == nil {
-				msg += " " + string(jsonObj)
-			}
-		}
-	}
-	t.Messages = append(t.Messages, msg)
-}
-
-// Fail send result.Pass to false and appends message and json serialized version of objects in result
-func (t *TestResult) Fail(msg string, objects ...interface{}) {
-	t.Pass = false
-	t.Log(msg, objects...)
+func init() {
+	plugins.Register("main", func(ctx context.Context) {
+		service.NewService(
+			service.Name(common.ServiceRestNamespace_+common.ServiceLog),
+			service.Context(ctx),
+			service.Tag(common.ServiceTagBroker),
+			service.Description("RESTful Gateway to search in the log repositories"),
+			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceLog, []string{}),
+			service.WithWeb(func() service.WebHandler {
+				return new(Handler)
+			}),
+		)
+	})
 }

@@ -119,7 +119,7 @@ func (j *JobsHandler) DeleteJob(ctx context.Context, request *proto.DeleteJobReq
 			response.Success = false
 			return err
 		}
-		client.Publish(ctx, client.NewPublication(common.TopicJobConfigEvent, &proto.JobChangeEvent{
+		client.Publish(ctx, client.NewMessage(common.TopicJobConfigEvent, &proto.JobChangeEvent{
 			JobRemoved: request.JobID,
 		}))
 		go func() {
@@ -171,7 +171,7 @@ func (j *JobsHandler) DeleteJob(ctx context.Context, request *proto.DeleteJobReq
 			if e := j.store.DeleteJob(id); e == nil {
 				deleted++
 				log.Logger(ctx).Info("Deleting AutoClean Job " + id)
-				client.Publish(ctx, client.NewPublication(common.TopicJobConfigEvent, &proto.JobChangeEvent{
+				client.Publish(ctx, client.NewMessage(common.TopicJobConfigEvent, &proto.JobChangeEvent{
 					JobRemoved: id,
 				}))
 				go func() {
@@ -227,7 +227,7 @@ func (j *JobsHandler) PutTask(ctx context.Context, request *proto.PutTaskRequest
 	T := lang.Bundle().GetTranslationFunc()
 	job.Label = T(job.Label)
 	if !job.TasksSilentUpdate {
-		client.Publish(ctx, client.NewPublication(common.TopicJobTaskEvent, &proto.TaskChangeEvent{
+		client.Publish(ctx, client.NewMessage(common.TopicJobTaskEvent, &proto.TaskChangeEvent{
 			TaskUpdated: request.Task,
 			Job:         job,
 		}))
@@ -316,7 +316,7 @@ func (j *JobsHandler) PutTaskStream(ctx context.Context, streamer proto.JobServi
 		T := lang.Bundle().GetTranslationFunc()
 		tJob.Label = T(tJob.Label)
 		if !tJob.TasksSilentUpdate {
-			client.Publish(ctx, client.NewPublication(common.TopicJobTaskEvent, &proto.TaskChangeEvent{
+			client.Publish(ctx, client.NewMessage(common.TopicJobTaskEvent, &proto.TaskChangeEvent{
 				TaskUpdated: request.Task,
 				Job:         tJob,
 			}))

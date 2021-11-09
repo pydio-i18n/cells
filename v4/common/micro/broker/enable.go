@@ -23,12 +23,11 @@ package broker
 import (
 	"fmt"
 
-	"github.com/pydio/cells/common"
-
 	"github.com/micro/micro/v3/service/broker/memory"
 	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/server"
 
+	"github.com/pydio/cells/v4/common"
 	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/micro/broker/service"
 	"github.com/pydio/cells/v4/common/registry"

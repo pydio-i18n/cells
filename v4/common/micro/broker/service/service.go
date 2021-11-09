@@ -24,12 +24,11 @@ import (
 	"context"
 	"time"
 
-	"github.com/pydio/cells/common"
-	"google.golang.org/grpc"
-
 	"github.com/micro/micro/v3/service/broker"
 	"github.com/pborman/uuid"
+	"google.golang.org/grpc"
 
+	"github.com/pydio/cells/v4/common"
 	defaults "github.com/pydio/cells/v4/common/micro"
 	pb "github.com/pydio/cells/v4/common/proto/broker"
 	context2 "github.com/pydio/cells/v4/common/utils/context"
