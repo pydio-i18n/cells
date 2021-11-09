@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021. Abstrium SAS <team (at) pydio.com>
+ * Copyright (c) 2018. Abstrium SAS <team (at) pydio.com>
  * This file is part of Pydio Cells.
  *
  * Pydio Cells is free software: you can redistribute it and/or modify
@@ -18,21 +18,30 @@
  * The latest code can be found at <https://pydio.com>.
  */
 
-package auth
+// Package acl provides persistence and access to Access Control List
+package acl
 
 import (
-	"context"
+	"time"
 
-	"github.com/pydio/cells/v4/common/proto/rest"
-
-	"github.com/pydio/cells/v4/common/proto/idm"
+	"github.com/pydio/cells/v4/common/dao"
+	"github.com/pydio/cells/v4/common/sql"
 )
 
-// TODO V4 - UNTIL WE IMPORT FULL PACKAGE
-func WithImpersonate(ctx context.Context, user *idm.User) context.Context {
-	return ctx
+// DAO interface
+type DAO interface {
+	dao.DAO
+
+	Add(interface{}) error
+	SetExpiry(sql.Enquirer, time.Time) (int64, error)
+	Del(sql.Enquirer) (numRows int64, e error)
+	Search(sql.Enquirer, *[]interface{}) error
 }
 
-func SubjectsForResourcePolicyQuery(ctx context.Context, q *rest.ResourcePolicyQuery) (subjects []string, err error) {
-	return
+func NewDAO(o dao.DAO) dao.DAO {
+	switch v := o.(type) {
+	case sql.DAO:
+		return &sqlimpl{DAO: v}
+	}
+	return nil
 }

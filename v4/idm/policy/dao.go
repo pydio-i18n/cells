@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021. Abstrium SAS <team (at) pydio.com>
+ * Copyright (c) 2018. Abstrium SAS <team (at) pydio.com>
  * This file is part of Pydio Cells.
  *
  * Pydio Cells is free software: you can redistribute it and/or modify
@@ -18,21 +18,33 @@
  * The latest code can be found at <https://pydio.com>.
  */
 
-package auth
+// Package policy provides advanced policy features to fine tune end-user permissions.
+package policy
 
 import (
 	"context"
 
-	"github.com/pydio/cells/v4/common/proto/rest"
+	"github.com/ory/ladon"
 
+	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/proto/idm"
+	"github.com/pydio/cells/v4/common/sql"
 )
 
-// TODO V4 - UNTIL WE IMPORT FULL PACKAGE
-func WithImpersonate(ctx context.Context, user *idm.User) context.Context {
-	return ctx
+type DAO interface {
+	sql.DAO
+	ladon.Warden
+	ladon.Manager
+
+	StorePolicyGroup(ctx context.Context, group *idm.PolicyGroup) (*idm.PolicyGroup, error)
+	ListPolicyGroups(ctx context.Context) ([]*idm.PolicyGroup, error)
+	DeletePolicyGroup(ctx context.Context, group *idm.PolicyGroup) error
 }
 
-func SubjectsForResourcePolicyQuery(ctx context.Context, q *rest.ResourcePolicyQuery) (subjects []string, err error) {
-	return
+func NewDAO(o dao.DAO) dao.DAO {
+	switch v := o.(type) {
+	case sql.DAO:
+		return &sqlimpl{DAO: v}
+	}
+	return nil
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021. Abstrium SAS <team (at) pydio.com>
+ * Copyright (c) 2018. Abstrium SAS <team (at) pydio.com>
  * This file is part of Pydio Cells.
  *
  * Pydio Cells is free software: you can redistribute it and/or modify
@@ -18,21 +18,28 @@
  * The latest code can be found at <https://pydio.com>.
  */
 
-package auth
+// Package rest is a gateway to the underlying grpc service
+package rest
 
 import (
 	"context"
 
-	"github.com/pydio/cells/v4/common/proto/rest"
-
-	"github.com/pydio/cells/v4/common/proto/idm"
+	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/service"
 )
 
-// TODO V4 - UNTIL WE IMPORT FULL PACKAGE
-func WithImpersonate(ctx context.Context, user *idm.User) context.Context {
-	return ctx
-}
-
-func SubjectsForResourcePolicyQuery(ctx context.Context, q *rest.ResourcePolicyQuery) (subjects []string, err error) {
-	return
+func init() {
+	plugins.Register("main", func(ctx context.Context) {
+		service.NewService(
+			service.Name(common.ServiceRestNamespace_+common.ServicePolicy),
+			service.Context(ctx),
+			service.Tag(common.ServiceTagIdm),
+			service.Description("RESTful service for managing policies"),
+			service.Dependency(common.ServiceGrpcNamespace_+common.ServicePolicy, []string{}),
+			service.WithWeb(func() service.WebHandler {
+				return new(PolicyHandler)
+			}),
+		)
+	})
 }

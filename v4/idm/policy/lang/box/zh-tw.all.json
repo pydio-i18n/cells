@@ -1,0 +1,119 @@
+{
+  "PolicyGroup.PublicAccess.Title": {
+    "other": "公開存取"
+  },
+  "PolicyGroup.PublicAccess.Description": {
+    "other": "公開存取探索端點"
+  },
+  "PolicyGroup.PublicAccess.Rule1": {
+    "other": "匿名存取探索 (GET)"
+  },
+  "PolicyGroup.PublicAccess.Rule2": {
+    "other": "匿名存取密碼重設端點 (PUT, POST)"
+  },
+  "PolicyGroup.PublicAccess.Rule3": {
+    "other": "匿名存取載入前端狀態 (GET)"
+  },
+  "PolicyGroup.PublicAccess.Rule4": {
+    "other": "匿名存取初始前端會談 (POST)"
+  },
+  "PolicyGroup.PublicInstall.Title": {
+    "other": "安裝端點 (首次執行)"
+  },
+  "PolicyGroup.PublicInstall.Description": {
+    "other": "安裝端點在首次執行時需有公開存取權限"
+  },
+  "PolicyGroup.PublicInstall.Rule1": {
+    "other": "匿名存取安裝端點 (GET, POST)"
+  },
+  "PolicyGroup.LoggedUsers.Title": {
+    "other": "紀錄使用者與管理者的存取"
+  },
+  "PolicyGroup.LoggedUsers.Description": {
+    "other": "決定使用者/共享者/管理者如何存取 REST APIs"
+  },
+  "PolicyGroup.LoggedUsers.Rule1": {
+    "other": "所有 REST 存取管理者個人檔案"
+  },
+  "PolicyGroup.LoggedUsers.Rule2": {
+    "other": "預設 REST 存取已登入使用者"
+  },
+  "PolicyGroup.LoggedUsers.Rule3": {
+    "other": "列出和搜尋使用者定義的 metadata"
+  },
+  "PolicyGroup.LoggedUsers.Rule4": {
+    "other": "更新使用者定義的 metadata"
+  },
+  "PolicyGroup.LoggedUsers.Rule5": {
+    "other": "Read-access to all FrontendService"
+  },
+  "PolicyGroup.LoggedUsers.Rule6": {
+    "other": "Write-access to FrontendService except global binaries uploads"
+  },
+  "PolicyGroup.OIDC.Title": {
+    "other": "OpenIdConnect 操作"
+  },
+  "PolicyGroup.OIDC.Description": {
+    "other": "啟用/關閉 OpenID 連接伺服器認證"
+  },
+  "PolicyGroup.OIDC.Rule1": {
+    "other": "對所有使用者的預設存取登入行為"
+  },
+  "PolicyGroup.ACLSample1.Title": {
+    "other": "[Example] 複雜 ACL 政策"
+  },
+  "PolicyGroup.ACLSample1.Description": {
+    "other": "動態管理 ACLs 複雜政策的範例"
+  },
+  "PolicyGroup.ACLSample1.Rule1": {
+    "other": "預設准許讀取/寫入"
+  },
+  "PolicyGroup.ACLSample1.Rule2": {
+    "other": "避免根據 IP 和檔案 metadata 條件進行修改"
+  },
+  "PolicyGroup.ACLSample1.Rule3": {
+    "other": "在請求非來自本地端時過濾掉副檔名為 PNG 的檔案"
+  },
+  "PolicyGroup.ACLSamplePeriod.Title": {
+    "other": "[Example] 有限週期內"
+  },
+  "PolicyGroup.ACLSamplePeriod.Description": {
+    "other": "為工作區啟用一段時間內的存取"
+  },
+  "PolicyGroup.ACLSamplePeriod.Rule1": {
+    "other": "ACL 規則範例, 只准許在 2018 年的 2 月和 3 月存取"
+  },
+  "PolicyGroup.ACLSampleDateDisable.Title": {
+    "other": "[Example] 在特定日期後就不可存取"
+  },
+  "PolicyGroup.ACLSampleDateDisable.Description": {
+    "other": "在特定時間後不可存取工作區"
+  },
+  "PolicyGroup.ACLSampleDateDisable.Rule1": {
+    "other": "全域讀取/寫入"
+  },
+  "PolicyGroup.ACLSampleDateDisable.Rule2": {
+    "other": "在 2018-02-28 之後禁止讀取/寫入"
+  },
+  "PolicyGroup.ACLSampleBusinessHours.Title": {
+    "other": "[Example] 只在上班時間允許存取"
+  },
+  "PolicyGroup.ACLSampleBusinessHours.Description": {
+    "other": "在特定日期中的限定的時間內啟用存取工作區"
+  },
+  "PolicyGroup.ACLSampleBusinessHours.Rule1": {
+    "other": "工作時間規則範例, 准許讀取/寫入"
+  },
+  "PolicyGroup.ACLSampleExternalIP.Title": {
+    "other": "[Example] 根據 IP 禁止存取"
+  },
+  "PolicyGroup.ACLSampleExternalIP.Description": {
+    "other": "區域網路之外的 IP 禁止存取"
+  },
+  "PolicyGroup.ACLSampleExternalIP.Rule1": {
+    "other": "全域讀取/寫入"
+  },
+  "PolicyGroup.ACLSampleExternalIP.Rule2": {
+    "other": "如果不是本機, 127.0.0.1 或 ::1 時禁止該 IP 連線"
+  }
+}
