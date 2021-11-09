@@ -22,13 +22,13 @@ package index
 
 import (
 	"context"
+	defaults "github.com/pydio/cells/v4/common/micro"
 
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/sync/model"
 )
 
@@ -43,21 +43,21 @@ func NewClientWithMeta(dsName string, reader tree.NodeProviderClient, writer tre
 	m := &ClientWithMeta{}
 	c := NewClient(dsName, reader, writer, sessionClient)
 	m.Client = *c
-	m.metaClient = tree.NewNodeReceiverClient(registry.GetClient(common.ServiceMeta))
+	m.metaClient = tree.NewNodeReceiverClient(defaults.NewClientConn(common.ServiceMeta))
 	return m
 }
 
 // Walk wraps the initial Walk function to load metadata on the fly
 func (m *ClientWithMeta) Walk(walknFc model.WalkNodesFunc, root string, recursive bool) (err error) {
 
-	metaClient := tree.NewNodeProviderStreamerClient(registry.GetClient(common.ServiceMeta))
+	metaClient := tree.NewNodeProviderStreamerClient(defaults.NewClientConn(common.ServiceMeta))
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	metaStreamer, e := metaClient.ReadNodeStream(ctx)
 	if e != nil {
 		return e
 	}
-	defer metaStreamer.Close()
+	defer metaStreamer.CloseSend()
 	walkWrapped := func(path string, node *tree.Node, err error) {
 		if err == nil {
 			metaStreamer.Send(&tree.ReadNodeRequest{Node: node})
