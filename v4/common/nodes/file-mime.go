@@ -123,7 +123,7 @@ var mimeMetaClient tree.NodeReceiverClient
 
 func WrapReaderForMime(ctx context.Context, clone *tree.Node, reader io.Reader) io.Reader {
 	if mimeMetaClient == nil {
-		mimeMetaClient = tree.NewNodeReceiverClient(defaults.NewClientConn())
+		mimeMetaClient = tree.NewNodeReceiverClient(defaults.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceMeta))
 	}
 	bgCtx := context2.NewBackgroundWithMetaCopy(ctx)
 	return NewTeeMimeReader(reader, func(result *MimeResult) {

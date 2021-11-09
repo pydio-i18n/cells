@@ -24,11 +24,13 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/pydio/cells/v4/common/config/memory"
+
 	"github.com/pydio/cells/v4/x/configx"
 )
 
 var (
-	std   Store = nil
+	std   Store = New(memory.New())
 	local Store = std
 )
 

@@ -24,6 +24,9 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/plugins"
+	"net"
+	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
@@ -32,36 +35,53 @@ import (
 	"runtime"
 	"time"
 
-
 	"github.com/manifoldco/promptui"
-	"github.com/micro/micro/v3/service/broker"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 
-	"github.com/pydio/cells/v4/common/utils/statics"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/caddy"
 	"github.com/pydio/cells/v4/common/config"
-	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/install"
+	"github.com/pydio/cells/v4/common/utils/statics"
 	// "github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/service/metrics"
-	"github.com/pydio/cells/v4/common/utils/net"
+	unet "github.com/pydio/cells/v4/common/utils/net"
 	"github.com/pydio/cells/v4/discovery/install/assets"
 )
 
 const (
+	/*
 	caddyfile = `
 {{range .Sites}}
 {{range .Binds}}{{.}} {{end}} {
-	root "{{$.WebRoot}}"
-	proxy /install {{urls $.Micro}}
+	root * "{{$.WebRoot}}"
+
+	route /* {
+		reverse_proxy :8002  {
+			fail_duration 20s
+			header_up Host {host}
+			header_up X-Real-IP {remote}
+		}
+	}
 
 	{{if .TLS}}tls {{.TLS}}{{end}}
 	{{if .TLSCert}}tls "{{.TLSCert}}" "{{.TLSKey}}"{{end}}
 }
 {{end}}
+	 `
+
+	 */
+
+	caddyfile = `
+:8080 
+root * /Users/ghecquet/work/src/github.com/pydio/cells/v4/discovery/install/assets/src
+file_server
+
+reverse_proxy /install* :8002
 	 `
 )
 
@@ -206,7 +226,7 @@ ENVIRONMENT
 		cmd.Println("")
 
 		var proxyConf *install.ProxyConfig
-		var err error
+		/*var err error
 
 		// Do this in a better way
 		micro := config.Get("ports", common.ServiceMicroApi).Int()
@@ -215,7 +235,7 @@ ENVIRONMENT
 			config.Set(micro, "ports", common.ServiceMicroApi)
 			err = config.Save("cli", "Install / Setting default Ports")
 			fatalIfError(cmd, err)
-		}
+		}*/
 
 		if niYamlFile != "" || niJsonFile != "" || niBindUrl != "" {
 
@@ -325,13 +345,13 @@ func checkDefaultBusy(cmd *cobra.Command, proxyConf *install.ProxyConfig, pickOn
 	if e != nil {
 		return proxyConf, "", e
 	}
-	if e := net.CheckPortAvailability(u.Port()); e != nil {
+	if e := unet.CheckPortAvailability(u.Port()); e != nil {
 		if !pickOne {
 			// Just inform that port is busy
 			return proxyConf, u.Port(), nil
 		}
 		// Port is busy, pick another one!
-		newPort := net.GetAvailableHttpAltPort()
+		newPort := unet.GetAvailableHttpAltPort()
 		newConf := *proxyConf
 		newConf.Binds[0] = fmt.Sprintf("%s:%d", u.Hostname(), newPort)
 		proxyConf = &newConf
@@ -351,24 +371,24 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 	defer cancel()
 
 	// initStartingToolsOnce.Do(func() {
-		initLogLevel()
+	initLogLevel()
 
-		metrics.Init()
+	metrics.Init()
 
-		// Initialise the default registry
-		// handleRegistry()
+	// Initialise the default registry
+	// handleRegistry()
 
-		// Initialise the default broker
-		// handleBroker()
+	// Initialise the default broker
+	// handleBroker()
 
-		// Initialise the default transport
-		// handleTransport()
+	// Initialise the default transport
+	// handleTransport()
 
-		// Making sure we capture the signals
-		// handleSignals()
+	// Making sure we capture the signals
+	// handleSignals()
 	// })
 
-	plugins.Init(ctx, "install")
+
 
 	// initServices()
 
@@ -383,16 +403,31 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 	}
 
 	/*
-	// starting the microservice
-	micro := registry.Default.GetServiceByName(common.ServiceMicroApi)
-	micro.Start(ctx)
+		// starting the microservice
+		micro := registry.Default.GetServiceByName(common.ServiceMicroApi)
+		micro.Start(ctx)
 
-	// starting the installation REST service
-	regService := registry.Default.GetServiceByName(common.ServiceInstall)
+		// starting the installation REST service
+		regService := registry.Default.GetServiceByName(common.ServiceInstall)
 
-	// Starting service install
-	regService.Start(ctx)
+		// Starting service install
+		regService.Start(ctx)
 	*/
+
+	lisHTTP, err := net.Listen("tcp", ":8002")
+	if err != nil {
+		log.Fatal("error listening", zap.Error(err))
+	}
+
+	srvHTTP := http.NewServeMux()
+	ctx = context.WithValue(ctx, "httpServerKey", srvHTTP)
+
+	go func() {
+		http.Serve(lisHTTP, srvHTTP)
+	}()
+
+	plugins.Init(ctx, "install")
+
 	// Creating temporary caddy file
 	sites, err := config.LoadSites()
 	if err != nil {
@@ -420,21 +455,25 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 	cmd.Println(promptui.Styler(promptui.BGMagenta, promptui.FGWhite)("Listening to: " + proxyConf.GetBinds()[0]))
 	cmd.Println("")
 
-	subscriber, err := broker.Subscribe(common.TopicProxyRestarted, func(p *broker.Message) error {
+	/*
+		TODO v4
+		subscriber, err := broker.Subscribe(common.TopicProxyRestarted, func(p *broker.Message) error {
 
-		url := proxyConf.ReverseProxyURL
-		if url == "" {
-			url = proxyConf.GetDefaultBindURL()
-		}
+			url := proxyConf.ReverseProxyURL
+			if url == "" {
+				url = proxyConf.GetDefaultBindURL()
+			}
 
-		cmd.Println("")
-		cmd.Printf(promptui.Styler(promptui.BGMagenta, promptui.FGWhite)("Opening URL ") + promptui.Styler(promptui.BGMagenta, promptui.FGWhite, promptui.FGUnderline, promptui.FGBold)(url) + promptui.Styler(promptui.BGMagenta, promptui.FGWhite)(" in your browser. Please copy/paste it if the browser is not on the same machine."))
-		cmd.Println("")
+			cmd.Println("")
+			cmd.Printf(promptui.Styler(promptui.BGMagenta, promptui.FGWhite)("Opening URL ") + promptui.Styler(promptui.BGMagenta, promptui.FGWhite, promptui.FGUnderline, promptui.FGBold)(url) + promptui.Styler(promptui.BGMagenta, promptui.FGWhite)(" in your browser. Please copy/paste it if the browser is not on the same machine."))
+			cmd.Println("")
 
-		open(url)
+			open(url)
 
-		return nil
-	})
+			return nil
+		})
+
+	*/
 
 	if err != nil {
 		cmd.Print("Could not subscribe to broker: ", err)
@@ -452,7 +491,7 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 
 	}()
 
-	defer subscriber.Unsubscribe()
+	// TODO v4 defer subscriber.Unsubscribe()
 
 	select {
 	case <-instanceDone:

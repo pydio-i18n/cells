@@ -34,17 +34,14 @@ import (
 
 // GetGenericStoreClient creates a *minio.Core client for a given binary store.
 func GetGenericStoreClient(ctx context.Context, storeNamespace string, microClient client.Client) (client StorageClient, bucket string, e error) {
-
-	/* TODO v4
-	// var dataSource string
+	var dataSource string
 	var err error
 	dataSource, bucket, err = GetGenericStoreClientConfig(storeNamespace)
 	if err != nil {
 		return nil, "", err
 	}
-	*/
 
-	s3endpointClient := object.NewDataSourceEndpointClient(defaults.NewClientConn())
+	s3endpointClient := object.NewDataSourceEndpointClient(defaults.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceDataSync_ + dataSource))
 	response, err := s3endpointClient.GetDataSourceConfig(ctx, &object.GetDataSourceConfigRequest{})
 	if err != nil {
 		return nil, "", err

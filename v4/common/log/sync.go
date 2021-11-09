@@ -22,6 +22,7 @@ package log
 
 import (
 	"context"
+	"github.com/pydio/cells/common"
 	"sync/atomic"
 	"time"
 
@@ -55,7 +56,7 @@ func NewLogSyncer(ctx context.Context, serviceName string) *LogSyncer {
 func (syncer *LogSyncer) logSyncerClientReconnect() {
 	atomic.StoreInt32(&syncer.reconnecting, 1)
 
-	c := log.NewLogRecorderClient(defaults.NewClientConn())
+	c := log.NewLogRecorderClient(defaults.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceLog))
 
 	cli, err := c.PutLog(syncer.ctx)
 	if err != nil {

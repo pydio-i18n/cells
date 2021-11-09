@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/caddyserver/caddy/v2/caddyconfig"
 	"html/template"
 	"strings"
 	"sync"
@@ -123,11 +124,25 @@ func Start() error {
 		return err
 	}
 
-	b := buf.Bytes()
+	// Load config directly from memory
+	adapter := caddyconfig.GetAdapter("caddyfile")
+	confs, warns, err := adapter.Adapt(buf.Bytes(), map[string]interface{}{})
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	for _, w := range warns {
+		log.Info("[WARN]", zap.String("", w.String()))
+	}
 
-	caddy.Load(b, true)
+	// TODO v4 remove
+	fmt.Println(string(confs))
 
-	LastKnownCaddyFile = string(b)
+	if err := caddy.Load(confs, true); err != nil {
+		return err
+	}
+
+	LastKnownCaddyFile = string(confs)
 
 	return nil
 }

@@ -70,7 +70,7 @@ func WithWeb(handler func() WebHandler) ServiceOption {
 		ws := new(restful.WebService)
 		ws.Consumes(restful.MIME_JSON, "application/x-www-form-urlencoded", "multipart/form-data")
 		ws.Produces(restful.MIME_JSON, restful.MIME_OCTET, restful.MIME_XML)
-		// ws.Path(rootPath)
+		ws.Path(rootPath)
 
 		h := handler()
 		swaggerTags := h.SwaggerTags()
