@@ -22,10 +22,10 @@ package log
 
 import (
 	"context"
-	"github.com/pydio/cells/common"
 	"sync/atomic"
 	"time"
 
+	"github.com/pydio/cells/v4/common"
 	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/log"
 )

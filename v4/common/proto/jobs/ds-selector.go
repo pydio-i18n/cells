@@ -23,7 +23,6 @@ package jobs
 import (
 	"context"
 
-	"github.com/micro/micro/v3/service/client"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -51,7 +50,7 @@ func (m *DataSourceSelector) Filter(ctx context.Context, input ActionMessage) (A
 	return input, x, len(passed) > 0
 }
 
-func (m *DataSourceSelector) Select(cl client.Client, ctx context.Context, input ActionMessage, objects chan interface{}, done chan bool) error {
+func (m *DataSourceSelector) Select(ctx context.Context, input ActionMessage, objects chan interface{}, done chan bool) error {
 	defer func() {
 		done <- true
 	}()

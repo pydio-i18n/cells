@@ -23,7 +23,8 @@ package jobs
 import (
 	"context"
 
-	"github.com/micro/micro/v3/service/client"
+	defaults "github.com/pydio/cells/v4/common/micro"
+
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
@@ -36,7 +37,7 @@ func (m *UsersSelector) MultipleSelection() bool {
 }
 
 // Select performs a query on the User Service to load a list of users. The more generic IdmSelector should be used instead.
-func (m *UsersSelector) Select(cl client.Client, ctx context.Context, input ActionMessage, objects chan interface{}, done chan bool) error {
+func (m *UsersSelector) Select(ctx context.Context, input ActionMessage, objects chan interface{}, done chan bool) error {
 
 	defer func() {
 		done <- true
@@ -63,12 +64,12 @@ func (m *UsersSelector) Select(cl client.Client, ctx context.Context, input Acti
 	if query == nil {
 		return nil
 	}
-	userClient := idm.NewUserService(common.ServiceGrpcNamespace_+common.ServiceUser, cl)
+	userClient := idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
 	s, e := userClient.SearchUser(ctx, &idm.SearchUserRequest{Query: query})
 	if e != nil {
 		return e
 	}
-	defer s.Close()
+	defer s.CloseSend()
 	for {
 		resp, e := s.Recv()
 		if e != nil {

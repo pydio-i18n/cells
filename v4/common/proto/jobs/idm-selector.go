@@ -24,7 +24,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/context/metadata"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -41,7 +40,7 @@ func (m *IdmSelector) MultipleSelection() bool {
 }
 
 // Select IDM Objects by a given query
-func (m *IdmSelector) Select(cl client.Client, ctx context.Context, input ActionMessage, objects chan interface{}, done chan bool) error {
+func (m *IdmSelector) Select(ctx context.Context, input ActionMessage, objects chan interface{}, done chan bool) error {
 
 	defer func() {
 		done <- true
@@ -58,12 +57,12 @@ func (m *IdmSelector) Select(cl client.Client, ctx context.Context, input Action
 	}
 	switch m.Type {
 	case IdmSelectorType_User:
-		userClient := idm.NewUserService(common.ServiceGrpcNamespace_+common.ServiceUser, cl)
+		userClient := idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
 		s, e := userClient.SearchUser(ctx, &idm.SearchUserRequest{Query: query})
 		if e != nil {
 			return e
 		}
-		defer s.Close()
+		defer s.CloseSend()
 		for {
 			resp, e := s.Recv()
 			if e != nil {
@@ -75,11 +74,11 @@ func (m *IdmSelector) Select(cl client.Client, ctx context.Context, input Action
 			objects <- resp.User
 		}
 	case IdmSelectorType_Role:
-		roleClient := idm.NewRoleService(common.ServiceGrpcNamespace_+common.ServiceRole, cl)
+		roleClient := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
 		if s, e := roleClient.SearchRole(ctx, &idm.SearchRoleRequest{Query: query}); e != nil {
 			return e
 		} else {
-			defer s.Close()
+			defer s.CloseSend()
 			for {
 				resp, er := s.Recv()
 				if er != nil {
@@ -92,11 +91,11 @@ func (m *IdmSelector) Select(cl client.Client, ctx context.Context, input Action
 			}
 		}
 	case IdmSelectorType_Workspace:
-		wsClient := idm.NewWorkspaceService(common.ServiceGrpcNamespace_+common.ServiceWorkspace, cl)
+		wsClient := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
 		if s, e := wsClient.SearchWorkspace(ctx, &idm.SearchWorkspaceRequest{Query: query}); e != nil {
 			return e
 		} else {
-			defer s.Close()
+			defer s.CloseSend()
 			for {
 				resp, er := s.Recv()
 				if er != nil {
@@ -109,11 +108,11 @@ func (m *IdmSelector) Select(cl client.Client, ctx context.Context, input Action
 			}
 		}
 	case IdmSelectorType_Acl:
-		aclClient := idm.NewACLService(common.ServiceGrpcNamespace_+common.ServiceAcl, cl)
+		aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
 		if s, e := aclClient.SearchACL(ctx, &idm.SearchACLRequest{Query: query}); e != nil {
 			return e
 		} else {
-			defer s.Close()
+			defer s.CloseSend()
 			for {
 				resp, er := s.Recv()
 				if er != nil {

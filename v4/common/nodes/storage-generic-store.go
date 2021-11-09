@@ -23,8 +23,6 @@ package nodes
 import (
 	"context"
 
-	"github.com/micro/micro/v3/service/client"
-
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	defaults "github.com/pydio/cells/v4/common/micro"
@@ -33,7 +31,7 @@ import (
 )
 
 // GetGenericStoreClient creates a *minio.Core client for a given binary store.
-func GetGenericStoreClient(ctx context.Context, storeNamespace string, microClient client.Client) (client StorageClient, bucket string, e error) {
+func GetGenericStoreClient(ctx context.Context, storeNamespace string) (client StorageClient, bucket string, e error) {
 	var dataSource string
 	var err error
 	dataSource, bucket, err = GetGenericStoreClientConfig(storeNamespace)

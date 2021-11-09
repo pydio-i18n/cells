@@ -26,7 +26,6 @@ import (
 	"path"
 	"strings"
 
-	"github.com/micro/micro/v3/service/client"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -64,7 +63,7 @@ func (n *NodesSelector) MultipleSelection() bool {
 	return n.Collect
 }
 
-func (n *NodesSelector) Select(cl client.Client, ctx context.Context, input ActionMessage, objects chan interface{}, done chan bool) error {
+func (n *NodesSelector) Select(ctx context.Context, input ActionMessage, objects chan interface{}, done chan bool) error {
 	defer func() {
 		done <- true
 	}()
@@ -131,7 +130,7 @@ func (n *NodesSelector) Select(cl client.Client, ctx context.Context, input Acti
 					From:    cursor,
 					Size:    size,
 				}
-				res, loadMore, err := n.performListing(ctx, cl, common.ServiceSearch, req, filter, objects)
+				res, loadMore, err := n.performListing(ctx, common.ServiceSearch, req, filter, objects)
 				if err != nil {
 					return err
 				}
@@ -149,7 +148,7 @@ func (n *NodesSelector) Select(cl client.Client, ctx context.Context, input Acti
 				Query:   q,
 				Details: true,
 			}
-			total, _, e = n.performListing(ctx, cl, common.ServiceTree, req, filter, objects)
+			total, _, e = n.performListing(ctx, common.ServiceTree, req, filter, objects)
 			if e != nil {
 				return e
 			}
@@ -159,15 +158,15 @@ func (n *NodesSelector) Select(cl client.Client, ctx context.Context, input Acti
 	return nil
 }
 
-func (n *NodesSelector) performListing(ctx context.Context, cl client.Client, serviceName string, req *tree.SearchRequest, filter func(n *tree.Node) bool, objects chan interface{}) (int, bool, error) {
-	treeClient := tree.NewSearcherService(common.ServiceGrpcNamespace_+serviceName, cl)
+func (n *NodesSelector) performListing(ctx context.Context, serviceName string, req *tree.SearchRequest, filter func(n *tree.Node) bool, objects chan interface{}) (int, bool, error) {
+	treeClient := tree.NewSearcherClient(defaults.NewClientConn(serviceName))
 	sStream, eR := treeClient.Search(ctx, req)
 	if eR != nil {
 		return 0, false, eR
 	}
 	var received int32
 	var count int
-	defer sStream.Close()
+	defer sStream.CloseSend()
 	for {
 		resp, rE := sStream.Recv()
 		if rE != nil {
