@@ -25,9 +25,9 @@ import (
 
 	"github.com/micro/micro/v3/service/client"
 
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
+	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/x/configx"
 )

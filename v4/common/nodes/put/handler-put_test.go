@@ -57,7 +57,7 @@ func testMkFileResources() (*Handler, context.Context, *nodes.HandlerMock) {
 	return h, ctx, mock
 }
 
-func TestMkfileHandler_GetOrCreatePutNode(t *testing.T) {
+func TestHandler_GetOrCreatePutNode(t *testing.T) {
 
 	h, ctx, _ := testMkFileResources()
 	Convey("getOrCreatePutNode", t, func() {
@@ -82,7 +82,7 @@ func TestMkfileHandler_GetOrCreatePutNode(t *testing.T) {
 
 }
 
-func TestMkfileHandler_PutObject(t *testing.T) {
+func TestHandler_PutObject(t *testing.T) {
 
 	h, ctx, _ := testMkFileResources()
 	Convey("PutObject 1", t, func() {

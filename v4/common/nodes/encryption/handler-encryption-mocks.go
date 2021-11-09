@@ -147,7 +147,7 @@ func (sc *mockSendBlockStreamClient) Trailer() metadata.MD {
 }
 
 func (sc *mockSendBlockStreamClient) CloseSend() error {
-	panic("implement me")
+	return nil
 }
 
 func (sc *mockSendBlockStreamClient) Context() context.Context {

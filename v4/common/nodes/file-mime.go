@@ -122,6 +122,9 @@ func (m *TeeMimeReader) Read(p []byte) (n int, err error) {
 var mimeMetaClient tree.NodeReceiverClient
 
 func WrapReaderForMime(ctx context.Context, clone *tree.Node, reader io.Reader) io.Reader {
+	if IsUnitTestEnv {
+		return reader
+	}
 	if mimeMetaClient == nil {
 		mimeMetaClient = tree.NewNodeReceiverClient(defaults.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceMeta))
 	}
