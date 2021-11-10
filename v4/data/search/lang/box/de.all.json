@@ -1,0 +1,20 @@
+{
+  "Search.Config.IndexContent.Label": {
+    "other": "Inhalt indexieren"
+  },
+  "Search.Config.IndexContent.Description": {
+    "other": "Wenn auf \"true\" gesetzt, sucht der Indexer nach den ContentRef-Metadaten, liest den Inhalt dieser Referenz und indiziert ihn für die Suche."
+  },
+  "Search.Config.BasenameAnalyze.Label": {
+    "other": "Dateinamenanalysator"
+  },
+  "Search.Config.BasenameAnalyze.Description": {
+    "other": "Analysator für Dateinamen"
+  },
+  "Search.Config.ContentAnalyzer.Label": {
+    "other": "Inhaltsanalysator"
+  },
+  "Search.Config.ContentAnalyzer.Description": {
+    "other": "Analysator für Inhalte verwendet"
+  }
+}

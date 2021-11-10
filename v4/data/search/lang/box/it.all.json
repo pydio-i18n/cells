@@ -1,0 +1,20 @@
+{
+  "Search.Config.IndexContent.Label": {
+    "other": "Indicizza Contenuto"
+  },
+  "Search.Config.IndexContent.Description": {
+    "other": "Se impostato su VERO, l'indicizzatore cercherà i metadati ContentRef, leggerà i contenuti da questo riferimento e indicizzerà la ricerca."
+  },
+  "Search.Config.BasenameAnalyze.Label": {
+    "other": "Analizzatore Nome del File"
+  },
+  "Search.Config.BasenameAnalyze.Description": {
+    "other": "Analizzatore utilizzato sui nomi dei file"
+  },
+  "Search.Config.ContentAnalyzer.Label": {
+    "other": "Analizzatore dei Contenuti"
+  },
+  "Search.Config.ContentAnalyzer.Description": {
+    "other": "Analizzatore usato sui contenuti"
+  }
+}

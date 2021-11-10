@@ -1,0 +1,20 @@
+{
+  "Search.Config.IndexContent.Label": {
+    "other": "Indexar Contenidos"
+  },
+  "Search.Config.IndexContent.Description": {
+    "other": "Si se establece en \"Verdadero\", el indexador buscará los metadatos de ContentRef, leerá el contenido de esta referencia y lo indexará para búsquedas."
+  },
+  "Search.Config.BasenameAnalyze.Label": {
+    "other": "Analizador de Nombre de Archivo"
+  },
+  "Search.Config.BasenameAnalyze.Description": {
+    "other": "Analizador usado en nombres de archivo"
+  },
+  "Search.Config.ContentAnalyzer.Label": {
+    "other": "Analizador de Contenidos"
+  },
+  "Search.Config.ContentAnalyzer.Description": {
+    "other": "Analizador usado en el contenidos"
+  }
+}
