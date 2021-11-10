@@ -6,13 +6,8 @@ import (
 	"strings"
 
 	"google.golang.org/protobuf/types/known/anypb"
-
 	"go.uber.org/zap"
-
-	service "github.com/pydio/cells/common/service/proto"
-	"github.com/pydio/cells/v4/common/log"
-
-	"github.com/micro/go-micro/errors"
+	"github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
 
 	"github.com/pydio/cells/v4/common"
@@ -20,6 +15,8 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	service "github.com/pydio/cells/v4/common/proto/service"
+	"github.com/pydio/cells/v4/common/log"
 	permissions2 "github.com/pydio/cells/v4/common/utils/permissions"
 )
 

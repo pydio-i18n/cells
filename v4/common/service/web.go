@@ -3,11 +3,12 @@ package service
 import (
 	"context"
 	"encoding/json"
-	"github.com/go-openapi/spec"
 	"net/http"
 	"reflect"
 	"strings"
 	"sync"
+
+	"github.com/go-openapi/spec"
 
 	"go.uber.org/zap"
 
@@ -52,6 +53,8 @@ func WithWeb(handler func() WebHandler) ServiceOption {
 			// log.Println("Context does not contain server key")
 			return
 		}
+
+		log.Logger(ctx).Info("starting ", zap.String("service", o.Name))
 
 		// TODO v4
 		// if rateLimit, err := strconv.Atoi(os.Getenv("WEB_RATE_LIMIT")); err == nil {
@@ -137,6 +140,7 @@ func WithWeb(handler func() WebHandler) ServiceOption {
 		wrapped = cors.Default().Handler(wrapped)
 
 		mux.Handle(ws.RootPath(), wrapped)
+		mux.Handle(ws.RootPath() + "/", wrapped)
 
 		return
 	}

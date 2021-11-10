@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	plugins.Register("main", func(ctx context.Context) {
+	f := func(ctx context.Context) {
 		service.NewService(
 			service.Name(common.ServiceRestNamespace_+common.ServiceConfig),
 			service.Context(ctx),
@@ -20,5 +20,8 @@ func init() {
 				return new(Handler)
 			}),
 		)
-	})
+	}
+
+	plugins.Register("main", f)
+	plugins.Register("install", f)
 }

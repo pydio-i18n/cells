@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
+
+	"github.com/micro/micro/v3/service/errors"
+
 	"github.com/pydio/cells/v4/common/nodes/compose"
-
-	"github.com/micro/go-micro/errors"
-
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/proto/idm"

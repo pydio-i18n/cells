@@ -124,9 +124,10 @@ func Start() error {
 		return err
 	}
 
+	b := buf.Bytes()
 	// Load config directly from memory
 	adapter := caddyconfig.GetAdapter("caddyfile")
-	confs, warns, err := adapter.Adapt(buf.Bytes(), map[string]interface{}{})
+	confs, warns, err := adapter.Adapt(b, map[string]interface{}{})
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -136,7 +137,7 @@ func Start() error {
 	}
 
 	// TODO v4 remove
-	fmt.Println(string(confs))
+	fmt.Println(string(b))
 
 	if err := caddy.Load(confs, true); err != nil {
 		return err

@@ -87,6 +87,9 @@ to quickly create a Cobra application.`,
 		wg.Add(3)
 
 		go func() {
+			v := reflect.ValueOf(srvHTTP).Elem()
+			fmt.Printf("routes: %v\n", v.FieldByName("m"))
+
 			http.Serve(lisHTTP, srvHTTP)
 			wg.Done()
 		}()

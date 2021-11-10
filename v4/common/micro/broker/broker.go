@@ -39,6 +39,13 @@ func NewBroker(b broker.Broker, opts ...Option) broker.Broker {
 	return &brokerwrap{b, newOptions(opts...)}
 }
 
+func Connect() error {
+	return std.Connect()
+}
+
+func Disconnect() error {
+	return std.Disconnect()
+}
 
 func Publish(s string, m *broker.Message, opts ...broker.PublishOption) error {
 	return std.Publish(s, m, opts...)

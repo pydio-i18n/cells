@@ -104,6 +104,7 @@ func (s *Handler) EndpointsDiscovery(req *restful.Request, resp *restful.Respons
 	endpointResponse.Endpoints["websocket"] = withScheme(withPath(urlParsed, "/ws/event"), wsProtocol).String()
 	endpointResponse.Endpoints["frontend"] = withPath(urlParsed, "").String()
 
+	// TODO v4 http version
 	if urlParsed.Scheme == "http" {
 		if external := viper.GetString("grpc_external"); external != "" {
 			endpointResponse.Endpoints["grpc"] = external

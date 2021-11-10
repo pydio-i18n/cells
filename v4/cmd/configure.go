@@ -56,14 +56,27 @@ import (
 )
 
 const (
-	/*
 	caddyfile = `
+{
+  auto_https disable_redirects
+}
+
 {{range .Sites}}
 {{range .Binds}}{{.}} {{end}} {
 	root * "{{$.WebRoot}}"
+	file_server
 
-	route /* {
-		reverse_proxy :8002  {
+	route /a/* {
+		uri strip_prefix /a
+		reverse_proxy :8002 {
+			fail_duration 20s
+			header_up Host {host}
+			header_up X-Real-IP {remote}
+		}
+	}
+
+	route /install* {
+		reverse_proxy :8002 {
 			fail_duration 20s
 			header_up Host {host}
 			header_up X-Real-IP {remote}
@@ -76,7 +89,7 @@ const (
 {{end}}
 	 `
 
-	 */
+	 /*
 
 	caddyfile = `
 :8080 
@@ -85,13 +98,15 @@ file_server
 
 route /a/* {
 	uri strip_prefix /a
-	reverse_proxy localhost:8002
+	reverse_proxy :8002
 }
 
 route /install* {
-	reverse_proxy /a* :8002
+	reverse_proxy :8002
 }
 	 `
+
+	 */
 )
 
 var (
@@ -435,6 +450,7 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 		http.Serve(lisHTTP, srvHTTP)
 	}()
 
+	broker.Connect()
 	plugins.Init(ctx, "install")
 
 	// Creating temporary caddy file
