@@ -139,6 +139,11 @@ type BucketInfo struct {
 	CreationDate time.Time
 }
 
+type ObjectInfoOwner struct {
+	DisplayName string
+	ID          string
+}
+
 // ObjectInfo container for object metadata.
 type ObjectInfo struct {
 	// An ETag is optionally set to md5sum of an object.  In case of multipart objects,
@@ -156,10 +161,7 @@ type ObjectInfo struct {
 	Metadata http.Header `json:"metadata" xml:"-"`
 
 	// Owner name.
-	Owner struct {
-		DisplayName string `json:"name"`
-		ID          string `json:"id"`
-	} `json:"owner"`
+	Owner *ObjectInfoOwner
 
 	// The class of storage used to store the object.
 	StorageClass string `json:"storageClass"`
