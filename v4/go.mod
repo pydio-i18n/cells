@@ -16,6 +16,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1-0.20200219035652-afde56e7acac
 	github.com/emicklei/go-restful v2.15.0+incompatible
 	github.com/fsnotify/fsnotify v1.5.1
+	github.com/ghodss/yaml v1.0.0
 	github.com/go-openapi/errors v0.20.1
 	github.com/go-openapi/loads v0.21.0
 	github.com/go-openapi/spec v0.20.4
@@ -24,6 +25,7 @@ require (
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.3.0
+	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/sessions v1.2.1 // indirect
 	github.com/gosimple/slug v1.11.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
@@ -37,19 +39,25 @@ require (
 	github.com/json-iterator/go v1.1.12
 	github.com/karrick/godirwalk v1.16.1
 	github.com/krolaw/zipstream v0.0.0-20180621105154-0a2661891f94
+	github.com/kylelemons/godebug v1.1.0
+	github.com/livekit/protocol v0.10.0
 	github.com/lucas-clemente/quic-go v0.24.0 // indirect
 	github.com/manifoldco/promptui v0.8.0
 	github.com/matcornic/hermes/v2 v2.1.0
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/micro/micro/v3 v3.6.0
+	github.com/mitchellh/mapstructure v1.4.2
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/nicksnyder/go-i18n v1.10.0
-	github.com/ory/hydra v1.10.7 // indirect
+	github.com/ory/fosite v0.40.3-0.20211101181407-30e8cb92e53c
+	github.com/ory/hydra v1.10.7
 	github.com/ory/ladon v1.2.0
+	github.com/ory/x v0.0.303
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.1
 	github.com/pkg/errors v0.9.1
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
+	github.com/pydio/melody v0.0.0-20190928133520-4271c6513fb6
 	github.com/rjeczalik/notify v0.9.2
 	github.com/robertkrimen/otto v0.0.0-20211024170158-b87d35c0b86f
 	github.com/rs/cors v1.8.0
@@ -59,6 +67,7 @@ require (
 	github.com/sendgrid/rest v2.6.5+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.10.3+incompatible
 	github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0
+	github.com/sirupsen/logrus v1.8.1
 	github.com/smartystreets/assertions v1.1.1 // indirect
 	github.com/smartystreets/goconvey v1.6.4
 	github.com/spf13/afero v1.6.0
@@ -83,9 +92,10 @@ require (
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
 	golang.org/x/net v0.0.0-20211020060615-d418f374d309
-	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
+	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7
+	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac
 	google.golang.org/genproto v0.0.0-20211020151524-b7c3a969101a
 	google.golang.org/grpc v1.41.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0
