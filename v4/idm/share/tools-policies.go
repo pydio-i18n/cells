@@ -4,16 +4,16 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/pborman/uuid"
+	"github.com/google/uuid"
 
 	"github.com/pydio/cells/v4/common"
+	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
-	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 )
 
 func InheritPolicies(ctx context.Context, policyName string, read, write bool) (string, error) {
-	polClient := idm.NewPolicyEngineServiceClient(registry.GetClient(common.ServicePolicy))
+	polClient := idm.NewPolicyEngineServiceClient(defaults.NewClientConn(common.ServicePolicy))
 	response, e := polClient.ListPolicyGroups(ctx, &idm.ListPolicyGroupsRequest{})
 	if e != nil {
 		return "", e
@@ -70,7 +70,7 @@ func derivePolicy(policy *idm.PolicyGroup, read, write bool, suffix string) (*id
 	for _, p := range policy.Policies {
 		// Deny : append policy
 		if p.Effect == idm.PolicyEffect_deny {
-			p.Id = uuid.New()
+			p.Id = uuid.New().String()
 			p.Subjects = []string{"policy:" + newG.Uuid}
 			newG.Policies = append(newG.Policies, p)
 			continue
@@ -95,7 +95,7 @@ func derivePolicy(policy *idm.PolicyGroup, read, write bool, suffix string) (*id
 		return nil, fmt.Errorf("cannot assign write as parent policy does not provide write access")
 	}
 	// Reset actions
-	allowPol.Id = uuid.New()
+	allowPol.Id = uuid.New().String()
 	allowPol.Subjects = []string{"policy:" + newG.Uuid}
 	allowPol.Actions = []string{}
 	if read {
@@ -124,7 +124,7 @@ func policyByName(groups []*idm.PolicyGroup, name string) (*idm.PolicyGroup, boo
 }
 
 func InterpretInheritedPolicy(ctx context.Context, name string) (read, write bool, e error) {
-	polClient := idm.NewPolicyEngineServiceClient(registry.GetClient(common.ServicePolicy))
+	polClient := idm.NewPolicyEngineServiceClient(defaults.NewClientConn(common.ServicePolicy))
 	response, e := polClient.ListPolicyGroups(ctx, &idm.ListPolicyGroupsRequest{})
 	if e != nil {
 		return false, false, e

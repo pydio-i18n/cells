@@ -36,7 +36,6 @@ import (
 	"github.com/pydio/cells/v4/common/proto/docstore"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
-	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 )
 
@@ -44,7 +43,7 @@ const PasswordComplexitySuffix = "#$!Az1"
 
 func StoreHashDocument(ctx context.Context, ownerUser *idm.User, link *rest.ShareLink, updateHash ...string) error {
 
-	store := docstore.NewDocStoreClient(registry.GetClient(common.ServiceDocStore))
+	store := docstore.NewDocStoreClient(defaults.NewClientConn(common.ServiceDocStore))
 
 	hashDoc := &docstore.ShareDocument{
 		OwnerId:       ownerUser.Login,
@@ -109,7 +108,7 @@ func StoreHashDocument(ctx context.Context, ownerUser *idm.User, link *rest.Shar
 
 func LoadHashDocumentData(ctx context.Context, shareLink *rest.ShareLink, acls []*idm.ACL) error {
 
-	store := docstore.NewDocStoreClient(registry.GetClient(common.ServiceDocStore))
+	store := docstore.NewDocStoreClient(defaults.NewClientConn(common.ServiceDocStore))
 	streamer, er := store.ListDocuments(ctx, &docstore.ListDocumentsRequest{StoreID: common.DocStoreIdShares, Query: &docstore.DocumentQuery{
 		MetaQuery: "+REPOSITORY:\"" + shareLink.Uuid + "\" +SHARE_TYPE:minisite",
 	}})
@@ -117,7 +116,7 @@ func LoadHashDocumentData(ctx context.Context, shareLink *rest.ShareLink, acls [
 		return er
 	}
 	var linkDoc *docstore.Document
-	defer streamer.Close()
+	defer streamer.CloseSend()
 	for {
 		resp, e := streamer.Recv()
 		if e != nil {
@@ -194,7 +193,7 @@ func LoadHashDocumentData(ctx context.Context, shareLink *rest.ShareLink, acls [
 
 func DeleteHashDocument(ctx context.Context, shareId string) error {
 
-	store := docstore.NewDocStoreClient(common.ServiceGrpcNamespace_+common.ServiceDocStore, defaults.NewClient())
+	store := docstore.NewDocStoreClient(defaults.NewClientConn(common.ServiceDocStore))
 	resp, err := store.DeleteDocuments(ctx, &docstore.DeleteDocumentsRequest{StoreID: common.DocStoreIdShares, Query: &docstore.DocumentQuery{
 		MetaQuery: "+REPOSITORY:\"" + shareId + "\" +SHARE_TYPE:minisite",
 	}})
@@ -212,7 +211,7 @@ func DeleteHashDocument(ctx context.Context, shareId string) error {
 // the passed userLogin value.
 func SearchHashDocumentForUser(ctx context.Context, userLogin string) (*docstore.ShareDocument, error) {
 
-	store := docstore.NewDocStoreClient(common.ServiceGrpcNamespace_+common.ServiceDocStore, defaults.NewClient())
+	store := docstore.NewDocStoreClient(defaults.NewClientConn(common.ServiceDocStore))
 
 	// SEARCH PUBLIC
 	streamer, err := store.ListDocuments(ctx, &docstore.ListDocumentsRequest{StoreID: common.DocStoreIdShares, Query: &docstore.DocumentQuery{
@@ -222,7 +221,7 @@ func SearchHashDocumentForUser(ctx context.Context, userLogin string) (*docstore
 		return nil, err
 	}
 	var linkData *docstore.ShareDocument
-	defer streamer.Close()
+	defer streamer.CloseSend()
 	for {
 		resp, e := streamer.Recv()
 		if e != nil {
@@ -246,7 +245,7 @@ func SearchHashDocumentForUser(ctx context.Context, userLogin string) (*docstore
 	if err != nil {
 		return nil, err
 	}
-	defer streamer1.Close()
+	defer streamer1.CloseSend()
 	for {
 		resp, e := streamer1.Recv()
 		if e != nil {

@@ -4,12 +4,11 @@ import (
 	"context"
 	"time"
 
-
 	"github.com/micro/micro/v3/service/errors"
 
-	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/nodes"
+	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -70,7 +69,7 @@ func CheckCellOptionsAgainstConfigs(ctx context.Context, request *rest.PutCellRe
 	}
 	options := defaultOptions()
 	aclWss := acl.Workspaces
-	return router.WrapCallback(func(inputFilter nodes.NodeFilter, outputFilter nodes.NodeFilter) error {
+	return router.WrapCallback(func(inputFilter nodes.FilterFunc, outputFilter nodes.FilterFunc) error {
 		for _, n := range request.Room.RootNodes {
 			var files, folders bool
 			var wss []*idm.Workspace

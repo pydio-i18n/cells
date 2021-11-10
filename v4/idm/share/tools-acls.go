@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"strings"
 
-	"google.golang.org/protobuf/types/known/anypb"
 	"github.com/gosimple/slug"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/types/known/anypb"
 
-	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
+	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 )
@@ -123,7 +123,7 @@ func AclsToCellAcls(ctx context.Context, acls []*idm.ACL) map[string]*rest.CellA
 func LoadCellAclsObjects(ctx context.Context, roomAcls map[string]*rest.CellAcl, checker ContextEditableChecker) error {
 
 	log.Logger(ctx).Debug("LoadCellAclsObjects", zap.Any("acls", roomAcls))
-	roleClient := idm.NewRoleServiceClient(common.ServiceGrpcNamespace_+common.ServiceRole, defaults.NewClient())
+	roleClient := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
 	var roleIds []string
 	for _, acl := range roomAcls {
 		roleIds = append(roleIds, acl.RoleId)
@@ -134,7 +134,7 @@ func LoadCellAclsObjects(ctx context.Context, roomAcls map[string]*rest.CellAcl,
 		return err
 	}
 	loadUsers := make(map[string]*idm.Role)
-	defer streamer.Close()
+	defer streamer.CloseSend()
 	for {
 		resp, e := streamer.Recv()
 		if e != nil {
@@ -157,12 +157,12 @@ func LoadCellAclsObjects(ctx context.Context, roomAcls map[string]*rest.CellAcl,
 			userQ, _ := anypb.New(&idm.UserSingleQuery{Uuid: roleId})
 			subQueries = append(subQueries, userQ)
 		}
-		userClient := idm.NewUserServiceClient(common.ServiceGrpcNamespace_+common.ServiceUser, defaults.NewClient())
+		userClient := idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
 		stream, err := userClient.SearchUser(ctx, &idm.SearchUserRequest{Query: &service.Query{SubQueries: subQueries}})
 		if err != nil {
 			return err
 		}
-		defer stream.Close()
+		defer stream.CloseSend()
 		for {
 			resp, e := stream.Recv()
 			if e != nil {
@@ -408,7 +408,7 @@ func GetOrCreateWorkspace(ctx context.Context, ownerUser *idm.User, wsUuid strin
 
 	log.Logger(ctx).Debug("GetOrCreateWorkspace", zap.String("wsUuid", wsUuid), zap.Any("scope", scope.String()), zap.Bool("updateIfNeeded", updateIfNeeded))
 
-	wsClient := idm.NewWorkspaceServiceClient(common.ServiceGrpcNamespace_+common.ServiceWorkspace, defaults.NewClient())
+	wsClient := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
 	var create bool
 	if wsUuid == "" {
 		if label == "" {
@@ -442,7 +442,7 @@ func GetOrCreateWorkspace(ctx context.Context, ownerUser *idm.User, wsUuid strin
 		if err != nil {
 			return workspace, false, err
 		}
-		defer wsStream.Close()
+		defer wsStream.CloseSend()
 		for {
 			wsResp, er := wsStream.Recv()
 			if er != nil {
@@ -500,7 +500,7 @@ func DeleteWorkspace(ctx context.Context, ownerUser *idm.User, scope idm.Workspa
 		}
 	}
 	// Deleting workspace will delete associated policies and associated ACLs
-	wsClient := idm.NewWorkspaceServiceClient(common.ServiceGrpcNamespace_+common.ServiceWorkspace, defaults.NewClient())
+	wsClient := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
 	q, _ := anypb.New(&idm.WorkspaceSingleQuery{
 		Uuid: workspaceId,
 	})
@@ -566,7 +566,7 @@ func GetTemplateACLsForMinisite(ctx context.Context, roleId string, perms []rest
 	if err != nil {
 		return nil, err
 	}
-	defer streamer.Close()
+	defer streamer.CloseSend()
 	for {
 		resp, e := streamer.Recv()
 		if e != nil {
@@ -593,7 +593,7 @@ func GetTemplateACLsForMinisite(ctx context.Context, roleId string, perms []rest
 		if err != nil {
 			return nil, err
 		}
-		defer streamer2.Close()
+		defer streamer2.CloseSend()
 		for {
 			resp, e := streamer2.Recv()
 			if e != nil {

@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"strings"
 
-	"google.golang.org/protobuf/types/known/anypb"
-	"go.uber.org/zap"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
+	"go.uber.org/zap"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
-	"github.com/pydio/cells/v4/common/proto/tree"
 	service "github.com/pydio/cells/v4/common/proto/service"
-	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/proto/tree"
 	permissions2 "github.com/pydio/cells/v4/common/utils/permissions"
 )
 
@@ -24,8 +24,8 @@ import (
 func GetOrCreateHiddenUser(ctx context.Context, ownerUser *idm.User, link *rest.ShareLink, passwordEnabled bool, updatePassword string, passwordHashed bool) (user *idm.User, err error) {
 
 	// Create or Load corresponding Hidden User
-	uClient := idm.NewUserServiceClient(common.ServiceGrpcNamespace_+common.ServiceUser, defaults.NewClient())
-	roleClient := idm.NewRoleServiceClient(common.ServiceGrpcNamespace_+common.ServiceRole, defaults.NewClient())
+	uClient := idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
+	roleClient := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
 	if link.UserLogin == "" {
 		newUuid := uuid.New()
 		login := strings.Replace(newUuid, "-", "", -1)[0:16]
@@ -83,7 +83,7 @@ func GetOrCreateHiddenUser(ctx context.Context, ownerUser *idm.User, link *rest.
 		if e != nil {
 			return nil, e
 		}
-		defer stream.Close()
+		defer stream.CloseSend()
 		for {
 			rsp, e := stream.Recv()
 			if e != nil {
@@ -112,7 +112,7 @@ func UpdateACLsForHiddenUser(ctx context.Context, roleId string, workspaceId str
 		}
 	}
 
-	aclClient := idm.NewACLServiceClient(common.ServiceGrpcNamespace_+common.ServiceAcl, defaults.NewClient())
+	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
 	if update {
 		// Delete existing acls for existing user
 		q, _ := anypb.New(&idm.ACLSingleQuery{RoleIDs: []string{roleId}})
@@ -189,7 +189,7 @@ func DeleteHiddenUser(ctx context.Context, link *rest.ShareLink) error {
 	if link.UserLogin == "" {
 		return nil
 	}
-	uClient := idm.NewUserServiceClient(common.ServiceGrpcNamespace_+common.ServiceUser, defaults.NewClient())
+	uClient := idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
 	q1, _ := anypb.New(&idm.UserSingleQuery{Login: link.UserLogin})
 	q2, _ := anypb.New(&idm.UserSingleQuery{AttributeName: idm.UserAttrHidden, AttributeValue: "true"})
 	_, e := uClient.DeleteUser(ctx, &idm.DeleteUserRequest{Query: &service.Query{
@@ -206,13 +206,13 @@ func ClearLostHiddenUsers(ctx context.Context) error {
 	log.Logger(ctx).Info("Migration: looking for hidden users unlinked from any public link")
 
 	// List hidden users and check for their associated links
-	uClient := idm.NewUserServiceClient(common.ServiceGrpcNamespace_+common.ServiceUser, defaults.NewClient())
+	uClient := idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
 	q, _ := anypb.New(&idm.UserSingleQuery{AttributeName: idm.UserAttrHidden, AttributeValue: "true"})
 	stream, e := uClient.SearchUser(ctx, &idm.SearchUserRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}})
 	if e != nil {
 		return e
 	}
-	defer stream.Close()
+	defer stream.CloseSend()
 	for {
 		resp, er := stream.Recv()
 		if er != nil {

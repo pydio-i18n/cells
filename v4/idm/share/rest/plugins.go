@@ -27,7 +27,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/service"
-	"github.com/pydio/cells/v4/idm/share"
 )
 
 func init() {
@@ -37,21 +36,23 @@ func init() {
 			service.Context(ctx),
 			service.Tag(common.ServiceTagIdm),
 			service.Description("REST access to shared rooms"),
-			service.RouterDependencies(),
+			//service.RouterDependencies(),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceAcl, []string{}),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceUser, []string{}),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceRole, []string{}),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceWorkspace, []string{}),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceMeta, []string{}),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceDocStore, []string{}),
-			service.Migrations([]*service.Migration{
-				{
-					TargetVersion: service.ValidVersion("1.6.2"),
-					Up: func(ctx context.Context) error {
-						return share.ClearLostHiddenUsers(ctx)
+			/*
+				service.Migrations([]*service.Migration{
+					{
+						TargetVersion: service.ValidVersion("1.6.2"),
+						Up: func(ctx context.Context) error {
+							return share.ClearLostHiddenUsers(ctx)
+						},
 					},
-				},
-			}),
+				}),
+			*/
 			service.WithWeb(func() service.WebHandler {
 				return NewSharesHandler()
 			}),
