@@ -28,14 +28,12 @@ import (
 	"strings"
 	"time"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
-
 	"github.com/ory/fosite"
 	"github.com/ory/fosite/handler/openid"
 	"github.com/ory/fosite/token/jwt"
 	"github.com/ory/hydra/consent"
 	"github.com/ory/hydra/oauth2"
-	"github.com/ory/x/sqlcon"
+	"github.com/ory/x/sqlxx"
 	"github.com/ory/x/urlx"
 	"github.com/pborman/uuid"
 	"github.com/pkg/errors"
@@ -46,7 +44,7 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	pauth "github.com/pydio/cells/v4/common/proto/auth"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
-	"github.com/pydio/cells/v4/common/sql"
+	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 // Handler for the plugin
@@ -68,8 +66,8 @@ func (h *Handler) GetLogin(ctx context.Context, in *pauth.GetLoginRequest, out *
 		return err
 	}
 
-	out.Challenge = req.Challenge
-	out.SessionID = req.SessionID
+	out.Challenge = req.ID
+	out.SessionID = req.SessionID.String()
 	out.RequestURL = req.RequestURL
 	out.Subject = req.Subject
 	out.RequestedScope = req.RequestedScope
@@ -89,13 +87,13 @@ func (h *Handler) CreateLogin(ctx context.Context, in *pauth.CreateLoginRequest,
 	// Generate the request URL
 	host, _ := servicecontext.HttpMetaFromGrpcContext(ctx, servicecontext.HttpMetaHost)
 	provider := auth.GetConfigurationProvider(host)
-	iu := urlx.AppendPaths(provider.IssuerURL(), provider.OAuth2AuthURL())
+	iu := urlx.AppendPaths(provider.IssuerURL(), provider.OAuth2AuthURL().Path)
 	sessionID := uuid.New()
 
 	if err := auth.GetRegistry().ConsentManager().CreateLoginSession(ctx, &consent.LoginSession{
 		ID:              sessionID,
 		Subject:         "",
-		AuthenticatedAt: time.Now().UTC(),
+		AuthenticatedAt: sqlxx.NullTime(time.Now().UTC()),
 		Remember:        false,
 	}); err != nil {
 		return err
@@ -110,7 +108,7 @@ func (h *Handler) CreateLogin(ctx context.Context, in *pauth.CreateLoginRequest,
 	if err := auth.GetRegistry().ConsentManager().CreateLoginRequest(
 		ctx,
 		&consent.LoginRequest{
-			Challenge:         challenge,
+			ID:                challenge,
 			Verifier:          verifier,
 			CSRF:              csrf,
 			Skip:              false,
@@ -119,9 +117,9 @@ func (h *Handler) CreateLogin(ctx context.Context, in *pauth.CreateLoginRequest,
 			Subject:           "",
 			Client:            client,
 			RequestURL:        iu.String(),
-			AuthenticatedAt:   time.Time{},
+			AuthenticatedAt:   sqlxx.NullTime{},
 			RequestedAt:       time.Now().UTC(),
-			SessionID:         sessionID,
+			SessionID:         sqlxx.NullString(sessionID),
 		},
 	); err != nil {
 		return errors.WithStack(err)
@@ -140,9 +138,9 @@ func (h *Handler) AcceptLogin(ctx context.Context, in *pauth.AcceptLoginRequest,
 
 	var p consent.HandledLoginRequest
 	p.Subject = in.Subject
-	p.Challenge = in.Challenge
+	p.ID = in.Challenge
 	p.RequestedAt = time.Now().UTC()
-	p.AuthenticatedAt = p.RequestedAt
+	p.AuthenticatedAt = sqlxx.NullTime(p.RequestedAt)
 
 	_, err := auth.GetRegistry().ConsentManager().HandleLoginRequest(ctx, in.Challenge, &p)
 	if err != nil {
@@ -158,11 +156,11 @@ func (h *Handler) GetConsent(ctx context.Context, in *pauth.GetConsentRequest, o
 		return err
 	}
 
-	out.Challenge = req.Challenge
-	out.LoginSessionID = req.LoginSessionID
+	out.Challenge = req.ID
+	out.LoginSessionID = req.LoginSessionID.String()
 	out.Subject = req.Subject
 	out.SubjectIdentifier = req.Subject
-	out.ClientID = req.Client.ClientID
+	out.ClientID = req.ClientID
 
 	return nil
 }
@@ -179,7 +177,7 @@ func (h *Handler) CreateConsent(ctx context.Context, in *pauth.CreateConsentRequ
 		return err
 	}
 
-	client, err := auth.GetRegistry().ClientManager().GetConcreteClient(ctx, login.Client.ClientID)
+	client, err := auth.GetRegistry().ClientManager().GetConcreteClient(ctx, login.ClientID)
 	if err != nil {
 		return err
 	}
@@ -197,7 +195,8 @@ func (h *Handler) CreateConsent(ctx context.Context, in *pauth.CreateConsentRequ
 		return errors.WithStack(fosite.ErrRequestUnauthorized.WithDebug("The login request has expired, please try again."))
 	}
 
-	if err := auth.GetRegistry().ConsentManager().ConfirmLoginSession(ctx, session.LoginRequest.SessionID, session.Subject, session.Remember); err != nil {
+	// TODO V4 : verify session.RequestedAt or session.AuthenticatedAt ?
+	if err := auth.GetRegistry().ConsentManager().ConfirmLoginSession(ctx, session.LoginRequest.SessionID.String(), session.RequestedAt, session.Subject, session.Remember); err != nil {
 		return err
 	}
 
@@ -205,7 +204,7 @@ func (h *Handler) CreateConsent(ctx context.Context, in *pauth.CreateConsentRequ
 	if err := auth.GetRegistry().ConsentManager().CreateConsentRequest(
 		ctx,
 		&consent.ConsentRequest{
-			Challenge:         challenge,
+			ID:                challenge,
 			Verifier:          verifier,
 			CSRF:              csrf,
 			Skip:              false,
@@ -214,9 +213,9 @@ func (h *Handler) CreateConsent(ctx context.Context, in *pauth.CreateConsentRequ
 			Subject:           session.Subject,
 			Client:            client,
 			RequestURL:        login.RequestURL,
-			LoginChallenge:    login.Challenge,
+			LoginChallenge:    sqlxx.NullString(login.ID),
 			LoginSessionID:    login.SessionID,
-			AuthenticatedAt:   time.Now().UTC(),
+			AuthenticatedAt:   sqlxx.NullTime(time.Now().UTC()),
 			RequestedAt:       time.Now().UTC(),
 		},
 	); err != nil {
@@ -247,9 +246,9 @@ func (h *Handler) AcceptConsent(ctx context.Context, in *pauth.AcceptConsentRequ
 		idToken[k] = v
 	}
 
-	p.Challenge = in.Challenge
+	p.ID = in.Challenge
 	p.RequestedAt = time.Now().UTC()
-	p.AuthenticatedAt = p.RequestedAt
+	p.AuthenticatedAt = sqlxx.NullTime(p.RequestedAt)
 	p.Session = consent.NewConsentRequestSessionData()
 	p.Session.AccessToken = accessToken
 	p.Session.IDToken = idToken
@@ -324,7 +323,7 @@ func (h *Handler) CreateAuthCode(ctx context.Context, in *pauth.CreateAuthCodeRe
 		}
 	}
 
-	ar.SetID(session.Challenge)
+	ar.SetID(session.ID)
 
 	claims := &jwt.IDTokenClaims{
 		Subject:     session.ConsentRequest.SubjectIdentifier,
@@ -349,12 +348,12 @@ func (h *Handler) CreateAuthCode(ctx context.Context, in *pauth.CreateAuthCodeRe
 		Extra:            session.Session.AccessToken,
 		KID:              accessTokenKeyID,
 		ClientID:         ar.GetClient().GetID(),
-		ConsentChallenge: session.Challenge,
+		ConsentChallenge: session.ID,
 	})
 
 	if err != nil {
 		e := fosite.ErrorToRFC6749Error(err)
-		log.Logger(ctx).Error("Could not create authorize response", zap.Error(e), zap.String("debug", e.Debug))
+		log.Logger(ctx).Error("Could not create authorize response", zap.Error(e), zap.String("debug", e.Debug()))
 		return err
 	}
 
@@ -372,8 +371,8 @@ func (h *Handler) CreateLogout(ctx context.Context, in *pauth.CreateLogoutReques
 	if err := auth.GetRegistry().ConsentManager().CreateLogoutRequest(
 		ctx,
 		&consent.LogoutRequest{
+			ID:          challenge,
 			RequestURL:  in.RequestURL,
-			Challenge:   challenge,
 			Subject:     in.Subject,
 			SessionID:   in.SessionID,
 			Verifier:    uuid.New(),
@@ -569,7 +568,7 @@ func (h *Handler) Revoke(ctx context.Context, in *pauth.RevokeTokenRequest, out 
 func (h *Handler) PruneTokens(ctx context.Context, in *pauth.PruneTokensRequest, out *pauth.PruneTokensResponse) error {
 
 	storage := auth.GetRegistry().OAuth2Storage()
-	err := storage.FlushInactiveAccessTokens(ctx, time.Now())
+	err := storage.FlushInactiveAccessTokens(ctx, time.Now(), 1000, 100)
 	if err != nil {
 		return err
 	}
@@ -588,40 +587,44 @@ func (h *Handler) PruneTokens(ctx context.Context, in *pauth.PruneTokensRequest,
 		if c.MaxInactivity == "" {
 			continue
 		}
+		/*
+				TODO V4 : Interface changed
 
-		duration, err := time.ParseDuration(c.MaxInactivity)
-		if err != nil {
-			return err
-		}
+			duration, err := time.ParseDuration(c.MaxInactivity)
+			if err != nil {
+				return err
+			}
 
-		store, ok := auth.GetRegistry().OAuth2Storage().(*oauth2.FositeSQLStore)
-		if !ok {
-			continue
-		}
+			store, ok := auth.GetRegistry().OAuth2Storage().(*oauth2.FositeSQLStore)
+			if !ok {
+				continue
+			}
 
-		// Removing refresh tokens
-		if res, err := store.DB.ExecContext(ctx, store.DB.Rebind("DELETE FROM hydra_oauth2_refresh WHERE client_id = ? AND requested_at < ?"), c.ID, time.Now().Add(-duration)); err == sql.ErrNoRows {
-			return nil
-		} else if err != nil {
-			return sqlcon.HandleError(err)
-		} else {
-			i, _ := res.RowsAffected()
-			out.Count = int32(i)
-		}
+			// Removing refresh tokens
+			if res, err := store.DB.ExecContext(ctx, store.DB.Rebind("DELETE FROM hydra_oauth2_refresh WHERE client_id = ? AND requested_at < ?"), c.ID, time.Now().Add(-duration)); err == sql.ErrNoRows {
+				return nil
+			} else if err != nil {
+				return sqlcon.HandleError(err)
+			} else {
+				i, _ := res.RowsAffected()
+				out.Count = int32(i)
+			}
 
-		// Removing login challenges
-		if _, err := store.DB.ExecContext(ctx, store.DB.Rebind("DELETE FROM hydra_oauth2_authentication_request WHERE client_id = ? AND requested_at < ?"), c.ID, time.Now().Add(-duration)); err == sql.ErrNoRows {
-			return nil
-		} else if err != nil {
-			return sqlcon.HandleError(err)
-		}
+			// Removing login challenges
+			if _, err := store.DB.ExecContext(ctx, store.DB.Rebind("DELETE FROM hydra_oauth2_authentication_request WHERE client_id = ? AND requested_at < ?"), c.ID, time.Now().Add(-duration)); err == sql.ErrNoRows {
+				return nil
+			} else if err != nil {
+				return sqlcon.HandleError(err)
+			}
 
-		// Removing consent challenges
-		if _, err := store.DB.ExecContext(ctx, store.DB.Rebind("DELETE FROM hydra_oauth2_consent_request WHERE client_id = ? AND requested_at < ?"), c.ID, time.Now().Add(-duration)); err == sql.ErrNoRows {
-			return nil
-		} else if err != nil {
-			return sqlcon.HandleError(err)
-		}
+			// Removing consent challenges
+			if _, err := store.DB.ExecContext(ctx, store.DB.Rebind("DELETE FROM hydra_oauth2_consent_request WHERE client_id = ? AND requested_at < ?"), c.ID, time.Now().Add(-duration)); err == sql.ErrNoRows {
+				return nil
+			} else if err != nil {
+				return sqlcon.HandleError(err)
+			}
+
+		*/
 	}
 
 	return nil

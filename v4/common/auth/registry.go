@@ -35,6 +35,7 @@ import (
 	"github.com/ory/hydra/jwk"
 	"github.com/ory/hydra/oauth2"
 	"github.com/ory/hydra/x"
+	"github.com/ory/x/logrusx"
 	"github.com/ory/x/sqlcon"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -60,10 +61,10 @@ func InitRegistry(dao sql.DAO) {
 	once.Do(func() {
 
 		db := sqlx.NewDb(dao.DB(), dao.Driver())
-		l := logrus.New()
-		l.SetLevel(logrus.PanicLevel)
+		l := logrusx.New("oauth", "1", logrusx.ForceLevel(logrus.PanicLevel))
+		//l.SetLevel(logrus.PanicLevel)
 
-		reg = driver.NewRegistrySQL().WithConfig(defaultConf).WithLogger(l)
+		reg = driver.NewRegistrySQL().WithConfig(defaultConf.GetProvider()).WithLogger(l)
 		r := reg.(*driver.RegistrySQL).WithDB(db)
 		if err := r.Init(); err != nil {
 			log.Error("Error registering oauth registry", zap.Error(err))
@@ -154,7 +155,7 @@ func syncClients(ctx context.Context, s client.Storage, c common.Scanner) error 
 		return err
 	}
 
-	old, err := s.GetClients(ctx, n, 0)
+	old, err := s.GetClients(ctx, client.Filter{Offset: 0, Limit: n})
 	if err != nil {
 		return err
 	}

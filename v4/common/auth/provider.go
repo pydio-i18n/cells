@@ -21,11 +21,12 @@
 package auth
 
 import (
+	"net/http"
 	"net/url"
 	"sync"
 	"time"
 
-	configuration "github.com/ory/hydra/driver/config"
+	hconf "github.com/ory/hydra/driver/config"
 	"github.com/ory/hydra/x"
 	"github.com/ory/x/tracing"
 	"github.com/rs/cors"
@@ -36,17 +37,71 @@ import (
 )
 
 type ConfigurationProvider interface {
-	configuration.Provider
+	Set(key string, value interface{}) error
+	MustSet(key string, value interface{})
+	InsecureRedirects() []string
+	WellKnownKeys(include ...string) []string
+	IsUsingJWTAsAccessTokens() bool
+	AllowedTopLevelClaims() []string
+	SubjectTypesSupported() []string
+	DefaultClientScope() []string
+	DSN() string
+	EncryptSessionData() bool
+	ExcludeNotBeforeClaim() bool
+	DataSourcePlugin() string
+	BCryptCost() int
+	CookieSameSiteMode() http.SameSite
+	CookieSameSiteLegacyWorkaround() bool
+	ConsentRequestMaxAge() time.Duration
+	AccessTokenLifespan() time.Duration
+	RefreshTokenLifespan() time.Duration
+	IDTokenLifespan() time.Duration
+	AuthCodeLifespan() time.Duration
+	ScopeStrategy() string
+	Tracing() *tracing.Config
+	GetCookieSecrets() [][]byte
+	GetRotatedSystemSecrets() [][]byte
+	GetSystemSecret() []byte
+	LogoutRedirectURL() *url.URL
+	LoginURL() *url.URL
+	LogoutURL() *url.URL
+	ConsentURL() *url.URL
+	ErrorURL() *url.URL
+	PublicURL() *url.URL
+	IssuerURL() *url.URL
+	OAuth2ClientRegistrationURL() *url.URL
+	OAuth2TokenURL() *url.URL
+	OAuth2AuthURL() *url.URL
+	JWKSURL() *url.URL
+	TokenRefreshHookURL() *url.URL
+	AccessTokenStrategy() string
+	SubjectIdentifierAlgorithmSalt() string
+	OIDCDiscoverySupportedClaims() []string
+	OIDCDiscoverySupportedScope() []string
+	OIDCDiscoveryUserinfoEndpoint() *url.URL
+	ShareOAuth2Debug() bool
+	OAuth2LegacyErrors() bool
+	PKCEEnforced() bool
+	EnforcePKCEForPublicClients() bool
+	CGroupsV1AutoMaxProcsEnabled() bool
+	GrantAllClientCredentialsScopesPerDefault() bool
+
+	GetProvider() *hconf.Provider
 	Clients() common.Scanner
 	Connectors() common.Scanner
 }
 
 type configurationProvider struct {
+	*hconf.Provider
 	// rootURL
 	r string
 
 	// values
 	v configx.Values
+}
+
+func (c *configurationProvider) GetProvider() *hconf.Provider {
+	return c.Provider
 }
 
 var (
@@ -110,6 +165,7 @@ func GetConfigurationProvider(hostname ...string) ConfigurationProvider {
 }
 
 func NewProvider(rootURL string, values configx.Values) ConfigurationProvider {
+	// Todo V4 : INIT A  PROPER hconf.Provider with New
 	return &configurationProvider{
 		r: rootURL,
 		v: values,
@@ -300,8 +356,10 @@ func (v *configurationProvider) IssuerURL() *url.URL {
 	return u
 }
 
-func (v *configurationProvider) OAuth2AuthURL() string {
-	return v.v.Val("urls", "oauth2AuthURL").Default("/oauth2/auth").String() // this should not have the host etc prepended...
+func (v *configurationProvider) OAuth2AuthURL() *url.URL {
+	us := v.v.Val("urls", "oauth2AuthURL").Default("/oauth2/auth").String() // this should not have the host etc prepended...
+	u, _ := url.Parse(us)
+	return u
 }
 
 func (v *configurationProvider) OAuth2ClientRegistrationURL() *url.URL {
@@ -329,8 +387,11 @@ func (v *configurationProvider) OIDCDiscoverySupportedScope() []string {
 	return v.v.Val("oidc", "supportedScope").StringArray()
 }
 
-func (v *configurationProvider) OIDCDiscoveryUserinfoEndpoint() string {
-	return v.v.Val("oidc", "userInfoEndpoint").Default("/oauth2/userinfo").String()
+func (v *configurationProvider) OIDCDiscoveryUserinfoEndpoint() *url.URL {
+
+	us := v.v.Val("oidc", "userInfoEndpoint").Default("/oauth2/userinfo").String()
+	u, _ := url.Parse(us)
+	return u
 }
 
 func (v *configurationProvider) ShareOAuth2Debug() bool {
