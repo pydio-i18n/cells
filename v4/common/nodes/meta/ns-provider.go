@@ -22,10 +22,12 @@ package meta
 
 import (
 	"context"
+	"strings"
 	"sync"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/micro/go-micro/broker"
+	mbroker "github.com/micro/micro/v3/service/broker"
+	"github.com/pydio/cells/v4/common/micro/broker"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/micro"
@@ -99,15 +101,19 @@ func (p *NamespacesProvider) IncludedIndexes() map[string]struct{} {
 // Load finds all services declared as ServiceMetaNsProvider and call them to list the namespaces they declare
 func (p *NamespacesProvider) Load() {
 	// Other Meta Providers (running services only)
-	services, err := registry.ListServicesWithMicroMeta(ServiceMetaNsProvider, "list")
-	if err != nil {
-		return
-	}
+	var services []registry.Service
+	/*
+		TODO V4
+		services, err := registry.ListServicesWithMicroMeta(ServiceMetaNsProvider, "list")
+		if err != nil {
+			return
+		}
+	*/
 	defer func() {
 		p.loaded = true
 	}()
 	for _, srv := range services {
-		cl := idm.NewUserMetaServiceClient(srv.Name(), defaults.NewClient())
+		cl := idm.NewUserMetaServiceClient(defaults.NewClientConn(strings.TrimPrefix(srv.Name(), common.ServiceGrpcNamespace_)))
 		s, e := cl.ListUserMetaNamespace(context.Background(), &idm.ListUserMetaNamespaceRequest{})
 		if e != nil {
 			continue
@@ -121,23 +127,27 @@ func (p *NamespacesProvider) Load() {
 			p.namespaces = append(p.namespaces, r.UserMetaNamespace)
 		}
 		p.Unlock()
-		s.Close()
+		s.CloseSend()
 	}
 
 }
 
 // InitStreamers prepares a set of NodeProviderStreamerClients ready to be requested
 func (p *NamespacesProvider) InitStreamers(ctx context.Context) error {
-	services, err := registry.ListServicesWithMicroMeta(ServiceMetaNsProvider, "list")
-	if err != nil {
-		return err
-	}
-	for _, srv := range services {
-		c := tree.NewNodeProviderStreamerClient(srv.Name(), defaults.NewClient())
-		if s, e := c.ReadNodeStream(ctx); e == nil {
-			p.streamers = append(p.streamers, s)
+	/*
+		TODO V4
+		services, err := registry.ListServicesWithMicroMeta(ServiceMetaNsProvider, "list")
+		if err != nil {
+			return err
 		}
-	}
+		for _, srv := range services {
+			c := tree.NewNodeProviderStreamerClient(srv.Name(), defaults.NewClient())
+			if s, e := c.ReadNodeStream(ctx); e == nil {
+				p.streamers = append(p.streamers, s)
+			}
+		}
+
+	*/
 	return nil
 }
 
@@ -145,7 +155,7 @@ func (p *NamespacesProvider) InitStreamers(ctx context.Context) error {
 func (p *NamespacesProvider) CloseStreamers() error {
 	var ers []error
 	for _, s := range p.streamers {
-		if e := s.Close(); e != nil {
+		if e := s.CloseSend(); e != nil {
 			ers = append(ers, e)
 		}
 	}
@@ -183,9 +193,9 @@ func (p *NamespacesProvider) Clear() {
 
 // Watch watches idm ChangeEvents to force reload when metadata namespaces are modified
 func (p *NamespacesProvider) Watch() {
-	defaults.Broker().Subscribe(common.TopicIdmEvent, func(publication broker.Publication) error {
+	broker.Subscribe(common.TopicIdmEvent, func(message *mbroker.Message) error {
 		var ce idm.ChangeEvent
-		if e := proto.Unmarshal(publication.Message().Body, &ce); e == nil {
+		if e := proto.Unmarshal(message.Body, &ce); e == nil {
 			if ce.MetaNamespace != nil {
 				p.Clear()
 			}
