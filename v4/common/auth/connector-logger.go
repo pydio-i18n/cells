@@ -20,19 +20,16 @@
 
 package auth
 
-import (
-	"context"
+// ConnectorLogger serves as an adapter interface for logger libraries
+// so that dex does not depend on any of them directly.
+type ConnectorLogger interface {
+	Debug(args ...interface{})
+	Info(args ...interface{})
+	Warn(args ...interface{})
+	Error(args ...interface{})
 
-	"github.com/pydio/cells/v4/common/proto/rest"
-
-	"github.com/pydio/cells/v4/common/proto/idm"
-)
-
-// TODO V4 - UNTIL WE IMPORT FULL PACKAGE
-func WithImpersonate(ctx context.Context, user *idm.User) context.Context {
-	return ctx
-}
-
-func SubjectsForResourcePolicyQuery(ctx context.Context, q *rest.ResourcePolicyQuery) (subjects []string, err error) {
-	return
+	Debugf(format string, args ...interface{})
+	Infof(format string, args ...interface{})
+	Warnf(format string, args ...interface{})
+	Errorf(format string, args ...interface{})
 }

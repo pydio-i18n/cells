@@ -44,7 +44,7 @@ require (
 	github.com/micro/micro/v3 v3.6.0
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/nicksnyder/go-i18n v1.10.0
-	github.com/ory/hydra v1.10.7
+	github.com/ory/hydra v1.10.7 // indirect
 	github.com/ory/ladon v1.2.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.1
@@ -83,6 +83,7 @@ require (
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
 	golang.org/x/net v0.0.0-20211020060615-d418f374d309
+	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7
 	google.golang.org/genproto v0.0.0-20211020151524-b7c3a969101a
