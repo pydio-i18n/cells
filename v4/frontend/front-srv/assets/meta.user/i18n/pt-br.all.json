@@ -1,0 +1,50 @@
+{
+  "1": {
+    "other": "Metadados"
+  },
+  "10": {
+    "other": "Existente ou nova tag"
+  },
+  "11": {
+    "other": "Nenhum metadados definido, clique para adicionar algum"
+  },
+  "16": {
+    "other": "Sem metadados"
+  },
+  "12": {
+    "other": "Seleção Múltipla:"
+  },
+  "13": {
+    "other": "marque os campos que você deseja atualizar, o valor será aplicado a todos os arquivos selecionados"
+  },
+  "14": {
+    "other": "Editar metadado"
+  },
+  "15": {
+    "other": "Salvar metadado"
+  },
+  "2": {
+    "other": "Sem Rótulo"
+  },
+  "3": {
+    "other": "Remover Classificação"
+  },
+  "4": {
+    "other": "Baixo"
+  },
+  "5": {
+    "other": "A fazer"
+  },
+  "6": {
+    "other": "Pessoal"
+  },
+  "7": {
+    "other": "Trabalho"
+  },
+  "8": {
+    "other": "Importante"
+  },
+  "9": {
+    "other": "Sem Valor"
+  }
+}

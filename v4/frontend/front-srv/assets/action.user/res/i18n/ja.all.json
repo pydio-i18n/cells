@@ -1,0 +1,233 @@
+{
+  "1": {
+    "other": "アドレス帳"
+  },
+  "10": {
+    "other": "Associated workspaces"
+  },
+  "11": {
+    "other": "Are you sure that you want to delete the selected element(s)?"
+  },
+  "12": {
+    "other": "You don't have the permission to delete this element."
+  },
+  "13": {
+    "other": "Successfully deleted public file."
+  },
+  "14": {
+    "other": "Integrity"
+  },
+  "15": {
+    "other": "Ok"
+  },
+  "16": {
+    "other": "Broken"
+  },
+  "17": {
+    "other": "Download URL"
+  },
+  "18": {
+    "other": "Copy URL"
+  },
+  "19": {
+    "other": "Copy url to send by email."
+  },
+  "2": {
+    "other": "Shared folders"
+  },
+  "20": {
+    "other": "Downloads"
+  },
+  "21": {
+    "other": "Yes"
+  },
+  "22": {
+    "other": "No"
+  },
+  "23": {
+    "other": "Successfully deleted %s files."
+  },
+  "24": {
+    "other": "Nothing to delete."
+  },
+  "25": {
+    "other": "Clear Expired"
+  },
+  "26": {
+    "other": "Delete expired shared files."
+  },
+  "27": {
+    "other": "Owner"
+  },
+  "28": {
+    "other": "Files shared for direct download, either protected by a password or not."
+  },
+  "29": {
+    "other": "Delegates workspaces created by users."
+  },
+  "3": {
+    "other": "Shared files"
+  },
+  "30": {
+    "other": "Users created to access the delegated workspaces."
+  },
+  "31": {
+    "other": "備考"
+  },
+  "32": {
+    "other": "Reset"
+  },
+  "33": {
+    "other": "Reset download counter"
+  },
+  "34": {
+    "other": "My Shares"
+  },
+  "35": {
+    "other": "All my shared items (files and folders)"
+  },
+  "36": {
+    "other": "Parameters"
+  },
+  "37": {
+    "other": "My profile and application settings"
+  },
+  "38": {
+    "other": "Notifications"
+  },
+  "39": {
+    "other": "下のリストはあなたがアクセスできるワークスペースの一覧です。そのワークスペースは個人用か他のユーザーと共有されてるかもしれません。"
+  },
+  "4": {
+    "other": "File Path"
+  },
+  "40": {
+    "other": "ようこそ、%sさん! "
+  },
+  "41": {
+    "other": "このワークスペースをデフォルトとして使用"
+  },
+  "42": {
+    "other": "続行"
+  },
+  "43": {
+    "other": "プロフィール"
+  },
+  "43t": {
+    "other": "全てのパーソナルデータ"
+  },
+  "44": {
+    "other": "マイアカウント"
+  },
+  "45": {
+    "other": "パーソナルデータ"
+  },
+  "46": {
+    "other": "アドレス帳"
+  },
+  "47": {
+    "other": "あなたが作成したユーザーとチーム"
+  },
+  "48": {
+    "other": "マイユーザー"
+  },
+  "49": {
+    "other": "あなたの作成した外部のユーザー"
+  },
+  "5": {
+    "other": "Repository"
+  },
+  "50": {
+    "other": "マイチーム"
+  },
+  "51": {
+    "other": "共有時ショートカット利用時のユーザー規約"
+  },
+  "52": {
+    "other": "本当にこのチームを削除しますか？この操作ではユーザーは削除しません。"
+  },
+  "53": {
+    "other": "Back to my workspaces"
+  },
+  "54": {
+    "other": "Update Members"
+  },
+  "55": {
+    "other": "Add/Remove users from this team"
+  },
+  "56": {
+    "other": "Add one user per line, type in the textarea to see the auto-completion list appear."
+  },
+  "57": {
+    "other": "Create a Team"
+  },
+  "58": {
+    "other": "Teams are used as a shortcut to quickly share a folder with a predefined set of users"
+  },
+  "59": {
+    "other": "Team Label"
+  },
+  "6": {
+    "other": "Password"
+  },
+  "60": {
+    "other": "Team Users"
+  },
+  "61": {
+    "other": "Email Preferences"
+  },
+  "62": {
+    "other": "Send emails every X minutes"
+  },
+  "63": {
+    "other": "Send emails every Y hours"
+  },
+  "64": {
+    "other": "Choose the hour of the day"
+  },
+  "65": {
+    "other": "Choose the first hour of the day"
+  },
+  "66": {
+    "other": "Choose the second hour of the day"
+  },
+  "67": {
+    "other": "Pick a day of the week"
+  },
+  "68": {
+    "other": "Monday"
+  },
+  "69": {
+    "other": "Tuesday"
+  },
+  "7": {
+    "other": "Expiration"
+  },
+  "70": {
+    "other": "Wednesday"
+  },
+  "71": {
+    "other": "Thursday"
+  },
+  "72": {
+    "other": "Friday"
+  },
+  "73": {
+    "other": "Saturday"
+  },
+  "74": {
+    "other": "Sunday"
+  },
+  "8": {
+    "other": "Elements"
+  },
+  "9": {
+    "other": "Associated users"
+  },
+  "desc": {
+    "other": "Manage my account preferences, my address book, shared elements, etc."
+  },
+  "title": {
+    "other": "マイアカウント"
+  }
+}

@@ -1,0 +1,215 @@
+{
+  "Address used for notifications": {
+    "other": "用于接收通知的地址"
+  },
+  "All roles": {
+    "other": "All roles"
+  },
+  "Allow Group Listing": {
+    "other": "Allow Group Listing"
+  },
+  "Allow Role Listing": {
+    "other": "Allow Role Listing"
+  },
+  "Allow the users to create a new user when sharing a folder": {
+    "other": "允许用户在共享文件夹时创建新用户"
+  },
+  "Allow the users to pick an existing user when sharing a folder": {
+    "other": "Allow the users to pick an existing user when sharing a folder"
+  },
+  "Allow to search users from other groups through auto completer (can be handy if previous option is set to false) and share workspaces with them": {
+    "other": "Allow to search users from other groups through auto completer (can be handy if previous option is set to false) and share workspaces with them"
+  },
+  "Always Override": {
+    "other": "Always Override"
+  },
+  "Always override other roles, included group roles.": {
+    "other": "Always override other roles, included group roles."
+  },
+  "Avatar": {
+    "other": "Avatar"
+  },
+  "Choose the configuration plugin": {
+    "other": "选择配置插件"
+  },
+  "Configuration Store Instance": {
+    "other": "Configuration Store Instance"
+  },
+  "Configurations Management": {
+    "other": "Configurations Management"
+  },
+  "Core SQL Connexion": {
+    "other": "Core SQL Connection"
+  },
+  "Country": {
+    "other": "国家/地区"
+  },
+  "Create external users": {
+    "other": "Create external users"
+  },
+  "Default Workspace": {
+    "other": "默认工作区"
+  },
+  "Default start repository": {
+    "other": "登录后显示的默认工作区。“主页”是带有活动和搜索引擎的欢迎页面。"
+  },
+  "Display roles and/or groups": {
+    "other": "Display roles and/or groups"
+  },
+  "Do not display real login in parenthesis": {
+    "other": "Do not display real login in parenthesis"
+  },
+  "Do not load groups and users list if no regexp is entered. Avoid sending large search on LDAP.": {
+    "other": "Do not load groups and users list if no regexp is entered. Avoid sending large search on LDAP."
+  },
+  "Email": {
+    "other": "电子邮件"
+  },
+  "Excluded Roles": {
+    "other": "Excluded Roles"
+  },
+  "External Users Creation": {
+    "other": "External Users Creation"
+  },
+  "External users parameters": {
+    "other": "External users parameters"
+  },
+  "Full name displayed to others": {
+    "other": "显示给他人看的全名"
+  },
+  "Generic Conf Features": {
+    "other": "Generic Conf Features"
+  },
+  "Hide real login": {
+    "other": "Hide real login"
+  },
+  "If previous option is set to True, directly display a full list of users from all groups": {
+    "other": "If previous option is set to True, directly display a full list of users from all groups"
+  },
+  "If set, this action will be triggered automatically at users login. Can be logout (to lock out the users), pass_change (to force password change), or anything else": {
+    "other": "If set, this action will be triggered automatically at users login. Can be logout (to lock out the users), pass_change (to force password change), or anything else"
+  },
+  "If the 'guest' user is enabled, remember her preferences accross sessions.": {
+    "other": "If the 'guest' user is enabled, remember her preferences accross sessions."
+  },
+  "Image displayed next to the user name": {
+    "other": "Image displayed next to the user name"
+  },
+  "Included Roles": {
+    "other": "Included Roles"
+  },
+  "Instance": {
+    "other": "Instance"
+  },
+  "Internal / External Users": {
+    "other": "Internal / External Users"
+  },
+  "Language": {
+    "other": "语言"
+  },
+  "Let user create repositories": {
+    "other": "Let user create workspaces"
+  },
+  "Let user create repositories from templates": {
+    "other": "Let user create repositories from templates"
+  },
+  "List Roles By": {
+    "other": "List Roles By"
+  },
+  "List existing from all groups": {
+    "other": "List existing from all groups"
+  },
+  "List of parameters to be edited when creating a new shared user.": {
+    "other": "创建新共享用户时要编辑的参数列表。"
+  },
+  "Make regexp mandatory": {
+    "other": "Make regexp mandatory"
+  },
+  "Maximum number of shared users per user": {
+    "other": "每个用户的最大共享用户数"
+  },
+  "Maximum number of users displayed in the users autocompleter": {
+    "other": "用户自动完成时显示的最大用户数"
+  },
+  "Minimum number of characters to trigger the auto completion feature": {
+    "other": "触发自动完成功能的最小字符数"
+  },
+  "Name": {
+    "other": "组名"
+  },
+  "Preferences Saving": {
+    "other": "Preferences Saving"
+  },
+  "Remember guest preferences": {
+    "other": "Remember guest preferences"
+  },
+  "Role Label": {
+    "other": "角色标签"
+  },
+  "Role/Group Listing": {
+    "other": "Role/Group Listing"
+  },
+  "Roles / Groups Directory Listing": {
+    "other": "Roles / Groups Directory Listing"
+  },
+  "SQL Connexion": {
+    "other": "SQL连接"
+  },
+  "See existing users": {
+    "other": "See existing users"
+  },
+  "Sets how the application core data (users,roles,etc) is stored.": {
+    "other": "Sets how the application core data (users,roles,etc) is stored."
+  },
+  "Share with existing users from all groups": {
+    "other": "Share with existing users from all groups"
+  },
+  "Shared users limit": {
+    "other": "Shared users limit"
+  },
+  "Simple SQL Connexion definition that can be used by other sql-based plugins": {
+    "other": "Simple SQL Connection definition that can be used by other sql-based plugins"
+  },
+  "Skip user history": {
+    "other": "跳过界面偏好设置"
+  },
+  "Some roles should be disappered in the list.  list separated by ',' or start with 'preg:' for regex.": {
+    "other": "Some roles should be disappered in the list.  list separated by ',' or start with 'preg:' for regex."
+  },
+  "Some roles should be shown in the list.  list separated by ',' or start with 'preg:' for regex.": {
+    "other": "Some roles should be shown in the list.  list separated by ',' or start with 'preg:' for regex."
+  },
+  "Use this option to avoid automatic reloading of the interface state (last folder, opened tabs, etc)": {
+    "other": "使用此选项以避免自动重新加载界面状态(如最后一个文件夹，打开标签等)"
+  },
+  "User Language": {
+    "other": "用户语言"
+  },
+  "User roles only": {
+    "other": "User roles only"
+  },
+  "Users Directory Listing": {
+    "other": "用户目录列表"
+  },
+  "Users Lock Action": {
+    "other": "Users Lock Action"
+  },
+  "Users completer limit": {
+    "other": "Users completer limit"
+  },
+  "Users completer min chars": {
+    "other": "Users completer min chars"
+  },
+  "Users only (do not list groups nor roles)": {
+    "other": "Users only (do not list groups nor roles)"
+  },
+  "Whether users can create their own repositories, based on predefined templates.": {
+    "other": "Whether users can create their own repositories, based on predefined templates."
+  },
+  "Worskpace creation delegation": {
+    "other": "Worskpace creation delegation"
+  },
+  "role prefix": {
+    "other": "Role prefix"
+  }
+}

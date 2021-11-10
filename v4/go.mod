@@ -26,7 +26,8 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
-	github.com/gorilla/sessions v1.2.1 // indirect
+	github.com/gorilla/securecookie v1.1.1
+	github.com/gorilla/sessions v1.2.1
 	github.com/gosimple/slug v1.11.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.6.0
@@ -35,6 +36,7 @@ require (
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/jaytaylor/go-hostsfile v0.0.0-20201026230151-f581673a59cf
 	github.com/jcuga/golongpoll v1.3.0
+	github.com/jinzhu/copier v0.3.2
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/json-iterator/go v1.1.12
 	github.com/karrick/godirwalk v1.16.1
@@ -47,6 +49,7 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/micro/micro/v3 v3.6.0
 	github.com/mitchellh/mapstructure v1.4.2
+	github.com/mssola/user_agent v0.5.3
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/nicksnyder/go-i18n v1.10.0
 	github.com/ory/fosite v0.40.3-0.20211101181407-30e8cb92e53c
@@ -55,6 +58,7 @@ require (
 	github.com/ory/x v0.0.303
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.1
+	github.com/philopon/go-toposort v0.0.0-20170620085441-9be86dbd762f
 	github.com/pkg/errors v0.9.1
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/pydio/melody v0.0.0-20190928133520-4271c6513fb6
@@ -64,6 +68,7 @@ require (
 	github.com/rs/xid v1.3.0
 	github.com/rubenv/sql-migrate v0.0.0-20211023115951-9f02b1e13857
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
+	github.com/scottleedavis/go-exif-remove v0.0.0-20190908021517-58bdbaac8636
 	github.com/sendgrid/rest v2.6.5+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.10.3+incompatible
 	github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0
