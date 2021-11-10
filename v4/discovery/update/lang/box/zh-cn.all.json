@@ -1,0 +1,53 @@
+{
+  "Update.Config.Title": {
+    "other": "更新配置"
+  },
+  "Update.Config.Url.Label": {
+    "other": "更新服务器"
+  },
+  "Update.Config.Url.Description": {
+    "other": "更新服务器的 URL"
+  },
+  "Update.Config.PublicKey.Label": {
+    "other": "公钥"
+  },
+  "Update.Config.PublicKey.Description": {
+    "other": "用于验证二进制签名的官方密钥。"
+  },
+  "Update.Config.Channel.Label": {
+    "other": "更新通道"
+  },
+  "Update.Config.Channel.Description": {
+    "other": "用于请求更新的通道。如果您不确定，请选择稳定版通道。"
+  },
+  "Update.Config.Channel.ValueStable": {
+    "other": "稳定版"
+  },
+  "Update.Config.Channel.ValueDev": {
+    "other": "开发者版(自行承担后果)"
+  },
+  "Update.Config.ProxyHost.Label": {
+    "other": "代理服务器"
+  },
+  "Update.Config.ProxyHost.Description": {
+    "other": "出站连接需要的代理服务器主机"
+  },
+  "Update.Config.ProxyUser.Label": {
+    "other": "代理服务器用户名"
+  },
+  "Update.Config.ProxyUser.Description": {
+    "other": "代理服务器标识的用户"
+  },
+  "Update.Config.ProxyPassword.Label": {
+    "other": "代理服务器密码"
+  },
+  "Update.Config.ProxyPassword.Description": {
+    "other": "代理服务器标识密码"
+  },
+  "Update.Config.Disable.Label": {
+    "other": "Disable update checks"
+  },
+  "Update.Config.Disable.Description": {
+    "other": "If your server has no access to outside world, do not try contact update site."
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "Update.Config.Title": {
+    "other": "アップデート設定"
+  },
+  "Update.Config.Url.Label": {
+    "other": "アップデートサーバー"
+  },
+  "Update.Config.Url.Description": {
+    "other": "アップデートサーバーの HTTP URL"
+  },
+  "Update.Config.PublicKey.Label": {
+    "other": "公開鍵"
+  },
+  "Update.Config.PublicKey.Description": {
+    "other": "バイナリの署名を検証するために使用する公式の鍵"
+  },
+  "Update.Config.Channel.Label": {
+    "other": "アップデートチャンネル"
+  },
+  "Update.Config.Channel.Description": {
+    "other": "アップデートを要求するチャンネル。よくわからなければ、安定版を選択してください。"
+  },
+  "Update.Config.Channel.ValueStable": {
+    "other": "安定版"
+  },
+  "Update.Config.Channel.ValueDev": {
+    "other": "開発版 (自己責任でどうぞ)"
+  },
+  "Update.Config.ProxyHost.Label": {
+    "other": "プロキシ"
+  },
+  "Update.Config.ProxyHost.Description": {
+    "other": "外部接続に必要とされる場合のプロキシサーバーホスト"
+  },
+  "Update.Config.ProxyUser.Label": {
+    "other": "プロキシユーザー"
+  },
+  "Update.Config.ProxyUser.Description": {
+    "other": "プロキシサーバーの認証に使用するユーザー"
+  },
+  "Update.Config.ProxyPassword.Label": {
+    "other": "プロキシパスワード"
+  },
+  "Update.Config.ProxyPassword.Description": {
+    "other": "プロキシサーバーの認証に使用するパスワード"
+  },
+  "Update.Config.Disable.Label": {
+    "other": "Disable update checks"
+  },
+  "Update.Config.Disable.Description": {
+    "other": "If your server has no access to outside world, do not try contact update site."
+  }
+}

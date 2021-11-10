@@ -1,0 +1,53 @@
+{
+  "Update.Config.Title": {
+    "other": "Actualizar Configuración"
+  },
+  "Update.Config.Url.Label": {
+    "other": "Actualizar Servidor"
+  },
+  "Update.Config.Url.Description": {
+    "other": "URL Http del servidor de actualización"
+  },
+  "Update.Config.PublicKey.Label": {
+    "other": "Clave Pública"
+  },
+  "Update.Config.PublicKey.Description": {
+    "other": "Clave oficial utilizada para verificar la firma de archivos binarios."
+  },
+  "Update.Config.Channel.Label": {
+    "other": "Actualizar Canal"
+  },
+  "Update.Config.Channel.Description": {
+    "other": "Canal utilizado para solicitar actualizaciones. Mantener en \"Estable\" si no se está seguro."
+  },
+  "Update.Config.Channel.ValueStable": {
+    "other": "Estable"
+  },
+  "Update.Config.Channel.ValueDev": {
+    "other": "Dev (bajo tu responsabilidad)"
+  },
+  "Update.Config.ProxyHost.Label": {
+    "other": "Proxy"
+  },
+  "Update.Config.ProxyHost.Description": {
+    "other": "Host de un servidor proxy si es necesario para conexiones salientes"
+  },
+  "Update.Config.ProxyUser.Label": {
+    "other": "Usuario de Proxy"
+  },
+  "Update.Config.ProxyUser.Description": {
+    "other": "Usuario para identificación del servidor proxy"
+  },
+  "Update.Config.ProxyPassword.Label": {
+    "other": "Contraseña del Proxy"
+  },
+  "Update.Config.ProxyPassword.Description": {
+    "other": "Contraseña para la identificación del servidor proxy"
+  },
+  "Update.Config.Disable.Label": {
+    "other": "Deshabilitar comprobaciones de actualización"
+  },
+  "Update.Config.Disable.Description": {
+    "other": "Si su servidor no tiene acceso al exterior, no intente conectar con el servidor de actualización."
+  }
+}

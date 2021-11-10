@@ -1,0 +1,53 @@
+{
+  "Update.Config.Title": {
+    "other": "Обновить конфигурацию"
+  },
+  "Update.Config.Url.Label": {
+    "other": "Обновить сервер"
+  },
+  "Update.Config.Url.Description": {
+    "other": "Http URL сервера обновления"
+  },
+  "Update.Config.PublicKey.Label": {
+    "other": "Открытый ключ"
+  },
+  "Update.Config.PublicKey.Description": {
+    "other": "Официальный ключ, используемый для проверки подписи двоичных файлов."
+  },
+  "Update.Config.Channel.Label": {
+    "other": "Канал обновления"
+  },
+  "Update.Config.Channel.Description": {
+    "other": "Канал, используемый для запроса обновлений. Установите флажок на Стабильный, если не уверены."
+  },
+  "Update.Config.Channel.ValueStable": {
+    "other": "Стабильный"
+  },
+  "Update.Config.Channel.ValueDev": {
+    "other": "Dev (используйте на свой страх и риск)"
+  },
+  "Update.Config.ProxyHost.Label": {
+    "other": "Прокси"
+  },
+  "Update.Config.ProxyHost.Description": {
+    "other": "Прокси-сервер, если необходим для исходящих соединений"
+  },
+  "Update.Config.ProxyUser.Label": {
+    "other": "Пользователь proxy"
+  },
+  "Update.Config.ProxyUser.Description": {
+    "other": "Пользователь для идентификации на прокси-сервере"
+  },
+  "Update.Config.ProxyPassword.Label": {
+    "other": "Пароль прокси"
+  },
+  "Update.Config.ProxyPassword.Description": {
+    "other": "Пароль для идентификации прокси-сервера"
+  },
+  "Update.Config.Disable.Label": {
+    "other": "Disable update checks"
+  },
+  "Update.Config.Disable.Description": {
+    "other": "If your server has no access to outside world, do not try contact update site."
+  }
+}
