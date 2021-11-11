@@ -31,12 +31,10 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/micro/broker"
-	"github.com/pydio/cells/v4/common/micro/registry"
-	"github.com/pydio/cells/v4/common/micro/transport/grpc"
+	//	"github.com/pydio/cells/v4/common/micro/registry"
+	//	"github.com/pydio/cells/v4/common/micro/transport/grpc"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	registry2 "github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/sync/endpoints/cells"
 	"github.com/pydio/cells/v4/common/sync/model"
@@ -60,10 +58,13 @@ type Local struct {
 func NewLocal(root string, options cells.Options) *Local {
 	if options.LocalInitRegistry {
 		localRouterOnce.Do(func() {
-			registry.EnableService("127.0.0.1", "8000")
-			broker.EnableService("127.0.0.1", "8003")
-			grpc.Enable()
-			registry2.Init()
+			/*
+				// TODO V4
+				registry.EnableService("127.0.0.1", "8000")
+				broker.EnableService("127.0.0.1", "8003")
+				grpc.Enable()
+				registry2.Init()
+			*/
 		})
 	}
 	l := &Local{

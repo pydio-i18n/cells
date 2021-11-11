@@ -32,7 +32,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pborman/uuid"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common/dao"
@@ -275,7 +275,7 @@ func (d *daocache) path(strpath string, create bool, noAdd bool, reqNode ...*tre
 		node := NewNode(source, mpath, names)
 
 		if node.Uuid == "" {
-			node.Uuid = uuid.NewUUID().String()
+			node.Uuid = uuid.New().String()
 		}
 
 		if node.Etag == "" {
@@ -704,4 +704,8 @@ func (d *daocache) LostAndFounds() ([]LostAndFound, error) {
 
 func (d *daocache) FixLostAndFound(lost LostAndFound) error {
 	return d.DAO.FixLostAndFound(lost)
+}
+
+func (d *daocache) Flatten() (string, error) {
+	return d.DAO.Flatten()
 }

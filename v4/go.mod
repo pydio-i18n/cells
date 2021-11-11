@@ -3,6 +3,7 @@ module github.com/pydio/cells/v4
 go 1.16
 
 require (
+	cloud.google.com/go/kms v1.1.0 // indirect
 	github.com/ajvb/kala v0.8.4
 	github.com/allegro/bigcache v1.2.1
 	github.com/beevik/ntp v0.3.0
@@ -33,7 +34,6 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.6.0
 	github.com/h2non/filetype v1.1.1
 	github.com/hashicorp/go-version v1.3.0
-	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf
 	github.com/jaytaylor/go-hostsfile v0.0.0-20201026230151-f581673a59cf
 	github.com/jcuga/golongpoll v1.3.0
@@ -50,6 +50,7 @@ require (
 	github.com/matcornic/hermes/v2 v2.1.0
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/micro/micro/v3 v3.6.0
+	github.com/minio/minio v0.0.0-20211111063317-68c5ad83fb73
 	github.com/minio/minio-go/v7 v7.0.15
 	github.com/mitchellh/mapstructure v1.4.2
 	github.com/mssola/user_agent v0.5.3
@@ -63,7 +64,6 @@ require (
 	github.com/pborman/uuid v1.2.1
 	github.com/philopon/go-toposort v0.0.0-20170620085441-9be86dbd762f
 	github.com/pkg/errors v0.9.1
-	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/pydio/melody v0.0.0-20190928133520-4271c6513fb6
 	github.com/rjeczalik/notify v0.9.2
 	github.com/robertkrimen/otto v0.0.0-20211024170158-b87d35c0b86f
@@ -76,7 +76,6 @@ require (
 	github.com/sendgrid/sendgrid-go v3.10.3+incompatible
 	github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0
 	github.com/sirupsen/logrus v1.8.1
-	github.com/smartystreets/assertions v1.1.1 // indirect
 	github.com/smartystreets/goconvey v1.6.4
 	github.com/spf13/afero v1.6.0
 	github.com/spf13/cast v1.4.1
@@ -84,8 +83,6 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/testify v1.7.0
-	github.com/tidwall/gjson v1.10.2 // indirect
-	github.com/tinylib/msgp v1.1.7-0.20211026165309-e818a1881b0e // indirect
 	github.com/twmb/murmur3 v1.1.6 // indirect
 	github.com/uber-go/tally v3.4.2+incompatible
 	github.com/zalando/go-keyring v0.1.1
@@ -95,13 +92,11 @@ require (
 	go.etcd.io/etcd/pkg/v3 v3.5.1
 	go.etcd.io/etcd/raft/v3 v3.5.1
 	go.etcd.io/etcd/server/v3 v3.5.1
-	go.uber.org/multierr v1.7.0 // indirect
 	go.uber.org/zap v1.19.1
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
 	golang.org/x/net v0.0.0-20211020060615-d418f374d309
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
-	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac
 	google.golang.org/genproto v0.0.0-20211020151524-b7c3a969101a
@@ -114,4 +109,5 @@ require (
 	gopkg.in/gorp.v1 v1.7.2
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v2 v2.4.0
+	k8s.io/klog/v2 v2.30.0 // indirect
 )
