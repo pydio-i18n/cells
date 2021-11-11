@@ -50,6 +50,8 @@ require (
 	github.com/matcornic/hermes/v2 v2.1.0
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/micro/micro/v3 v3.6.0
+	github.com/minio/cli v1.22.0
+	github.com/minio/madmin-go v1.1.12
 	github.com/minio/minio v0.0.0-20211111063317-68c5ad83fb73
 	github.com/minio/minio-go/v7 v7.0.15
 	github.com/mitchellh/mapstructure v1.4.2

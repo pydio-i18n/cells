@@ -24,9 +24,11 @@ package grpc
 import (
 	"context"
 
+	"google.golang.org/grpc"
+
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/service"
 )
 
@@ -34,7 +36,9 @@ func init() {
 
 	plugins.Register("main", func(ctx context.Context) {
 
-		sources := config.SourceNamesForDataServices(common.ServiceDataObjects)
+		//todo v4
+		//sources := config.SourceNamesForDataServices(common.ServiceDataObjects)
+		sources := []string{"local1"}
 
 		for _, datasource := range sources {
 
@@ -47,6 +51,21 @@ func init() {
 				service.Fork(true),
 				service.Unique(true),
 				service.AutoStart(false),
+				service.WithGRPC(func(server *grpc.Server) error {
+					engine := &ObjectHandler{
+						Config: &object.MinioConfig{
+							Name:        datasource,
+							ApiKey:      "mycustomapikey",
+							ApiSecret:   "mycustomapisecret",
+							StorageType: object.StorageType_LOCAL,
+							LocalFolder: "/Users/charles/Library/Application Support/Pydio/cells/data",
+						},
+						MinioConsolePort: 8383,
+					}
+					object.RegisterObjectsEndpointServer(server, engine)
+					go engine.StartMinioServer(ctx, datasource)
+					return nil
+				}),
 				/*
 					service.WithMicro(func(m micro.Service) error {
 						s := m.Options().Server

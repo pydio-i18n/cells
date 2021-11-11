@@ -39,7 +39,9 @@ import (
 
 // ObjectHandler definition
 type ObjectHandler struct {
-	Config *object.MinioConfig
+	object.UnimplementedObjectsEndpointServer
+	Config           *object.MinioConfig
+	MinioConsolePort int
 }
 
 // StartMinioServer handler
@@ -102,6 +104,11 @@ func (o *ObjectHandler) StartMinioServer(ctx context.Context, minioServiceName s
 	}
 
 	params = append(params, "--quiet")
+	if o.MinioConsolePort > 0 {
+		params = append(params, "--console-address", fmt.Sprintf(":%d", o.MinioConsolePort))
+	} else {
+		os.Setenv("MINIO_BROWSER", "off")
+	}
 
 	params = append(params, "--config-dir")
 	params = append(params, configFolder)
@@ -122,25 +129,26 @@ func (o *ObjectHandler) StartMinioServer(ctx context.Context, minioServiceName s
 		log.Logger(ctx).Info("Starting gateway objects service " + minioServiceName + " to Amazon S3")
 	}
 
-	os.Setenv("MINIO_ACCESS_KEY", accessKey)
-	os.Setenv("MINIO_SECRET_KEY", secretKey)
-	os.Setenv("MINIO_BROWSER", "off")
+	os.Setenv("MINIO_ROOT_USER", accessKey)
+	os.Setenv("MINIO_ROOT_PASSWORD", secretKey)
 	minio.Main(params)
 
 	return nil
 }
 
 // GetMinioConfig returns current configuration
-func (o *ObjectHandler) GetMinioConfig(_ context.Context, _ *object.GetMinioConfigRequest, resp *object.GetMinioConfigResponse) error {
+func (o *ObjectHandler) GetMinioConfig(_ context.Context, _ *object.GetMinioConfigRequest) (*object.GetMinioConfigResponse, error) {
 
-	resp.MinioConfig = o.Config
+	return &object.GetMinioConfigResponse{
+		MinioConfig: o.Config,
+	}, nil
 
-	return nil
 }
 
 // StorageStats returns statistics about storage
-func (o *ObjectHandler) StorageStats(_ context.Context, _ *object.StorageStatsRequest, resp *object.StorageStatsResponse) error {
+func (o *ObjectHandler) StorageStats(_ context.Context, _ *object.StorageStatsRequest) (*object.StorageStatsResponse, error) {
 
+	resp := &object.StorageStatsResponse{}
 	resp.Stats = make(map[string]string)
 	resp.Stats["StorageType"] = o.Config.StorageType.String()
 	switch o.Config.StorageType {
@@ -159,5 +167,5 @@ func (o *ObjectHandler) StorageStats(_ context.Context, _ *object.StorageStatsRe
 		*/
 	}
 
-	return nil
+	return resp, nil
 }

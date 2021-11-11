@@ -25,11 +25,12 @@ main:
 dev:
 	go build\
 	 -tags dev\
-         -gcflags "all=-N -l"\
+	 -gcflags "all=-N -l"\
 	 -ldflags "-X github.com/pydio/cells/v4/common.version=${DEV_VERSION}\
 	 -X github.com/pydio/cells/v4/common.BuildStamp=2018-01-01T00:00:00\
 	 -X github.com/pydio/cells/v4/common.BuildRevision=dev\
-	 -X github.com/pydio/cells/v4/common.LogFileDefaultValue=false"\
+	 -X github.com/pydio/cells/v4/common.LogFileDefaultValue=false\
+	 -X google.golang.org/protobuf/reflect/protoregistry.conflictPolicy=warn"\
 	 -o cells\
 	 .
 

@@ -25,13 +25,18 @@ import (
 	"context"
 	"os"
 
+	minio "github.com/minio/minio/cmd"
+
+	"github.com/pydio/cells/v4/common/service/generic"
+
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/service"
-	//"github.com/pydio/minio-srv/cmd/gateway/pydio"
+
+	_ "github.com/pydio/cells/v4/gateway/data/gw"
 )
 
 type logger struct {
@@ -61,24 +66,25 @@ func init() {
 			// service.RouterDependencies(),
 			service.Description("S3 Gateway to tree service"),
 			//service.Port(fmt.Sprintf("%d", port)),
-			/*
-				service.WithGeneric(func(opts ...server.Option) server.Server {
-					var certFile, keyFile string
+			service.WithGeneric(func(g generic.Server) error {
+
+				var certFile, keyFile string
+				/*
 					if config.Get("cert", "http", "ssl").Bool() {
 						certFile = config.Get("cert", "http", "certFile").String()
 						keyFile = config.Get("cert", "http", "keyFile").String()
 					}
+				*/
 
-					srv := &gatewayDataServer{
-						ctx:      ctx,
-						port:     port,
-						certFile: certFile,
-						keyFile:  keyFile,
-					}
+				srv := &gatewayDataServer{
+					port:     8484,
+					certFile: certFile,
+					keyFile:  keyFile,
+				}
+				srv.Start(ctx)
 
-					return service.NewGenericServer(srv, opts...)
-				}),
-			*/
+				return nil
+			}),
 		)
 	})
 }
@@ -91,8 +97,13 @@ type gatewayDataServer struct {
 	keyFile  string
 }
 
-func (g *gatewayDataServer) Start() error {
-	os.Setenv("MINIO_BROWSER", "off")
+func (g *gatewayDataServer) Start(ctx context.Context) error {
+	// os.Setenv("MINIO_BROWSER", "off")
+	os.Setenv("MINIO_ROOT_USER", "gateway")
+	os.Setenv("MINIO_ROOT_PASSWORD", "gatewaysecret")
+
+	params := []string{"minio", "gateway", "pydio"}
+	minio.Main(params)
 	/*
 		console := &logger{ctx: g.ctx}
 		ctx, cancel := context.WithCancel(g.ctx)

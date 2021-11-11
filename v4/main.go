@@ -9,14 +9,17 @@ import (
 	// Install
 	_ "github.com/pydio/cells/v4/discovery/install/rest"
 
-
 	// Discovery
-	_ "github.com/pydio/cells/v4/discovery/registry"
-	_ "github.com/pydio/cells/v4/discovery/health/grpc"
 	_ "github.com/pydio/cells/v4/discovery/health/generic"
+	_ "github.com/pydio/cells/v4/discovery/health/grpc"
 	_ "github.com/pydio/cells/v4/discovery/health/http"
+	_ "github.com/pydio/cells/v4/discovery/registry"
 
-	 _ "github.com/pydio/cells/v4/gateway/proxy"
+	// Gateways
+	_ "github.com/pydio/cells/v4/gateway/proxy"
+	// Test Minio Starts (as object, or as gateway)
+	//_ "github.com/pydio/cells/v4/data/source/objects/grpc"
+	//_ "github.com/pydio/cells/v4/gateway/data"
 )
 
 func main() {
