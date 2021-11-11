@@ -24,8 +24,15 @@ package micro
 import (
 	"context"
 	"net/http"
+	"strings"
+
+	ahandler "github.com/micro/micro/v3/service/api/handler"
+	aapi "github.com/micro/micro/v3/service/api/handler/api"
+	"github.com/micro/micro/v3/service/api/router"
+	regRouter "github.com/micro/micro/v3/service/api/router/registry"
 
 	"github.com/pydio/cells/v4/common"
+	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/service"
 )
@@ -37,10 +44,29 @@ func init() {
 
 func register(ctx context.Context) {
 	service.NewService(
+		service.Context(ctx),
 		service.Name(common.ServiceMicroApi),
 		service.Tag(common.ServiceTagGateway),
 		service.Description("Proxy handler to dispatch REST requests to the underlying services"),
 		service.WithHTTP(func(serveMux *http.ServeMux) {
+
+			ns := strings.TrimRight(common.ServiceRestNamespace_, ".")
+
+			//rr := api.NewResolver(resolver.WithServicePrefix("")) ???
+
+			rt := regRouter.NewRouter(
+				router.WithHandler(aapi.Handler),
+				//router.WithResolver(rr), ???
+				router.WithRegistry(defaults.Registry()),
+			)
+			ap := aapi.NewHandler(
+				ahandler.WithNamespace(ns),
+				ahandler.WithRouter(rt),
+				ahandler.WithClient(defaults.NewClient()),
+			)
+
+			serveMux.Handle("/{service:[a-zA-Z0-9]+}", ap)
+
 			/*
 				r := mux.NewRouter()
 				rt := router.NewRouter(router.WithNamespace(strings.TrimRight(common.ServiceRestNamespace_, ".")), router.WithHandler(handler.Http))

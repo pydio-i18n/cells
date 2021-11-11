@@ -17,9 +17,17 @@ import (
 
 	// Gateways
 	_ "github.com/pydio/cells/v4/gateway/proxy"
-	// Test Minio Starts (as object, or as gateway)
+	//
+	// Gateway Micro (Rest API)
+	// Not running yet, defaults.Registry() nil
+	//_ "github.com/pydio/cells/v4/gateway/micro"
+	//
+	//
+	// Minio Starts compiling, running!
+	// As OBJECT
 	//_ "github.com/pydio/cells/v4/data/source/objects/grpc"
-	_ "github.com/pydio/cells/v4/gateway/data"
+	// AS GATEWAY
+	// _ "github.com/pydio/cells/v4/gateway/data"
 )
 
 func main() {
