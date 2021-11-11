@@ -23,7 +23,6 @@ require (
 	github.com/go-openapi/spec v0.20.4
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gobwas/glob v0.2.3
-	github.com/gogo/protobuf v1.3.2
 	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0

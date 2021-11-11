@@ -24,9 +24,9 @@ import (
 	"fmt"
 	"path"
 
-	"github.com/gogo/protobuf/proto"
 	"github.com/hashicorp/go-version"
 	"github.com/pborman/uuid"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
