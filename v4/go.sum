@@ -2250,8 +2250,6 @@ github.com/minio/mc v0.0.0-20211027024940-7866f97ef502/go.mod h1:vxztwXLB9Gyl/h3
 github.com/minio/md5-simd v1.1.0/go.mod h1:XpBqgZULrMYD3R+M28PcmP0CkI7PEMzB3U77ZrKZ0Gw=
 github.com/minio/md5-simd v1.1.2 h1:Gdi1DZK69+ZVMoNHRXJyNcxrMA4dSxoYHZSQbirFg34=
 github.com/minio/md5-simd v1.1.2/go.mod h1:MzdKDxYpY2BT9XQFocsiZf/NKVtR7nkE4RoEpN+20RM=
-github.com/minio/minio v0.0.0-20211111063317-68c5ad83fb73 h1:EMcBgGTzRtsgJvWowWTQFHV06snZBFR3w3dC2wo8FYI=
-github.com/minio/minio v0.0.0-20211111063317-68c5ad83fb73/go.mod h1:a/pVqwaQ5ySpp3TkGMWD81W+OshDgIaYWvBBiPVNQSw=
 github.com/minio/minio-go/v7 v7.0.10/go.mod h1:td4gW1ldOsj1PbSNS+WYK43j+P1XVhX/8W8awaYlBFo=
 github.com/minio/minio-go/v7 v7.0.11-0.20210302210017-6ae69c73ce78/go.mod h1:mTh2uJuAbEqdhMVl6CMIIZLUeiMiWtJR4JB8/5g2skw=
 github.com/minio/minio-go/v7 v7.0.15-0.20211004160302-3b57c1e369ca/go.mod h1:pUV0Pc+hPd1nccgmzQF/EXh48l/Z/yps6QPF1aaie4g=
@@ -2706,6 +2704,10 @@ github.com/pseudomuto/protoc-gen-doc v1.4.1/go.mod h1:exDTOVwqpp30eV/EDPFLZy3Pwr
 github.com/pseudomuto/protokit v0.2.0/go.mod h1:2PdH30hxVHsup8KpBTOXTBeMVhJZVio3Q8ViKSAXT0Q=
 github.com/pydio/melody v0.0.0-20190928133520-4271c6513fb6 h1:R2xi5pGxvwcVUTRh8CrDzdkYLIQT8nXvQHyXuYg1rRE=
 github.com/pydio/melody v0.0.0-20190928133520-4271c6513fb6/go.mod h1:E3dNe7CwsJgzZjN2xiAVfAd8Spkxbviek8AZ9wjaZHk=
+github.com/pydio/minio v0.0.0-20211111063317-68c5ad83fb73 h1:0fVzc9tc9eqs59tCslbCJVwcXFZC2aTiiFIX+Gh1hms=
+github.com/pydio/minio v0.0.0-20211111063317-68c5ad83fb73/go.mod h1:a/pVqwaQ5ySpp3TkGMWD81W+OshDgIaYWvBBiPVNQSw=
+github.com/pydio/minio v0.0.0-20211111130016-491de31a4ca6 h1:zqK8yn7lM0mYkApBidGwyPdk772onNe4bN0dhbdzjmA=
+github.com/pydio/minio v0.0.0-20211111130016-491de31a4ca6/go.mod h1:a/pVqwaQ5ySpp3TkGMWD81W+OshDgIaYWvBBiPVNQSw=
 github.com/quasilyte/go-consistent v0.0.0-20190521200055-c6f3937de18c/go.mod h1:5STLWrekHfjyYwxBRVRXNOSewLJ3PWfDJd1VyTS21fI=
 github.com/quasilyte/go-ruleguard v0.1.2-0.20200318202121-b00d7a75d3d8/go.mod h1:CGFX09Ci3pq9QZdj86B+VGIdNj4VyCo2iPOGS9esB/k=
 github.com/rafaeljusto/redigomock v0.0.0-20170720131524-7ae0511314e9/go.mod h1:JaY6n2sDr+z2WTsXkOmNRUfDy6FN0L6Nk7x06ndm4tY=

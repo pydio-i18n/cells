@@ -23,6 +23,7 @@ package gateway
 
 import (
 	"context"
+	"net/http"
 	"os"
 
 	minio "github.com/minio/minio/cmd"
@@ -101,6 +102,16 @@ func (g *gatewayDataServer) Start(ctx context.Context) error {
 	// os.Setenv("MINIO_BROWSER", "off")
 	os.Setenv("MINIO_ROOT_USER", "gateway")
 	os.Setenv("MINIO_ROOT_PASSWORD", "gatewaysecret")
+
+	minio.HookRegisterGlobalHandler(func(handler http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if h := r.Header.Get("X-Pydio-Special-Header"); h != "" {
+				ctx = context.WithValue(r.Context(), "pydio-stuff", h)
+				r = r.WithContext(ctx)
+			}
+			handler.ServeHTTP(w, r)
+		})
+	})
 
 	params := []string{"minio", "gateway", "pydio"}
 	minio.Main(params)
