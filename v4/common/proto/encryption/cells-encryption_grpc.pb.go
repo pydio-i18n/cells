@@ -313,7 +313,7 @@ var UserKeyStore_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "encryption.proto",
+	Metadata: "cells-encryption.proto",
 }
 
 // NodeKeyManagerClient is the client API for NodeKeyManager service.
@@ -650,5 +650,5 @@ var NodeKeyManager_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "encryption.proto",
+	Metadata: "cells-encryption.proto",
 }

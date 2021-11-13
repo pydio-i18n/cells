@@ -99,7 +99,7 @@ var AuthTokenRevoker_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "auth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // AuthTokenPrunerClient is the client API for AuthTokenPruner service.
@@ -187,7 +187,7 @@ var AuthTokenPruner_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "auth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // LoginProviderClient is the client API for LoginProvider service.
@@ -345,7 +345,7 @@ var LoginProvider_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "auth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // ConsentProviderClient is the client API for ConsentProvider service.
@@ -503,7 +503,7 @@ var ConsentProvider_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "auth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // LogoutProviderClient is the client API for LogoutProvider service.
@@ -625,7 +625,7 @@ var LogoutProvider_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "auth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // AuthCodeProviderClient is the client API for AuthCodeProvider service.
@@ -711,7 +711,7 @@ var AuthCodeProvider_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "auth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // AuthTokenVerifierClient is the client API for AuthTokenVerifier service.
@@ -799,7 +799,7 @@ var AuthTokenVerifier_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "auth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // AuthCodeExchangerClient is the client API for AuthCodeExchanger service.
@@ -885,7 +885,7 @@ var AuthCodeExchanger_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "auth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // PasswordCredentialsTokenClient is the client API for PasswordCredentialsToken service.
@@ -972,7 +972,7 @@ var PasswordCredentialsToken_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "auth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // AuthTokenRefresherClient is the client API for AuthTokenRefresher service.
@@ -1058,7 +1058,7 @@ var AuthTokenRefresher_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "auth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // PersonalAccessTokenServiceClient is the client API for PersonalAccessTokenService service.
@@ -1217,5 +1217,5 @@ var PersonalAccessTokenService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "auth.proto",
+	Metadata: "cells-auth.proto",
 }
