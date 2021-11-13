@@ -22,6 +22,7 @@ package object
 
 import (
 	"fmt"
+	"github.com/pydio/cells/v4/x/configx"
 	"strings"
 
 	"go.uber.org/zap/zapcore"
@@ -48,7 +49,17 @@ const (
 	StorageKeyInitFromSnapshot = "initFromSnapshot"
 )
 
-// Builds the url used for clients
+func (d *DataSource) ClientConfig() configx.Values {
+	cfg := configx.New()
+	_ = cfg.Val("type").Set("mc")
+	_ = cfg.Val("endpoint").Set(d.BuildUrl())
+	_ = cfg.Val("key").Set(d.GetApiKey())
+	_ = cfg.Val("secret").Set(d.GetApiSecret())
+	_ = cfg.Val("secure").Set(d.GetObjectsSecure())
+	return cfg
+}
+
+// BuildUrl constructs the url used for clients.
 func (d *DataSource) BuildUrl() string {
 	return fmt.Sprintf("%s:%d", d.ObjectsHost, d.ObjectsPort)
 }
@@ -68,6 +79,7 @@ func (d *DataSource) IsInternal() bool {
 }
 
 /* LOGGING SUPPORT */
+
 // MarshalLogObject implements custom marshalling for datasource, to avoid logging ApiKey
 func (d *DataSource) MarshalLogObject(encoder zapcore.ObjectEncoder) error {
 	if d == nil {

@@ -138,6 +138,7 @@ func PerformCheck(ctx context.Context, name string, c *install.InstallConfig) *i
 		}
 
 		cfData := configx.New()
+		cfData.Val("type").Set("mc")
 		cfData.Val("endpoint").Set(endpoint)
 		cfData.Val("key").Set(c.GetDsS3ApiKey())
 		cfData.Val("secret").Set(c.GetDsS3ApiSecret())
@@ -186,6 +187,7 @@ func PerformCheck(ctx context.Context, name string, c *install.InstallConfig) *i
 		}
 
 		cfData := configx.New()
+		cfData.Val("type").Set("mc")
 		cfData.Val("endpoint").Set(endpoint)
 		cfData.Val("key").Set(c.GetDsS3ApiKey())
 		cfData.Val("secret").Set(c.GetDsS3ApiSecret())

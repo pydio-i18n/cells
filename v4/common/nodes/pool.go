@@ -90,12 +90,7 @@ func NewSource(data *object.DataSource) (LoadedSource, error) {
 	loaded := LoadedSource{}
 	loaded.DataSource = *data
 	var err error
-	cfData := configx.New()
-	cfData.Val("endpoint").Set(data.BuildUrl())
-	cfData.Val("key").Set(data.GetApiKey())
-	cfData.Val("secret").Set(data.GetApiSecret())
-	cfData.Val("secure").Set(data.GetObjectsSecure())
-	loaded.Client, err = NewStorageClient(cfData)
+	loaded.Client, err = NewStorageClient(loaded.ClientConfig())
 	return loaded, err
 }
 

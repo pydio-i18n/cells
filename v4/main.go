@@ -3,6 +3,9 @@ package main
 import (
 	"github.com/pydio/cells/v4/cmd"
 
+	// Register minio client for objects storage
+	_ "github.com/pydio/cells/v4/common/nodes/objects/mc"
+
 	_ "github.com/pydio/cells/v4/discovery/config/grpc"
 	_ "github.com/pydio/cells/v4/discovery/config/web"
 

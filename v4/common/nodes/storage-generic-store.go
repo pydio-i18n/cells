@@ -47,12 +47,7 @@ func GetGenericStoreClient(ctx context.Context, storeNamespace string) (client S
 
 	source := response.DataSource
 
-	cfData := configx.New()
-	cfData.Val("endpoint").Set(source.BuildUrl())
-	cfData.Val("key").Set(source.GetApiKey())
-	cfData.Val("secret").Set(source.GetApiSecret())
-	cfData.Val("secure").Set(source.GetObjectsSecure())
-	client, err = NewStorageClient(cfData)
+	client, err = NewStorageClient(source.ClientConfig())
 
 	return client, bucket, err
 

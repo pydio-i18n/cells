@@ -28,11 +28,23 @@ import (
 	minio "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 
+	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/models"
+	"github.com/pydio/cells/v4/x/configx"
 )
 
 type Client struct {
 	mc *minio.Core
+}
+
+func init() {
+	nodes.RegisterStorageClient("mc", func(cfg configx.Values) (nodes.StorageClient, error) {
+		ep := cfg.Val("endpoint").String()
+		key := cfg.Val("key").String()
+		secret := cfg.Val("secret").String()
+		secure := cfg.Val("secure").Bool()
+		return New(ep, key, secret, secure)
+	})
 }
 
 func New(endpoint, accessKey, secretKey string, secure bool, customRegion ...string) (*Client, error) {
