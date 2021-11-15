@@ -3,7 +3,7 @@ package generic
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/service/generic"
+	"github.com/pydio/cells/v4/common/server/generic"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
@@ -18,13 +18,11 @@ func init() {
 			service.Tag(common.ServiceTagDiscovery),
 			service.Description("Service launching a test discovery server."),
 			// service.WithStorage(config.NewDAO),
-			service.WithGeneric(func(srv generic.Server) error {
-				fmt.Println("This is a new handler")
-
-				select {
-				case <-ctx.Done():
-					fmt.Println("Handler is done")
-				}
+			service.WithGeneric(func(srv *generic.Server) error {
+				srv.Handle(func () error {
+					fmt.Println("Server generic started")
+					return nil
+				})
 
 				return nil
 			}),

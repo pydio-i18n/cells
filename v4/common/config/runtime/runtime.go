@@ -18,16 +18,35 @@
  * The latest code can be found at <https://pydio.com>.
  */
 
-package config
+package runtime
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+	"regexp"
+)
 
-// RuntimeIsLocal check if the environment runtime config is generated locally
-func RuntimeIsLocal() bool {
+// IsLocal check if the environment runtime config is generated locally
+func IsLocal() bool {
 	return viper.GetString("config") == "local"
 }
 
-// RuntimeIsRemote check if the environment runtime config is a remote server
-func RuntimeIsRemote() bool {
+// IsRemote check if the environment runtime config is a remote server
+func IsRemote() bool {
 	return viper.GetString("config") == "remote" || viper.GetString("config") == "raft"
+}
+
+func IsRequired(serviceName string) bool {
+	args := viper.GetStringSlice("args")
+	if len(args) == 0 {
+		return true
+	}
+
+	for _, arg := range viper.GetStringSlice("args"){
+		re := regexp.MustCompile(arg)
+		if re.MatchString(arg) {
+			return true
+		}
+	}
+
+	return false
 }

@@ -27,7 +27,7 @@ import (
 
 	"github.com/pydio/cells/v4/scheduler/timer"
 
-	"github.com/pydio/cells/v4/common/service/generic"
+	"github.com/pydio/cells/v4/common/server/generic"
 
 	"github.com/pydio/cells/v4/common/plugins"
 

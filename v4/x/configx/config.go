@@ -198,8 +198,10 @@ func (v *config) Set(data interface{}) error {
 	if v.opts.Unmarshaler != nil {
 		switch vv := data.(type) {
 		case []byte:
-			if err := v.opts.Unmarshaler.Unmarshal(vv, &data); err != nil {
-				return err
+			if len(vv) > 0 {
+				if err := v.opts.Unmarshaler.Unmarshal(vv, &data); err != nil {
+					return err
+				}
 			}
 		}
 	}

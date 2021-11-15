@@ -88,11 +88,7 @@ require (
 	github.com/uber-go/tally v3.4.2+incompatible
 	github.com/zalando/go-keyring v0.1.1
 	go.etcd.io/bbolt v1.3.6
-	go.etcd.io/etcd/api/v3 v3.5.1
-	go.etcd.io/etcd/client/pkg/v3 v3.5.1
-	go.etcd.io/etcd/pkg/v3 v3.5.1
-	go.etcd.io/etcd/raft/v3 v3.5.1
-	go.etcd.io/etcd/server/v3 v3.5.1
+	go.etcd.io/etcd/client/v3 v3.5.1 // indirect
 	go.uber.org/zap v1.19.1
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d

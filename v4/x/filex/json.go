@@ -1,11 +1,28 @@
 package filex
 
 import (
+	"io"
 	"os"
 	"path/filepath"
 
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
+
+// Read reads the content of a file
+func Read(filename string) ([]byte, error) {
+	fh, err := os.Create(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer fh.Close()
+
+	b, err := io.ReadAll(fh)
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
+}
 
 // Save writes configs to json file
 func Save(filename string, data interface{}) error {

@@ -21,6 +21,8 @@
 package rest
 
 import (
+	"fmt"
+	"github.com/pydio/cells/v4/common/config"
 	"time"
 
 
@@ -126,6 +128,8 @@ func (h *Handler) PostInstall(req *restful.Request, rsp *restful.Response) {
 		response.Success = true
 		rsp.WriteEntity(response)
 	}
+
+	fmt.Println(config.Get())
 
 	go func() {
 		<-time.After(3 * time.Second)
