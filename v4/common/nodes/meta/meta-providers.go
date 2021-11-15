@@ -24,6 +24,7 @@ package meta
 import (
 	"context"
 	"io"
+	"strings"
 	"time"
 
 	"go.uber.org/zap"
@@ -45,29 +46,29 @@ type Loader interface {
 	LoadMetas(ctx context.Context, nodes ...*tree.Node)
 }
 
-type StreamLoader struct {
+type streamLoader struct {
 	names     []string
 	streamers []tree.NodeProviderStreamer_ReadNodeStreamClient
-	closer    MetaProviderCloser
+	closer    providerCloser
 }
 
 func NewStreamLoader(ctx context.Context) Loader {
-	l := &StreamLoader{}
+	l := &streamLoader{}
 	l.streamers, l.closer, l.names = initMetaProviderClients(ctx)
 	return l
 }
 
-func (l *StreamLoader) LoadMetas(ctx context.Context, nodes ...*tree.Node) {
+func (l *streamLoader) LoadMetas(ctx context.Context, nodes ...*tree.Node) {
 	enrichNodesMetaFromProviders(ctx, l.streamers, l.names, nodes...)
 }
 
-func (l *StreamLoader) Close() error {
+func (l *streamLoader) Close() error {
 	return l.closer()
 }
 
-type MetaProviderCloser func() error
+type providerCloser func() error
 
-func initMetaProviderClients(ctx context.Context) ([]tree.NodeProviderStreamer_ReadNodeStreamClient, MetaProviderCloser, []string) {
+func initMetaProviderClients(ctx context.Context) ([]tree.NodeProviderStreamer_ReadNodeStreamClient, providerCloser, []string) {
 
 	metaProviders, names := getMetaProviderStreamers(ctx)
 	var streamers []tree.NodeProviderStreamer_ReadNodeStreamClient
@@ -153,20 +154,15 @@ func getMetaProviderStreamers(ctx context.Context) ([]tree.NodeProviderStreamerC
 		return result, names
 	}
 
-	// Other Meta Providers (running services only)
-	// TODO V4
-	/*
-		services, err := registry.ListServicesWithMicroMeta(ServiceMetaProvider, "stream")
-		if err != nil {
-			return nil, names
-		}
+	ss, e := servicesWithMeta(ServiceMetaProvider, "stream")
+	if e != nil {
+		return result, names
+	}
 
-		for _, srv := range services {
-			result = append(result, tree.NewNodeProviderStreamerClient(srv.Name(), defaults.NewClient()))
-			names = append(names, srv.Name())
-		}
-
-	*/
+	for _, srv := range ss {
+		result = append(result, tree.NewNodeProviderStreamerClient(defaults.NewClientConn(strings.TrimPrefix(srv.Name(), common.ServiceGrpcNamespace_))))
+		names = append(names, srv.Name())
+	}
 
 	return result, names
 

@@ -49,7 +49,7 @@ type Batch struct {
 	sync.Mutex
 	inserts    map[string]*tree.IndexableNode
 	deletes    map[string]struct{}
-	nsProvider *meta.NamespacesProvider
+	nsProvider *meta.NsProvider
 	options    BatchOptions
 	ctx        context.Context
 	uuidRouter nodes.Handler
@@ -140,7 +140,7 @@ func (b *Batch) LoadIndexableNode(indexNode *tree.IndexableNode, excludes map[st
 	indexNode.Meta = indexNode.AllMetaDeserialized(excludes)
 	indexNode.ModifTime = time.Unix(indexNode.MTime, 0)
 	var basename string
-	indexNode.GetMeta("name", &basename)
+	indexNode.GetMeta(common.MetaNamespaceNodeName, &basename)
 	indexNode.Basename = basename
 	if indexNode.Type == 1 {
 		indexNode.NodeType = "file"
@@ -148,7 +148,7 @@ func (b *Batch) LoadIndexableNode(indexNode *tree.IndexableNode, excludes map[st
 	} else {
 		indexNode.NodeType = "folder"
 	}
-	indexNode.GetMeta("GeoLocation", &indexNode.GeoPoint)
+	indexNode.GetMeta(common.MetaNamespaceGeoLocation, &indexNode.GeoPoint)
 	ref := indexNode.GetStringMeta("ContentRef")
 	if b.options.IndexContent && indexNode.IsLeaf() && ref != "" {
 		delete(indexNode.Meta, "ContentRef")
@@ -181,9 +181,9 @@ func (b *Batch) createBackgroundContext() context.Context {
 	return ctx
 }
 
-func (b *Batch) NamespacesProvider() *meta.NamespacesProvider {
+func (b *Batch) NamespacesProvider() *meta.NsProvider {
 	if b.nsProvider == nil {
-		b.nsProvider = meta.NewNamespacesProvider()
+		b.nsProvider = meta.NewNsProvider()
 	}
 	return b.nsProvider
 }

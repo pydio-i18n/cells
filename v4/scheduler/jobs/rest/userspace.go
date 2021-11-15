@@ -70,7 +70,7 @@ func compress(ctx context.Context, selectedPaths []string, targetNodePath string
 			if nodeErr != nil {
 				return nodeErr
 			}
-			node.SetMeta("acl-check-download", true)
+			node.MustSetMeta("acl-check-download", true)
 			if err := theRouter.WrappedCanApply(srcCtx, nil, &tree.NodeChangeEvent{Type: tree.NodeChangeEvent_READ, Source: node}); err != nil {
 				return permError
 			}
@@ -91,7 +91,7 @@ func compress(ctx context.Context, selectedPaths []string, targetNodePath string
 							break
 						}
 						cNode := c.GetNode()
-						cNode.SetMeta("acl-check-download", true)
+						cNode.MustSetMeta("acl-check-download", true)
 						if err := theRouter.WrappedCanApply(srcCtx, nil, &tree.NodeChangeEvent{Type: tree.NodeChangeEvent_READ, Source: cNode}); err != nil {
 							childrenStream.Close()
 							return permError
@@ -352,7 +352,7 @@ func dirCopy(ctx context.Context, selectedPathes []string, targetNodePath string
 			metaClient := tree.NewNodeReceiverClient(defaults.NewClientConn(common.ServiceMeta))
 			for _, n := range loadedNodes {
 				metaNode := &tree.Node{Uuid: n.GetUuid()}
-				metaNode.SetMeta(common.MetaNamespaceRecycleRestore, n.Path)
+				metaNode.MustSetMeta(common.MetaNamespaceRecycleRestore, n.Path)
 				_, e := metaClient.CreateNode(ctx, &tree.CreateNodeRequest{Node: metaNode})
 				if e != nil {
 					log.Logger(ctx).Error("Error while saving recycle_restore meta", zap.Error(e))

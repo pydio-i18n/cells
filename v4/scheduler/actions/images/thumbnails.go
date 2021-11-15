@@ -212,18 +212,18 @@ func (t *ThumbnailExtractor) resize(ctx context.Context, node *tree.Node, sizes 
 	width := bounds.Max.X
 	height := bounds.Max.Y
 	// Send update event right now
-	node.SetMeta(MetadataImageDimensions, struct {
+	node.MustSetMeta(MetadataImageDimensions, struct {
 		Width  int
 		Height int
 	}{
 		Width:  width,
 		Height: height,
 	})
-	node.SetMeta(MetadataCompatIsImage, true)
-	node.SetMeta(MetadataThumbnails, &ThumbnailsMeta{Processing: true})
-	node.SetMeta(MetadataCompatImageHeight, height)
-	node.SetMeta(MetadataCompatImageWidth, width)
-	node.SetMeta(MetadataCompatImageReadableDimensions, fmt.Sprintf("%dpx X %dpx", width, height))
+	node.MustSetMeta(MetadataCompatIsImage, true)
+	node.MustSetMeta(MetadataThumbnails, &ThumbnailsMeta{Processing: true})
+	node.MustSetMeta(MetadataCompatImageHeight, height)
+	node.MustSetMeta(MetadataCompatImageWidth, width)
+	node.MustSetMeta(MetadataCompatImageReadableDimensions, fmt.Sprintf("%dpx X %dpx", width, height))
 
 	if _, err = t.metaClient.UpdateNode(ctx, &tree.UpdateNodeRequest{From: node, To: node}); err != nil {
 		return errors.Wrap(err, errPath)
@@ -243,7 +243,7 @@ func (t *ThumbnailExtractor) resize(ctx context.Context, node *tree.Node, sizes 
 		updateMeta, err := t.writeSizeFromSrc(ctx, src, node, size)
 		if err != nil {
 			// Remove processing state from Metadata
-			node.SetMeta(MetadataThumbnails, nil)
+			node.MustSetMeta(MetadataThumbnails, nil)
 			t.metaClient.UpdateNode(ctx, &tree.UpdateNodeRequest{From: node, To: node})
 			return errors.Wrap(err, errPath)
 		}
@@ -263,9 +263,9 @@ func (t *ThumbnailExtractor) resize(ctx context.Context, node *tree.Node, sizes 
 	displayMemStat(ctx, "AFTER TRIGGERING GC")
 
 	if (meta != &ThumbnailsMeta{}) {
-		node.SetMeta(MetadataThumbnails, meta)
+		node.MustSetMeta(MetadataThumbnails, meta)
 	} else {
-		node.SetMeta(MetadataThumbnails, nil)
+		node.MustSetMeta(MetadataThumbnails, nil)
 	}
 
 	log.Logger(ctx).Info("Thumbs Generated for", zap.String(common.KeyNodePath, errPath), zap.Any("meta", meta))
@@ -388,7 +388,7 @@ func (t *ThumbnailExtractor) writeSizeFromSrc(ctx context.Context, img image.Ima
 
 func getNodeLocalPath(node *tree.Node) string {
 	if localFolder := node.GetStringMeta(common.MetaNamespaceNodeTestLocalFolder); localFolder != "" {
-		baseName := node.GetStringMeta("name")
+		baseName := node.GetStringMeta(common.MetaNamespaceNodeName)
 		targetFileName := filepath.Join(localFolder, baseName)
 		return targetFileName
 	}

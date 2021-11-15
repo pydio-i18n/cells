@@ -135,7 +135,7 @@ func uploadStream(w http.ResponseWriter, r *http.Request) {
 func buildFileFromNode(ctx context.Context, n *tree.Node) *File {
 
 	f := File{
-		BaseFileName:     n.GetStringMeta("name"),
+		BaseFileName:     n.GetStringMeta(common.MetaNamespaceNodeName),
 		OwnerId:          "pydio", // TODO get an ownerID?
 		Size:             n.GetSize(),
 		Version:          fmt.Sprintf("%d", n.GetModTime().Unix()),

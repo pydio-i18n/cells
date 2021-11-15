@@ -146,7 +146,7 @@ func (a *Handler) GetObject(ctx context.Context, node *tree.Node, requestData *m
 		}
 		if er == nil {
 			filter := node.Clone()
-			filter.SetMeta(common.MetaNamespaceDatasourcePath, path.Base(node.Path))
+			filter.MustSetMeta(common.MetaNamespaceDatasourcePath, path.Base(node.Path))
 			filterBi := nodes.BranchInfo{LoadedSource: source}
 			if a.TransparentGet {
 				// Do not set the Binary flag and just replace node info
@@ -154,7 +154,7 @@ func (a *Handler) GetObject(ctx context.Context, node *tree.Node, requestData *m
 				filter.Path = path.Join(source.Name, path.Base(node.Path))
 			} else {
 				filterBi.Binary = true
-				filter.SetMeta(common.MetaNamespaceDatasourcePath, path.Base(node.Path))
+				filter.MustSetMeta(common.MetaNamespaceDatasourcePath, path.Base(node.Path))
 			}
 			return a.Next.GetObject(nodes.WithBranchInfo(ctx, "in", filterBi), filter, requestData)
 		}
@@ -192,7 +192,7 @@ func (a *Handler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, op
 			ctx = nodes.WithBranchInfo(ctx, "in", nodes.BranchInfo{LoadedSource: source, Binary: true})
 			clone := in.Node.Clone()
 			dsKey = path.Base(in.Node.Path)
-			clone.SetMeta(common.MetaNamespaceDatasourcePath, dsKey)
+			clone.MustSetMeta(common.MetaNamespaceDatasourcePath, dsKey)
 			in.Node = clone
 		}
 	}
@@ -220,7 +220,7 @@ func (a *Handler) PutObject(ctx context.Context, node *tree.Node, reader io.Read
 			ctx = nodes.WithBranchInfo(ctx, "in", nodes.BranchInfo{LoadedSource: source, Binary: true})
 			clone := node.Clone()
 			clone.Uuid = path.Base(node.Path)
-			clone.SetMeta(common.MetaNamespaceDatasourcePath, path.Base(node.Path))
+			clone.MustSetMeta(common.MetaNamespaceDatasourcePath, path.Base(node.Path))
 			return a.Next.PutObject(ctx, clone, reader, requestData)
 		} else {
 			log.Logger(ctx).Debug("Putting Node Inside Binary Store Cannot find DS Info?", zap.Error(er))

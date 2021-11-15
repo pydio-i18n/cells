@@ -188,8 +188,8 @@ func (h *Handler) CreateNodes(req *restful.Request, resp *restful.Response) {
 
 			} else {
 				contents := " " // Use simple space for empty files
-				if n.GetStringMeta("Contents") != "" {
-					contents = n.GetStringMeta("Contents")
+				if n.GetStringMeta(common.MetaNamespaceContents) != "" {
+					contents = n.GetStringMeta(common.MetaNamespaceContents)
 				}
 				length = int64(len(contents))
 				reader = strings.NewReader(contents)
@@ -317,7 +317,7 @@ func (h *Handler) DeleteNodes(req *restful.Request, resp *restful.Response) {
 				log.Logger(ctx).Info(fmt.Sprintf("Deletion: moving [%s] to recycle bin %s", node.GetPath(), rPath))
 				// If moving to recycle, save current path as metadata for later restore operation
 				metaNode := &tree.Node{Uuid: ancestors[0].Uuid}
-				metaNode.SetMeta(common.MetaNamespaceRecycleRestore, ancestors[0].Path)
+				metaNode.MustSetMeta(common.MetaNamespaceRecycleRestore, ancestors[0].Path)
 				if _, e := metaClient.CreateNode(ctx, &tree.CreateNodeRequest{Node: metaNode, Silent: true}); e != nil {
 					log.Logger(ctx).Error("Could not store recycle_restore metadata for node", zap.Error(e))
 				}
@@ -330,7 +330,7 @@ func (h *Handler) DeleteNodes(req *restful.Request, resp *restful.Response) {
 				srcCtx, srcNode, _ := inputFilter(ctx, node, "from")
 				_, recycleOut, _ := outputFilter(ctx, deleteJobs.RecyclesNodes[rPath], "to")
 				targetCtx, recycleIn, _ := inputFilter(ctx, recycleOut, "to")
-				recycleIn.SetMeta(common.RecycleBinName, "true")
+				recycleIn.MustSetMeta(common.RecycleBinName, "true")
 				if er := router.WrappedCanApply(srcCtx, targetCtx, &tree.NodeChangeEvent{Type: tree.NodeChangeEvent_UPDATE_PATH, Source: srcNode, Target: recycleIn}); er != nil {
 					return er
 				}

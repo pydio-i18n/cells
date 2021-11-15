@@ -74,12 +74,12 @@ func (f *FlatStorageHandler) CreateNode(ctx context.Context, in *tree.CreateNode
 		if rNode.IsLeaf() {
 			return nil, errors.Forbidden("cannot.override.file", "trying to create a folder on top of an existing file")
 		}
-		rNode.SetMeta(common.MetaFlagIndexed, true)
+		rNode.MustSetMeta(common.MetaFlagIndexed, true)
 		return &tree.CreateNodeResponse{Node: rNode}, nil
 	}
 	cResp, cErr := f.ClientsPool.GetTreeClientWrite().CreateNode(ctx, in, opts...)
 	if cErr == nil && cResp.GetNode() != nil {
-		cResp.GetNode().SetMeta(common.MetaFlagIndexed, true)
+		cResp.GetNode().MustSetMeta(common.MetaFlagIndexed, true)
 	}
 	return cResp, cErr
 }
@@ -129,7 +129,7 @@ func (f *FlatStorageHandler) CopyObject(ctx context.Context, from *tree.Node, to
 			temporary.Type = tree.NodeType_LEAF
 			temporary.Etag = common.NodeFlagEtagTemporary
 			if ctype := from.GetStringMeta(common.MetaNamespaceMime); ctype != "" {
-				temporary.SetMeta(common.MetaNamespaceMime, ctype)
+				temporary.MustSetMeta(common.MetaNamespaceMime, ctype)
 			}
 			if _, er := f.ClientsPool.GetTreeClientWrite().CreateNode(ctx, &tree.CreateNodeRequest{Node: temporary}); er != nil {
 				return 0, er
@@ -275,7 +275,7 @@ func (f *FlatStorageHandler) postCreate(ctx context.Context, identifier string, 
 		}
 	}
 	if cType != "" {
-		updateNode.SetMeta(common.MetaNamespaceMime, cType)
+		updateNode.MustSetMeta(common.MetaNamespaceMime, cType)
 	}
 	_, er := f.ClientsPool.GetTreeClientWrite().CreateNode(ctx, &tree.CreateNodeRequest{Node: updateNode, UpdateIfExists: true})
 	if er != nil {

@@ -71,7 +71,7 @@ func (m *MetaProvider) ReadNodeStream(ctx context.Context, streamer tree.NodePro
 					if sub.UserId == userId && len(sub.Events) > 0 {
 						events := strings.Join(sub.Events, ",")
 						log.Logger(ctx).Debug("ReadNodeStream - Adding meta", zap.String("user_subscriptions", events))
-						node.SetMeta("user_subscriptions", events)
+						node.MustSetMeta(common.MetaFlagUserSubscriptions, events)
 					}
 				}
 			} else {

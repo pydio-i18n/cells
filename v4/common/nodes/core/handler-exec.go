@@ -121,7 +121,7 @@ func (e *Executor) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, o
 		newNode := &tree.Node{
 			Path: strings.TrimRight(node.Path, "/") + "/" + common.PydioSyncHiddenFile,
 		}
-		newNode.SetMeta(common.MetaNamespaceDatasourcePath, dsPath+"/"+common.PydioSyncHiddenFile)
+		newNode.MustSetMeta(common.MetaNamespaceDatasourcePath, dsPath+"/"+common.PydioSyncHiddenFile)
 		meta := make(map[string]string)
 		if session := in.IndexationSession; session != "" {
 			meta[common.XPydioSessionUuid] = session

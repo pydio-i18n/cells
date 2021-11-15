@@ -95,8 +95,8 @@ func (a *QuotaFilter) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, op
 					return resp, nil
 				}
 				n := resp.Node.Clone()
-				n.SetMeta("ws_quota", qc.q)
-				n.SetMeta("ws_quota_usage", qc.u)
+				n.MustSetMeta("ws_quota", qc.q)
+				n.MustSetMeta("ws_quota_usage", qc.u)
 				resp.Node = n
 				return resp, nil
 			}
@@ -104,8 +104,8 @@ func (a *QuotaFilter) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, op
 	}
 	if q, u, e := a.ComputeQuota(ctx, branch.Workspace); e == nil && q > 0 {
 		n := resp.Node.Clone()
-		n.SetMeta("ws_quota", q)
-		n.SetMeta("ws_quota_usage", u)
+		n.MustSetMeta("ws_quota", q)
+		n.MustSetMeta("ws_quota_usage", u)
 		resp.Node = n
 		if cacheKey != "" {
 			a.readCache.Set(cacheKey, &qCache{q: q, u: u}, cache.DefaultExpiration)

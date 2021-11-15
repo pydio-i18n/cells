@@ -275,12 +275,12 @@ func (w *WebsocketHandler) BroadcastNodeChangeEvent(ctx context.Context, event *
 			if t1 || t2 {
 				eType := event.Type
 				if nTarget != nil {
-					nTarget.SetMeta("EventWorkspaceId", workspace.UUID)
+					nTarget.MustSetMeta(common.MetaFlagWorkspaceEventId, workspace.UUID)
 					nTarget = nTarget.WithoutReservedMetas()
 					log.Logger(ctx).Debug("Broadcasting event to this session for workspace", zap.Any("type", event.Type), zap.String("wsId", wsId), zap.Any("path", event.Target.Path))
 				}
 				if nSource != nil {
-					nSource.SetMeta("EventWorkspaceId", workspace.UUID)
+					nSource.MustSetMeta(common.MetaFlagWorkspaceEventId, workspace.UUID)
 					nSource = nSource.WithoutReservedMetas()
 				}
 				// Eventually update event type if one node is out of scope

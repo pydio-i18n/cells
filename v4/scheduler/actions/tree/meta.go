@@ -110,7 +110,7 @@ func (c *MetaAction) Run(ctx context.Context, channels *actions.RunnableChannels
 	}
 	for _, n := range input.Nodes {
 		for k, v := range mm {
-			n.SetMeta(k, v)
+			n.MustSetMeta(k, v)
 		}
 		_, err := c.Client.UpdateNode(ctx, &tree.UpdateNodeRequest{From: n, To: n})
 		if err != nil {

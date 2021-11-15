@@ -44,8 +44,8 @@ func newTestHandlerBranchTranslator(pool *nodes.ClientsPool) (*DataSourceHandler
 		Path:      "datasource/root",
 		MetaStore: make(map[string]string),
 	}
-	testRootNode.SetMeta(common.MetaNamespaceDatasourceName, "datasource")
-	testRootNode.SetMeta(common.MetaNamespaceDatasourcePath, "root")
+	testRootNode.MustSetMeta(common.MetaNamespaceDatasourceName, "datasource")
+	testRootNode.MustSetMeta(common.MetaNamespaceDatasourcePath, "root")
 	b := newDataSourceHandler()
 	b.RootNodesCache = cache.New(1*time.Second, 10*time.Second)
 	b.RootNodesCache.Set("root-node-uuid", testRootNode, cache.DefaultExpiration)
@@ -68,7 +68,7 @@ func newTestHandlerBranchTranslator(pool *nodes.ClientsPool) (*DataSourceHandler
 func makeFakeTestContext(identifier string, root ...*tree.Node) context.Context {
 
 	fakeRoot := &tree.Node{Path: "datasource/root"}
-	fakeRoot.SetMeta(common.MetaNamespaceDatasourceName, "datasource")
+	fakeRoot.MustSetMeta(common.MetaNamespaceDatasourceName, "datasource")
 	c := context.Background()
 	b := nodes.BranchInfo{
 		Workspace: &idm.Workspace{

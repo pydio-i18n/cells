@@ -22,6 +22,7 @@ package bleve
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common"
 	"io/ioutil"
 	"log"
 	"os"
@@ -51,9 +52,9 @@ func getTmpIndex(createNodes bool) (s *BleveServer, dir string) {
 			Type:  1,
 			Size:  24,
 		}
-		node.SetMeta("name", "node.txt")
-		node.SetMeta("FreeMeta", "FreeMetaValue")
-		node.SetMeta("GeoLocation", map[string]float64{
+		node.MustSetMeta("name", "node.txt")
+		node.MustSetMeta("FreeMeta", "FreeMetaValue")
+		node.MustSetMeta(common.MetaNamespaceGeoLocation, map[string]float64{
 			"lat": 47.10358888888889,
 			"lon": 8.372777777777777,
 		})
@@ -70,7 +71,7 @@ func getTmpIndex(createNodes bool) (s *BleveServer, dir string) {
 			Type:  2,
 			Size:  36,
 		}
-		node2.SetMeta("name", "folder")
+		node2.MustSetMeta("name", "folder")
 
 		e = server.IndexNode(ctx, node2, false, nil)
 		if e != nil {
@@ -152,7 +153,7 @@ func TestMakeIndexableNode(t *testing.T) {
 			Type:      1,
 			MetaStore: make(map[string]string),
 		}
-		node.SetMeta("name", "node.txt")
+		node.MustSetMeta(common.MetaNamespaceNodeName, "node.txt")
 
 		b := NewBatch(BatchOptions{})
 		indexNode := &tree.IndexableNode{Node: *node}

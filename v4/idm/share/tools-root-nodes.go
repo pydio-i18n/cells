@@ -54,11 +54,8 @@ func LoadDetectedRootNodes(ctx context.Context, detectedRoots []string) (rootNod
 			if len(multipleMeta) > 0 {
 				node.AppearsIn = multipleMeta
 			}
-			if metaResp, e := metaClient.ReadNode(ctx, request); e == nil {
-				var isRoomNode bool
-				if mE := metaResp.GetNode().GetMeta("CellNode", &isRoomNode); mE == nil && isRoomNode {
-					node.SetMeta("CellNode", true)
-				}
+			if metaResp, e := metaClient.ReadNode(ctx, request); e == nil && metaResp.GetNode().GetMetaBool(common.MetaFlagCellNode) {
+				node.MustSetMeta(common.MetaFlagCellNode, true)
 			}
 			rootNodes[node.GetUuid()] = node.WithoutReservedMetas()
 		} else {
@@ -114,7 +111,7 @@ func ParseRootNodes(ctx context.Context, shareRequest *rest.PutCellRequest) (*tr
 				return nil, false, err
 			}
 			// Update node meta
-			createResp.Node.SetMeta("CellNode", true)
+			createResp.Node.MustSetMeta(common.MetaFlagCellNode, true)
 			metaClient := tree.NewNodeReceiverClient(defaults.NewClientConn(common.ServiceMeta))
 			metaClient.CreateNode(ctx, &tree.CreateNodeRequest{Node: createResp.Node})
 			shareRequest.Room.RootNodes = append(shareRequest.Room.RootNodes, createResp.Node)
@@ -154,7 +151,7 @@ func DetectInheritedPolicy(ctx context.Context, roots []*tree.Node, loadedParent
 
 	var cellNode bool
 	for _, r := range roots {
-		if r.HasMetaKey("CellNode") {
+		if r.GetMetaBool(common.MetaFlagCellNode) {
 			cellNode = true
 			break
 		}
@@ -300,7 +297,7 @@ func CheckLinkRootNodes(ctx context.Context, link *rest.ShareLink) (workspaces [
 func RootsParentWorkspaces(ctx context.Context, rr []*tree.Node) (ww []*tree.WorkspaceRelativePath, e error) {
 	router := compose.NewClient(compose.UuidComposer()...)
 	for _, r := range rr {
-		if r.HasMetaKey("CellNode") {
+		if r.GetMetaBool(common.MetaFlagCellNode) {
 			continue
 		}
 		resp, er := router.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Uuid: r.Uuid}})

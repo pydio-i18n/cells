@@ -48,7 +48,6 @@ import (
 
 const (
 	MetadataExif              = "ImageExif"
-	MetadataGeolocation       = "GeoLocation"
 	MetadataCompatOrientation = "image_exif_orientation"
 )
 
@@ -114,12 +113,12 @@ func (e *ExifProcessor) Run(ctx context.Context, channels *actions.RunnableChann
 	}
 
 	output := input
-	node.SetMeta(MetadataExif, exifData)
+	node.MustSetMeta(MetadataExif, exifData)
 	orientation, oe := exifData.Get(exif.Orientation)
 	if oe == nil {
 		t := orientation.String()
 		if t != "" {
-			node.SetMeta(MetadataCompatOrientation, t)
+			node.MustSetMeta(MetadataCompatOrientation, t)
 		}
 	}
 	lat, long, err := exifData.LatLong()
@@ -156,7 +155,7 @@ func (e *ExifProcessor) Run(ctx context.Context, channels *actions.RunnableChann
 				geoLocation["GPS_altitude"] = fmt.Sprintf("%d", a0.Num())
 			}
 		}
-		node.SetMeta(MetadataGeolocation, geoLocation)
+		node.MustSetMeta(common.MetaNamespaceGeoLocation, geoLocation)
 	}
 
 	e.metaClient.UpdateNode(ctx, &tree.UpdateNodeRequest{From: node, To: node})
@@ -181,7 +180,7 @@ func (e *ExifProcessor) ExtractExif(ctx context.Context, node *tree.Node) (*exif
 
 	var rer error
 	if localFolder := node.GetStringMeta(common.MetaNamespaceNodeTestLocalFolder); localFolder != "" {
-		baseName := node.GetStringMeta("name")
+		baseName := node.GetStringMeta(common.MetaNamespaceNodeName)
 		targetFileName := filepath.Join(localFolder, baseName)
 		reader, rer = os.Open(targetFileName)
 	} else {

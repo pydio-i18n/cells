@@ -343,7 +343,7 @@ func evaluateSingleQuery(q *tree.Query, node *tree.Node) (result bool) {
 
 	if len(q.FileName) != 0 {
 		// Basic search: can have wildcard on left, right, or none (exact search)
-		nodeName := node.GetStringMeta("name")
+		nodeName := node.GetStringMeta(common.MetaNamespaceNodeName)
 		if len(nodeName) == 0 {
 			nodeName = path.Base(node.Path)
 		}
@@ -374,7 +374,7 @@ func evaluateSingleQuery(q *tree.Query, node *tree.Node) (result bool) {
 	if len(q.Extension) > 0 {
 		// Can be "ext1,ext2,ext3"
 		exts := strings.Split(q.Extension, ",")
-		nodeName := node.GetStringMeta("name")
+		nodeName := node.GetStringMeta(common.MetaNamespaceNodeName)
 		if len(nodeName) == 0 {
 			nodeName = path.Base(node.Path)
 		}

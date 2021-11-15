@@ -176,19 +176,19 @@ func (a *WorkspaceHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequ
 						Path: ws.Slug,
 					}
 					// Pass workspace data along in node MetaStore
-					node.SetMeta(common.MetaFlagWorkspaceScope, ws.Scope.String())
-					node.SetMeta(common.MetaFlagWorkspacePermissions, wsPermissions)
-					node.SetMeta(common.MetaFlagWorkspaceLabel, ws.Label)
-					node.SetMeta(common.MetaFlagWorkspaceDescription, ws.Description)
-					node.SetMeta(common.MetaFlagWorkspaceSlug, ws.Slug)
-					node.SetMeta(common.MetaFlagWorkspaceUuid, ws.UUID)
+					node.MustSetMeta(common.MetaFlagWorkspaceScope, ws.Scope.String())
+					node.MustSetMeta(common.MetaFlagWorkspacePermissions, wsPermissions)
+					node.MustSetMeta(common.MetaFlagWorkspaceLabel, ws.Label)
+					node.MustSetMeta(common.MetaFlagWorkspaceDescription, ws.Description)
+					node.MustSetMeta(common.MetaFlagWorkspaceSlug, ws.Slug)
+					node.MustSetMeta(common.MetaFlagWorkspaceUuid, ws.UUID)
 					attributes := ws.LoadAttributes()
 					if common.PackageType == "PydioHome" && ws.Scope == idm.WorkspaceScope_ADMIN {
-						node.SetMeta(common.MetaFlagWorkspaceSyncable, true)
+						node.MustSetMeta(common.MetaFlagWorkspaceSyncable, true)
 					} else if attributes.AllowSync {
 						// Trigger a read to make sure that sync is not disabled by policy
 						if readCtx, readNode, er := a.updateBranchInfo(ctx, node.Clone(), "in"); er == nil {
-							readNode.SetMeta("acl-check-syncable", true)
+							readNode.MustSetMeta(nodes.MetaAclCheckSyncable, true)
 							if r, e := a.Next.ReadNode(readCtx, &tree.ReadNodeRequest{Node: readNode}); e == nil {
 								var v bool
 								if r.GetNode().HasMetaKey(common.MetaFlagWorkspaceSyncable) {
@@ -196,7 +196,7 @@ func (a *WorkspaceHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequ
 								} else {
 									v = true
 								}
-								node.SetMeta(common.MetaFlagWorkspaceSyncable, v)
+								node.MustSetMeta(common.MetaFlagWorkspaceSyncable, v)
 							} else {
 								log.Logger(ctx).Error("Cannot read workspace node during list nodes for workspaces", zap.Error(e))
 							}

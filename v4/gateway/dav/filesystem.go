@@ -73,7 +73,7 @@ func (fi *FileInfo) Name() string {
 	if fi.node.Path != "" {
 		return path.Base(fi.node.Path)
 	}
-	return fi.node.GetStringMeta("name")
+	return fi.node.GetStringMeta(common.MetaNamespaceNodeName)
 }
 
 func (fi *FileInfo) Size() int64 { return fi.node.Size }

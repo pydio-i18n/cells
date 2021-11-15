@@ -485,9 +485,7 @@ func DeleteWorkspace(ctx context.Context, ownerUser *idm.User, scope idm.Workspa
 			log.Logger(ctx).Debug("Will Delete Workspace for Room", zap.Any("room", output))
 			var roomNode *tree.Node
 			for _, node := range output.RootNodes {
-				var testVal bool
-				node.GetMeta("CellNode", &testVal)
-				if testVal {
+				if node.GetMetaBool(common.MetaFlagCellNode) {
 					roomNode = node
 					break
 				}

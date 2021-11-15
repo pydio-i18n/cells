@@ -88,15 +88,29 @@ func (node *Node) GetMeta(namespace string, jsonStruc interface{}) error {
 	return json.Unmarshal([]byte(metaString), &jsonStruc)
 }
 
-// SetMeta sets a metadata by marshalling to JSON
-func (node *Node) SetMeta(namespace string, jsonMeta interface{}) (err error) {
+// GetMetaBool looks for a meta to be present and bool value. Returns false is meta is not set.
+func (node *Node) GetMetaBool(namespace string) bool {
+	metaString := node.getMetaString(namespace)
+	if metaString == "" {
+		return false
+	}
+	var test bool
+	if e := json.Unmarshal([]byte(metaString), &test); e == nil && test {
+		return true
+	}
+	return false
+}
+
+// MustSetMeta sets a metadata by marshalling to JSON. It does not return error but panics instead.
+func (node *Node) MustSetMeta(namespace string, jsonMeta interface{}) {
 	if node.MetaStore == nil {
 		node.MetaStore = make(map[string]string)
 	}
-	var bytes []byte
-	bytes, err = json.Marshal(jsonMeta)
+	bytes, err := json.Marshal(jsonMeta)
+	if err != nil {
+		panic(fmt.Sprintf("Error while marshaling meta to json: %v", err))
+	}
 	node.MetaStore[namespace] = string(bytes)
-	return err
 }
 
 // GetStringMeta easily returns the string value of the MetaData for this key
@@ -160,8 +174,8 @@ func (node *Node) LegacyMeta(meta map[string]interface{}) {
 	meta["bytesize"] = node.Size
 	meta["ajxp_modiftime"] = node.MTime
 	meta["etag"] = node.Etag
-	if _, basename := path.Split(node.Path); basename != node.GetStringMeta("name") {
-		meta["text"] = node.GetStringMeta("name")
+	if _, basename := path.Split(node.Path); basename != node.GetStringMeta(common.MetaNamespaceNodeName) {
+		meta["text"] = node.GetStringMeta(common.MetaNamespaceNodeName)
 	}
 }
 

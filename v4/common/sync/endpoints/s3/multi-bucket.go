@@ -156,7 +156,7 @@ func (m *MultiBucketClient) Walk(walknFc model.WalkNodesFunc, root string, recur
 						for _, g := range m.bucketMetas {
 							if g.Match(tKey) {
 								log.Logger(context.Background()).Info("Attaching tag information to bucket "+bucket.Name, zap.Any(tKey, value))
-								fNode.SetMeta(tKey, value)
+								fNode.MustSetMeta(tKey, value)
 								break
 							}
 						}

@@ -187,8 +187,8 @@ func (s *Handler) Nodes(req *restful.Request, rsp *restful.Response) {
 					if userWorkspaces != nil {
 						for _, w := range userWorkspaces {
 							if strings.HasPrefix(filtered.Path, w.Slug+"/") {
-								filtered.SetMeta("repository_id", w.UUID)
-								filtered.SetMeta("repository_display", w.Label)
+								filtered.MustSetMeta(common.MetaFlagWorkspaceRepoId, w.UUID)
+								filtered.MustSetMeta(common.MetaFlagWorkspaceRepoDisplay, w.Label)
 							}
 						}
 					}

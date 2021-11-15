@@ -109,7 +109,7 @@ func AncestorsListFromContext(ctx context.Context, node *tree.Node, identifier s
 			for i := 0; i < len(parents); i++ {
 				if parents[i].Uuid == rootId {
 					cloneNode := parents[i].Clone()
-					cloneNode.SetMeta(common.MetaFlagWorkspaceRoot, "true")
+					cloneNode.MustSetMeta(common.MetaFlagWorkspaceRoot, "true")
 					parents[i] = cloneNode
 				}
 			}

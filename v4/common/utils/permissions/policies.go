@@ -109,7 +109,7 @@ func PolicyContextFromMetadata(policyContext map[string]string, ctx context.Cont
 
 // PolicyContextFromNode extracts metadata from the Node and enriches the passed policyContext.
 func PolicyContextFromNode(policyContext map[string]string, node *tree.Node) {
-	policyContext[PolicyNodeMetaName] = node.GetStringMeta("name")
+	policyContext[PolicyNodeMetaName] = node.GetStringMeta(common.MetaNamespaceNodeName)
 	policyContext[PolicyNodeMetaPath] = node.Path
 	policyContext[PolicyNodeMetaType] = node.GetType().String()
 	policyContext[PolicyNodeMetaMTime] = fmt.Sprintf("%v", node.MTime)

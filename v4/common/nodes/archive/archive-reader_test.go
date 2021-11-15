@@ -70,7 +70,7 @@ func getTempArchive(formatOrName string) (*tree.Node, string, error) {
 		Path: "fake-path",
 		Uuid: nodeUuid,
 	}
-	archiveNode.SetMeta(common.MetaNamespaceNodeTestLocalFolder, tmpDir)
+	archiveNode.MustSetMeta(common.MetaNamespaceNodeTestLocalFolder, tmpDir)
 	return archiveNode, tmpArchive, nil
 }
 

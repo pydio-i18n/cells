@@ -355,20 +355,20 @@ func (s *Sync) statRoots(ctx context.Context, source model.Endpoint) (stat *mode
 		if err != nil {
 			return stat, errors.WithMessage(err, "Cannot Stat Root")
 		}
-		if node.HasMetaKey("RecursiveChildrenSize") {
+		if node.HasMetaKey(model.MetaRecursiveChildrenSize) {
 			stat.HasSizeInfo = true
 			var s int64
-			if e := node.GetMeta("RecursiveChildrenSize", &s); e == nil {
+			if e := node.GetMeta(model.MetaRecursiveChildrenSize, &s); e == nil {
 				stat.Size += s
 			}
 		}
-		if node.HasMetaKey("RecursiveChildrenFolders") && node.HasMetaKey("RecursiveChildrenFiles") {
+		if node.HasMetaKey(model.MetaRecursiveChildrenFolders) && node.HasMetaKey(model.MetaRecursiveChildrenFiles) {
 			stat.HasChildrenInfo = true
 			var folders, files int64
-			if e := node.GetMeta("RecursiveChildrenFolders", &folders); e == nil {
+			if e := node.GetMeta(model.MetaRecursiveChildrenFolders, &folders); e == nil {
 				stat.Folders += folders
 			}
-			if e := node.GetMeta("RecursiveChildrenFiles", &files); e == nil {
+			if e := node.GetMeta(model.MetaRecursiveChildrenFiles, &files); e == nil {
 				stat.Files += files
 			}
 		}
