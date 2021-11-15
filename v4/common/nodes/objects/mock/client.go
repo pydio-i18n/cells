@@ -30,6 +30,7 @@ import (
 	"github.com/pydio/cells/v4/common/nodes/models"
 )
 
+// New creates a new mock Client with an optional list of buckets
 func New(buckets ...string) *Client {
 	c := &Client{
 		Buckets: map[string]map[string][]byte{},
@@ -40,6 +41,7 @@ func New(buckets ...string) *Client {
 	return c
 }
 
+// Client is an in-memory implementation of the nodes.StorageClient interface
 type Client struct {
 	Buckets map[string]map[string][]byte
 }
@@ -162,7 +164,21 @@ func (c *Client) AbortMultipartUploadWithContext(ctx context.Context, bucket, ob
 }
 
 func (c *Client) CopyObject(sourceBucket, sourceObject, destBucket, destObject string, metadata map[string]string) (models.ObjectInfo, error) {
-	return models.ObjectInfo{}, fmt.Errorf("not.implemented")
+	srcBucket, ok := c.Buckets[sourceBucket]
+	if !ok {
+		return models.ObjectInfo{}, fmt.Errorf("src bucket not found")
+	}
+	srcObjBytes, ok2 := srcBucket[sourceObject]
+	if !ok2 {
+		return models.ObjectInfo{}, fmt.Errorf("src object not found")
+	}
+	dstBucket, ok3 := c.Buckets[destBucket]
+	if !ok3 {
+		return models.ObjectInfo{}, fmt.Errorf("dest bucket not found")
+	}
+	dstBucket[destObject] = make([]byte, len(srcObjBytes))
+	copy(dstBucket[destObject], srcObjBytes)
+	return models.ObjectInfo{Size: int64(len(srcObjBytes))}, nil
 }
 
 func (c *Client) CopyObjectWithProgress(sourceBucket, sourceObject, destBucket, destObject string, srcMeta map[string]string, metadata map[string]string, progress io.Reader) error {

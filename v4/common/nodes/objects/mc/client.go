@@ -33,6 +33,7 @@ import (
 	"github.com/pydio/cells/v4/x/configx"
 )
 
+// Client wraps a minio.Core client in the nodes.StorageClient interface
 type Client struct {
 	mc *minio.Core
 }
@@ -47,6 +48,7 @@ func init() {
 	})
 }
 
+// New creates a new minio.Core with the most standard options
 func New(endpoint, accessKey, secretKey string, secure bool, customRegion ...string) (*Client, error) {
 	options := &minio.Options{
 		Creds:  credentials.NewStaticV2(accessKey, secretKey, ""),
