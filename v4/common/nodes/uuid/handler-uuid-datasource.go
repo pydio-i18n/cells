@@ -25,8 +25,6 @@ import (
 
 	"github.com/pydio/cells/v4/common/nodes/abstract"
 
-	"github.com/micro/micro/v3/service/errors"
-
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -60,7 +58,7 @@ func (v *DataSourceHandler) updateInputBranch(ctx context.Context, node *tree.No
 
 	branchInfo, ok := nodes.GetBranchInfo(ctx, identifier)
 	if !ok {
-		return ctx, node, errors.InternalServerError(nodes.VIEWS_LIBRARY_NAME, "Cannot find branch info for node")
+		return ctx, node, nodes.ErrBranchInfoMissing(identifier)
 	}
 	if branchInfo.Client != nil {
 		// DS is already set by a previous middleware, ignore.

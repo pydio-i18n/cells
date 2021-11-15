@@ -25,7 +25,6 @@ import (
 	"path"
 	"strings"
 
-	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -63,7 +62,7 @@ func (v *DataSourceHandler) updateInputBranch(ctx context.Context, node *tree.No
 
 	branchInfo, ok := nodes.GetBranchInfo(ctx, identifier)
 	if !ok {
-		return ctx, node, errors.InternalServerError(nodes.VIEWS_LIBRARY_NAME, "Cannot find branch info for node")
+		return ctx, node, nodes.ErrBranchInfoMissing(identifier)
 	}
 	if branchInfo.Client != nil {
 		// DS Is already set by a previous middleware, ignore.
@@ -124,7 +123,7 @@ func (v *DataSourceHandler) updateInputBranch(ctx context.Context, node *tree.No
 
 	} else {
 
-		return ctx, node, errors.InternalServerError(nodes.VIEWS_LIBRARY_NAME, "Missing Root in context")
+		return ctx, node, nodes.ErrBranchInfoRootMissing(identifier)
 
 	}
 
@@ -135,7 +134,7 @@ func (v *DataSourceHandler) updateInputBranch(ctx context.Context, node *tree.No
 func (v *DataSourceHandler) updateOutputNode(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
 
 	// Reload DS info - may be necessary for outputFiltering case
-	if branchInfo, ok := nodes.GetBranchInfo(ctx, identifier); (!ok || branchInfo.Name == "") && node.GetStringMeta(common.MetaNamespaceDatasourceName) != "" {
+	if branchInfo, ok := nodes.GetBranchInfo(ctx, identifier); (!ok || branchInfo.DataSource == nil) && node.GetStringMeta(common.MetaNamespaceDatasourceName) != "" {
 		dsName := node.GetStringMeta(common.MetaNamespaceDatasourceName)
 		if source, err := v.ClientsPool.GetDataSourceInfo(dsName); err == nil {
 			branchInfo.LoadedSource = source
@@ -143,7 +142,7 @@ func (v *DataSourceHandler) updateOutputNode(ctx context.Context, node *tree.Nod
 		}
 	}
 
-	if branchInfo, ok := nodes.GetBranchInfo(ctx, identifier); ok && branchInfo.LoadedSource.Name != "" && branchInfo.LoadedSource.ObjectsBucket == "" {
+	if branchInfo, ok := nodes.GetBranchInfo(ctx, identifier); ok && branchInfo.DataSource != nil && branchInfo.LoadedSource.ObjectsBucket == "" {
 		sLen := len(strings.Split(strings.Trim(node.Path, "/"), "/"))
 		if sLen == 1 {
 			// The root of the datasource is at the bucket level, set flag readonly

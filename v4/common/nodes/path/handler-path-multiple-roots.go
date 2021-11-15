@@ -88,7 +88,7 @@ func (m *MultipleRootsHandler) updateInputBranch(ctx context.Context, node *tree
 		}
 		if !rootNode.IsLeaf() {
 			branch.Root = rootNode
-			return nodes.WithBranchInfo(ctx, identifier, branch), m.setWorkspaceRootFlag(&branch.Workspace, node), nil
+			return nodes.WithBranchInfo(ctx, identifier, branch), m.setWorkspaceRootFlag(branch.Workspace, node), nil
 		}
 	}
 
@@ -111,9 +111,9 @@ func (m *MultipleRootsHandler) updateInputBranch(ctx context.Context, node *tree
 		}
 	}
 	if branch.Root == nil {
-		return ctx, node, errors.NotFound(nodes.VIEWS_LIBRARY_NAME, "Could not find root node")
+		return ctx, node, nodes.ErrBranchInfoMissing(identifier)
 	}
-	return ctx, m.setWorkspaceRootFlag(&branch.Workspace, out), nil
+	return ctx, m.setWorkspaceRootFlag(branch.Workspace, out), nil
 }
 
 func (m *MultipleRootsHandler) updateOutputBranch(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
@@ -129,19 +129,19 @@ func (m *MultipleRootsHandler) updateOutputBranch(ctx context.Context, node *tre
 		}
 	}
 	if !set || branch.UUID == "ROOT" || len(branch.RootUUIDs) < 2 {
-		return ctx, m.setWorkspaceRootFlag(&branch.Workspace, out), nil
+		return ctx, m.setWorkspaceRootFlag(branch.Workspace, out), nil
 	}
 	if len(branch.RootUUIDs) == 1 {
 		root, _ := m.LookupRoot(branch.RootUUIDs[0])
 		if !root.IsLeaf() {
-			return ctx, m.setWorkspaceRootFlag(&branch.Workspace, out), nil
+			return ctx, m.setWorkspaceRootFlag(branch.Workspace, out), nil
 		}
 	}
 	if branch.Root == nil {
-		return ctx, node, errors.InternalServerError(nodes.VIEWS_LIBRARY_NAME, "No Root defined, this is not normal")
+		return ctx, node, nodes.ErrBranchInfoRootMissing(identifier)
 	}
 	// Prepend root node Uuid
-	out = m.setWorkspaceRootFlag(&branch.Workspace, out)
+	out = m.setWorkspaceRootFlag(branch.Workspace, out)
 	out.Path = m.MakeRootKey(branch.Root) + "/" + strings.TrimLeft(node.Path, "/")
 	return ctx, out, nil
 }

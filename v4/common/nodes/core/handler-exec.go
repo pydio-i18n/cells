@@ -66,7 +66,7 @@ func (e *Executor) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts 
 	if in.ObjectStats {
 		info, ok := nodes.GetBranchInfo(ctx, "in")
 		if !ok {
-			return nil, errors.BadRequest(nodes.VIEWS_LIBRARY_NAME, "Cannot find S3 client, did you insert a resolver middleware?")
+			return nil, nodes.ErrBranchInfoMissing("in")
 		}
 		writer := info.Client
 		//		statOpts := minio.StatObjectOptions{}
@@ -165,7 +165,7 @@ func (e *Executor) UpdateNode(ctx context.Context, in *tree.UpdateNodeRequest, o
 func (e *Executor) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, opts ...grpc.CallOption) (*tree.DeleteNodeResponse, error) {
 	info, ok := nodes.GetBranchInfo(ctx, "in")
 	if !ok {
-		return nil, errors.BadRequest(nodes.VIEWS_LIBRARY_NAME, "Cannot find S3 client, did you insert a resolver middleware?")
+		return nil, nodes.ErrBranchInfoMissing("in")
 	}
 	writer := info.Client
 	//	statOpts := minio.StatObjectOptions{}
@@ -201,7 +201,7 @@ func (e *Executor) GetObject(ctx context.Context, node *tree.Node, requestData *
 	logger := log.Logger(ctx)
 	info, ok := nodes.GetBranchInfo(ctx, "in")
 	if !ok {
-		return nil, errors.BadRequest(nodes.VIEWS_LIBRARY_NAME, "Cannot find S3 client, did you insert a resolver middleware?")
+		return nil, nodes.ErrBranchInfoMissing("in")
 	}
 	writer := info.Client
 
@@ -248,7 +248,7 @@ func (e *Executor) GetObject(ctx context.Context, node *tree.Node, requestData *
 func (e *Executor) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (int64, error) {
 	info, ok := nodes.GetBranchInfo(ctx, "in")
 	if !ok {
-		return 0, errors.BadRequest(nodes.VIEWS_LIBRARY_NAME, "Cannot find S3 client, did you insert a resolver middleware?")
+		return 0, nodes.ErrBranchInfoMissing("in")
 	}
 	writer := info.Client
 
@@ -277,9 +277,12 @@ func (e *Executor) CopyObject(ctx context.Context, from *tree.Node, to *tree.Nod
 
 	// If DS's are same datasource, simple S3 Copy operation. Otherwise it must copy from one to another.
 	destInfo, ok := nodes.GetBranchInfo(ctx, "to")
+	if !ok {
+		return 0, nodes.ErrBranchInfoMissing("to")
+	}
 	srcInfo, ok2 := nodes.GetBranchInfo(ctx, "from")
-	if !ok || !ok2 {
-		return 0, errors.InternalServerError(nodes.VIEWS_LIBRARY_NAME, "Cannot find Handler for src or dest")
+	if !ok2 {
+		return 0, nodes.ErrBranchInfoMissing("from")
 	}
 	destClient := destInfo.Client
 	srcClient := srcInfo.Client
@@ -413,7 +416,7 @@ func (e *Executor) CopyObject(ctx context.Context, from *tree.Node, to *tree.Nod
 func (e *Executor) MultipartCreate(ctx context.Context, target *tree.Node, requestData *models.MultipartRequestData) (string, error) {
 	info, ok := nodes.GetBranchInfo(ctx, "in")
 	if !ok {
-		return "", errors.InternalServerError(nodes.VIEWS_LIBRARY_NAME, "Cannot find client")
+		return "", nodes.ErrBranchInfoMissing("in")
 	}
 	s3Path := e.buildS3Path(info, target)
 
@@ -425,7 +428,7 @@ func (e *Executor) MultipartCreate(ctx context.Context, target *tree.Node, reque
 func (e *Executor) MultipartPutObjectPart(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, reader io.Reader, requestData *models.PutRequestData) (models.MultipartObjectPart, error) {
 	info, ok := nodes.GetBranchInfo(ctx, "in")
 	if !ok {
-		return models.MultipartObjectPart{PartNumber: partNumberMarker}, errors.BadRequest(nodes.VIEWS_LIBRARY_NAME, "Cannot find S3 client, did you insert a resolver middleware?")
+		return models.MultipartObjectPart{PartNumber: partNumberMarker}, nodes.ErrBranchInfoMissing("in")
 	}
 	writer := info.Client
 	s3Path := e.buildS3Path(info, target)
@@ -434,7 +437,7 @@ func (e *Executor) MultipartPutObjectPart(ctx context.Context, target *tree.Node
 
 	if requestData.Size <= 0 {
 		// This should never happen, double check
-		return models.MultipartObjectPart{PartNumber: partNumberMarker}, errors.BadRequest(nodes.VIEWS_LIBRARY_NAME, "trying to upload a part object that has no data. Double check")
+		return models.MultipartObjectPart{PartNumber: partNumberMarker}, errors.BadRequest("put.part.empty", "trying to upload a part object that has no data. Double check")
 	} else {
 		if partNumberMarker == 1 && requestData.ContentTypeUnknown() {
 			cl := target.Clone()
@@ -454,7 +457,7 @@ func (e *Executor) MultipartPutObjectPart(ctx context.Context, target *tree.Node
 func (e *Executor) MultipartList(ctx context.Context, prefix string, requestData *models.MultipartRequestData) (res models.ListMultipartUploadsResult, err error) {
 	info, ok := nodes.GetBranchInfo(ctx, "in")
 	if !ok {
-		return res, errors.InternalServerError(nodes.VIEWS_LIBRARY_NAME, "Cannot find client")
+		return res, nodes.ErrBranchInfoMissing("in")
 	}
 	ml, er := info.Client.ListMultipartUploadsWithContext(ctx, info.ObjectsBucket, prefix, requestData.ListKeyMarker, requestData.ListUploadIDMarker, requestData.ListDelimiter, requestData.ListMaxUploads)
 	if er != nil {
@@ -496,7 +499,7 @@ func (e *Executor) MultipartList(ctx context.Context, prefix string, requestData
 func (e *Executor) MultipartAbort(ctx context.Context, target *tree.Node, uploadID string, requestData *models.MultipartRequestData) error {
 	info, ok := nodes.GetBranchInfo(ctx, "in")
 	if !ok {
-		return errors.InternalServerError(nodes.VIEWS_LIBRARY_NAME, "Cannot find client")
+		return nodes.ErrBranchInfoMissing("in")
 	}
 	s3Path := e.buildS3Path(info, target)
 	return info.Client.AbortMultipartUploadWithContext(ctx, info.ObjectsBucket, s3Path, uploadID)
@@ -505,7 +508,7 @@ func (e *Executor) MultipartAbort(ctx context.Context, target *tree.Node, upload
 func (e *Executor) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.ObjectInfo, error) {
 	info, ok := nodes.GetBranchInfo(ctx, "in")
 	if !ok {
-		return models.ObjectInfo{}, errors.InternalServerError(nodes.VIEWS_LIBRARY_NAME, "Cannot find client")
+		return models.ObjectInfo{}, nodes.ErrBranchInfoMissing("in")
 	}
 	s3Path := e.buildS3Path(info, target)
 
@@ -549,7 +552,7 @@ func (e *Executor) MultipartComplete(ctx context.Context, target *tree.Node, upl
 func (e *Executor) MultipartListObjectParts(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, maxParts int) (models.ListObjectPartsResult, error) {
 	info, ok := nodes.GetBranchInfo(ctx, "in")
 	if !ok {
-		return models.ListObjectPartsResult{}, errors.InternalServerError(nodes.VIEWS_LIBRARY_NAME, "Cannot find client")
+		return models.ListObjectPartsResult{}, nodes.ErrBranchInfoMissing("in")
 	}
 	s3Path := e.buildS3Path(info, target)
 	return info.Client.ListObjectPartsWithContext(ctx, info.ObjectsBucket, s3Path, uploadID, partNumberMarker, maxParts)

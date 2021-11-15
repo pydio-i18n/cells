@@ -53,7 +53,7 @@ type sourceAlias struct {
 }
 
 type LoadedSource struct {
-	object.DataSource
+	*object.DataSource
 	Client StorageClient
 }
 
@@ -67,7 +67,7 @@ type SourcesPool interface {
 }
 
 func (s LoadedSource) MarshalLogObject(encoder zapcore.ObjectEncoder) error {
-	return encoder.AddObject("DataSource", &s.DataSource)
+	return encoder.AddObject("DataSource", s.DataSource)
 }
 
 // ClientsPool is responsible for discovering available datasources and
@@ -83,15 +83,6 @@ type ClientsPool struct {
 
 	watcher     microregistry.Watcher
 	confWatcher configx.Receiver
-}
-
-// NewSource instantiates a LoadedSource with a minio client
-func NewSource(data *object.DataSource) (LoadedSource, error) {
-	loaded := LoadedSource{}
-	loaded.DataSource = *data
-	var err error
-	loaded.Client, err = NewStorageClient(loaded.ClientConfig())
-	return loaded, err
 }
 
 // NewClientsPool creates a client Pool and initialises it by calling the registry.
@@ -163,7 +154,7 @@ func (p *ClientsPool) GetDataSourceInfo(dsName string, retries ...int) (LoadedSo
 		} else {
 
 			ds := LoadedSource{}
-			ds.DataSource = *proto.Clone(&dsi.DataSource).(*object.DataSource)
+			ds.DataSource = proto.Clone(dsi.DataSource).(*object.DataSource)
 			ds.DataSource.ObjectsBucket = alias.bucket
 			ds.Client = dsi.Client
 			return ds, nil
@@ -219,15 +210,23 @@ func (p *ClientsPool) LoadDataSources() {
 		response, err := endpointClient.GetDataSourceConfig(ctx, &object.GetDataSourceConfigRequest{})
 		if err == nil && response.DataSource != nil {
 			log.Logger(ctx).Debug("Creating client for datasource " + source)
-			p.CreateClientsForDataSource(source, response.DataSource)
+			if e := p.CreateClientsForDataSource(source, response.DataSource); e != nil {
+				log.Logger(context.Background()).Warn("Cannot create clients for datasource "+source, zap.Error(e))
+			}
 		} else {
 			log.Logger(context.Background()).Debug("no answer from endpoint, maybe not ready yet? "+common.ServiceGrpcNamespace_+common.ServiceDataSync_+source, zap.Any("r", response), zap.Error(err))
 		}
 	}
 
-	p.registerAlternativeClient(common.PydioThumbstoreNamespace)
-	p.registerAlternativeClient(common.PydioDocstoreBinariesNamespace)
-	p.registerAlternativeClient(common.PydioVersionsNamespace)
+	if e := p.registerAlternativeClient(common.PydioThumbstoreNamespace); e != nil {
+		log.Logger(context.Background()).Warn("Cannot register alternative client "+common.PydioThumbstoreNamespace, zap.Error(e))
+	}
+	if e := p.registerAlternativeClient(common.PydioDocstoreBinariesNamespace); e != nil {
+		log.Logger(context.Background()).Warn("Cannot register alternative client "+common.PydioDocstoreBinariesNamespace, zap.Error(e))
+	}
+	if e := p.registerAlternativeClient(common.PydioVersionsNamespace); e != nil {
+		log.Logger(context.Background()).Warn("Cannot register alternative client "+common.PydioVersionsNamespace, zap.Error(e))
+	}
 }
 
 func (p *ClientsPool) registerAlternativeClient(namespace string) error {
@@ -304,14 +303,19 @@ func (p *ClientsPool) watchConfigChanges() {
 func (p *ClientsPool) CreateClientsForDataSource(dataSourceName string, dataSource *object.DataSource) error {
 
 	log.Logger(context.Background()).Debug("Adding dataSource", zap.String("dsname", dataSourceName))
-	p.Lock()
-	defer p.Unlock()
-	loaded, err := NewSource(dataSource)
+	loaded := LoadedSource{
+		DataSource: dataSource,
+	}
+	client, err := NewStorageClient(dataSource.ClientConfig())
 	if err != nil {
 		return err
 	}
+	loaded.Client = client
 
+	p.Lock()
 	p.sources[dataSourceName] = loaded
+	p.Unlock()
+
 	return nil
 }
 
@@ -337,11 +341,24 @@ func MakeFakeClientsPool(tc tree.NodeProviderClient, tw tree.NodeReceiverClient)
 	// 	return nil, err
 	// }
 
-	c.CreateClientsForDataSource("datasource", mockDatasource)
-	c.aliases["datasource"] = sourceAlias{
-		dataSource: "localhost:9078",
-		bucket:     "bucket",
+	loaded := LoadedSource{
+		DataSource: mockDatasource,
 	}
+	cfg := configx.New()
+	_ = cfg.Val("type").Set("mock")
+	client, _ := NewStorageClient(cfg)
+	loaded.Client = client
+	c.sources = map[string]LoadedSource{
+		"datasource": loaded,
+	}
+	/*
+		_ = c.CreateClientsForDataSource("datasource", mockDatasource)
+		c.aliases["datasource"] = sourceAlias{
+			dataSource: "localhost:9078",
+			bucket:     "bucket",
+		}
+
+	*/
 
 	// coreClient, _ := minio.NewCore("localhost:9078", "access", "secret", false)
 	// c.Clients = map[string]*minio.Core{

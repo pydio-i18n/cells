@@ -92,13 +92,13 @@ func newCacheHandler() *CacheHandler {
 		c.MaxEntriesInWindow = 10 * 60 * 64
 		c.MaxEntrySize = 200
 		c.HardMaxCacheSize = 8
-		syncCache = cache.NewInstrumentedCache(nodes.VIEWS_LIBRARY_NAME, c)
+		syncCache = cache.NewInstrumentedCache(nodes.ViewsLibraryName, c)
 		defaults.Broker().Subscribe(common.TopicTreeChanges, func(publication *broker.Message) error {
 			var event tree.NodeChangeEvent
 			if e := proto.Unmarshal(publication.Body, &event); e == nil && !event.Optimistic {
 				if event.Type == tree.NodeChangeEvent_CREATE || event.Type == tree.NodeChangeEvent_UPDATE_PATH || event.Type == tree.NodeChangeEvent_DELETE {
 					ctx := metadata.NewContext(context.Background(), publication.Header)
-					ctx = servicecontext.WithServiceName(ctx, nodes.VIEWS_LIBRARY_NAME)
+					ctx = servicecontext.WithServiceName(ctx, nodes.ViewsLibraryName)
 					s.cacheEvent(ctx, &event)
 				}
 			}

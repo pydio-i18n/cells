@@ -103,11 +103,11 @@ func (v *BranchFilter) GetRootKeys(rootNodes []string) (map[string]*tree.Node, e
 }
 
 func (v *BranchFilter) updateInputBranch(ctx context.Context, identifier string, node *tree.Node) (context.Context, error) {
-	return ctx, errors.New(nodes.VIEWS_LIBRARY_NAME, "Abstract Method Not Implemented", 500)
+	return ctx, errors.New("not.implemented", "Abstract Method Not Implemented", 500)
 }
 
 func (v *BranchFilter) updateOutputNode(ctx context.Context, identifier string, node *tree.Node) (context.Context, error) {
-	return ctx, errors.New(nodes.VIEWS_LIBRARY_NAME, "Abstract Method Not Implemented", 500)
+	return ctx, errors.New("not.implemented", "Abstract Method Not Implemented", 500)
 }
 
 func (v *BranchFilter) ExecuteWrapped(inputFilter nodes.FilterFunc, outputFilter nodes.FilterFunc, provider nodes.CallbackFunc) error {

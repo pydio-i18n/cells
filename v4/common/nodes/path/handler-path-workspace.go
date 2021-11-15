@@ -23,6 +23,7 @@ package path
 import (
 	"context"
 	"fmt"
+	"google.golang.org/protobuf/proto"
 	"strings"
 
 	"github.com/micro/micro/v3/service/errors"
@@ -113,7 +114,7 @@ func (a *WorkspaceHandler) updateBranchInfo(ctx context.Context, node *tree.Node
 	if err != nil {
 		return ctx, node, err
 	} else if ok {
-		branchInfo.Workspace = *ws
+		branchInfo.Workspace = proto.Clone(ws).(*idm.Workspace)
 		ctx = context2.WithAdditionalMetadata(ctx, map[string]string{
 			servicecontext.CtxWorkspaceUuid: ws.UUID,
 		})
@@ -156,7 +157,7 @@ func (a *WorkspaceHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequ
 		// List user workspaces here
 		accessList, ok := acl.FromContext(ctx)
 		if !ok {
-			return nil, errors.InternalServerError(nodes.VIEWS_LIBRARY_NAME, "Cannot find user workspaces")
+			return nil, nodes.ErrCannotFindACL()
 		}
 		streamer := nodes.NewWrappingStreamer()
 		go func() {

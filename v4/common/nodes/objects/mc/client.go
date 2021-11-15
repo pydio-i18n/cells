@@ -22,6 +22,7 @@ package mc
 
 import (
 	"context"
+	"github.com/minio/minio-go/v7/pkg/notification"
 	"io"
 	"strings"
 
@@ -333,6 +334,11 @@ func (c *Client) CopyObjectPart(srcBucket, srcObject, destBucket, destObject str
 		PartNumber: oi.PartNumber,
 		ETag:       oi.ETag,
 	}, e
+}
+
+// ListenBucketNotification hooks to events - Not part of the interface
+func (c *Client) ListenBucketNotification(ctx context.Context, bucketName, prefix, suffix string, events []string) <-chan notification.Info {
+	return c.mc.ListenBucketNotification(ctx, bucketName, prefix, suffix, events)
 }
 
 func readMetaToMinioOpts(meta models.ReadMeta) minio.GetObjectOptions {

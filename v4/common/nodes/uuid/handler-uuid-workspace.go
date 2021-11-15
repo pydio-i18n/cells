@@ -22,6 +22,7 @@ package uuid
 
 import (
 	"context"
+	"google.golang.org/protobuf/proto"
 	"path"
 	"strings"
 
@@ -73,14 +74,14 @@ func (h *WorkspaceHandler) updateInputBranch(ctx context.Context, node *tree.Nod
 	if acl.HasAdminKey(ctx) {
 		ws := &idm.Workspace{UUID: "ROOT", RootUUIDs: []string{"ROOT"}, Slug: "ROOT"}
 		branchInfo := nodes.BranchInfo{}
-		branchInfo.Workspace = *ws
+		branchInfo.Workspace = proto.Clone(ws).(*idm.Workspace)
 		ctx = nodes.WithBranchInfo(ctx, identifier, branchInfo)
 		return ctx, node, nil
 	}
 
 	accessList, ok := acl.FromContext(ctx)
 	if !ok {
-		return ctx, node, errors.InternalServerError(nodes.VIEWS_LIBRARY_NAME, "Cannot load access list")
+		return ctx, node, nodes.ErrCannotFindACL()
 	}
 
 	// Update Access List with resolved virtual nodes
@@ -110,12 +111,12 @@ func (h *WorkspaceHandler) updateInputBranch(ctx context.Context, node *tree.Nod
 	workspaces, _ := accessList.BelongsToWorkspaces(ctx, parents...)
 	if len(workspaces) == 0 {
 		log.Logger(ctx).Debug("Node des not belong to any accessible workspace!", accessList.Zap())
-		return ctx, node, errors.Forbidden(nodes.VIEWS_LIBRARY_NAME, "Node does not belong to any accessible workspace!")
+		return ctx, node, errors.Forbidden("no.workspaces.found", "Node does not belong to any accessible workspace!")
 	}
 	// Use first workspace by default
 	branchInfo := nodes.BranchInfo{
 		AncestorsList: make(map[string][]*tree.Node, 1),
-		Workspace:     *workspaces[0],
+		Workspace:     proto.Clone(workspaces[0]).(*idm.Workspace),
 	}
 	branchInfo.AncestorsList[node.Path] = parents
 	ctx = context2.WithAdditionalMetadata(ctx, map[string]string{

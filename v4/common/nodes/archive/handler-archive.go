@@ -301,7 +301,7 @@ func (a *Handler) archiveFakeStat(ctx context.Context, nodePath string) (node *t
 
 	}
 
-	return nil, errors.NotFound(nodes.VIEWS_LIBRARY_NAME, "Could not find corresponding folder for archive")
+	return nil, nodes.ErrFileNotFound("Could not find corresponding folder for archive " + nodePath)
 
 }
 

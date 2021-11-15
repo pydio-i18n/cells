@@ -30,10 +30,10 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 )
 
-// These keys may be enriched in Context depending on the middleware
+// BranchInfo contains information about a given identifier
 type BranchInfo struct {
 	LoadedSource
-	idm.Workspace
+	*idm.Workspace
 	Root              *tree.Node
 	Binary            bool
 	TransparentBinary bool
@@ -50,9 +50,8 @@ func WithBucketName(s LoadedSource, bucket string) LoadedSource {
 	out := LoadedSource{
 		Client: s.Client,
 	}
-	c := proto.Clone(&s.DataSource).(*object.DataSource)
-	c.ObjectsBucket = bucket
-	out.DataSource = *c
+	out.DataSource = proto.Clone(s.DataSource).(*object.DataSource)
+	out.DataSource.ObjectsBucket = bucket
 	return out
 }
 

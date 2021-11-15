@@ -102,7 +102,7 @@ func (e *Handler) GetObject(ctx context.Context, node *tree.Node, requestData *m
 	if dsName == "" {
 		if branchInfo.Root != nil {
 			dsName = branchInfo.Root.GetStringMeta(common.MetaNamespaceDatasourceName)
-		} else if branchInfo.Name != "" {
+		} else if branchInfo.DataSource != nil && branchInfo.Name != "" {
 			dsName = branchInfo.Name
 		} else {
 			return nil, errors.New("views.handler.encryption.GetObject", "cannot find datasource name", 500)

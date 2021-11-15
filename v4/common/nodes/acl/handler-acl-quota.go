@@ -102,7 +102,7 @@ func (a *QuotaFilter) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, op
 			}
 		}
 	}
-	if q, u, e := a.ComputeQuota(ctx, &branch.Workspace); e == nil && q > 0 {
+	if q, u, e := a.ComputeQuota(ctx, branch.Workspace); e == nil && q > 0 {
 		n := resp.Node.Clone()
 		n.SetMeta("ws_quota", q)
 		n.SetMeta("ws_quota_usage", u)
@@ -123,7 +123,7 @@ func (a *QuotaFilter) PutObject(ctx context.Context, node *tree.Node, reader io.
 	// currentUsage ALREADY takes into account the input data size.
 
 	if branchInfo, ok := nodes.GetBranchInfo(ctx, "in"); ok && !branchInfo.IsInternal() {
-		if maxQuota, currentUsage, err := a.ComputeQuota(ctx, &branchInfo.Workspace); err != nil {
+		if maxQuota, currentUsage, err := a.ComputeQuota(ctx, branchInfo.Workspace); err != nil {
 			return 0, err
 		} else if maxQuota > 0 && currentUsage > maxQuota {
 			return 0, errors.New("quota.exceeded", fmt.Sprintf("Your allowed quota of %d is reached", maxQuota), 422)
@@ -137,7 +137,7 @@ func (a *QuotaFilter) PutObject(ctx context.Context, node *tree.Node, reader io.
 func (a *QuotaFilter) MultipartPutObjectPart(ctx context.Context, target *tree.Node, uploadID string, partNumberMarker int, reader io.Reader, requestData *models.PutRequestData) (models.MultipartObjectPart, error) {
 
 	if branchInfo, ok := nodes.GetBranchInfo(ctx, "in"); ok && !branchInfo.IsInternal() {
-		if maxQuota, currentUsage, err := a.ComputeQuota(ctx, &branchInfo.Workspace); err != nil {
+		if maxQuota, currentUsage, err := a.ComputeQuota(ctx, branchInfo.Workspace); err != nil {
 			return models.MultipartObjectPart{}, err
 		} else if maxQuota > 0 && currentUsage > maxQuota {
 			return models.MultipartObjectPart{}, errors.New("quota.exceeded", fmt.Sprintf("Your allowed quota of %d is reached", maxQuota), 422)
@@ -151,7 +151,7 @@ func (a *QuotaFilter) MultipartPutObjectPart(ctx context.Context, target *tree.N
 func (a *QuotaFilter) CopyObject(ctx context.Context, from *tree.Node, to *tree.Node, requestData *models.CopyRequestData) (int64, error) {
 
 	if branchInfo, ok := nodes.GetBranchInfo(ctx, "to"); ok && !branchInfo.IsInternal() {
-		if maxQuota, currentUsage, err := a.ComputeQuota(ctx, &branchInfo.Workspace); err != nil {
+		if maxQuota, currentUsage, err := a.ComputeQuota(ctx, branchInfo.Workspace); err != nil {
 			return 0, err
 		} else if maxQuota > 0 && currentUsage+from.Size > maxQuota {
 			return 0, errors.New("quota.exceeded", fmt.Sprintf("Your allowed quota of %d is reached", maxQuota), 422)
@@ -167,7 +167,7 @@ func (a *QuotaFilter) WrappedCanApply(srcCtx context.Context, targetCtx context.
 	case tree.NodeChangeEvent_CREATE:
 		targetNode := operation.GetTarget()
 		if bI, ok := nodes.GetBranchInfo(targetCtx, "in"); ok && !bI.IsInternal() {
-			if maxQuota, currentUsage, err := a.ComputeQuota(targetCtx, &bI.Workspace); err != nil {
+			if maxQuota, currentUsage, err := a.ComputeQuota(targetCtx, bI.Workspace); err != nil {
 				return err
 			} else if maxQuota > 0 && currentUsage+targetNode.Size > maxQuota {
 				return errors.New("quota.exceeded", fmt.Sprintf("Your allowed quota of %d is reached", maxQuota), 422)
@@ -178,7 +178,7 @@ func (a *QuotaFilter) WrappedCanApply(srcCtx context.Context, targetCtx context.
 		tgt, o2 := nodes.GetBranchInfo(targetCtx, "to")
 		if o && o2 && src.Workspace.UUID != tgt.Workspace.UUID {
 			log.Logger(srcCtx).Info("Move across workspace, check quota on target!")
-			if maxQuota, currentUsage, err := a.ComputeQuota(targetCtx, &tgt.Workspace); err != nil {
+			if maxQuota, currentUsage, err := a.ComputeQuota(targetCtx, tgt.Workspace); err != nil {
 				return err
 			} else if maxQuota > 0 && currentUsage+operation.GetTarget().Size > maxQuota {
 				return errors.New("quota.exceeded", fmt.Sprintf("Your allowed quota of %d is reached", maxQuota), 422)

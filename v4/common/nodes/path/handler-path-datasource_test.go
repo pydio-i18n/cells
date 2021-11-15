@@ -71,7 +71,7 @@ func makeFakeTestContext(identifier string, root ...*tree.Node) context.Context 
 	fakeRoot.SetMeta(common.MetaNamespaceDatasourceName, "datasource")
 	c := context.Background()
 	b := nodes.BranchInfo{
-		Workspace: idm.Workspace{
+		Workspace: &idm.Workspace{
 			UUID:  "test-workspace",
 			Slug:  "test-workspace",
 			Label: "Test Workspace",
@@ -96,7 +96,7 @@ func TestBranchTranslator_ReadNode(t *testing.T) {
 		_, e := b.ReadNode(context.Background(), &tree.ReadNodeRequest{})
 		So(e, ShouldNotBeNil)
 		parsed := errors.Parse(e.Error())
-		So(parsed.Detail, ShouldContainSubstring, "Cannot find branch")
+		So(parsed.Detail, ShouldContainSubstring, "Cannot find client for branch")
 
 	})
 
@@ -104,7 +104,7 @@ func TestBranchTranslator_ReadNode(t *testing.T) {
 
 		b, _ := newTestHandlerBranchTranslator(pool)
 		c := nodes.WithBranchInfo(context.Background(), "in", nodes.BranchInfo{
-			Workspace: idm.Workspace{
+			Workspace: &idm.Workspace{
 				UUID:  "another-workspace",
 				Label: "Another Workspace",
 			},
@@ -120,7 +120,7 @@ func TestBranchTranslator_ReadNode(t *testing.T) {
 
 		b, mock := newTestHandlerBranchTranslator(pool)
 		adminCtx := nodes.WithBranchInfo(context.Background(), "in", nodes.BranchInfo{
-			Workspace: idm.Workspace{UUID: "ROOT"},
+			Workspace: &idm.Workspace{UUID: "ROOT"},
 		})
 		_, e := b.ReadNode(adminCtx, &tree.ReadNodeRequest{Node: &tree.Node{
 			Path:      "datasource/root/path",
@@ -173,7 +173,7 @@ func TestBranchTranslator_ReadNode(t *testing.T) {
 
 		b, _ := newTestHandlerBranchTranslator(pool)
 		adminCtx := nodes.WithBranchInfo(context.Background(), "in", nodes.BranchInfo{
-			Workspace: idm.Workspace{UUID: "ROOT"},
+			Workspace: &idm.Workspace{UUID: "ROOT"},
 		})
 		node := &tree.Node{Path: "datasource/root/sub/path"}
 		b.updateOutputNode(adminCtx, node, "in")

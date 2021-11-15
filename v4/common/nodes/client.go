@@ -49,7 +49,7 @@ type Client interface {
 }
 
 const (
-	VIEWS_LIBRARY_NAME = "pydio.lib.views"
+	ViewsLibraryName = "pydio.lib.views"
 )
 
 var (

@@ -56,6 +56,7 @@ func TestHandler_GetObject(t *testing.T) {
 
 	ctx := context.Background()
 	branchInfo := nodes.BranchInfo{}
+	branchInfo.DataSource = &object.DataSource{}
 	// 	branchInfo.Encrypted = true
 	ctx = nodes.WithBranchInfo(ctx, "in", branchInfo)
 
@@ -144,7 +145,9 @@ func TestHandler_Encrypted(t *testing.T) {
 
 	ctx := context.Background()
 	branchInfo := nodes.BranchInfo{}
-	branchInfo.EncryptionMode = object.EncryptionMode_MASTER
+	branchInfo.DataSource = &object.DataSource{
+		EncryptionMode: object.EncryptionMode_MASTER,
+	}
 	ctx = nodes.WithBranchInfo(ctx, "in", branchInfo)
 
 	data := "blamekhkds sdsfsdfdsfdblamekhkds sdsdzkjdqzkhgiàrjv=iu=éàioeruopée"
@@ -277,7 +280,9 @@ func TestRangeHandler_Encrypted(t *testing.T) {
 
 	ctx := context.Background()
 	branchInfo := nodes.BranchInfo{}
-	branchInfo.EncryptionMode = object.EncryptionMode_MASTER
+	branchInfo.DataSource = &object.DataSource{
+		EncryptionMode: object.EncryptionMode_MASTER,
+	}
 	ctx = nodes.WithBranchInfo(ctx, "in", branchInfo)
 
 	Convey("Test Put Object w. Enc", t, func() {

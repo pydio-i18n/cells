@@ -25,8 +25,6 @@ import (
 	"path"
 	"strings"
 
-	"github.com/micro/micro/v3/service/errors"
-
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/abstract"
@@ -61,7 +59,7 @@ func (v *WorkspaceRootResolver) updateInputBranch(ctx context.Context, node *tre
 
 	branchInfo, ok := nodes.GetBranchInfo(ctx, identifier)
 	if !ok {
-		return ctx, node, errors.InternalServerError(nodes.VIEWS_LIBRARY_NAME, "Cannot find branch info for node")
+		return ctx, node, nodes.ErrBranchInfoMissing(identifier)
 	}
 
 	if branchInfo.Root == nil {
@@ -86,7 +84,7 @@ func (v *WorkspaceRootResolver) updateOutputNode(ctx context.Context, node *tree
 		return ctx, node, nil
 	}
 	if branchInfo.Root == nil {
-		return ctx, node, errors.InternalServerError(nodes.VIEWS_LIBRARY_NAME, "No Root defined, this is not normal")
+		return ctx, node, nodes.ErrBranchInfoRootMissing(identifier)
 	}
 	// Trim root path
 	out := node.Clone()

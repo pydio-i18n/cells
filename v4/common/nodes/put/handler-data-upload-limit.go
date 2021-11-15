@@ -145,7 +145,7 @@ func (a *UploadLimitFilter) getUploadLimits(ctx context.Context) (limit int64, e
 		}
 		aclParams := acl.FlattenedFrontValues().Val("parameters", pName)
 		log.Logger(ctx).Debug("Checking upload max size from ACLs " + aclParams.String())
-		scopes := permissions.FrontValuesScopesFromWorkspaces([]*idm.Workspace{&i.Workspace})
+		scopes := permissions.FrontValuesScopesFromWorkspaces([]*idm.Workspace{i.Workspace})
 		for _, s := range scopes {
 			limit = aclParams.Val(maxSizeName, s).Default(limit).Int64()
 			stringExts = aclParams.Val(extensionsName, s).Default(stringExts).String()

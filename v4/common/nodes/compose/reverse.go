@@ -105,7 +105,7 @@ func (r *Reverse) WorkspaceCanSeeNode(ctx context.Context, accessList *permissio
 			newNode := node.Clone()
 			r.WrapCallback(func(inputFilter nodes.FilterFunc, outputFilter nodes.FilterFunc) error {
 				branchInfo := nodes.BranchInfo{}
-				branchInfo.Workspace = *workspace
+				branchInfo.Workspace = workspace
 				branchInfo.Root = parent
 				ctx = nodes.WithBranchInfo(ctx, "in", branchInfo)
 				_, newNode, _ = outputFilter(ctx, newNode, "in")
