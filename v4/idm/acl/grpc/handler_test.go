@@ -26,6 +26,8 @@ import (
 	"sync"
 	"testing"
 
+	"google.golang.org/grpc/metadata"
+
 	"google.golang.org/protobuf/types/known/anypb"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -74,13 +76,12 @@ func TestACL(t *testing.T) {
 	s := new(Handler)
 
 	Convey("Create ACLs", t, func() {
-		resp := new(idm.CreateACLResponse)
-		err := s.CreateACL(ctx, &idm.CreateACLRequest{ACL: &idm.ACL{
+		resp, err := s.CreateACL(ctx, &idm.CreateACLRequest{ACL: &idm.ACL{
 			NodeID:      "fake-node-id",
 			WorkspaceID: "fake-ws-id",
 			Action:      &idm.ACLAction{Name: "read", Value: "1"},
 			RoleID:      "role1"},
-		}, resp)
+		})
 
 		So(err, ShouldBeNil)
 		So(resp.GetACL().GetID(), ShouldEqual, "1")
@@ -88,45 +89,44 @@ func TestACL(t *testing.T) {
 	})
 
 	Convey("Create ACLs", t, func() {
-		resp := new(idm.CreateACLResponse)
-		err := s.CreateACL(ctx, &idm.CreateACLRequest{ACL: &idm.ACL{
+		resp, err := s.CreateACL(ctx, &idm.CreateACLRequest{ACL: &idm.ACL{
 			NodeID:      "fake-node-id",
 			WorkspaceID: "fake-ws-id",
 			Action:      &idm.ACLAction{Name: "read", Value: "1"},
 			RoleID:      "role2"},
-		}, resp)
+		})
 
 		So(err, ShouldBeNil)
 		So(resp.GetACL().GetID(), ShouldEqual, "2")
 	})
 
 	Convey("Get ACL", t, func() {
-		mock := &aclStreamMock{}
-		err := s.StreamACL(ctx, mock)
+		mock := &aclStreamMock{ctx: ctx}
+		err := s.StreamACL(mock)
 
 		So(err, ShouldBeNil)
 		So(len(mock.InternalBuffer), ShouldEqual, 0)
 	})
 
 	Convey("Search ACL", t, func() {
-		mock := &aclStreamMock{}
+		mock := &aclStreamMock{ctx: ctx}
 		readQ, _ := anypb.New(&idm.ACLSingleQuery{
 			Actions: []*idm.ACLAction{{Name: "read"}},
 		})
-		err := s.SearchACL(ctx, &idm.SearchACLRequest{Query: &service.Query{SubQueries: []*anypb.Any{readQ}}}, mock)
+		err := s.SearchACL(&idm.SearchACLRequest{Query: &service.Query{SubQueries: []*anypb.Any{readQ}}}, mock)
 
 		So(err, ShouldBeNil)
 		So(len(mock.InternalBuffer), ShouldEqual, 2)
 	})
 
 	Convey("Del ACL", t, func() {
-		err := s.DeleteACL(ctx, &idm.DeleteACLRequest{}, &idm.DeleteACLResponse{})
+		_, err := s.DeleteACL(ctx, &idm.DeleteACLRequest{})
 
 		So(err, ShouldNotBeNil)
 	})
 
 	Convey("Del ACL", t, func() {
-		err := s.DeleteACL(ctx, &idm.DeleteACLRequest{}, &idm.DeleteACLResponse{})
+		_, err := s.DeleteACL(ctx, &idm.DeleteACLRequest{})
 
 		So(err, ShouldNotBeNil)
 	})
@@ -141,13 +141,13 @@ func TestACL(t *testing.T) {
 			SubQueries: []*anypb.Any{singleQ1Any},
 		}
 
-		err = s.DeleteACL(ctx, &idm.DeleteACLRequest{Query: query}, &idm.DeleteACLResponse{})
+		_, err = s.DeleteACL(ctx, &idm.DeleteACLRequest{Query: query})
 		So(err, ShouldBeNil)
 	})
 
 	Convey("Search ACL", t, func() {
-		mock := &aclStreamMock{}
-		err := s.SearchACL(ctx, &idm.SearchACLRequest{}, mock)
+		mock := &aclStreamMock{ctx: ctx}
+		err := s.SearchACL(&idm.SearchACLRequest{}, mock)
 
 		So(err, ShouldBeNil)
 		So(len(mock.InternalBuffer), ShouldEqual, 1)
@@ -159,11 +159,24 @@ func TestACL(t *testing.T) {
 // =================================================
 
 type aclStreamMock struct {
+	ctx            context.Context
 	InternalBuffer []*idm.ACL
 }
 
-func (x *aclStreamMock) Context() context.Context {
+func (x *aclStreamMock) SetHeader(md metadata.MD) error {
 	panic("implement me")
+}
+
+func (x *aclStreamMock) SendHeader(md metadata.MD) error {
+	panic("implement me")
+}
+
+func (x *aclStreamMock) SetTrailer(md metadata.MD) {
+	panic("implement me")
+}
+
+func (x *aclStreamMock) Context() context.Context {
+	return x.ctx
 }
 
 func (x *aclStreamMock) Close() error {

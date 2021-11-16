@@ -24,6 +24,10 @@ package grpc
 import (
 	"context"
 
+	"github.com/pydio/cells/v4/common/proto/idm"
+	"github.com/pydio/cells/v4/idm/policy"
+	"google.golang.org/grpc"
+
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/service"
@@ -36,56 +40,54 @@ func init() {
 			service.Context(ctx),
 			service.Tag(common.ServiceTagIdm),
 			service.Description("Policy Engine Service"),
-			/*
-				service.WithStorage(policy.NewDAO, "idm_policy"),
-				service.Migrations([]*service.Migration{
-					{
-						TargetVersion: service.FirstRun(),
-						Up:            policy.InitDefaults,
-					},
-					{
-						TargetVersion: service.ValidVersion("1.0.1"),
-						Up:            policy.Upgrade101,
-					},
-					{
-						TargetVersion: service.ValidVersion("1.0.3"),
-						Up:            policy.Upgrade103,
-					},
-					{
-						TargetVersion: service.ValidVersion("1.2.0"),
-						Up:            policy.Upgrade120,
-					},
-					{
-						TargetVersion: service.ValidVersion("1.2.2"),
-						Up:            policy.Upgrade122,
-					},
-					{
-						TargetVersion: service.ValidVersion("1.4.2"),
-						Up:            policy.Upgrade142,
-					},
-					{
-						TargetVersion: service.ValidVersion("2.0.2"),
-						Up:            policy.Upgrade202,
-					},
-					{
-						TargetVersion: service.ValidVersion("2.0.99"),
-						Up:            policy.Upgrade210,
-					},
-					{
-						TargetVersion: service.ValidVersion("2.1.99"),
-						Up:            policy.Upgrade220,
-					},
-					{
-						TargetVersion: service.ValidVersion("2.2.7"),
-						Up:            policy.Upgrade227,
-					},
-				}),
-				service.WithMicro(func(m micro.Service) error {
-					handler := new(Handler)
-					idm.RegisterPolicyEngineServiceHandler(m.Options().Server, handler)
-					return nil
-				}),
-			*/
+			service.WithStorage(policy.NewDAO, "idm_policy"),
+			service.Migrations([]*service.Migration{
+				{
+					TargetVersion: service.FirstRun(),
+					Up:            policy.InitDefaults,
+				},
+				{
+					TargetVersion: service.ValidVersion("1.0.1"),
+					Up:            policy.Upgrade101,
+				},
+				{
+					TargetVersion: service.ValidVersion("1.0.3"),
+					Up:            policy.Upgrade103,
+				},
+				{
+					TargetVersion: service.ValidVersion("1.2.0"),
+					Up:            policy.Upgrade120,
+				},
+				{
+					TargetVersion: service.ValidVersion("1.2.2"),
+					Up:            policy.Upgrade122,
+				},
+				{
+					TargetVersion: service.ValidVersion("1.4.2"),
+					Up:            policy.Upgrade142,
+				},
+				{
+					TargetVersion: service.ValidVersion("2.0.2"),
+					Up:            policy.Upgrade202,
+				},
+				{
+					TargetVersion: service.ValidVersion("2.0.99"),
+					Up:            policy.Upgrade210,
+				},
+				{
+					TargetVersion: service.ValidVersion("2.1.99"),
+					Up:            policy.Upgrade220,
+				},
+				{
+					TargetVersion: service.ValidVersion("2.2.7"),
+					Up:            policy.Upgrade227,
+				},
+			}),
+			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
+				handler := new(Handler)
+				idm.RegisterPolicyEngineServiceServer(server, handler)
+				return nil
+			}),
 		)
 	})
 }

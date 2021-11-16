@@ -24,6 +24,13 @@ package grpc
 import (
 	"context"
 
+	"github.com/pydio/cells/v4/common/micro/broker"
+	"github.com/pydio/cells/v4/common/proto/idm"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/resources"
+	"github.com/pydio/cells/v4/idm/workspace"
+	"google.golang.org/grpc"
+
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/service"
@@ -37,36 +44,39 @@ func init() {
 			service.Tag(common.ServiceTagIdm),
 			service.Description("Workspaces Service"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceAcl, []string{}),
-			/*
-				service.WithStorage(workspace.NewDAO, "idm_workspace"),
-				service.WithMicro(func(m micro.Service) error {
-					ctx := m.Options().Context
+			service.WithStorage(workspace.NewDAO, "idm_workspace"),
+			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 
-					h := new(Handler)
-					idm.RegisterWorkspaceServiceHandler(m.Options().Server, h)
+				h := new(Handler)
+				idm.RegisterWorkspaceServiceServer(server, h)
 
-					// Register a cleaner for removing a workspace when there are no more ACLs on it.
-					wsCleaner := NewWsCleaner(h, ctx)
-					if err := m.Options().Server.Subscribe(m.Options().Server.NewSubscriber(common.TopicIdmEvent, wsCleaner)); err != nil {
-						return err
+				// Register a cleaner for removing a workspace when there are no more ACLs on it.
+				wsCleaner := NewWsCleaner(h, ctx)
+				cleaner := &resources.PoliciesCleaner{
+					Dao: servicecontext.GetDAO(ctx),
+					Options: resources.PoliciesCleanerOptions{
+						SubscribeRoles: true,
+						SubscribeUsers: true,
+					},
+					LogCtx: ctx,
+				}
+				u, e := broker.Subscribe(common.TopicIdmEvent, func(message broker.Message) error {
+					ev := &idm.ChangeEvent{}
+					if ct, e := message.Unmarshal(ev); e == nil {
+						_ = wsCleaner.Handle(ct, ev)
+						return cleaner.Handle(ct, ev)
 					}
-
-					// Register a cleaner on DeleteRole events to purge policies automatically
-					cleaner := &resources.PoliciesCleaner{
-						Dao: servicecontext.GetDAO(ctx),
-						Options: resources.PoliciesCleanerOptions{
-							SubscribeRoles: true,
-							SubscribeUsers: true,
-						},
-						LogCtx: ctx,
-					}
-					if err := m.Options().Server.Subscribe(m.Options().Server.NewSubscriber(common.TopicIdmEvent, cleaner)); err != nil {
-						return err
-					}
-
 					return nil
-				}),
-			*/
+				})
+				if e != nil {
+					return e
+				}
+				go func() {
+					<-ctx.Done()
+					_ = u()
+				}()
+				return nil
+			}),
 		)
 	})
 }

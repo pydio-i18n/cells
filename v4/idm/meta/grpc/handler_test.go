@@ -83,8 +83,7 @@ func TestRole(t *testing.T) {
 			Namespace: "namespace",
 			Label:     "label",
 		}}
-		resp := &idm.UpdateUserMetaNamespaceResponse{}
-		err := h.UpdateUserMetaNamespace(ctx, &idm.UpdateUserMetaNamespaceRequest{Namespaces: namespaces, Operation: idm.UpdateUserMetaNamespaceRequest_PUT}, resp)
+		_, err := h.UpdateUserMetaNamespace(ctx, &idm.UpdateUserMetaNamespaceRequest{Namespaces: namespaces, Operation: idm.UpdateUserMetaNamespaceRequest_PUT})
 		So(err, ShouldBeNil)
 
 	})

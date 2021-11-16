@@ -24,6 +24,12 @@ package grpc
 import (
 	"context"
 
+	"github.com/pydio/cells/v4/common/micro/broker"
+	"github.com/pydio/cells/v4/common/proto/idm"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/idm/role"
+	"google.golang.org/grpc"
+
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/service"
@@ -37,31 +43,38 @@ func init() {
 			service.Tag(common.ServiceTagIdm),
 			service.Description("Roles Service"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceAcl, []string{}),
-			/*
-				service.Migrations([]*service.Migration{
-					{
-						TargetVersion: service.FirstRun(),
-						Up:            InitRoles,
-					}, {
-						TargetVersion: service.ValidVersion("1.2.0"),
-						Up:            UpgradeTo12,
-					},
-				}),
-				service.WithStorage(role.NewDAO, "idm_role"),
-				service.WithMicro(func(m micro.Service) error {
-					ctx := m.Options().Context
-					server := new(Handler)
+			service.Migrations([]*service.Migration{
+				{
+					TargetVersion: service.FirstRun(),
+					Up:            InitRoles,
+				}, {
+					TargetVersion: service.ValidVersion("1.2.0"),
+					Up:            UpgradeTo12,
+				},
+			}),
+			service.WithStorage(role.NewDAO, "idm_role"),
+			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
+				handler := new(Handler)
+				idm.RegisterRoleServiceServer(server, handler)
 
-					idm.RegisterRoleServiceHandler(m.Options().Server, server)
-
-					// Clean role on user deletion
-					cleaner := NewCleaner(server, servicecontext.GetDAO(ctx))
-					if err := m.Options().Server.Subscribe(m.Options().Server.NewSubscriber(common.TopicIdmEvent, cleaner)); err != nil {
-						return err
+				// Clean role on user deletion
+				cleaner := NewCleaner(handler, servicecontext.GetDAO(ctx))
+				u, e := broker.Subscribe(common.TopicIdmEvent, func(message broker.Message) error {
+					ic := &idm.ChangeEvent{}
+					if ct, e := message.Unmarshal(ic); e == nil {
+						return cleaner.Handle(ct, ic)
 					}
 					return nil
-				}),
-			*/
+				})
+				if e != nil {
+					return e
+				}
+				go func() {
+					<-ctx.Done()
+					_ = u()
+				}()
+				return nil
+			}),
 		)
 	})
 }

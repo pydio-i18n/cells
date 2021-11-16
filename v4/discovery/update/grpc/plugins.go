@@ -24,6 +24,9 @@ package grpc
 import (
 	"context"
 
+	"github.com/pydio/cells/v4/common/proto/update"
+	"google.golang.org/grpc"
+
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/plugins"
@@ -40,13 +43,11 @@ func init() {
 			service.Context(ctx),
 			service.Tag(common.ServiceTagDiscovery),
 			service.Description("Update checker service"),
-			/*
-				service.WithMicro(func(m micro.Service) error {
-					handler := new(Handler)
-					update.RegisterUpdateServiceHandler(m.Server(), handler)
-					return nil
-				}),
-			*/
+			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
+				handler := new(Handler)
+				update.RegisterUpdateServiceServer(server, handler)
+				return nil
+			}),
 		)
 	})
 }

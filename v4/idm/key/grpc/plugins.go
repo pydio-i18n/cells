@@ -24,6 +24,10 @@ package grpc
 import (
 	"context"
 
+	"github.com/pydio/cells/v4/common/proto/encryption"
+	"github.com/pydio/cells/v4/idm/key"
+	"google.golang.org/grpc"
+
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/service"
@@ -36,17 +40,16 @@ func init() {
 			service.Context(ctx),
 			service.Tag(common.ServiceTagIdm),
 			service.Description("Encryption Keys server"),
-			/*
-				service.WithStorage(key.NewDAO, "idm_key"),
-				service.WithMicro(func(m micro.Service) error {
-					h, err := NewUserKeyStore()
-					if err != nil {
-						return err
-					}
-					encryption.RegisterUserKeyStoreHandler(m.Options().Server, h)
-					return nil
-				}),
-			*/
+			service.WithStorage(key.NewDAO, "idm_key"),
+			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
+
+				h, err := NewUserKeyStore()
+				if err != nil {
+					return err
+				}
+				encryption.RegisterUserKeyStoreServer(server, h)
+				return nil
+			}),
 		)
 	})
 }

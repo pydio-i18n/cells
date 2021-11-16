@@ -37,10 +37,13 @@ import (
 )
 
 // Handler definition
-type Handler struct{}
+type Handler struct {
+	idm.UnimplementedWorkspaceServiceServer
+}
 
 // CreateWorkspace in database
-func (h *Handler) CreateWorkspace(ctx context.Context, req *idm.CreateWorkspaceRequest, resp *idm.CreateWorkspaceResponse) error {
+func (h *Handler) CreateWorkspace(ctx context.Context, req *idm.CreateWorkspaceRequest) (*idm.CreateWorkspaceResponse, error) {
+
 	dao := servicecontext.GetDAO(ctx).(workspace.DAO)
 
 	if req.Workspace.Slug == "" {
@@ -50,12 +53,14 @@ func (h *Handler) CreateWorkspace(ctx context.Context, req *idm.CreateWorkspaceR
 	// ADD POLICIES
 	if len(req.Workspace.Policies) > 0 {
 		if e := dao.AddPolicies(update, req.Workspace.UUID, req.Workspace.Policies); e != nil {
-			return e
+			return nil, e
 		}
 	}
-	resp.Workspace = req.Workspace
+	resp := &idm.CreateWorkspaceResponse{
+		Workspace: req.Workspace,
+	}
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if update {
@@ -82,22 +87,25 @@ func (h *Handler) CreateWorkspace(ctx context.Context, req *idm.CreateWorkspaceR
 		)
 	}
 
-	return nil
+	return resp, nil
 }
 
 // DeleteWorkspace from database
-func (h *Handler) DeleteWorkspace(ctx context.Context, req *idm.DeleteWorkspaceRequest, response *idm.DeleteWorkspaceResponse) error {
+func (h *Handler) DeleteWorkspace(ctx context.Context, req *idm.DeleteWorkspaceRequest) (*idm.DeleteWorkspaceResponse, error) {
+
 	dao := servicecontext.GetDAO(ctx).(workspace.DAO)
 
 	workspaces := new([]interface{})
 	if err := dao.Search(req.Query, workspaces); err != nil {
-		return err
+		return nil, err
 	}
 
 	numRows, err := dao.Del(req.Query)
-	response.RowsDeleted = numRows
+	response := &idm.DeleteWorkspaceResponse{
+		RowsDeleted: numRows,
+	}
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// Update relevant policies and propagate event
@@ -120,13 +128,14 @@ func (h *Handler) DeleteWorkspace(ctx context.Context, req *idm.DeleteWorkspaceR
 		)
 	}
 
-	return nil
+	return response, nil
 }
 
 // SearchWorkspace in database
-func (h *Handler) SearchWorkspace(ctx context.Context, request *idm.SearchWorkspaceRequest, response idm.WorkspaceService_SearchWorkspaceStream) error {
+func (h *Handler) SearchWorkspace(request *idm.SearchWorkspaceRequest, response idm.WorkspaceService_SearchWorkspaceServer) error {
+
+	ctx := response.Context()
 	dao := servicecontext.GetDAO(ctx).(workspace.DAO)
-	defer response.Close()
 
 	workspaces := new([]interface{})
 	if err := dao.Search(request.Query, workspaces); err != nil {
@@ -140,9 +149,13 @@ func (h *Handler) SearchWorkspace(ctx context.Context, request *idm.SearchWorksp
 			continue
 		}
 		if !ok {
-			response.SendMsg(errors.InternalServerError(common.ServiceWorkspace, "Wrong type"))
+			if e := response.SendMsg(errors.InternalServerError(common.ServiceWorkspace, "Wrong type")); e != nil {
+				return e
+			}
 		} else {
-			response.Send(&idm.SearchWorkspaceResponse{Workspace: ws})
+			if e := response.Send(&idm.SearchWorkspaceResponse{Workspace: ws}); e != nil {
+				return e
+			}
 		}
 	}
 
@@ -150,10 +163,10 @@ func (h *Handler) SearchWorkspace(ctx context.Context, request *idm.SearchWorksp
 }
 
 // StreamWorkspace from database
-func (h *Handler) StreamWorkspace(ctx context.Context, streamer idm.WorkspaceService_StreamWorkspaceStream) error {
-	dao := servicecontext.GetDAO(ctx).(workspace.DAO)
+func (h *Handler) StreamWorkspace(streamer idm.WorkspaceService_StreamWorkspaceServer) error {
 
-	defer streamer.Close()
+	ctx := streamer.Context()
+	dao := servicecontext.GetDAO(ctx).(workspace.DAO)
 
 	for {
 		incoming, err := streamer.Recv()

@@ -165,9 +165,9 @@ func (c *WsCleaner) deleteEmptyWs(workspaceId string) error {
 		q2, _ := anypb.New(&idm.WorkspaceSingleQuery{
 			Uuid: workspaceId,
 		})
-		e := c.Handler.DeleteWorkspace(c.ctx, &idm.DeleteWorkspaceRequest{
+		_, e := c.Handler.DeleteWorkspace(c.ctx, &idm.DeleteWorkspaceRequest{
 			Query: &service.Query{SubQueries: []*anypb.Any{q2}},
-		}, &idm.DeleteWorkspaceResponse{})
+		})
 		if e == nil {
 			log.Logger(c.ctx).Info("Deleted workspace based on ACL Delete events", zap.String("wsId", workspaceId))
 		}

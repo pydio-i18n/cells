@@ -27,6 +27,8 @@ import (
 	"testing"
 	"time"
 
+	"google.golang.org/grpc/metadata"
+
 	cache "github.com/patrickmn/go-cache"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -83,31 +85,29 @@ func TestUser(t *testing.T) {
 	h := new(Handler)
 
 	Convey("Create one user", t, func() {
-		resp := new(idm.CreateUserResponse)
-		err := h.CreateUser(ctx, &idm.CreateUserRequest{User: &idm.User{Login: "user1"}}, resp)
+		resp, err := h.CreateUser(ctx, &idm.CreateUserRequest{User: &idm.User{Login: "user1"}})
 
 		So(err, ShouldBeNil)
 		So(resp.GetUser().GetLogin(), ShouldEqual, "user1")
 	})
 
 	Convey("Create a second user with name attribute", t, func() {
-		resp := new(idm.CreateUserResponse)
-		err := h.CreateUser(ctx, &idm.CreateUserRequest{User: &idm.User{Login: "user2", Attributes: map[string]string{"name": "User 2"}}}, resp)
+		resp, err := h.CreateUser(ctx, &idm.CreateUserRequest{User: &idm.User{Login: "user2", Attributes: map[string]string{"name": "User 2"}}})
 
 		So(err, ShouldBeNil)
 		So(resp.GetUser().GetLogin(), ShouldEqual, "user2")
 	})
 
 	Convey("Get User", t, func() {
-		mock := &userStreamMock{}
-		err := h.StreamUser(ctx, mock)
+		mock := &userStreamMock{ctx: ctx}
+		err := h.StreamUser(mock)
 
 		So(err, ShouldBeNil)
 		So(len(mock.InternalBuffer), ShouldEqual, 0)
 	})
 
 	Convey("Search User", t, func() {
-		mock := &userStreamMock{}
+		mock := &userStreamMock{ctx: ctx}
 		userQuery := &idm.UserSingleQuery{
 			Login: "user1",
 		}
@@ -117,24 +117,22 @@ func TestUser(t *testing.T) {
 				SubQueries: []*anypb.Any{userQueryAny},
 			},
 		}
-		err := h.SearchUser(ctx, request, mock)
+		err := h.SearchUser(request, mock)
 
 		So(err, ShouldBeNil)
 		So(len(mock.InternalBuffer), ShouldEqual, 1)
 
-		resp := new(idm.CountUserResponse)
-		err = h.CountUser(ctx, request, resp)
+		resp, err := h.CountUser(ctx, request)
 		So(err, ShouldBeNil)
 		So(resp.Count, ShouldEqual, 1)
 	})
 
 	Convey("Create a user with auto apply role", t, func() {
-		resp := new(idm.CreateUserResponse)
-		err := h.CreateUser(ctx, &idm.CreateUserRequest{User: &idm.User{Login: "user3", Attributes: map[string]string{"profile": "autoApplyProfile"}}}, resp)
+		resp, err := h.CreateUser(ctx, &idm.CreateUserRequest{User: &idm.User{Login: "user3", Attributes: map[string]string{"profile": "autoApplyProfile"}}})
 
 		So(err, ShouldBeNil)
 		So(resp.GetUser().GetLogin(), ShouldEqual, "user3")
-		mock := &userStreamMock{}
+		mock := &userStreamMock{ctx: ctx}
 		userQuery := &idm.UserSingleQuery{
 			Login: "user3",
 		}
@@ -144,7 +142,7 @@ func TestUser(t *testing.T) {
 				SubQueries: []*anypb.Any{userQueryAny},
 			},
 		}
-		err = h.SearchUser(ctx, request, mock)
+		err = h.SearchUser(request, mock)
 		So(err, ShouldBeNil)
 		So(len(mock.InternalBuffer), ShouldEqual, 1)
 		fmt.Println(mock.InternalBuffer[0].Roles)
@@ -162,7 +160,7 @@ func TestUser(t *testing.T) {
 	})
 
 	Convey("Del User", t, func() {
-		err := h.DeleteUser(ctx, &idm.DeleteUserRequest{}, &idm.DeleteUserResponse{})
+		_, err := h.DeleteUser(ctx, &idm.DeleteUserRequest{})
 		So(err, ShouldNotBeNil)
 	})
 
@@ -176,13 +174,13 @@ func TestUser(t *testing.T) {
 			SubQueries: []*anypb.Any{singleQ1Any},
 		}
 
-		err = h.DeleteUser(ctx, &idm.DeleteUserRequest{Query: query}, &idm.DeleteUserResponse{})
+		_, err = h.DeleteUser(ctx, &idm.DeleteUserRequest{Query: query})
 		So(err, ShouldBeNil)
 	})
 
 	Convey("List all Users", t, func() {
-		mock := &userStreamMock{}
-		err := h.SearchUser(ctx, &idm.SearchUserRequest{}, mock)
+		mock := &userStreamMock{ctx: ctx}
+		err := h.SearchUser(&idm.SearchUserRequest{}, mock)
 
 		So(err, ShouldBeNil)
 		So(len(mock.InternalBuffer), ShouldEqual, 3)
@@ -190,80 +188,74 @@ func TestUser(t *testing.T) {
 
 	Convey("Create and bind user", t, func() {
 		resp := new(idm.CreateUserResponse)
-		err := h.CreateUser(ctx, &idm.CreateUserRequest{User: &idm.User{Login: "john", Password: "f00"}}, resp)
+		resp, err := h.CreateUser(ctx, &idm.CreateUserRequest{User: &idm.User{Login: "john", Password: "f00"}})
 
 		So(err, ShouldBeNil)
 		So(resp.GetUser().GetLogin(), ShouldEqual, "john")
 
 		// Correct bind
 		{
-			bindResp := new(idm.BindUserResponse)
-			err = h.BindUser(ctx, &idm.BindUserRequest{UserName: "john", Password: "f00"}, bindResp)
+			bindResp, err := h.BindUser(ctx, &idm.BindUserRequest{UserName: "john", Password: "f00"})
 			So(err, ShouldBeNil)
 			So(bindResp.User, ShouldNotBeNil)
 		}
 		// Wrong user name
 		{
-			bindResp := new(idm.BindUserResponse)
-			err = h.BindUser(ctx, &idm.BindUserRequest{UserName: "johnFAIL", Password: "f00"}, bindResp)
+			_, err := h.BindUser(ctx, &idm.BindUserRequest{UserName: "johnFAIL", Password: "f00"})
 			So(err, ShouldNotBeNil)
 		}
 		// Wrong Password
 		{
-			bindResp := new(idm.BindUserResponse)
-			err = h.BindUser(ctx, &idm.BindUserRequest{UserName: "john", Password: "f00FAIL"}, bindResp)
+			_, err = h.BindUser(ctx, &idm.BindUserRequest{UserName: "john", Password: "f00FAIL"})
 			So(err, ShouldNotBeNil)
 		}
 
 	})
 
 	Convey("Create and bind user with a legacy password", t, func() {
-		resp := new(idm.CreateUserResponse)
 		attributes := make(map[string]string, 1)
 		attributes[idm.UserAttrPassHashed] = "true"
-		err := h.CreateUser(ctx, &idm.CreateUserRequest{User: &idm.User{
+		resp, err := h.CreateUser(ctx, &idm.CreateUserRequest{User: &idm.User{
 			Login:      "legacy",
 			Password:   "sha256:1000:ojGf2O2ELslNab+PZ/CkbVddgHQnSwx/FcMZ0Pa4+EE=:d6mVgF+fS+wg7X+0lmSn1T1IOU7DLZhz",
 			Attributes: attributes,
-		}}, resp)
+		}})
 
 		So(err, ShouldBeNil)
 		So(resp.GetUser().GetLogin(), ShouldEqual, "legacy")
 
-		bindResp := new(idm.BindUserResponse)
-		err = h.BindUser(ctx, &idm.BindUserRequest{UserName: "legacy", Password: "P@ssw0rd"}, bindResp)
+		bindResp, err := h.BindUser(ctx, &idm.BindUserRequest{UserName: "legacy", Password: "P@ssw0rd"})
 		So(err, ShouldBeNil)
 		So(bindResp.User, ShouldNotBeNil)
 	})
 
 	Convey("Test password change lock", t, func() {
 
-		resp := new(idm.CreateUserResponse)
-		err := h.CreateUser(ctx, &idm.CreateUserRequest{
+		resp, err := h.CreateUser(ctx, &idm.CreateUserRequest{
 			User: &idm.User{Login: "emma",
 				Password: "oldpassword",
 				Attributes: map[string]string{
 					"locks": `["pass_change","other"]`,
-				}}}, resp)
+				}}})
 		So(err, ShouldBeNil)
 
 		updatedContext := context.WithValue(ctx, common.PydioContextUserKey, "emma")
-		err = h.CreateUser(updatedContext, &idm.CreateUserRequest{
+		resp, err = h.CreateUser(updatedContext, &idm.CreateUserRequest{
 			User: &idm.User{
 				Login:       "emma",
 				OldPassword: "oldpassword",
 				Password:    "oldpassword",
 				Attributes: map[string]string{
 					"locks": `["pass_change","other"]`,
-				}}}, resp)
+				}}})
 		So(err, ShouldNotBeNil)
 
-		err = h.CreateUser(updatedContext, &idm.CreateUserRequest{
+		resp, err = h.CreateUser(updatedContext, &idm.CreateUserRequest{
 			User: &idm.User{Login: "emma",
 				Password: "newpassword",
 				Attributes: map[string]string{
 					"locks": `["pass_change","other"]`,
-				}}}, resp)
+				}}})
 		So(err, ShouldBeNil)
 		So(resp.User.Attributes, ShouldNotBeNil)
 		So(resp.User.Attributes["locks"], ShouldEqual, `["other"]`)
@@ -277,11 +269,24 @@ func TestUser(t *testing.T) {
 // =================================================
 
 type userStreamMock struct {
+	ctx            context.Context
 	InternalBuffer []*idm.User
 }
 
-func (x *userStreamMock) Context() context.Context {
+func (x *userStreamMock) SetHeader(md metadata.MD) error {
 	panic("implement me")
+}
+
+func (x *userStreamMock) SendHeader(md metadata.MD) error {
+	panic("implement me")
+}
+
+func (x *userStreamMock) SetTrailer(md metadata.MD) {
+	panic("implement me")
+}
+
+func (x *userStreamMock) Context() context.Context {
+	return x.ctx
 }
 
 func (x *userStreamMock) Close() error {
