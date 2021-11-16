@@ -199,7 +199,7 @@ func init() {
 				for _, w := range warns {
 					log.Info("[WARN]", zap.String("", w.String()))
 				}
-				caddy.TrapSignals()
+				// caddy.TrapSignals()
 				fmt.Println("loading caddy")
 				if e := caddy.Load(confs, true); e != nil {
 					return err
