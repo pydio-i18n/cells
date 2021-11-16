@@ -26,9 +26,6 @@ import (
 	"sync"
 	"time"
 
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
-
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
@@ -36,8 +33,10 @@ import (
 	logcore "github.com/pydio/cells/v4/broker/log/grpc"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	proto "github.com/pydio/cells/v4/common/proto/jobs"
 	log2 "github.com/pydio/cells/v4/common/proto/log"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/scheduler/jobs"
 	"github.com/pydio/cells/v4/scheduler/lang"
 )
@@ -88,14 +87,14 @@ func (j *JobsHandler) PutJob(ctx context.Context, request *proto.PutJobRequest, 
 		return err
 	}
 	response.Job = request.Job
-	client.Publish(ctx, client.NewMessage(common.TopicJobConfigEvent, &proto.JobChangeEvent{
+	broker.MustPublish(ctx, common.TopicJobConfigEvent, &proto.JobChangeEvent{
 		JobUpdated: request.Job,
-	}))
+	})
 	if request.Job.AutoStart && !request.Job.Inactive {
-		client.Publish(ctx, client.NewMessage(common.TopicTimerEvent, &proto.JobTriggerEvent{
+		broker.MustPublish(ctx, common.TopicTimerEvent, &proto.JobTriggerEvent{
 			JobID:  response.Job.ID,
 			RunNow: true,
-		}))
+		})
 	}
 	return nil
 }
@@ -119,9 +118,9 @@ func (j *JobsHandler) DeleteJob(ctx context.Context, request *proto.DeleteJobReq
 			response.Success = false
 			return err
 		}
-		client.Publish(ctx, client.NewMessage(common.TopicJobConfigEvent, &proto.JobChangeEvent{
+		broker.MustPublish(ctx, common.TopicJobConfigEvent, &proto.JobChangeEvent{
 			JobRemoved: request.JobID,
-		}))
+		})
 		go func() {
 			j.DeleteLogsFor(bgContext, request.JobID)
 		}()
@@ -171,9 +170,9 @@ func (j *JobsHandler) DeleteJob(ctx context.Context, request *proto.DeleteJobReq
 			if e := j.store.DeleteJob(id); e == nil {
 				deleted++
 				log.Logger(ctx).Info("Deleting AutoClean Job " + id)
-				client.Publish(ctx, client.NewMessage(common.TopicJobConfigEvent, &proto.JobChangeEvent{
+				broker.MustPublish(ctx, common.TopicJobConfigEvent, &proto.JobChangeEvent{
 					JobRemoved: id,
-				}))
+				})
 				go func() {
 					j.DeleteLogsFor(bgContext, id)
 				}()
@@ -227,10 +226,10 @@ func (j *JobsHandler) PutTask(ctx context.Context, request *proto.PutTaskRequest
 	T := lang.Bundle().GetTranslationFunc()
 	job.Label = T(job.Label)
 	if !job.TasksSilentUpdate {
-		client.Publish(ctx, client.NewMessage(common.TopicJobTaskEvent, &proto.TaskChangeEvent{
+		broker.MustPublish(ctx, common.TopicJobTaskEvent, &proto.TaskChangeEvent{
 			TaskUpdated: request.Task,
 			Job:         job,
-		}))
+		})
 	}
 
 	return nil
@@ -316,10 +315,10 @@ func (j *JobsHandler) PutTaskStream(ctx context.Context, streamer proto.JobServi
 		T := lang.Bundle().GetTranslationFunc()
 		tJob.Label = T(tJob.Label)
 		if !tJob.TasksSilentUpdate {
-			client.Publish(ctx, client.NewMessage(common.TopicJobTaskEvent, &proto.TaskChangeEvent{
+			broker.MustPublish(ctx, common.TopicJobTaskEvent, &proto.TaskChangeEvent{
 				TaskUpdated: request.Task,
 				Job:         tJob,
-			}))
+			})
 		}
 		if sendErr != nil {
 			return sendErr

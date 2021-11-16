@@ -24,9 +24,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
+
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/idm/acl"
@@ -46,10 +47,10 @@ func (h *Handler) CreateACL(ctx context.Context, req *idm.CreateACLRequest, resp
 	}
 
 	resp.ACL = req.ACL
-	client.Publish(ctx, client.NewMessage(common.TopicIdmEvent, &idm.ChangeEvent{
+	broker.MustPublish(ctx, common.TopicIdmEvent, &idm.ChangeEvent{
 		Type: idm.ChangeEventType_UPDATE,
 		Acl:  req.ACL,
-	}))
+	})
 	return nil
 }
 
@@ -83,10 +84,10 @@ func (h *Handler) DeleteACL(ctx context.Context, req *idm.DeleteACLRequest, resp
 	if err == nil {
 		for _, in := range *acls {
 			if val, ok := in.(*idm.ACL); ok {
-				client.Publish(ctx, client.NewMessage(common.TopicIdmEvent, &idm.ChangeEvent{
+				broker.MustPublish(ctx, common.TopicIdmEvent, &idm.ChangeEvent{
 					Type: idm.ChangeEventType_DELETE,
 					Acl:  val,
-				}))
+				})
 			}
 		}
 	}

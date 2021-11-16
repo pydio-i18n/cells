@@ -30,11 +30,11 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/micro/micro/v3/service/client"
 	bolt "go.etcd.io/bbolt"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/boltdb"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/activity"
 	"github.com/pydio/cells/v4/x/configx"
 	json "github.com/pydio/cells/v4/x/jsonx"
@@ -125,12 +125,12 @@ func (dao *boltdbimpl) BatchPost(aa []*batchActivity) error {
 				return err
 			}
 			if a.publishCtx != nil {
-				client.Publish(a.publishCtx, client.NewMessage(common.TopicActivityEvent, &activity.PostActivityEvent{
+				broker.MustPublish(a.publishCtx, common.TopicActivityEvent, &activity.PostActivityEvent{
 					OwnerType: a.ownerType,
 					OwnerId:   a.ownerId,
 					BoxName:   string(a.boxName),
 					Activity:  object,
-				}))
+				})
 			}
 		}
 		return nil
@@ -156,12 +156,12 @@ func (dao *boltdbimpl) PostActivity(ownerType activity.OwnerType, ownerId string
 
 	})
 	if err == nil && publishCtx != nil {
-		client.Publish(publishCtx, client.NewMessage(common.TopicActivityEvent, &activity.PostActivityEvent{
+		broker.MustPublish(publishCtx, common.TopicActivityEvent, &activity.PostActivityEvent{
 			OwnerType: ownerType,
 			OwnerId:   ownerId,
 			BoxName:   string(boxName),
 			Activity:  object,
-		}))
+		})
 	}
 	return err
 
@@ -200,7 +200,7 @@ func (dao *boltdbimpl) ListSubscriptions(objectType activity.OwnerType, objectId
 			if bucket == nil {
 				continue
 			}
-			bucket.ForEach(func(k, v []byte) error {
+			er := bucket.ForEach(func(k, v []byte) error {
 				uId := string(k)
 				if _, exists := userIds[uId]; exists {
 					return nil // Already listed
@@ -219,6 +219,9 @@ func (dao *boltdbimpl) ListSubscriptions(objectType activity.OwnerType, objectId
 				userIds[uId] = true
 				return nil
 			})
+			if er != nil {
+				// Oops, something went wrong here!
+			}
 		}
 
 		return nil

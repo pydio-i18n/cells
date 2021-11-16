@@ -3,10 +3,10 @@ package modifiers
 import (
 	"github.com/emicklei/go-restful"
 	"github.com/gorilla/sessions"
-	"github.com/micro/micro/v3/service/client"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	"github.com/pydio/cells/v4/common/service/frontend"
@@ -37,10 +37,10 @@ func LogoutAuth(middleware frontend.AuthMiddleware) frontend.AuthMiddleware {
 		}
 
 		// Send Event
-		client.Publish(ctx, client.NewMessage(common.TopicIdmEvent, &idm.ChangeEvent{
+		broker.MustPublish(ctx, common.TopicIdmEvent, &idm.ChangeEvent{
 			Type: idm.ChangeEventType_LOGOUT,
 			User: &idm.User{Login: cl.Name},
-		}))
+		})
 
 		if err := v.Logout(ctx, req.Request.URL.String(), cl.Subject, cl.SessionID, auth.SetAccessToken(accessToken.(string)), auth.SetRefreshToken(refreshToken.(string))); err != nil {
 			return err

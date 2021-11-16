@@ -20,6 +20,8 @@
 
 package broker
 
+import "context"
+
 // Options to the broker
 type Options struct {
 	beforeDisconnect []func() error
@@ -42,5 +44,16 @@ func newOptions(opts ...Option) Options {
 func BeforeDisconnect(f func() error) Option {
 	return func(o *Options) {
 		o.beforeDisconnect = append(o.beforeDisconnect, f)
+	}
+}
+
+type PublishOptions struct {
+	Context context.Context
+}
+type PublishOption func(options *PublishOptions)
+
+func WithContext(ctx context.Context) PublishOption {
+	return func(options *PublishOptions) {
+		options.Context = ctx
 	}
 }

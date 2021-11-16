@@ -23,6 +23,7 @@ package rest
 
 import (
 	"fmt"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"io"
 	"strings"
 	"time"
@@ -36,7 +37,6 @@ import (
 	"github.com/pydio/cells/v4/common/nodes/acl"
 
 	"github.com/emicklei/go-restful"
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
 	"go.uber.org/zap"
@@ -162,9 +162,9 @@ func (h *Handler) CreateNodes(req *restful.Request, resp *restful.Response) {
 				service.RestError500(req, resp, e)
 				if session != "" {
 					// Make sure to close the session
-					client.Publish(ctx, client.NewMessage(common.TopicIndexEvent, &tree.IndexEvent{
+					broker.MustPublish(ctx, common.TopicIndexEvent, &tree.IndexEvent{
 						SessionForceClose: session,
-					}))
+					})
 				}
 				return
 			}

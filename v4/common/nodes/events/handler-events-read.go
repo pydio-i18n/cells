@@ -22,9 +22,9 @@ package events
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"io"
 
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -87,10 +87,10 @@ func (h *HandlerRead) ListNodes(ctx context.Context, in *tree.ListNodesRequest, 
 		if node.Uuid != "" {
 			c := context2.WithMetaCopy(ctx)
 			go func() {
-				client.Publish(c, client.NewMessage(common.TopicTreeChanges, &tree.NodeChangeEvent{
+				broker.MustPublish(c, common.TopicTreeChanges, &tree.NodeChangeEvent{
 					Type:   tree.NodeChangeEvent_READ,
 					Target: node,
-				}))
+				})
 			}()
 		}
 	}
@@ -131,10 +131,10 @@ func (h *HandlerRead) GetObject(ctx context.Context, node *tree.Node, requestDat
 			}
 			c := context2.WithMetaCopy(ctx)
 			go func() {
-				client.Publish(c, client.NewMessage(common.TopicTreeChanges, &tree.NodeChangeEvent{
+				broker.MustPublish(c, common.TopicTreeChanges, &tree.NodeChangeEvent{
 					Type:   tree.NodeChangeEvent_READ,
 					Target: eventNode,
-				}))
+				})
 			}()
 		}
 		if doc != nil && linkData != nil {

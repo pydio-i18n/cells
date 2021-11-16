@@ -21,8 +21,11 @@
 package broker
 
 import (
+	"context"
+	"fmt"
 	"github.com/micro/micro/v3/service/broker"
 	"github.com/micro/micro/v3/service/broker/memory"
+	"github.com/micro/micro/v3/service/client"
 )
 
 type brokerwrap struct {
@@ -47,8 +50,17 @@ func Disconnect() error {
 	return std.Disconnect()
 }
 
-func Publish(s string, m *broker.Message, opts ...broker.PublishOption) error {
-	return std.Publish(s, m, opts...)
+// Publish sends a message to standard broker. For the moment, forward message to client.Publish
+func Publish(ctx context.Context, topic string, message interface{}, opts ...PublishOption) error {
+	return client.Publish(ctx, client.NewMessage(topic, message))
+}
+
+// MustPublish publishes a message ignoring the error
+func MustPublish(ctx context.Context, topic string, message interface{}, opts ...PublishOption) {
+	err := Publish(ctx, topic, message)
+	if err != nil {
+		fmt.Printf("[Message Publication Error] Topic: %s, Error: %v\n", topic, err)
+	}
 }
 
 func Subscribe(s string, h broker.Handler, opts ...broker.SubscribeOption) (broker.Subscriber, error) {

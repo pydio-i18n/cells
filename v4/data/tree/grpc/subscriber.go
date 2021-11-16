@@ -25,31 +25,29 @@ import (
 	"sync"
 	"time"
 
-	"github.com/micro/micro/v3/service/client"
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	c2 "github.com/pydio/cells/v4/common/utils/context"
 )
 
 type EventSubscriber struct {
-	TreeServer  *TreeServer
-	EventClient client.Client
+	TreeServer *TreeServer
 
 	moves    map[string]chan *tree.NodeChangeEvent
 	movesMux *sync.Mutex
 }
 
-func NewEventSubscriber(t *TreeServer, c client.Client) *EventSubscriber {
+func NewEventSubscriber(t *TreeServer) *EventSubscriber {
 	return &EventSubscriber{
-		TreeServer:  t,
-		EventClient: c,
-		moves:       make(map[string]chan *tree.NodeChangeEvent),
-		movesMux:    &sync.Mutex{},
+		TreeServer: t,
+		moves:      make(map[string]chan *tree.NodeChangeEvent),
+		movesMux:   &sync.Mutex{},
 	}
 }
 
 func (s *EventSubscriber) publish(ctx context.Context, msg *tree.NodeChangeEvent) {
-	s.EventClient.Publish(ctx, s.EventClient.NewMessage(common.TopicTreeChanges, msg))
+	broker.MustPublish(ctx, common.TopicTreeChanges, msg)
 	s.TreeServer.PublishChange(msg)
 }
 

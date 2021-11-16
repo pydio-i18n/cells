@@ -30,7 +30,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/nicksnyder/go-i18n/i18n"
 	"github.com/pborman/uuid"
@@ -39,6 +38,7 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	context2 "github.com/pydio/cells/v4/common/utils/context"
@@ -135,9 +135,9 @@ func CopyMoveNodes(ctx context.Context, router Handler, sourceNode *tree.Node, t
 			go func() {
 				<-time.After(10 * time.Second)
 				log.Logger(ctx).Info("Forcing close session " + session + " and unlock")
-				client.Publish(context.Background(), client.NewMessage(common.TopicIndexEvent, &tree.IndexEvent{
+				broker.MustPublish(context.Background(), common.TopicIndexEvent, &tree.IndexEvent{
 					SessionForceClose: session,
-				}))
+				})
 				if locker != nil {
 					locker.Unlock(ctx)
 				}
@@ -148,11 +148,11 @@ func CopyMoveNodes(ctx context.Context, router Handler, sourceNode *tree.Node, t
 	}()
 
 	publishError := func(dsName, errorPath string) {
-		client.Publish(context.Background(), client.NewMessage(common.TopicIndexEvent, &tree.IndexEvent{
+		broker.MustPublish(context.Background(), common.TopicIndexEvent, &tree.IndexEvent{
 			ErrorDetected:  true,
 			DataSourceName: dsName,
 			ErrorPath:      errorPath,
-		}))
+		})
 	}
 
 	// Setting up logger

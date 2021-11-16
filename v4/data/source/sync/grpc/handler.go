@@ -23,13 +23,13 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"math"
 	"strconv"
 	"strings"
 	sync2 "sync"
 	"time"
 
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/context/metadata"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
@@ -411,10 +411,10 @@ func (s *Handler) watchErrors() {
 				md := make(map[string]string)
 				md[common.PydioContextUserKey] = common.PydioSystemUsername
 				ctx := metadata.NewContext(context.Background(), md)
-				client.Publish(ctx, client.NewMessage(common.TopicTimerEvent, &jobs.JobTriggerEvent{
+				broker.MustPublish(ctx, common.TopicTimerEvent, &jobs.JobTriggerEvent{
 					JobID:  "resync-ds-" + s.dsName,
 					RunNow: true,
-				}))
+				})
 			}
 		case <-s.stop:
 			return

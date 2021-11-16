@@ -25,14 +25,13 @@ import (
 	"errors"
 	"fmt"
 
-	defaults "github.com/pydio/cells/v4/common/micro"
-
-	"github.com/micro/micro/v3/service/client"
 	"go.uber.org/zap"
 
 	chat2 "github.com/pydio/cells/v4/broker/chat"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
+	defaults "github.com/pydio/cells/v4/common/micro"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/chat"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/context"
@@ -50,54 +49,60 @@ func getMetaClient() tree.NodeReceiverClient {
 	return metaClient
 }
 
-type ChatHandler struct{}
+type ChatHandler struct {
+	chat.UnimplementedChatServiceServer
+}
 
-func (c *ChatHandler) PutRoom(ctx context.Context, req *chat.PutRoomRequest, resp *chat.PutRoomResponse) error {
+func (c *ChatHandler) PutRoom(ctx context.Context, req *chat.PutRoomRequest) (*chat.PutRoomResponse, error) {
 
+	resp := &chat.PutRoomResponse{}
 	db := servicecontext.GetDAO(ctx).(chat2.DAO)
 	newRoom, err := db.PutRoom(req.Room)
 	if err != nil {
-		return err
+		return resp, err
 	}
 	resp.Room = newRoom
 	log.Logger(ctx).Debug("Put Room", newRoom.Zap())
-	client.Publish(ctx, client.NewMessage(common.TopicChatEvent, &chat.ChatEvent{
+	broker.MustPublish(ctx, common.TopicChatEvent, &chat.ChatEvent{
 		Room:    resp.Room,
 		Details: "PUT",
-	}))
-	return err
+	})
+	return resp, err
 }
 
-func (c *ChatHandler) DeleteRoom(ctx context.Context, req *chat.DeleteRoomRequest, response *chat.DeleteRoomResponse) error {
+func (c *ChatHandler) DeleteRoom(ctx context.Context, req *chat.DeleteRoomRequest) (*chat.DeleteRoomResponse, error) {
+
+	response := &chat.DeleteRoomResponse{}
 
 	log.Logger(ctx).Debug("Delete Room", req.Room.Zap())
 	db := servicecontext.GetDAO(ctx).(chat2.DAO)
 
 	ok, err := db.DeleteRoom(req.Room)
 	if err != nil {
-		return err
+		return nil, err
 	} else if !ok {
 		// should never happen
-		return errors.New("cannot delete room, but DeleteRoom method returned no error")
+		return nil, errors.New("cannot delete room, but DeleteRoom method returned no error")
 	}
 
 	response.Success = true
-	client.Publish(ctx, client.NewMessage(common.TopicChatEvent, &chat.ChatEvent{
+	broker.MustPublish(ctx, common.TopicChatEvent, &chat.ChatEvent{
 		Room:    req.Room,
 		Details: "DELETE",
-	}))
-	return nil
+	})
+	return response, nil
 }
 
-func (c *ChatHandler) ListRooms(ctx context.Context, req *chat.ListRoomsRequest, streamer chat.ChatService_ListRoomsStream) error {
+func (c *ChatHandler) ListRooms(req *chat.ListRoomsRequest, streamer chat.ChatService_ListRoomsServer) error {
 
+	ctx := streamer.Context()
 	log.Logger(ctx).Debug("List Rooms", zap.Any(common.KeyChatListRoomReq, req))
 	db := servicecontext.GetDAO(ctx).(chat2.DAO)
 	rooms, err := db.ListRooms(req)
 	if err != nil {
 		return err
 	}
-	defer streamer.Close()
+	//defer streamer.Close()
 	for _, r := range rooms {
 		streamer.Send(&chat.ListRoomsResponse{Room: r})
 	}
@@ -105,15 +110,16 @@ func (c *ChatHandler) ListRooms(ctx context.Context, req *chat.ListRoomsRequest,
 	return nil
 }
 
-func (c *ChatHandler) ListMessages(ctx context.Context, req *chat.ListMessagesRequest, streamer chat.ChatService_ListMessagesStream) error {
+func (c *ChatHandler) ListMessages(req *chat.ListMessagesRequest, streamer chat.ChatService_ListMessagesServer) error {
 
+	ctx := streamer.Context()
 	log.Logger(ctx).Debug("List Messages", zap.Any(common.KeyChatListMsgReq, req))
 	db := servicecontext.GetDAO(ctx).(chat2.DAO)
 	messages, err := db.ListMessages(req)
 	if err != nil {
 		return err
 	}
-	defer streamer.Close()
+	//defer streamer.CloseSend()
 	for _, m := range messages {
 		streamer.Send(&chat.ListMessagesResponse{Message: m})
 	}
@@ -121,15 +127,16 @@ func (c *ChatHandler) ListMessages(ctx context.Context, req *chat.ListMessagesRe
 	return nil
 }
 
-func (c *ChatHandler) PostMessage(ctx context.Context, req *chat.PostMessageRequest, resp *chat.PostMessageResponse) error {
+func (c *ChatHandler) PostMessage(ctx context.Context, req *chat.PostMessageRequest) (*chat.PostMessageResponse, error) {
 
+	resp := &chat.PostMessageResponse{}
 	log.Logger(ctx).Debug("Post Messages", zap.Any(common.KeyChatPostMsgReq, req))
 	db := servicecontext.GetDAO(ctx).(chat2.DAO)
 
 	for _, m := range req.Messages {
 		newMessage, err := db.PostMessage(m)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		resp.Messages = append(resp.Messages, newMessage)
 	}
@@ -137,17 +144,17 @@ func (c *ChatHandler) PostMessage(ctx context.Context, req *chat.PostMessageRequ
 	go func() {
 		for _, m := range resp.Messages {
 			bgCtx := context2.NewBackgroundWithUserKey(m.Author)
-			client.Publish(bgCtx, client.NewMessage(common.TopicChatEvent, &chat.ChatEvent{
+			broker.MustPublish(bgCtx, common.TopicChatEvent, &chat.ChatEvent{
 				Message: m,
-			}))
+			})
 			// For comments on nodes, publish an UPDATE_USER_META event
 			if room, err := db.RoomByUuid(chat.RoomType_NODE, m.RoomUuid); err == nil {
-				client.Publish(bgCtx, client.NewMessage(common.TopicMetaChanges, &tree.NodeChangeEvent{
+				broker.MustPublish(bgCtx, common.TopicMetaChanges, &tree.NodeChangeEvent{
 					Type: tree.NodeChangeEvent_UPDATE_USER_META,
 					Target: &tree.Node{Uuid: room.RoomTypeObject, MetaStore: map[string]string{
 						"comments": `"` + m.Message + `"`,
 					}},
-				}))
+				})
 				if count, e := db.CountMessages(room); e == nil {
 					getMetaClient().UpdateNode(bgCtx, &tree.UpdateNodeRequest{To: &tree.Node{
 						Uuid: room.RoomTypeObject,
@@ -159,10 +166,10 @@ func (c *ChatHandler) PostMessage(ctx context.Context, req *chat.PostMessageRequ
 			}
 		}
 	}()
-	return nil
+	return resp, nil
 }
 
-func (c *ChatHandler) DeleteMessage(ctx context.Context, req *chat.DeleteMessageRequest, resp *chat.DeleteMessageResponse) error {
+func (c *ChatHandler) DeleteMessage(ctx context.Context, req *chat.DeleteMessageRequest) (*chat.DeleteMessageResponse, error) {
 
 	log.Logger(ctx).Debug("Delete Messages", zap.Any(common.KeyChatPostMsgReq, req))
 	db := servicecontext.GetDAO(ctx).(chat2.DAO)
@@ -170,12 +177,12 @@ func (c *ChatHandler) DeleteMessage(ctx context.Context, req *chat.DeleteMessage
 	for _, m := range req.Messages {
 		err := db.DeleteMessage(m)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		client.Publish(ctx, client.NewMessage(common.TopicChatEvent, &chat.ChatEvent{
+		broker.MustPublish(ctx, common.TopicChatEvent, &chat.ChatEvent{
 			Message: m,
 			Details: "DELETE",
-		}))
+		})
 	}
 	go func() {
 		for _, m := range req.Messages {
@@ -196,6 +203,5 @@ func (c *ChatHandler) DeleteMessage(ctx context.Context, req *chat.DeleteMessage
 			}
 		}
 	}()
-	resp.Success = true
-	return nil
+	return &chat.DeleteMessageResponse{Success: true}, nil
 }

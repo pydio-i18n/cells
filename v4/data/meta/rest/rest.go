@@ -28,14 +28,13 @@ import (
 	"strings"
 	"time"
 
-	defaults "github.com/pydio/cells/v4/common/micro"
-
 	"github.com/emicklei/go-restful"
-	"github.com/micro/micro/v3/service/client"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
+	defaults "github.com/pydio/cells/v4/common/micro"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/nodes/meta"
@@ -215,10 +214,10 @@ func (h *Handler) GetBulkMeta(req *restful.Request, resp *restful.Response) {
 					if e != nil {
 						return e
 					}
-					client.Publish(c, client.NewMessage(common.TopicTreeChanges, &tree.NodeChangeEvent{
+					broker.MustPublish(c, common.TopicTreeChanges, &tree.NodeChangeEvent{
 						Type:   tree.NodeChangeEvent_READ,
 						Target: n,
-					}))
+					})
 					return nil
 				})
 				if er != nil {

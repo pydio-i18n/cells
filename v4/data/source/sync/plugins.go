@@ -23,10 +23,10 @@ package sync
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/micro/broker"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/service"
@@ -55,10 +55,9 @@ func onDataSourceDelete(ctx context.Context, deletedSource string) {
 	// TODO - find a way to delete datasources - surely a config watch
 
 	log.Logger(ctx).Info("Sync = Send Event Server-wide for " + deletedSource)
-	cl := defaults.NewClient()
-	cl.Publish(ctx, cl.NewMessage(common.TopicDatasourceEvent, &object.DataSourceEvent{
+	broker.MustPublish(ctx, common.TopicDatasourceEvent, &object.DataSourceEvent{
 		Type: object.DataSourceEvent_DELETE,
 		Name: deletedSource,
-	}))
+	})
 
 }
