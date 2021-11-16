@@ -52,6 +52,9 @@ func Disconnect() error {
 
 // Publish sends a message to standard broker. For the moment, forward message to client.Publish
 func Publish(ctx context.Context, topic string, message interface{}, opts ...PublishOption) error {
+	if client.DefaultClient == nil {
+		return fmt.Errorf("client.DefaultClient is not defined")
+	}
 	return client.Publish(ctx, client.NewMessage(topic, message))
 }
 

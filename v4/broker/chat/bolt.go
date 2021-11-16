@@ -159,8 +159,11 @@ func (h *boltdbimpl) DeleteRoom(room *chat.ChatRoom) (bool, error) {
 		if err != nil {
 			return err
 		}
-		return bucket.Delete([]byte(room.Uuid))
-
+		e := bucket.Delete([]byte(room.Uuid))
+		if e == nil {
+			success = true
+		}
+		return e
 	})
 
 	return success, err
