@@ -25,12 +25,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/pydio/cells/v4/common/proto/mailer"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
-
-	"github.com/pydio/cells/v4/common/utils/std"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
@@ -38,7 +34,10 @@ import (
 	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/jobs"
+	"github.com/pydio/cells/v4/common/proto/mailer"
 	"github.com/pydio/cells/v4/common/service"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/utils/std"
 )
 
 var (
