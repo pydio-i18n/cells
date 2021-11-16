@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"crypto/tls"
-
+	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/server"
 
 	"github.com/google/uuid"
@@ -24,8 +24,8 @@ type ServiceOptions struct {
 	Context context.Context
 	Cancel  context.CancelFunc
 
-	// DAO        func(dao.DAO) dao.DAO
-	// Prefix     interface{}
+	DAO        func(dao.DAO) dao.DAO
+	Prefix     interface{}
 	Migrations []*Migration
 
 	// Port      string

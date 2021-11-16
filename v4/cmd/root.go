@@ -31,6 +31,9 @@ import (
 )
 
 var (
+	ctx context.Context
+	cancel context.CancelFunc
+
 	cfgFile string
 
 	infoCommands = []string{"version", "completion", "doc", "help", "--help", "bash", "zsh", os.Args[0]}
@@ -54,7 +57,8 @@ to quickly create a Cobra application.`,
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	if err := RootCmd.Execute(); err != nil {
+	ctx, cancel = context.WithCancel(context.Background())
+	if err := RootCmd.ExecuteContext(ctx); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/server"
@@ -29,11 +30,19 @@ func NewService(opts ...ServiceOption) Service {
 	name := s.opts.Name
 	tags := s.opts.Tags
 
-	bs, ok := s.opts.Server.(server.BeforeServer)
+	if !runtime.IsRequired(name) {
+		return nil
+	}
+
+	bs, ok := s.opts.Server.(server.WrappedServer)
 	if ok {
 		bs.RegisterBeforeServe(s.Init)
 		bs.RegisterBeforeServe(func() error {
 			log.Info("started", zap.String("name", name))
+			return nil
+		})
+		bs.RegisterAfterServe(func() error {
+			log.Info("stopped", zap.String("name", name))
 			return nil
 		})
 	}

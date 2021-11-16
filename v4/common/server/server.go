@@ -8,12 +8,9 @@ type Server interface {
 	Serve(net.Listener) error
 }
 
-type BeforeServer interface {
+type WrappedServer interface {
 	RegisterBeforeServe(func() error)
 	BeforeServe() error
-}
-
-type AfterServer interface {
 	RegisterAfterServe(func () error)
 	AfterServe() error
 }

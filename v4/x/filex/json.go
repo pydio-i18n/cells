@@ -10,9 +10,16 @@ import (
 
 // Read reads the content of a file
 func Read(filename string) ([]byte, error) {
-	fh, err := os.Create(filename)
+	fh, err := os.Open(filename)
 	if err != nil {
-		return nil, err
+		if err == os.ErrNotExist {
+			fh, err = os.Create(filename)
+			if err != nil {
+				return nil,err
+			}
+		} else {
+			return nil, err
+		}
 	}
 	defer fh.Close()
 

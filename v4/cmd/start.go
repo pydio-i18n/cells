@@ -16,19 +16,15 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/server/generic"
-	"net"
-	"sync"
-	"time"
-
+	"github.com/pydio/cells/v4/common/server/grpc"
+	"github.com/pydio/cells/v4/common/server/http"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
-
-	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/plugins"
-	"github.com/pydio/cells/v4/common/server/grpc"
-	"github.com/pydio/cells/v4/common/server/http"
+	"net"
 )
 
 var (
@@ -56,6 +52,8 @@ to quickly create a Cobra application.`,
 
 		initLogLevel()
 
+		handleSignals()
+
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
@@ -64,11 +62,13 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			log.Fatal("error listening", zap.Error(err))
 		}
+		defer lis.Close()
 
 		lisHTTP, err := net.Listen("tcp", ":8002")
 		if err != nil {
 			log.Fatal("error listening", zap.Error(err))
 		}
+		defer lisHTTP.Close()
 
 		srvGRPC := grpc.New()
 		grpc.Register(srvGRPC)
@@ -81,36 +81,27 @@ to quickly create a Cobra application.`,
 
 		plugins.Init(cmd.Context(), "main")
 
-		wg := &sync.WaitGroup{}
-		wg.Add(3)
-
 		go func() {
 			if err := srvHTTP.Serve(lisHTTP); err != nil {
 				fmt.Println(err)
 			}
-			wg.Done()
 		}()
 
 		go func() {
 			if err := srvGRPC.Serve(lis); err != nil {
 				fmt.Println(err)
 			}
-
-			wg.Done()
 		}()
 
 		go func() {
 			if err := srvGeneric.Serve(nil); err != nil {
 				fmt.Println(err)
 			}
-			wg.Done()
 		}()
 
 		log.Info("started")
 
-		<-time.After(1 * time.Second)
-
-		wg.Wait()
+		<-cmd.Context().Done()
 	},
 }
 
