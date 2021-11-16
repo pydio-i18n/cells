@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"crypto/tls"
+
 	"github.com/pydio/cells/v4/common/server"
 
 	"github.com/google/uuid"
@@ -17,18 +18,20 @@ type ServiceOptions struct {
 	Version     string
 	Description string
 	Source      string
+	// TODO V4 - MUST BE FOUND IN REGISTRY
+	Metadata map[string]string
 
 	Context context.Context
 	Cancel  context.CancelFunc
 
 	// DAO        func(dao.DAO) dao.DAO
 	// Prefix     interface{}
-	// Migrations []*Migration
+	Migrations []*Migration
 
 	// Port      string
 	TLSConfig *tls.Config
 
-	Server server.Server
+	Server     server.Server
 	ServerInit func() error
 
 	Dependencies []*dependency
@@ -40,9 +43,9 @@ type ServiceOptions struct {
 	Unique      bool
 
 	// Before and After funcs
-	BeforeInit  []func(context.Context) error
-	Init        []func(context.Context) error
-	AfterInit   []func(context.Context) error
+	BeforeInit []func(context.Context) error
+	Init       []func(context.Context) error
+	AfterInit  []func(context.Context) error
 }
 
 type dependency struct {
@@ -123,6 +126,19 @@ func Unique(b bool) ServiceOption {
 	}
 }
 
+// Migrations option for a service
+func Migrations(migrations []*Migration) ServiceOption {
+	return func(o *ServiceOptions) {
+		o.Migrations = migrations
+	}
+}
+
+func Metadata(name, value string) ServiceOption {
+	return func(o *ServiceOptions) {
+		o.Metadata[name] = value
+	}
+}
+
 // Dependency option for a service
 func Dependency(n string, t []string) ServiceOption {
 	return func(o *ServiceOptions) {
@@ -134,6 +150,7 @@ func newOptions(opts ...ServiceOption) ServiceOptions {
 	opt := ServiceOptions{}
 
 	opt.ID = uuid.New().String()
+	opt.Metadata = make(map[string]string)
 
 	for _, o := range opts {
 		o(&opt)
