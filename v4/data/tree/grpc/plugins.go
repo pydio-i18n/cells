@@ -24,6 +24,10 @@ package grpc
 import (
 	"context"
 
+	"github.com/pydio/cells/v4/common/micro/broker"
+	"github.com/pydio/cells/v4/common/proto/tree"
+	"google.golang.org/grpc"
+
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/service"
@@ -37,45 +41,41 @@ func init() {
 			service.Tag(common.ServiceTagData),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceMeta, []string{}),
 			service.Description("Aggregator of all datasources into one master tree"),
-			/*
-				service.WithMicro(func(m micro.Service) error {
+			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 
-					ctx := m.Options().Context
+				treeServer := &TreeServer{
+					DataSources: map[string]DataSource{},
+				}
+				eventSubscriber := NewEventSubscriber(treeServer)
 
-					dataSources := map[string]DataSource{}
-					treeServer := &TreeServer{
-						DataSources: dataSources,
+				updateServicesList(ctx, treeServer, 0)
+
+				tree.RegisterNodeProviderServer(server, treeServer)
+				tree.RegisterNodeReceiverServer(server, treeServer)
+				tree.RegisterSearcherServer(server, treeServer)
+				tree.RegisterNodeChangesStreamerServer(server, treeServer)
+				tree.RegisterNodeProviderStreamerServer(server, treeServer)
+
+				go watchRegistry(ctx, treeServer)
+
+				unsub, err := broker.Subscribe(common.TopicIndexChanges, func(message broker.Message) error {
+					msg := &tree.NodeChangeEvent{}
+					if ct, e := message.Unmarshal(msg); e == nil {
+						return eventSubscriber.Handle(ct, msg)
 					}
-
-					eventSubscriber := NewEventSubscriber(treeServer, defaults.NewClient())
-
-					updateServicesList(ctx, treeServer, 0)
-
-					srv := m.Options().Server
-					tree.RegisterNodeProviderHandler(srv, treeServer)
-					tree.RegisterNodeReceiverHandler(srv, treeServer)
-					tree.RegisterSearcherHandler(srv, treeServer)
-					tree.RegisterNodeChangesStreamerHandler(srv, treeServer)
-					tree.RegisterNodeProviderStreamerHandler(srv, treeServer)
-
-					go watchRegistry(ctx, treeServer)
-
-					if err := m.Options().Server.Subscribe(
-						m.Options().Server.NewSubscriber(
-							common.TopicIndexChanges,
-							eventSubscriber,
-							func(o *server.SubscriberOptions) {
-								o.Queue = "tree"
-							},
-						),
-					); err != nil {
-						return err
-					}
-
 					return nil
-				}),
+				}, broker.Queue("tree"))
+				if err != nil {
+					return err
+				}
 
-			*/
+				go func() {
+					<-ctx.Done()
+					_ = unsub()
+				}()
+
+				return nil
+			}),
 		)
 	})
 }

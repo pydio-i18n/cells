@@ -24,8 +24,6 @@ import (
 	"context"
 	"strings"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
-
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
@@ -37,10 +35,16 @@ import (
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/utils/cache"
 	"github.com/pydio/cells/v4/data/meta"
+	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 // MetaServer definition
 type MetaServer struct {
+	tree.UnimplementedNodeProviderServer
+	tree.UnimplementedNodeProviderStreamerServer
+	tree.UnimplementedNodeReceiverServer
+	tree.UnimplementedSearcherServer
+
 	//	Dao           DAO
 	eventsChannel chan *cache.EventWithContext
 	cache         *cache.InstrumentedCache
@@ -63,8 +67,8 @@ func (s *MetaServer) Stop() {
 	}
 }
 
-// CreateNodeChangeSubscriber that will treat events for the meta server
-func (s *MetaServer) CreateNodeChangeSubscriber(parentContext context.Context) *EventsSubscriber {
+// Subscriber that will treat events for the meta server
+func (s *MetaServer) Subscriber(parentContext context.Context) *EventsSubscriber {
 
 	if s.eventsChannel == nil {
 		s.initEventsChannel()
@@ -95,10 +99,10 @@ func (s *MetaServer) processEvent(ctx context.Context, e *tree.NodeChangeEvent) 
 		log.Logger(ctx).Debug("Received Create event", zap.Any("event", e))
 
 		// Let's extract the basic information from the tree and store it
-		er := s.UpdateNode(ctx, &tree.UpdateNodeRequest{
+		_, er := s.UpdateNode(ctx, &tree.UpdateNodeRequest{
 			To:     e.Target,
 			Silent: e.Silent,
-		}, &tree.UpdateNodeResponse{})
+		})
 		if er != nil {
 			log.Logger(ctx).Warn("Error while processing meta event (CREATE)", zap.Error(er))
 		}
@@ -106,10 +110,10 @@ func (s *MetaServer) processEvent(ctx context.Context, e *tree.NodeChangeEvent) 
 		log.Logger(ctx).Debug("Received Update event", zap.Any("event", e))
 
 		// Let's extract the basic information from the tree and store it
-		if er := s.UpdateNode(ctx, &tree.UpdateNodeRequest{
+		if _, er := s.UpdateNode(ctx, &tree.UpdateNodeRequest{
 			To:     e.Target,
 			Silent: e.Silent,
-		}, &tree.UpdateNodeResponse{}); er == nil {
+		}); er == nil {
 			// UpdateNode will trigger an UPDATE_META, forward UPDATE_PATH event as well
 			broker.MustPublish(ctx, common.TopicMetaChanges, e)
 		} else {
@@ -119,10 +123,10 @@ func (s *MetaServer) processEvent(ctx context.Context, e *tree.NodeChangeEvent) 
 		log.Logger(ctx).Debug("Received Update meta", zap.Any("event", e))
 
 		// Let's extract the basic information from the tree and store it
-		er := s.UpdateNode(ctx, &tree.UpdateNodeRequest{
+		_, er := s.UpdateNode(ctx, &tree.UpdateNodeRequest{
 			To:     e.Target,
 			Silent: e.Silent,
-		}, &tree.UpdateNodeResponse{})
+		})
 		if er != nil {
 			log.Logger(ctx).Warn("Error while processing meta event (UPDATE_META)", zap.Error(er))
 		}
@@ -136,10 +140,10 @@ func (s *MetaServer) processEvent(ctx context.Context, e *tree.NodeChangeEvent) 
 		// Lets delete all metadata
 		log.Logger(ctx).Debug("Received Delete content", zap.Any("event", e))
 
-		er := s.DeleteNode(ctx, &tree.DeleteNodeRequest{
+		_, er := s.DeleteNode(ctx, &tree.DeleteNodeRequest{
 			Node:   e.Source,
 			Silent: e.Silent,
-		}, &tree.DeleteNodeResponse{})
+		})
 		if er != nil {
 			log.Logger(ctx).Warn("Error while processing meta event (DELETE)", zap.Error(er))
 		}
@@ -150,9 +154,9 @@ func (s *MetaServer) processEvent(ctx context.Context, e *tree.NodeChangeEvent) 
 }
 
 // ReadNode information off the meta server
-func (s *MetaServer) ReadNode(ctx context.Context, req *tree.ReadNodeRequest, resp *tree.ReadNodeResponse) (err error) {
+func (s *MetaServer) ReadNode(ctx context.Context, req *tree.ReadNodeRequest) (resp *tree.ReadNodeResponse, err error) {
 	if req.Node == nil || req.Node.Uuid == "" {
-		return errors.BadRequest(common.ServiceMeta, "Please provide a Node with a Uuid")
+		return resp, errors.BadRequest(common.ServiceMeta, "Please provide a Node with a Uuid")
 	}
 
 	if s.cache != nil {
@@ -174,19 +178,19 @@ func (s *MetaServer) ReadNode(ctx context.Context, req *tree.ReadNodeRequest, re
 					respNode.MustSetMeta(k, metaValue)
 				}
 				resp.Node = respNode
-				return nil
+				return resp, nil
 			}
 		}
 	}
 
 	if servicecontext.GetDAO(ctx) == nil {
-		return errors.InternalServerError(common.ServiceMeta, "No DAO found Wrong initialization")
+		return resp, errors.InternalServerError(common.ServiceMeta, "No DAO found Wrong initialization")
 	}
 	dao := servicecontext.GetDAO(ctx).(meta.DAO)
 
 	metadata, err := dao.GetMetadata(req.Node.Uuid)
 	if metadata == nil || err != nil {
-		return errors.NotFound(common.ServiceMeta, "Node with Uuid "+req.Node.Uuid+" not found")
+		return resp, errors.NotFound(common.ServiceMeta, "Node with Uuid "+req.Node.Uuid+" not found")
 	}
 
 	if s.cache != nil {
@@ -196,7 +200,7 @@ func (s *MetaServer) ReadNode(ctx context.Context, req *tree.ReadNodeRequest, re
 			s.cache.Set(req.Node.Uuid, value)
 		}
 	}
-
+	resp = &tree.ReadNodeResponse{}
 	resp.Success = true
 	respNode := req.Node
 	for k, v := range metadata {
@@ -206,13 +210,14 @@ func (s *MetaServer) ReadNode(ctx context.Context, req *tree.ReadNodeRequest, re
 	}
 	resp.Node = respNode
 
-	return nil
+	return resp, nil
 }
 
 // ReadNodeStream implements ReadNode as a bidirectional stream
-func (s *MetaServer) ReadNodeStream(ctx context.Context, streamer tree.NodeProviderStreamer_ReadNodeStreamStream) error {
+func (s *MetaServer) ReadNodeStream(streamer tree.NodeProviderStreamer_ReadNodeStreamServer) error {
 
-	defer streamer.Close()
+	//defer streamer.Close()
+	ctx := streamer.Context()
 
 	for {
 		request, err := streamer.Recv()
@@ -225,7 +230,7 @@ func (s *MetaServer) ReadNodeStream(ctx context.Context, streamer tree.NodeProvi
 		response := &tree.ReadNodeResponse{}
 
 		log.Logger(ctx).Debug("ReadNodeStream", zap.String("path", request.Node.Path))
-		e := s.ReadNode(ctx, &tree.ReadNodeRequest{Node: request.Node}, response)
+		_, e := s.ReadNode(ctx, &tree.ReadNodeRequest{Node: request.Node})
 		if e != nil {
 			if errors.Parse(e.Error()).Code == 404 {
 				// There is no metadata, simply return the original node
@@ -246,13 +251,14 @@ func (s *MetaServer) ReadNodeStream(ctx context.Context, streamer tree.NodeProvi
 }
 
 // ListNodes information from the meta server (Not implemented)
-func (s *MetaServer) ListNodes(ctx context.Context, req *tree.ListNodesRequest, resp tree.NodeProvider_ListNodesStream) (err error) {
+func (s *MetaServer) ListNodes(req *tree.ListNodesRequest, resp tree.NodeProvider_ListNodesServer) (err error) {
 	return errors.BadRequest("ListNodes", "Method not implemented")
 }
 
 // CreateNode metadata
-func (s *MetaServer) CreateNode(ctx context.Context, req *tree.CreateNodeRequest, resp *tree.CreateNodeResponse) (err error) {
+func (s *MetaServer) CreateNode(ctx context.Context, req *tree.CreateNodeRequest) (resp *tree.CreateNodeResponse, err error) {
 	dao := servicecontext.GetDAO(ctx).(meta.DAO)
+	resp = &tree.CreateNodeResponse{}
 	var author = ""
 	if value := ctx.Value(claim.ContextKey); value != nil {
 		claims := value.(claim.Claims)
@@ -278,15 +284,16 @@ func (s *MetaServer) CreateNode(ctx context.Context, req *tree.CreateNodeRequest
 		Silent: req.Silent,
 	})
 
-	return nil
+	return resp, nil
 }
 
 // UpdateNode metadata
-func (s *MetaServer) UpdateNode(ctx context.Context, req *tree.UpdateNodeRequest, resp *tree.UpdateNodeResponse) (err error) {
+func (s *MetaServer) UpdateNode(ctx context.Context, req *tree.UpdateNodeRequest) (resp *tree.UpdateNodeResponse, err error) {
 
 	if servicecontext.GetDAO(ctx) == nil {
-		return errors.InternalServerError(common.ServiceMeta, "No DAO found Wrong initialization")
+		return resp, errors.InternalServerError(common.ServiceMeta, "No DAO found Wrong initialization")
 	}
+	resp = &tree.UpdateNodeResponse{}
 
 	dao := servicecontext.GetDAO(ctx).(meta.DAO)
 	var author = ""
@@ -305,7 +312,7 @@ func (s *MetaServer) UpdateNode(ctx context.Context, req *tree.UpdateNodeRequest
 	if err := dao.SetMetadata(req.To.Uuid, author, s.filterMetaToStore(ctx, req.To.MetaStore)); err != nil {
 		log.Logger(ctx).Error("failed to update meta node", zap.Any("error", err))
 		resp.Success = false
-		return err
+		return resp, err
 	}
 
 	resp.Success = true
@@ -322,11 +329,11 @@ func (s *MetaServer) UpdateNode(ctx context.Context, req *tree.UpdateNodeRequest
 		Silent: req.Silent,
 	})
 
-	return nil
+	return resp, nil
 }
 
 // DeleteNode metadata (Not implemented)
-func (s *MetaServer) DeleteNode(ctx context.Context, request *tree.DeleteNodeRequest, result *tree.DeleteNodeResponse) (err error) {
+func (s *MetaServer) DeleteNode(ctx context.Context, request *tree.DeleteNodeRequest) (result *tree.DeleteNodeResponse, err error) {
 
 	// Delete all meta for this node
 	dao := servicecontext.GetDAO(ctx).(meta.DAO)
@@ -339,10 +346,12 @@ func (s *MetaServer) DeleteNode(ctx context.Context, request *tree.DeleteNodeReq
 	}
 
 	if err = dao.SetMetadata(request.Node.Uuid, "", map[string]string{}); err != nil {
-		return err
+		return result, err
 	}
 
-	result.Success = true
+	result = &tree.DeleteNodeResponse{
+		Success: true,
+	}
 
 	broker.MustPublish(ctx, common.TopicMetaChanges, &tree.NodeChangeEvent{
 		Type:   tree.NodeChangeEvent_DELETE,
@@ -350,14 +359,13 @@ func (s *MetaServer) DeleteNode(ctx context.Context, request *tree.DeleteNodeReq
 		Silent: request.Silent,
 	})
 
-	return nil
+	return result, nil
 }
 
 // Search a stream of nodes based on its metadata
-func (s *MetaServer) Search(ctx context.Context, request *tree.SearchRequest, result tree.Searcher_SearchStream) error {
+func (s *MetaServer) Search(request *tree.SearchRequest, result tree.Searcher_SearchServer) error {
 
-	defer result.Close()
-
+	ctx := result.Context()
 	dao := servicecontext.GetDAO(ctx).(meta.DAO)
 
 	metaByUUID, err := dao.ListMetadata(request.Query.FileName)

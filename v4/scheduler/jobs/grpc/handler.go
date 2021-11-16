@@ -422,8 +422,7 @@ func (j *JobsHandler) DeleteLogsFor(ctx context.Context, job string, tasks ...st
 		}
 		req.Query = strings.Join(qs, " ")
 	}
-	resp := &log2.DeleteLogsResponse{}
-	if e := j.DeleteLogs(ctx, req, resp); e != nil {
+	if resp, e := j.DeleteLogs(ctx, req); e != nil {
 		log.Logger(ctx).Error("Deleting logs in background for ", zap.String("j", job), zap.Strings("t", tasks), zap.Error(e))
 		return 0, e
 	} else {

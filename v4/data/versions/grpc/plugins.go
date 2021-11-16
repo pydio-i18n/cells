@@ -23,11 +23,10 @@ package grpc
 
 import (
 	"context"
+	"path"
 	"time"
 
-	"github.com/pydio/cells/v4/common/utils/std"
-
-	json "github.com/pydio/cells/v4/x/jsonx"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
@@ -35,8 +34,12 @@ import (
 	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/docstore"
+	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service"
+	"github.com/pydio/cells/v4/common/utils/std"
+	"github.com/pydio/cells/v4/data/versions"
+	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 var (
@@ -56,49 +59,47 @@ func init() {
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceJobs, []string{}),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceDocStore, []string{}),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceTree, []string{}),
-			/*
-				service.Migrations([]*service.Migration{
-					{
-						TargetVersion: service.FirstRun(),
-						Up:            InitDefaults,
-					},
-				}),
-				service.Unique(true),
-				service.WithMicro(func(m micro.Service) error {
+			service.Migrations([]*service.Migration{
+				{
+					TargetVersion: service.FirstRun(),
+					Up:            InitDefaults,
+				},
+			}),
+			service.Unique(true),
+			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 
-					serviceDir, e := config.ServiceDataDir(common.ServiceGrpcNamespace_ + common.ServiceVersions)
-					if e != nil {
-						return e
-					}
-					store, err := versions.NewBoltStore(path.Join(serviceDir, "versions.db"))
-					if err != nil {
-						return err
-					}
+				serviceDir, e := config.ServiceDataDir(common.ServiceGrpcNamespace_ + common.ServiceVersions)
+				if e != nil {
+					return e
+				}
+				store, err := versions.NewBoltStore(path.Join(serviceDir, "versions.db"))
+				if err != nil {
+					return err
+				}
 
-					engine := &Handler{
-						db: store,
-					}
+				engine := &Handler{
+					db: store,
+				}
 
-					tree.RegisterNodeVersionerHandler(m.Options().Server, engine)
+				tree.RegisterNodeVersionerServer(server, engine)
 
-					jobsClient := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
-					to := registry.ShortRequestTimeout()
-					ctx := m.Options().Context
-					// Migration from old prune-versions-job : delete if exists, replaced by composed job
-					var reinsert bool
-					if _, e := jobsClient.GetJob(ctx, &jobs.GetJobRequest{JobID: "prune-versions-job"}); e == nil {
-						jobsClient.DeleteJob(ctx, &jobs.DeleteJobRequest{JobID: "prune-versions-job"})
-						reinsert = true
-					}
-					vJob := getVersioningJob()
-					if _, err := jobsClient.GetJob(ctx, &jobs.GetJobRequest{JobID: vJob.ID}, to); err != nil || reinsert {
-						log.Logger(ctx).Info("Inserting versioning job")
-						jobsClient.PutJob(ctx, &jobs.PutJobRequest{Job: vJob}, to)
-					}
+				jobsClient := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+				// TODO V4
+				// to := registry.ShortRequestTimeout()
+				// Migration from old prune-versions-job : delete if exists, replaced by composed job
+				var reinsert bool
+				if _, e := jobsClient.GetJob(ctx, &jobs.GetJobRequest{JobID: "prune-versions-job"}); e == nil {
+					jobsClient.DeleteJob(ctx, &jobs.DeleteJobRequest{JobID: "prune-versions-job"})
+					reinsert = true
+				}
+				vJob := getVersioningJob()
+				if _, err := jobsClient.GetJob(ctx, &jobs.GetJobRequest{JobID: vJob.ID} /*, to*/); err != nil || reinsert {
+					log.Logger(ctx).Info("Inserting versioning job")
+					jobsClient.PutJob(ctx, &jobs.PutJobRequest{Job: vJob} /*, to*/)
+				}
 
-					return nil
-				}),
-			*/
+				return nil
+			}),
 		)
 	})
 }

@@ -42,6 +42,9 @@ import (
 
 // SearchServer implements GRPC server for index/search
 type SearchServer struct {
+	tree.UnimplementedSearcherServer
+	protosync.UnimplementedSyncEndpointServer
+
 	Engine           dao.SearchEngine
 	eventsChannel    chan *cache.EventWithContext
 	TreeClient       tree.NodeProviderClient
@@ -49,8 +52,8 @@ type SearchServer struct {
 	ReIndexThrottler chan struct{}
 }
 
-// CreateNodeChangeSubscriber that will treat events for the meta server
-func (s *SearchServer) CreateNodeChangeSubscriber() *EventsSubscriber {
+// Subscriber create a handler that will treat events for the meta server
+func (s *SearchServer) Subscriber() *EventsSubscriber {
 
 	if s.eventsChannel == nil {
 		s.initEventsChannel()
@@ -129,8 +132,9 @@ func (s *SearchServer) processEvent(ctx context.Context, e *tree.NodeChangeEvent
 	}
 }
 
-func (s *SearchServer) Search(ctx context.Context, req *tree.SearchRequest, streamer tree.Searcher_SearchStream) error {
+func (s *SearchServer) Search(req *tree.SearchRequest, streamer tree.Searcher_SearchServer) error {
 
+	ctx := streamer.Context()
 	resultsChan := make(chan *tree.Node)
 	facetsChan := make(chan *tree.SearchFacet)
 	doneChan := make(chan bool)
@@ -187,7 +191,7 @@ func (s *SearchServer) Search(ctx context.Context, req *tree.SearchRequest, stre
 	return nil
 }
 
-func (s *SearchServer) TriggerResync(c context.Context, req *protosync.ResyncRequest, resp *protosync.ResyncResponse) error {
+func (s *SearchServer) TriggerResync(c context.Context, req *protosync.ResyncRequest) (*protosync.ResyncResponse, error) {
 
 	go func() {
 		bg := context.Background()
@@ -218,9 +222,8 @@ func (s *SearchServer) TriggerResync(c context.Context, req *protosync.ResyncReq
 
 	}()
 
-	resp.Success = true
+	return &protosync.ResyncResponse{Success: true}, nil
 
-	return nil
 }
 
 func (s *SearchServer) ReindexFolder(c context.Context, node *tree.Node, excludes map[string]struct{}) {

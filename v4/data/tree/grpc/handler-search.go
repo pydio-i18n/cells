@@ -25,6 +25,8 @@ import (
 	"fmt"
 	"strings"
 
+	"google.golang.org/grpc/metadata"
+
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common/log"
@@ -34,11 +36,23 @@ import (
 // StreamConverter wraps a Searcher_SearchStream into a NodesProvider_ListNodesStream
 type StreamConverter struct {
 	ctx     context.Context
-	wrapped tree.Searcher_SearchStream
+	wrapped tree.Searcher_SearchServer
+}
+
+func (sc *StreamConverter) SetHeader(md metadata.MD) error {
+	return sc.wrapped.SetHeader(md)
+}
+
+func (sc *StreamConverter) SendHeader(md metadata.MD) error {
+	return sc.wrapped.SendHeader(md)
+}
+
+func (sc *StreamConverter) SetTrailer(md metadata.MD) {
+	sc.wrapped.SetTrailer(md)
 }
 
 func (sc *StreamConverter) Context() context.Context {
-	return context.Background()
+	return sc.wrapped.Context()
 }
 
 func (sc *StreamConverter) SendMsg(i interface{}) error {
@@ -47,15 +61,14 @@ func (sc *StreamConverter) SendMsg(i interface{}) error {
 func (sc *StreamConverter) RecvMsg(i interface{}) error {
 	return sc.wrapped.RecvMsg(i)
 }
-func (sc *StreamConverter) Close() error {
-	return sc.wrapped.Close()
-}
+
 func (sc *StreamConverter) Send(response *tree.ListNodesResponse) error {
 	return sc.wrapped.Send(&tree.SearchResponse{Node: response.GetNode()})
 }
 
 // Search implements the SearchServer handler method. It will transform a tree.SearchRequest into an underlying ListNode query
-func (s *TreeServer) Search(ctx context.Context, request *tree.SearchRequest, stream tree.Searcher_SearchStream) error {
+func (s *TreeServer) Search(request *tree.SearchRequest, stream tree.Searcher_SearchServer) error {
+	ctx := stream.Context()
 	q := request.GetQuery()
 	if q == nil {
 		return fmt.Errorf("request.Query should not be nil")
@@ -149,7 +162,7 @@ func (s *TreeServer) Search(ctx context.Context, request *tree.SearchRequest, st
 			wrapped: stream,
 		}
 		log.Logger(ctx).Debug("Tree.Search - sending ListNodeRequest", zap.Any("req", listReq))
-		e := s.ListNodes(ctx, listReq, streamer)
+		e := s.ListNodes(listReq, streamer)
 		if e != nil {
 			return e
 		}
