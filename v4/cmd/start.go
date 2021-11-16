@@ -15,23 +15,25 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/server/generic"
 	"net"
-	"net/http"
-	"reflect"
 	"sync"
 	"time"
 
-	"github.com/pydio/cells/v4/common/plugins"
-
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common/log"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
-	"github.com/pydio/cells/v4/common/service/generic"
+	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/server/grpc"
+	"github.com/pydio/cells/v4/common/server/http"
+)
+
+var (
+	FilterStartTags    []string
+	FilterStartExclude []string
 )
 
 // startCmd represents the start command
@@ -45,62 +47,62 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
+		viper.Set("args", args)
+
+		bindViperFlags(cmd.Flags(), map[string]string{
+			//	"log":  "logs_level",
+			"fork": "is_fork",
+		})
+
 		initLogLevel()
 
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("And the args are ", args)
 		lis, err := net.Listen("tcp", ":8001")
 		if err != nil {
 			log.Fatal("error listening", zap.Error(err))
 		}
-
-		srvg := grpc.NewServer(
-			grpc.ChainUnaryInterceptor(
-				servicecontext.SpanUnaryServerInterceptor(),
-				servicecontext.MetricsUnaryServerInterceptor(),
-			),
-			grpc.ChainStreamInterceptor(
-				servicecontext.SpanStreamServerInterceptor(),
-				servicecontext.MetricsStreamServerInterceptor(),
-			),
-		)
-
-		ctx := context.Background()
-		ctx = context.WithValue(ctx, "grpcServerKey", srvg)
 
 		lisHTTP, err := net.Listen("tcp", ":8002")
 		if err != nil {
 			log.Fatal("error listening", zap.Error(err))
 		}
 
-		srvHTTP := http.NewServeMux()
-		ctx = context.WithValue(ctx, "httpServerKey", srvHTTP)
+		srvGRPC := grpc.New()
+		grpc.Register(srvGRPC)
 
-		srvGeneric := generic.NewGenericServer(ctx)
+		srvHTTP := http.New()
+		http.Register(srvHTTP)
 
-		ctx = context.WithValue(ctx, "genericServerKey", srvGeneric)
+		srvGeneric := generic.New(cmd.Context())
+		generic.Register(srvGeneric)
 
-		plugins.Init(ctx, "main")
+		plugins.Init(cmd.Context(), "main")
 
 		wg := &sync.WaitGroup{}
 		wg.Add(3)
 
 		go func() {
-			v := reflect.ValueOf(srvHTTP).Elem()
-			fmt.Printf("routes: %v\n", v.FieldByName("m"))
-
-			http.Serve(lisHTTP, srvHTTP)
+			if err := srvHTTP.Serve(lisHTTP); err != nil {
+				fmt.Println(err)
+			}
 			wg.Done()
 		}()
 
 		go func() {
-			srvg.Serve(lis)
+			if err := srvGRPC.Serve(lis); err != nil {
+				fmt.Println(err)
+			}
+
 			wg.Done()
 		}()
 
 		go func() {
-			srvGeneric.Serve()
+			if err := srvGeneric.Serve(nil); err != nil {
+				fmt.Println(err)
+			}
 			wg.Done()
 		}()
 
@@ -108,16 +110,15 @@ to quickly create a Cobra application.`,
 
 		<-time.After(1 * time.Second)
 
-		fmt.Println("grpc: ", srvg.GetServiceInfo())
-
-		v := reflect.ValueOf(srvHTTP).Elem()
-		fmt.Printf("routes: %v\n", v.FieldByName("m"))
-
 		wg.Wait()
 	},
 }
 
 func init() {
+	// Flags for selecting / filtering services
+	StartCmd.Flags().StringArrayVarP(&FilterStartTags, "tags", "t", []string{}, "Select services to start by tags, possible values are 'broker', 'data', 'datasource', 'discovery', 'frontend', 'gateway', 'idm', 'scheduler'")
+	StartCmd.Flags().StringArrayVarP(&FilterStartExclude, "exclude", "x", []string{}, "Select services to start by filtering out some specific ones by name")
+
 	RootCmd.AddCommand(StartCmd)
 
 	// Here you will define your flags and configuration settings.

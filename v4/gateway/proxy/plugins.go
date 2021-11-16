@@ -24,7 +24,6 @@ package proxy
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/service/generic"
 
 	"go.uber.org/zap"
 
@@ -35,6 +34,7 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/server/generic"
 	"github.com/pydio/cells/v4/common/service"
 )
 
@@ -188,7 +188,7 @@ func init() {
 			service.Tag(common.ServiceTagGateway),
 			service.Description("Main HTTP proxy for exposing a unique address to the world"),
 			// service.Unique(true),
-			service.WithGeneric(func(srv generic.Server) error {
+			service.WithGeneric(func(srv *generic.Server) error {
 				// Load config directly from memory
 				adapter := caddyconfig.GetAdapter("caddyfile")
 				confs, warns, err := adapter.Adapt([]byte(cfile), map[string]interface{}{})

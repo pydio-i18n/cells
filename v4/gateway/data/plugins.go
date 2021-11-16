@@ -23,12 +23,11 @@ package gateway
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/server/generic"
 	"net/http"
 	"os"
 
 	minio "github.com/minio/minio/cmd"
-
-	"github.com/pydio/cells/v4/common/service/generic"
 
 	"go.uber.org/zap"
 
@@ -67,7 +66,8 @@ func init() {
 			// service.RouterDependencies(),
 			service.Description("S3 Gateway to tree service"),
 			//service.Port(fmt.Sprintf("%d", port)),
-			service.WithGeneric(func(g generic.Server) error {
+			service.WithGeneric(func(g *generic.Server) error {
+
 
 				var certFile, keyFile string
 				/*

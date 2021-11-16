@@ -36,17 +36,17 @@ import (
 	"time"
 
 	"github.com/manifoldco/promptui"
+	mbroker "github.com/micro/micro/v3/service/broker"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
-	mbroker "github.com/micro/micro/v3/service/broker"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/caddy"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/install"
 	"github.com/pydio/cells/v4/common/utils/statics"
 	// "github.com/pydio/cells/v4/common/registry"
@@ -88,25 +88,6 @@ const (
 }
 {{end}}
 	 `
-
-	 /*
-
-	caddyfile = `
-:8080 
-root * /Users/ghecquet/work/src/github.com/pydio/cells/v4/discovery/install/assets/src
-file_server
-
-route /a/* {
-	uri strip_prefix /a
-	reverse_proxy :8002
-}
-
-route /install* {
-	reverse_proxy :8002
-}
-	 `
-
-	 */
 )
 
 var (

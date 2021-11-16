@@ -17,10 +17,12 @@ func init() {
 			service.Tag(common.ServiceTagDiscovery),
 			service.Description("Service launching a test discovery server."),
 			// service.WithStorage(config.NewDAO),
-			service.WithHTTP(func(mux *http.ServeMux) {
+			service.WithHTTP(func(mux *http.ServeMux) error {
 				mux.HandleFunc("/test", func(rw http.ResponseWriter, r *http.Request) {
 					rw.Write([]byte("this is a test"))
 				})
+
+				return nil
 			}),
 		)
 	})

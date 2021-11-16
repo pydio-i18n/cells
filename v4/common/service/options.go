@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"crypto/tls"
+	"github.com/pydio/cells/v4/common/server"
 
 	"github.com/google/uuid"
 )
@@ -27,7 +28,8 @@ type ServiceOptions struct {
 	// Port      string
 	TLSConfig *tls.Config
 
-	// Micro micro.Service
+	Server server.Server
+	ServerInit func() error
 
 	Dependencies []*dependency
 
@@ -37,22 +39,10 @@ type ServiceOptions struct {
 	Fork        bool
 	Unique      bool
 
-	// Registry registry.Registry
-
-	// Regexp *regexp.Regexp
-	// Flags  pflag.FlagSet
-
-	// MinNumberOfNodes int
-
 	// Before and After funcs
-	// BeforeInit  []func(Service) error
-	// AfterInit   []func(Service) error
-	// BeforeStart []func(Service) error
-	// AfterStart  []func(Service) error
-	// BeforeStop  []func(Service) error
-	// AfterStop   []func(Service) error
-
-	// OnRegexpMatch func(Service, []string) error
+	BeforeInit  []func(context.Context) error
+	Init        []func(context.Context) error
+	AfterInit   []func(context.Context) error
 }
 
 type dependency struct {
