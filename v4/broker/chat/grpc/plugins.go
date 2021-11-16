@@ -43,7 +43,7 @@ func init() {
 				service.WithStorage(chat.NewDAO, "broker_chat"),
 				service.Unique(true),
 			*/
-			service.WithGRPC(func(server *grpc.Server) error {
+			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
 				chat.RegisterChatServiceServer(server, new(ChatHandler))
 				return nil
 			}),

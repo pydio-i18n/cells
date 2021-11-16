@@ -29,9 +29,7 @@ import (
 
 	"github.com/cskr/pubsub"
 	"github.com/golang/protobuf/ptypes"
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/context/metadata"
-	"github.com/micro/micro/v3/service/server"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -65,7 +63,6 @@ var (
 type Subscriber struct {
 	sync.RWMutex
 	rootCtx     context.Context
-	client      client.Client
 	definitions map[string]*jobs.Job
 	batcher     *cache.EventsBatcher
 	queue       chan Runnable
@@ -74,10 +71,9 @@ type Subscriber struct {
 
 // NewSubscriber creates a multiplexer for tasks managements and messages
 // by maintaining a map of dispatcher, one for each job definition.
-func NewSubscriber(parentContext context.Context, client client.Client, srv server.Server) *Subscriber {
+func NewSubscriber(parentContext context.Context) *Subscriber {
 
 	s := &Subscriber{
-		client:      client,
 		definitions: make(map[string]*jobs.Job),
 		queue:       make(chan Runnable),
 		dispatchers: make(map[string]*Dispatcher),
@@ -317,7 +313,7 @@ func (s *Subscriber) timerEvent(ctx context.Context, event *jobs.JobTriggerEvent
 		log.Logger(ctx).Info("Run Job " + jobId + " on timer event " + event.Schedule.String())
 	}
 	task := NewTaskFromEvent(ctx, j, event)
-	go task.EnqueueRunnables(s.client, s.queue)
+	go task.EnqueueRunnables(s.queue)
 
 	return nil
 }
@@ -388,7 +384,7 @@ func (s *Subscriber) processNodeEvent(ctx context.Context, event *tree.NodeChang
 
 		log.Logger(tCtx).Debug("Run Job " + jobId + " on event " + eventMatch)
 		task := NewTaskFromEvent(tCtx, jobData, event)
-		go task.EnqueueRunnables(s.client, s.queue)
+		go task.EnqueueRunnables(s.queue)
 	}
 
 }
@@ -419,7 +415,7 @@ func (s *Subscriber) idmEvent(ctx context.Context, event *idm.ChangeEvent) error
 				}
 				log.Logger(tCtx).Debug("Run Job " + jobId + " on event " + eName)
 				task := NewTaskFromEvent(tCtx, jobData, event)
-				go task.EnqueueRunnables(s.client, s.queue)
+				go task.EnqueueRunnables(s.queue)
 			}
 		}
 	}

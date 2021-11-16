@@ -48,7 +48,7 @@ func register(ctx context.Context) {
 		service.Name(common.ServiceMicroApi),
 		service.Tag(common.ServiceTagGateway),
 		service.Description("Proxy handler to dispatch REST requests to the underlying services"),
-		service.WithHTTP(func(serveMux *http.ServeMux) {
+		service.WithHTTP(func(c context.Context, serveMux *http.ServeMux) error {
 
 			ns := strings.TrimRight(common.ServiceRestNamespace_, ".")
 
@@ -77,7 +77,7 @@ func register(ctx context.Context) {
 				)
 				r.PathPrefix("/{service:[a-zA-Z0-9]+}").Handler(ht)
 			*/
-
+			return nil
 		}),
 	)
 }

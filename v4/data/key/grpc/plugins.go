@@ -43,7 +43,7 @@ func init() {
 
 			//service.WithStorage(key.NewDAO, "data_key"),
 
-			service.WithGRPC(func(src *grpc.Server) error {
+			service.WithGRPC(func(c context.Context, src *grpc.Server) error {
 				h := &NodeKeyManagerHandler{}
 				//encryption.RegisterNodeKeyManagerHandler(m.Options().Server, h)
 				broker.Subscribe(common.TopicTreeChanges, func(message broker.Message) error {

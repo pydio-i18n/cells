@@ -92,7 +92,7 @@ func init() {
 			clearOpts = append(clearOpts,
 				// service.Port(p), TODO V4
 				service.Context(ctx),
-				service.WithGRPC(func(g *grpc.Server) error {
+				service.WithGRPC(func(c context.Context, g *grpc.Server) error {
 					return grpcServerWithLog(logCtx, g, "Starting HTTP only gRPC gateway. Will be accessed directly through port "+p)
 				}),
 				//service.WithMicro(microServiceWithLog(logCtx, "Starting HTTP only gRPC gateway. Will be accessed directly through port "+p)),
@@ -103,7 +103,7 @@ func init() {
 			logCtx := servicecontext.WithServiceName(ctx, common.ServiceGatewayGrpc)
 			tlsOpts = append(tlsOpts,
 				service.Context(ctx),
-				service.WithGRPC(func(g *grpc.Server) error {
+				service.WithGRPC(func(c context.Context, g *grpc.Server) error {
 					return grpcServerWithLog(logCtx, g, "Activating self-signed configuration for gRPC gateway to allow full TLS chain.")
 				}),
 			)

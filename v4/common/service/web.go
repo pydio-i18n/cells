@@ -8,16 +8,15 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/go-openapi/spec"
-
-	"go.uber.org/zap"
-
 	"github.com/emicklei/go-restful"
 	"github.com/go-openapi/loads"
+	"github.com/go-openapi/spec"
+	"github.com/rs/cors"
+	"go.uber.org/zap"
+
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/rest"
-	"github.com/rs/cors"
 )
 
 var (
@@ -140,7 +139,7 @@ func WithWeb(handler func() WebHandler) ServiceOption {
 		wrapped = cors.Default().Handler(wrapped)
 
 		mux.Handle(ws.RootPath(), wrapped)
-		mux.Handle(ws.RootPath() + "/", wrapped)
+		mux.Handle(ws.RootPath()+"/", wrapped)
 
 		return
 	}
@@ -190,7 +189,9 @@ func SwaggerSpec() *loads.Document {
 		for _, data := range append([]string{rest.SwaggerJson}, swaggerJSONStrings...) {
 			// Reading swagger json
 			rawMessage := new(json.RawMessage)
-			json.Unmarshal([]byte(data), rawMessage)
+			if e := json.Unmarshal([]byte(data), rawMessage); e != nil {
+				log.Fatal("Failed to load swagger row data", zap.Error(e))
+			}
 			j, err := loads.Analyzed(*rawMessage, "")
 			if err != nil {
 				log.Fatal("Failed to load swagger", zap.Error(err))

@@ -18,7 +18,7 @@ func init() {
 			service.Tag(common.ServiceTagDiscovery),
 			service.Description("Main service loading configurations for all other services."),
 			// service.WithStorage(config.NewDAO),
-			service.WithGRPC(func(srv *grpc.Server) error {
+			service.WithGRPC(func(c context.Context, srv *grpc.Server) error {
 				// Register handler
 				pbconfig.RegisterConfigServer(srv, &Handler{})
 

@@ -51,7 +51,7 @@ func init() {
 				service.Fork(true),
 				service.Unique(true),
 				service.AutoStart(false),
-				service.WithGRPC(func(server *grpc.Server) error {
+				service.WithGRPC(func(c context.Context, server *grpc.Server) error {
 					engine := &ObjectHandler{
 						Config: &object.MinioConfig{
 							Name:        datasource,
