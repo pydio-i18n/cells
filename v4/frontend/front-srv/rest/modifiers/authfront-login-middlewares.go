@@ -7,7 +7,6 @@ import (
 
 	"github.com/emicklei/go-restful"
 	"github.com/gorilla/sessions"
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -15,6 +14,7 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	defaults "github.com/pydio/cells/v4/common/micro"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	"github.com/pydio/cells/v4/common/proto/service"
@@ -135,10 +135,10 @@ func LoginSuccessWrapper(middleware frontend.AuthMiddleware) frontend.AuthMiddle
 			}
 		}
 
-		client.Publish(ctx, client.NewMessage(common.TopicIdmEvent, &idm.ChangeEvent{
+		broker.MustPublish(ctx, common.TopicIdmEvent, &idm.ChangeEvent{
 			Type: idm.ChangeEventType_LOGIN,
 			User: user,
-		}))
+		})
 
 		return nil
 	}

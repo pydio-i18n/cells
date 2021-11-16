@@ -23,12 +23,12 @@ package timer
 import (
 	"context"
 
-	"github.com/micro/micro/v3/service/client"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	defaults "github.com/pydio/cells/v4/common/micro"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/utils/schedule"
 )
@@ -65,7 +65,7 @@ func NewEventProducer(rootCtx context.Context) *EventProducer {
 				if e.TestChan != nil {
 					e.TestChan <- event
 				} else {
-					client.Publish(e.Context, client.NewMessage(common.TopicTimerEvent, event))
+					broker.MustPublish(e.Context, common.TopicTimerEvent, event)
 				}
 			case <-e.StopChan:
 				return

@@ -25,7 +25,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/micro/micro/v3/service/client"
 	"github.com/pborman/uuid"
 	"google.golang.org/protobuf/proto"
 
@@ -195,7 +194,7 @@ func (t *Task) GlobalError(e error) {
 }
 
 // EnqueueRunnables appends chained actions to a running Runnable
-func (t *Task) EnqueueRunnables(c client.Client, output chan Runnable) {
+func (t *Task) EnqueueRunnables(output chan Runnable) {
 
 	r := RootRunnable(t.context, t)
 	r.Dispatch(r.ActionPath, t.initialMessage, t.Actions, output)

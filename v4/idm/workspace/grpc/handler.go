@@ -25,12 +25,12 @@ import (
 	"fmt"
 
 	"github.com/gosimple/slug"
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/idm/workspace"
@@ -60,10 +60,10 @@ func (h *Handler) CreateWorkspace(ctx context.Context, req *idm.CreateWorkspaceR
 
 	if update {
 		// Propagate creation or update event
-		client.Publish(ctx, client.NewMessage(common.TopicIdmEvent, &idm.ChangeEvent{
+		broker.MustPublish(ctx, common.TopicIdmEvent, &idm.ChangeEvent{
 			Type:      idm.ChangeEventType_UPDATE,
 			Workspace: req.Workspace,
-		}))
+		})
 		log.Auditer(ctx).Info(
 			fmt.Sprintf("Updated workspace [%s]", req.Workspace.Slug),
 			log.GetAuditId(common.AuditWsUpdate),
@@ -71,10 +71,10 @@ func (h *Handler) CreateWorkspace(ctx context.Context, req *idm.CreateWorkspaceR
 		)
 	} else {
 		// Propagate creation or update event
-		client.Publish(ctx, client.NewMessage(common.TopicIdmEvent, &idm.ChangeEvent{
+		broker.MustPublish(ctx, common.TopicIdmEvent, &idm.ChangeEvent{
 			Type:      idm.ChangeEventType_CREATE,
 			Workspace: req.Workspace,
-		}))
+		})
 		log.Auditer(ctx).Info(
 			fmt.Sprintf("Created workspace [%s]", req.Workspace.Slug),
 			log.GetAuditId(common.AuditWsCreate),
@@ -109,10 +109,10 @@ func (h *Handler) DeleteWorkspace(ctx context.Context, req *idm.DeleteWorkspaceR
 			continue
 		}
 
-		client.Publish(ctx, client.NewMessage(common.TopicIdmEvent, &idm.ChangeEvent{
+		broker.MustPublish(ctx, common.TopicIdmEvent, &idm.ChangeEvent{
 			Type:      idm.ChangeEventType_DELETE,
 			Workspace: w.(*idm.Workspace),
-		}))
+		})
 		log.Auditer(ctx).Info(
 			fmt.Sprintf("Deleted workspace [%s]", currW.Slug),
 			log.GetAuditId(common.AuditWsDelete),

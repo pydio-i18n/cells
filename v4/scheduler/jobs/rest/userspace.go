@@ -28,7 +28,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
 	"go.uber.org/zap"
@@ -39,6 +38,7 @@ import (
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	defaults "github.com/pydio/cells/v4/common/micro"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -412,10 +412,10 @@ func syncDatasource(ctx context.Context, dsName string, languages ...string) (st
 	jobUuid := "resync-ds-" + dsName
 	cli := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
 	if resp, er := cli.GetJob(ctx, &jobs.GetJobRequest{JobID: jobUuid}); er == nil && resp.Job != nil {
-		client.Publish(ctx, client.NewMessage(common.TopicTimerEvent, &jobs.JobTriggerEvent{
+		broker.MustPublish(ctx, common.TopicTimerEvent, &jobs.JobTriggerEvent{
 			JobID:  jobUuid,
 			RunNow: true,
-		}))
+		})
 		return jobUuid, nil
 	}
 	if e := disallowTemplate(map[string]string{
@@ -582,10 +582,10 @@ func p8migration(ctx context.Context, jsonParams string) (string, error) {
 	cli := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
 	if _, er := cli.PutJob(ctx, &jobs.PutJobRequest{Job: job}); er == nil {
 		<-time.After(2 * time.Second)
-		client.Publish(ctx, client.NewMessage(common.TopicTimerEvent, &jobs.JobTriggerEvent{
+		broker.MustPublish(ctx, common.TopicTimerEvent, &jobs.JobTriggerEvent{
 			JobID:  jobUuid,
 			RunNow: true,
-		}))
+		})
 		return jobUuid, nil
 	} else {
 		return "", er

@@ -26,12 +26,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/nodes/meta"
 	protosync "github.com/pydio/cells/v4/common/proto/sync"
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -161,10 +161,10 @@ func (s *SearchServer) Search(ctx context.Context, req *tree.SearchRequest, stre
 
 							log.Logger(ctx).Error("Found node that does not exists, send event to make sure all is sync'ed.", zap.String("uuid", node.Uuid))
 
-							client.Publish(ctx, client.NewMessage(common.TopicTreeChanges, &tree.NodeChangeEvent{
+							broker.MustPublish(ctx, common.TopicTreeChanges, &tree.NodeChangeEvent{
 								Type:   tree.NodeChangeEvent_DELETE,
 								Source: node,
-							}))
+							})
 
 						}
 					} else {

@@ -28,13 +28,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
@@ -48,7 +48,6 @@ import (
 type TreeServer struct {
 	DataSourceName     string
 	DataSourceInternal bool
-	client             client.Client
 	sessionStore       sessions.DAO
 }
 
@@ -79,8 +78,7 @@ func NewTreeServer(ds *object.DataSource) *TreeServer {
 	return &TreeServer{
 		DataSourceName:     ds.Name,
 		DataSourceInternal: ds.IsInternal(),
-		//client:             client.NewClient(), // TODO V4
-		sessionStore: sessions.NewSessionMemoryStore(),
+		sessionStore:       sessions.NewSessionMemoryStore(),
 	}
 }
 
@@ -198,10 +196,10 @@ func (s *TreeServer) CreateNode(ctx context.Context, req *tree.CreateNodeRequest
 		// has triggered creation of parents, send notifications for parents as well
 		for _, parent := range created[:len(created)-1] {
 			s.setDataSourceMeta(parent)
-			client.Publish(ctx, client.NewMessage(common.TopicIndexChanges, &tree.NodeChangeEvent{
+			broker.MustPublish(ctx, common.TopicIndexChanges, &tree.NodeChangeEvent{
 				Type:   tree.NodeChangeEvent_CREATE,
 				Target: parent.Node,
-			}))
+			})
 		}
 	}
 
@@ -626,7 +624,7 @@ func (s *TreeServer) DeleteNode(ctx context.Context, req *tree.DeleteNodeRequest
 			if batcher != nil {
 				batcher.Notify(common.TopicIndexChanges, ev)
 			} else {
-				client.Publish(ctx, client.NewMessage(common.TopicIndexChanges, ev))
+				broker.MustPublish(ctx, common.TopicIndexChanges, ev)
 			}
 			<-time.After(100 * time.Microsecond)
 		}
@@ -770,7 +768,7 @@ func (s *TreeServer) UpdateParentsAndNotify(ctx context.Context, dao index.DAO, 
 		event.Silent = session.Silent
 		batcher.Notify(common.TopicIndexChanges, event)
 	} else {
-		client.Publish(ctx, client.NewMessage(common.TopicIndexChanges, event))
+		broker.MustPublish(ctx, common.TopicIndexChanges, event)
 	}
 
 	return nil

@@ -25,14 +25,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/pydio/cells/v4/scheduler/timer"
-
-	"github.com/pydio/cells/v4/common/server/generic"
-
-	"github.com/pydio/cells/v4/common/plugins"
-
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/micro/broker"
+	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/proto/jobs"
+	"github.com/pydio/cells/v4/common/server/generic"
 	"github.com/pydio/cells/v4/common/service"
+	"github.com/pydio/cells/v4/scheduler/timer"
 )
 
 func init() {
@@ -44,28 +43,35 @@ func init() {
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceJobs, []string{}),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceTasks, []string{}),
 			service.Description("Triggers events based on a scheduler pattern"),
-			service.WithGeneric(func(server generic.Server) error {
+			service.WithGeneric(func(c context.Context, server *generic.Server) error {
 
 				producer := timer.NewEventProducer(ctx)
-				/*
-					subscriber := &timer.JobsEventsSubscriber{
-						Producer: producer,
+				subscriber := &timer.JobsEventsSubscriber{
+					Producer: producer,
+				}
+				unSubscriber, er := broker.Subscribe(common.TopicJobConfigEvent, func(message broker.Message) error {
+					msg := &jobs.JobChangeEvent{}
+					if ctx, e := message.Unmarshal(msg); e == nil {
+						return subscriber.Handle(ctx, msg)
 					}
-					m.Options().Server.Subscribe(
-						m.Options().Server.NewSubscriber(
-							common.TopicJobConfigEvent,
-							subscriber,
-						),
-					)
-				*/
+					return nil
+				})
+				if er != nil {
+					return fmt.Errorf("cannot subscribe on JobConfigEvent topic %v", er)
+				}
 
-				producer.Start()
+				if e := producer.Start(); e != nil {
+					return e
+				}
 
 				select {
-				case <-ctx.Done():
+				case <-c.Done():
 					fmt.Println("Handler is done")
+					producer.StopAll()
+					_ = unSubscriber()
 				}
 				return nil
+
 			}),
 		)
 	})

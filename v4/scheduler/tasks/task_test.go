@@ -222,7 +222,7 @@ func TestTask_EnqueueRunnables(t *testing.T) {
 			},
 		}, event)
 
-		task.EnqueueRunnables(nil, output)
+		task.EnqueueRunnables(output)
 		read := <-output
 		So(read, ShouldNotBeNil)
 		So(read.Action, ShouldResemble, jobs.Action{ID: "actions.test.fake"})
@@ -251,7 +251,7 @@ func TestTask_EnqueueRunnables(t *testing.T) {
 			},
 		}, event)
 
-		task.EnqueueRunnables(nil, output)
+		task.EnqueueRunnables(output)
 		read := <-output
 		So(read, ShouldNotBeNil)
 		So(read.Action, ShouldResemble, jobs.Action{ID: "unknown action"})

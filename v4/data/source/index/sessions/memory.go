@@ -27,7 +27,7 @@ import (
 	"time"
 
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/micro"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/data/source/index"
 )
@@ -113,12 +113,11 @@ func (b *MemoryBatcher) Flush(ctx context.Context, dao index.DAO) {
 	b.store.Lock()
 	defer b.store.Unlock()
 
-	cl := defaults.NewClient()
 	count := 0
 	if queue, exists := b.store.eventsQueue[b.uuid]; exists {
 		for _, stored := range queue {
 			// Notify stored event now
-			cl.Publish(ctx, cl.NewMessage(stored.Topic, stored.Msg))
+			broker.MustPublish(ctx, stored.Topic, stored.Msg)
 			count++
 			if count%1000 == 0 {
 				// Let's micro pause every 1000 events to reduce pressure

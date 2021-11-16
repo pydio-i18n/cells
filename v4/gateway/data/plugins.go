@@ -23,7 +23,6 @@ package gateway
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/server/generic"
 	"net/http"
 	"os"
 
@@ -34,8 +33,8 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/server/generic"
 	"github.com/pydio/cells/v4/common/service"
-
 	_ "github.com/pydio/cells/v4/gateway/data/gw"
 )
 
@@ -66,8 +65,7 @@ func init() {
 			// service.RouterDependencies(),
 			service.Description("S3 Gateway to tree service"),
 			//service.Port(fmt.Sprintf("%d", port)),
-			service.WithGeneric(func(g *generic.Server) error {
-
+			service.WithGeneric(func(c context.Context, g *generic.Server) error {
 
 				var certFile, keyFile string
 				/*

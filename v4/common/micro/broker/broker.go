@@ -21,8 +21,11 @@
 package broker
 
 import (
+	"context"
+	"fmt"
 	"github.com/micro/micro/v3/service/broker"
 	"github.com/micro/micro/v3/service/broker/memory"
+	"github.com/micro/micro/v3/service/client"
 )
 
 type brokerwrap struct {
@@ -47,13 +50,54 @@ func Disconnect() error {
 	return std.Disconnect()
 }
 
-func Publish(s string, m *broker.Message, opts ...broker.PublishOption) error {
-	return std.Publish(s, m, opts...)
+// Publish sends a message to standard broker. For the moment, forward message to client.Publish
+func Publish(ctx context.Context, topic string, message interface{}, opts ...PublishOption) error {
+	return client.Publish(ctx, client.NewMessage(topic, message))
 }
 
+// MustPublish publishes a message ignoring the error
+func MustPublish(ctx context.Context, topic string, message interface{}, opts ...PublishOption) {
+	err := Publish(ctx, topic, message)
+	if err != nil {
+		fmt.Printf("[Message Publication Error] Topic: %s, Error: %v\n", topic, err)
+	}
+}
+
+func Subscribe(topic string, handler SubscriberHandler, opts ...SubscribeOption) (UnSubscriber, error) {
+
+	so := &SubscribeOptions{}
+	for _, o := range opts {
+		o(so)
+	}
+	var mopts []broker.SubscribeOption
+	if so.Context != nil {
+		mopts = append(mopts, broker.SubscribeContext(so.Context))
+	}
+	if so.Queue != "" {
+		mopts = append(mopts, broker.Queue(so.Queue))
+	}
+	if so.ErrorHandler != nil {
+		mopts = append(mopts, broker.HandleError(func(message *broker.Message, err error) {
+			so.ErrorHandler(err)
+		}))
+	}
+
+	sub, er := std.Subscribe(topic, func(message *broker.Message) error {
+		subMsg := &SubMessage{Message: message}
+		return handler(subMsg)
+	}, mopts...)
+	if er != nil {
+		return nil, er
+	}
+	return sub.Unsubscribe, nil
+
+}
+
+/*
 func Subscribe(s string, h broker.Handler, opts ...broker.SubscribeOption) (broker.Subscriber, error) {
 	return std.Subscribe(s, h, opts...)
 }
+*/
 
 // Options wraps standard function
 func (b *brokerwrap) Options() broker.Options {

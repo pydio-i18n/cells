@@ -25,7 +25,6 @@ import (
 	"strings"
 
 	"github.com/emicklei/go-restful"
-	"github.com/micro/micro/v3/service/client"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -33,6 +32,7 @@ import (
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	defaults "github.com/pydio/cells/v4/common/micro"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/proto/jobs"
@@ -167,12 +167,12 @@ func (s *JobsHandler) UserControlJob(req *restful.Request, rsp *restful.Response
 
 	} else if cmd.Cmd == jobs.Command_RunOnce {
 
-		client.Publish(ctx, client.NewMessage(common.TopicTimerEvent, &jobs.JobTriggerEvent{
+		broker.MustPublish(ctx, common.TopicTimerEvent, &jobs.JobTriggerEvent{
 			JobID:         cmd.JobId,
 			RunNow:        true,
 			RunTaskId:     cmd.TaskId,
 			RunParameters: cmd.RunParameters,
-		}))
+		})
 
 	} else if cmd.Cmd == jobs.Command_Active || cmd.Cmd == jobs.Command_Inactive {
 

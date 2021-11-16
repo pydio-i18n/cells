@@ -25,12 +25,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/service/context"
@@ -73,10 +73,10 @@ func (h *Handler) CreateRole(ctx context.Context, req *idm.CreateRoleRequest, re
 
 	if update {
 		// Propagate event
-		client.Publish(ctx, client.NewMessage(common.TopicIdmEvent, &idm.ChangeEvent{
+		broker.MustPublish(ctx, common.TopicIdmEvent, &idm.ChangeEvent{
 			Type: idm.ChangeEventType_UPDATE,
 			Role: r,
-		}))
+		})
 		log.Logger(ctx).Info(
 			fmt.Sprintf("Role [%s] has been updated", r.Label),
 			log.GetAuditId(common.AuditRoleUpdate),
@@ -88,10 +88,10 @@ func (h *Handler) CreateRole(ctx context.Context, req *idm.CreateRoleRequest, re
 			r.ZapUuid(),
 		)
 	} else {
-		client.Publish(ctx, client.NewMessage(common.TopicIdmEvent, &idm.ChangeEvent{
+		broker.MustPublish(ctx, common.TopicIdmEvent, &idm.ChangeEvent{
 			Type: idm.ChangeEventType_CREATE,
 			Role: r,
-		}))
+		})
 		log.Logger(ctx).Info(
 			fmt.Sprintf("Role [%s] has been created", r.Label),
 			log.GetAuditId(common.AuditRoleCreate),
@@ -140,10 +140,10 @@ func (h *Handler) DeleteRole(ctx context.Context, req *idm.DeleteRoleRequest, re
 		}
 
 		// propagate event
-		client.Publish(ctx, client.NewMessage(common.TopicIdmEvent, &idm.ChangeEvent{
+		broker.MustPublish(ctx, common.TopicIdmEvent, &idm.ChangeEvent{
 			Type: idm.ChangeEventType_DELETE,
 			Role: r,
-		}))
+		})
 		log.Auditer(ctx).Info(
 			fmt.Sprintf("Deleted role [%s]", r.Label),
 			log.GetAuditId(common.AuditRoleDelete),

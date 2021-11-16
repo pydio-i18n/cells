@@ -28,16 +28,10 @@ import (
 	"time"
 
 	"github.com/allegro/bigcache"
-	"github.com/micro/micro/v3/service/broker"
-	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/micro/micro/v3/service/errors"
-	"go.uber.org/zap"
-	"google.golang.org/grpc"
-	"google.golang.org/protobuf/proto"
-
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/abstract"
 	"github.com/pydio/cells/v4/common/nodes/models"
@@ -45,6 +39,8 @@ import (
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/utils/cache"
 	json "github.com/pydio/cells/v4/x/jsonx"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
 )
 
 var (
@@ -93,11 +89,10 @@ func newCacheHandler() *CacheHandler {
 		c.MaxEntrySize = 200
 		c.HardMaxCacheSize = 8
 		syncCache = cache.NewInstrumentedCache(nodes.ViewsLibraryName, c)
-		defaults.Broker().Subscribe(common.TopicTreeChanges, func(publication *broker.Message) error {
+		_, _ = broker.Subscribe(common.TopicTreeChanges, func(publication broker.Message) error {
 			var event tree.NodeChangeEvent
-			if e := proto.Unmarshal(publication.Body, &event); e == nil && !event.Optimistic {
+			if ctx, e := publication.Unmarshal(&event); e == nil && !event.Optimistic {
 				if event.Type == tree.NodeChangeEvent_CREATE || event.Type == tree.NodeChangeEvent_UPDATE_PATH || event.Type == tree.NodeChangeEvent_DELETE {
-					ctx := metadata.NewContext(context.Background(), publication.Header)
 					ctx = servicecontext.WithServiceName(ctx, nodes.ViewsLibraryName)
 					s.cacheEvent(ctx, &event)
 				}

@@ -188,7 +188,7 @@ func init() {
 			service.Tag(common.ServiceTagGateway),
 			service.Description("Main HTTP proxy for exposing a unique address to the world"),
 			// service.Unique(true),
-			service.WithGeneric(func(srv *generic.Server) error {
+			service.WithGeneric(func(c context.Context, srv *generic.Server) error {
 				// Load config directly from memory
 				adapter := caddyconfig.GetAdapter("caddyfile")
 				confs, warns, err := adapter.Adapt([]byte(cfile), map[string]interface{}{})

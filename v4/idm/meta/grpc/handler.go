@@ -25,11 +25,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/micro/micro/v3/service/client"
-
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth"
 	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -126,11 +125,11 @@ func (h *Handler) UpdateUserMeta(ctx context.Context, request *idm.UpdateUserMet
 					target.MetaStore[val.Namespace] = val.JsonValue
 				}
 			}
-			client.Publish(bgCtx, client.NewMessage(common.TopicMetaChanges, &tree.NodeChangeEvent{
+			broker.MustPublish(bgCtx, common.TopicMetaChanges, &tree.NodeChangeEvent{
 				Type:   tree.NodeChangeEvent_UPDATE_USER_META,
 				Source: source,
 				Target: target,
-			}))
+			})
 		}
 	}()
 
@@ -206,10 +205,10 @@ func (h *Handler) UpdateUserMetaNamespace(ctx context.Context, request *idm.Upda
 		if err := dao.Del(metaNameSpace); err != nil {
 			return err
 		} else {
-			client.Publish(ctx, client.NewMessage(common.TopicIdmEvent, &idm.ChangeEvent{
+			broker.MustPublish(ctx, common.TopicIdmEvent, &idm.ChangeEvent{
 				Type:          idm.ChangeEventType_DELETE,
 				MetaNamespace: metaNameSpace,
-			}))
+			})
 		}
 	}
 	if request.Operation == idm.UpdateUserMetaNamespaceRequest_PUT {
@@ -217,10 +216,10 @@ func (h *Handler) UpdateUserMetaNamespace(ctx context.Context, request *idm.Upda
 			if err := dao.Add(metaNameSpace); err != nil {
 				return err
 			} else {
-				client.Publish(ctx, client.NewMessage(common.TopicIdmEvent, &idm.ChangeEvent{
+				broker.MustPublish(ctx, common.TopicIdmEvent, &idm.ChangeEvent{
 					Type:          idm.ChangeEventType_CREATE,
 					MetaNamespace: metaNameSpace,
-				}))
+				})
 			}
 			response.Namespaces = append(response.Namespaces, metaNameSpace)
 		}

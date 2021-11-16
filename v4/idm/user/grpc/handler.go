@@ -29,9 +29,6 @@ import (
 	"sync"
 	"time"
 
-	defaults "github.com/pydio/cells/v4/common/micro"
-
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
@@ -39,6 +36,8 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
+	defaults "github.com/pydio/cells/v4/common/micro"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	service "github.com/pydio/cells/v4/common/proto/service"
@@ -155,10 +154,10 @@ func (h *Handler) CreateUser(ctx context.Context, req *idm.CreateUserRequest, re
 
 	if len(createdNodes) == 0 {
 		// Propagate creation event
-		client.Publish(ctx, client.NewMessage(common.TopicIdmEvent, &idm.ChangeEvent{
+		broker.MustPublish(ctx, common.TopicIdmEvent, &idm.ChangeEvent{
 			Type: idm.ChangeEventType_UPDATE,
 			User: out,
-		}))
+		})
 		if out.IsGroup {
 			log.Auditer(ctx).Info(
 				fmt.Sprintf("Updated group [%s]", out.GroupLabel),
@@ -174,10 +173,10 @@ func (h *Handler) CreateUser(ctx context.Context, req *idm.CreateUserRequest, re
 		}
 	} else {
 		// Propagate creation event
-		client.Publish(ctx, client.NewMessage(common.TopicIdmEvent, &idm.ChangeEvent{
+		broker.MustPublish(ctx, common.TopicIdmEvent, &idm.ChangeEvent{
 			Type: idm.ChangeEventType_CREATE,
 			User: out,
-		}))
+		})
 		if out.IsGroup {
 			log.Auditer(ctx).Info(
 				fmt.Sprintf("Created group [%s]", out.GroupPath),
@@ -251,10 +250,10 @@ func (h *Handler) DeleteUser(ctx context.Context, req *idm.DeleteUserRequest, re
 					}
 
 					// Propagate deletion event
-					client.Publish(ctx, client.NewMessage(common.TopicIdmEvent, &idm.ChangeEvent{
+					broker.MustPublish(ctx, common.TopicIdmEvent, &idm.ChangeEvent{
 						Type: idm.ChangeEventType_DELETE,
 						User: deleted,
-					}))
+					})
 					var msg string
 					if deleted.IsGroup {
 						msg = fmt.Sprintf("Deleted group [%s]", path.Join(deleted.GroupPath, deleted.GroupLabel))

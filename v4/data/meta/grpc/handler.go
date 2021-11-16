@@ -26,13 +26,13 @@ import (
 
 	json "github.com/pydio/cells/v4/x/jsonx"
 
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth/claim"
 	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/utils/cache"
@@ -95,10 +95,13 @@ func (s *MetaServer) processEvent(ctx context.Context, e *tree.NodeChangeEvent) 
 		log.Logger(ctx).Debug("Received Create event", zap.Any("event", e))
 
 		// Let's extract the basic information from the tree and store it
-		s.UpdateNode(ctx, &tree.UpdateNodeRequest{
+		er := s.UpdateNode(ctx, &tree.UpdateNodeRequest{
 			To:     e.Target,
 			Silent: e.Silent,
 		}, &tree.UpdateNodeResponse{})
+		if er != nil {
+			log.Logger(ctx).Warn("Error while processing meta event (CREATE)", zap.Error(er))
+		}
 	case tree.NodeChangeEvent_UPDATE_PATH:
 		log.Logger(ctx).Debug("Received Update event", zap.Any("event", e))
 
@@ -108,28 +111,39 @@ func (s *MetaServer) processEvent(ctx context.Context, e *tree.NodeChangeEvent) 
 			Silent: e.Silent,
 		}, &tree.UpdateNodeResponse{}); er == nil {
 			// UpdateNode will trigger an UPDATE_META, forward UPDATE_PATH event as well
-			client.Publish(ctx, client.NewMessage(common.TopicMetaChanges, e))
+			broker.MustPublish(ctx, common.TopicMetaChanges, e)
+		} else {
+			log.Logger(ctx).Warn("Error while processing meta event (UPDATE_PATH)", zap.Error(er))
 		}
 	case tree.NodeChangeEvent_UPDATE_META:
 		log.Logger(ctx).Debug("Received Update meta", zap.Any("event", e))
 
 		// Let's extract the basic information from the tree and store it
-		s.UpdateNode(ctx, &tree.UpdateNodeRequest{
+		er := s.UpdateNode(ctx, &tree.UpdateNodeRequest{
 			To:     e.Target,
 			Silent: e.Silent,
 		}, &tree.UpdateNodeResponse{})
+		if er != nil {
+			log.Logger(ctx).Warn("Error while processing meta event (UPDATE_META)", zap.Error(er))
+		}
+
 	case tree.NodeChangeEvent_UPDATE_CONTENT:
 		// Simply forward to TopicMetaChange
 		log.Logger(ctx).Debug("Received Update content, forwarding to TopicMetaChange", zap.Any("event", e))
-		client.Publish(ctx, client.NewMessage(common.TopicMetaChanges, e))
+		broker.MustPublish(ctx, common.TopicMetaChanges, e)
+
 	case tree.NodeChangeEvent_DELETE:
 		// Lets delete all metadata
 		log.Logger(ctx).Debug("Received Delete content", zap.Any("event", e))
 
-		s.DeleteNode(ctx, &tree.DeleteNodeRequest{
+		er := s.DeleteNode(ctx, &tree.DeleteNodeRequest{
 			Node:   e.Source,
 			Silent: e.Silent,
 		}, &tree.DeleteNodeResponse{})
+		if er != nil {
+			log.Logger(ctx).Warn("Error while processing meta event (DELETE)", zap.Error(er))
+		}
+
 	default:
 		log.Logger(ctx).Debug("Ignoring event type", zap.Any("event", e.GetType()))
 	}
@@ -258,11 +272,11 @@ func (s *MetaServer) CreateNode(ctx context.Context, req *tree.CreateNodeRequest
 
 	resp.Success = true
 
-	client.Publish(ctx, client.NewMessage(common.TopicMetaChanges, &tree.NodeChangeEvent{
+	broker.MustPublish(ctx, common.TopicMetaChanges, &tree.NodeChangeEvent{
 		Type:   tree.NodeChangeEvent_UPDATE_META,
 		Target: req.Node,
 		Silent: req.Silent,
-	}))
+	})
 
 	return nil
 }
@@ -302,11 +316,11 @@ func (s *MetaServer) UpdateNode(ctx context.Context, req *tree.UpdateNodeRequest
 			req.To.MetaStore[k] = v
 		}
 	}
-	client.Publish(ctx, client.NewMessage(common.TopicMetaChanges, &tree.NodeChangeEvent{
+	broker.MustPublish(ctx, common.TopicMetaChanges, &tree.NodeChangeEvent{
 		Type:   tree.NodeChangeEvent_UPDATE_META,
 		Target: req.To,
 		Silent: req.Silent,
-	}))
+	})
 
 	return nil
 }
@@ -330,11 +344,11 @@ func (s *MetaServer) DeleteNode(ctx context.Context, request *tree.DeleteNodeReq
 
 	result.Success = true
 
-	client.Publish(ctx, client.NewMessage(common.TopicMetaChanges, &tree.NodeChangeEvent{
+	broker.MustPublish(ctx, common.TopicMetaChanges, &tree.NodeChangeEvent{
 		Type:   tree.NodeChangeEvent_DELETE,
 		Source: request.Node,
 		Silent: request.Silent,
-	}))
+	})
 
 	return nil
 }

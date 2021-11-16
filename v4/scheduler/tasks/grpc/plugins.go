@@ -31,6 +31,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/jobs/bleveimpl"
 	"github.com/pydio/cells/v4/common/service"
+	"github.com/pydio/cells/v4/scheduler/tasks"
 )
 
 func init() {
@@ -43,12 +44,10 @@ func init() {
 			service.Tag(common.ServiceTagScheduler),
 			service.Description("Tasks are running jobs dispatched on multiple workers"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceJobs, []string{}),
-			service.WithGRPC(func(server *grpc.Server) error {
+			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
 				jobs.RegisterTaskServiceServer(server, new(Handler))
-
-				// Todo v4
-				//multiplexer := tasks.NewSubscriber(m.Options().Context, m.Options().Client, m.Options().Server)
-				//multiplexer.Init()
+				multiplexer := tasks.NewSubscriber(ctx)
+				multiplexer.Init()
 				return nil
 			}),
 		)
