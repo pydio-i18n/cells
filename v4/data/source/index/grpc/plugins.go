@@ -25,11 +25,17 @@ package grpc
 
 import (
 	"context"
+	"fmt"
+	"google.golang.org/grpc"
+	"strings"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/service"
+	"github.com/pydio/cells/v4/common/proto/tree"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/data/source/index"
 )
 
 func init() {
@@ -51,31 +57,29 @@ func init() {
 				service.Fork(true),
 				service.AutoStart(false),
 				service.Unique(true),
-				/*
-					service.WithStorage(index.NewDAO, func(s service.Service) string {
-						// Returning a prefix for the dao
-						return strings.Replace(name, ".", "_", -1)
-					}),
-					service.WithMicro(func(m micro.Service) error {
+				service.WithStorage(index.NewDAO, func(o *service.ServiceOptions) string {
+					// Returning a prefix for the dao
+					return strings.Replace(o.Name, ".", "_", -1)
+				}),
+				service.WithGRPC(func(ctx context.Context, srv *grpc.Server) error {
+					// sourceOpt := server.Options().Metadata["source"]
+					sourceOpt := source
 
-						server := m.Server()
-						sourceOpt := server.Options().Metadata["source"]
-						dsObject, e := config.GetSourceInfoByName(sourceOpt)
-						if e != nil {
-							return fmt.Errorf("cannot find datasource configuration for " + sourceOpt)
-						}
-						engine := NewTreeServer(dsObject)
-						tree.RegisterNodeReceiverHandler(m.Options().Server, engine)
-						tree.RegisterNodeProviderHandler(m.Options().Server, engine)
-						tree.RegisterNodeReceiverStreamHandler(m.Options().Server, engine)
-						tree.RegisterNodeProviderStreamerHandler(m.Options().Server, engine)
-						tree.RegisterSessionIndexerHandler(m.Options().Server, engine)
-						object.RegisterResourceCleanerEndpointHandler(m.Options().Server, engine)
-						sync.RegisterSyncEndpointHandler(m.Options().Server, engine)
+					dsObject, e := config.GetSourceInfoByName(sourceOpt)
+					if e != nil {
+						return fmt.Errorf("cannot find datasource configuration for " + sourceOpt)
+					}
+					engine := NewTreeServer(dsObject, servicecontext.GetDAO(ctx).(index.DAO))
+					tree.RegisterNodeReceiverServer(srv, engine)
+					tree.RegisterNodeProviderServer(srv, engine)
+					tree.RegisterNodeReceiverStreamServer(srv, engine)
+					tree.RegisterNodeProviderStreamerServer(srv, engine)
+					tree.RegisterSessionIndexerServer(srv, engine)
+					//object.RegisterResourceCleanerEndpointHandler(m.Options().Server, engine)
+					//sync.RegisterSyncEndpointHandler(m.Options().Server, engine)
 
-						return nil
-					}),
-				*/
+					return nil
+				}),
 			)
 		}
 	})

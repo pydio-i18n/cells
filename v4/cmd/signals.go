@@ -23,7 +23,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -41,7 +40,6 @@ func handleSignals() {
 
 	go func() {
 		for sig := range c {
-			fmt.Println("Received ", c)
 			switch sig {
 			case syscall.SIGTERM:
 				fallthrough

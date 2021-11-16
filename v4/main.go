@@ -20,6 +20,9 @@ import (
 
 	// Gateways
 	_ "github.com/pydio/cells/v4/gateway/proxy"
+
+	// Datasource
+	_ "github.com/pydio/cells/v4/data/source/index/grpc"
 	//
 	// Gateway Micro (Rest API)
 	// Not running yet, defaults.Registry() nil

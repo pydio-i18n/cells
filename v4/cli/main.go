@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/micro/micro/v3/proto/config"
 	"github.com/micro/micro/v3/proto/registry"
+	"github.com/pydio/cells/v4/common/proto/tree"
 	"google.golang.org/grpc"
 	"log"
 
@@ -17,16 +18,8 @@ func main() {
 		log.Panic("error dialing", err)
 	}
 
+	/*
 	confCli := config.NewConfigClient(c)
-	regCli := registry.NewRegistryClient(c)
-
-	go func() {
-		err := watchRegistry(regCli)
-		if err != nil {
-			log.Panic("Error in watch reg ", err)
-		}
-	}()
-
 	if err := setConfig(confCli); err!= nil {
 		log.Panic(err)
 	}
@@ -35,11 +28,24 @@ func main() {
 		log.Panic(err)
 	}
 
+	regCli := registry.NewRegistryClient(c)
+	go func() {
+		err := watchRegistry(regCli)
+		if err != nil {
+			log.Panic("Error in watch reg ", err)
+		}
+	}()
 	if err := setRegistry(regCli); err!= nil {
 		log.Panic(err)
 	}
 
 	if err := getRegistry(regCli); err!= nil {
+		log.Panic(err)
+	}
+	 */
+
+	nodeProviderCli := tree.NewNodeProviderClient(c)
+	if err := readNode(nodeProviderCli); err != nil {
 		log.Panic(err)
 	}
 }
@@ -118,4 +124,17 @@ func watchRegistry(cli registry.RegistryClient) error {
 
 		fmt.Println(res)
 	}
+}
+
+func readNode(cli tree.NodeProviderClient) error {
+	req := &tree.ReadNodeRequest{}
+
+	resp, err := cli.ReadNode(context.Background(), req)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(resp)
+
+	return nil
 }
