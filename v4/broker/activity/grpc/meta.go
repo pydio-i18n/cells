@@ -21,7 +21,6 @@
 package grpc
 
 import (
-	"context"
 	"strings"
 
 	"github.com/micro/micro/v3/service/context/metadata"
@@ -36,10 +35,11 @@ import (
 )
 
 type MetaProvider struct {
+	tree.UnimplementedNodeProviderStreamerServer
 }
 
-func (m *MetaProvider) ReadNodeStream(ctx context.Context, streamer tree.NodeProviderStreamer_ReadNodeStreamStream) error {
-
+func (m *MetaProvider) ReadNodeStream(streamer tree.NodeProviderStreamer_ReadNodeStreamServer) error {
+	ctx := streamer.Context()
 	dao := servicecontext.GetDAO(ctx).(activity.DAO)
 
 	// Extract current user Id from X-Pydio-User key
@@ -54,7 +54,7 @@ func (m *MetaProvider) ReadNodeStream(ctx context.Context, streamer tree.NodePro
 		}
 	}
 
-	defer streamer.Close()
+	//defer streamer.Close()
 
 	for {
 		request, err := streamer.Recv()

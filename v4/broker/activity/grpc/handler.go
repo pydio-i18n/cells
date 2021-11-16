@@ -41,9 +41,12 @@ import (
 	"github.com/pydio/cells/v4/common/service/context"
 )
 
-type Handler struct{}
+type Handler struct {
+	proto.UnimplementedActivityServiceServer
+}
 
-func (h *Handler) PostActivity(ctx context.Context, stream proto.ActivityService_PostActivityStream) error {
+func (h *Handler) PostActivity(stream proto.ActivityService_PostActivityServer) error {
+	ctx := stream.Context()
 	dao := servicecontext.GetDAO(ctx).(activity.DAO)
 	// defer stream.Close() - TODO V4 ?
 	for {
@@ -69,10 +72,11 @@ func (h *Handler) PostActivity(ctx context.Context, stream proto.ActivityService
 	}
 }
 
-func (h *Handler) StreamActivities(ctx context.Context, request *proto.StreamActivitiesRequest, stream proto.ActivityService_StreamActivitiesStream) error {
+func (h *Handler) StreamActivities(request *proto.StreamActivitiesRequest, stream proto.ActivityService_StreamActivitiesServer) error {
 
+	ctx := stream.Context()
 	dao := servicecontext.GetDAO(ctx).(activity.DAO)
-	defer stream.Close()
+	//defer stream.Close()
 
 	log.Logger(ctx).Debug("Should get activities", zap.Any("r", request))
 	treeStreamer := tree.NewNodeProviderStreamerClient(defaults.NewClientConn(common.ServiceTree))
@@ -145,20 +149,23 @@ func (h *Handler) StreamActivities(ctx context.Context, request *proto.StreamAct
 	return nil
 }
 
-func (h *Handler) Subscribe(ctx context.Context, request *proto.SubscribeRequest, resp *proto.SubscribeResponse) (err error) {
+func (h *Handler) Subscribe(ctx context.Context, request *proto.SubscribeRequest) (*proto.SubscribeResponse, error) {
 
 	dao := servicecontext.GetDAO(ctx).(activity.DAO)
 
-	subscription := request.Subscription
-
-	resp.Subscription = subscription
-	return dao.UpdateSubscription(subscription)
+	if e := dao.UpdateSubscription(request.Subscription); e != nil {
+		return nil, e
+	}
+	return &proto.SubscribeResponse{
+		Subscription: request.Subscription,
+	}, nil
 
 }
 
-func (h *Handler) SearchSubscriptions(ctx context.Context, request *proto.SearchSubscriptionsRequest, stream proto.ActivityService_SearchSubscriptionsStream) error {
+func (h *Handler) SearchSubscriptions(request *proto.SearchSubscriptionsRequest, stream proto.ActivityService_SearchSubscriptionsServer) error {
 
-	defer stream.Close()
+	ctx := stream.Context()
+	//defer stream.Close()
 
 	dao := servicecontext.GetDAO(ctx).(activity.DAO)
 
@@ -188,17 +195,18 @@ func (h *Handler) SearchSubscriptions(ctx context.Context, request *proto.Search
 	return nil
 }
 
-func (h *Handler) UnreadActivitiesNumber(ctx context.Context, request *proto.UnreadActivitiesRequest, response *proto.UnreadActivitiesResponse) error {
+func (h *Handler) UnreadActivitiesNumber(ctx context.Context, request *proto.UnreadActivitiesRequest) (*proto.UnreadActivitiesResponse, error) {
 
 	dao := servicecontext.GetDAO(ctx).(activity.DAO)
 
 	number := dao.CountUnreadForUser(request.UserId)
-	response.Number = int32(number)
+	return &proto.UnreadActivitiesResponse{
+		Number: int32(number),
+	}, nil
 
-	return nil
 }
 
-func (h *Handler) SetUserLastActivity(ctx context.Context, request *proto.UserLastActivityRequest, response *proto.UserLastActivityResponse) error {
+func (h *Handler) SetUserLastActivity(ctx context.Context, request *proto.UserLastActivityRequest) (*proto.UserLastActivityResponse, error) {
 
 	dao := servicecontext.GetDAO(ctx).(activity.DAO)
 
@@ -208,22 +216,21 @@ func (h *Handler) SetUserLastActivity(ctx context.Context, request *proto.UserLa
 	} else if request.BoxName == "lastsent" {
 		boxName = activity.BoxLastSent
 	} else {
-		return fmt.Errorf("Invalid box name")
+		return nil, fmt.Errorf("Invalid box name")
 	}
 
 	if err := dao.StoreLastUserInbox(request.UserId, boxName, nil, request.ActivityId); err == nil {
-		response.Success = true
-		return nil
+		return &proto.UserLastActivityResponse{Success: true}, nil
 	} else {
-		return err
+		return nil, err
 	}
 
 }
 
-func (h *Handler) PurgeActivities(ctx context.Context, request *proto.PurgeActivitiesRequest, response *proto.PurgeActivitiesResponse) error {
+func (h *Handler) PurgeActivities(ctx context.Context, request *proto.PurgeActivitiesRequest) (*proto.PurgeActivitiesResponse, error) {
 
 	if request.BoxName != string(activity.BoxInbox) && request.BoxName != string(activity.BoxOutbox) {
-		return errors.BadRequest("invalid.parameter", "Please provide one of inbox|outbox box name")
+		return nil, errors.BadRequest("invalid.parameter", "Please provide one of inbox|outbox box name")
 	}
 	count := int32(0)
 	logger := func(s string) {
@@ -235,9 +242,11 @@ func (h *Handler) PurgeActivities(ctx context.Context, request *proto.PurgeActiv
 	if request.UpdatedBeforeTimestamp > 0 {
 		updated = time.Unix(int64(request.UpdatedBeforeTimestamp), 0)
 	}
-	dao.Purge(logger, request.OwnerType, request.OwnerID, activity.BoxName(request.BoxName), int(request.MinCount), int(request.MaxCount), updated, request.CompactDB, request.ClearBackups)
-	response.Success = true
-	response.DeletedCount = count
-	return nil
+
+	e := dao.Purge(logger, request.OwnerType, request.OwnerID, activity.BoxName(request.BoxName), int(request.MinCount), int(request.MaxCount), updated, request.CompactDB, request.ClearBackups)
+	return &proto.PurgeActivitiesResponse{
+		Success:      true,
+		DeletedCount: count,
+	}, e
 
 }

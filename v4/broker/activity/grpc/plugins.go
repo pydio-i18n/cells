@@ -27,6 +27,13 @@ package grpc
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/broker/activity"
+	"github.com/pydio/cells/v4/common/micro/broker"
+	proto "github.com/pydio/cells/v4/common/proto/activity"
+	"github.com/pydio/cells/v4/common/proto/tree"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/utils/cache"
+	"google.golang.org/grpc"
 	"time"
 
 	"google.golang.org/protobuf/types/known/anypb"
@@ -63,23 +70,22 @@ func init() {
 					},
 				}),
 				service.WithStorage(activity.NewDAO, "broker_activity"),
-				service.Unique(true),
-				service.WithMicro(func(m micro.Service) error {
-					service.AddMicroMeta(m, meta.ServiceMetaProvider, "stream")
+			*/
+			service.Unique(true),
+			service.WithGRPC(func(c context.Context, srv *grpc.Server) error {
+				// TODO V4
+				//service.AddMicroMeta(m, meta.ServiceMetaProvider, "stream")
 
-					dao := servicecontext.GetDAO(m.Options().Context).(activity.DAO)
-					// Register Subscribers
-					subscriber := NewEventsSubscriber(dao)
-					s := m.Options().Server
-					batcher := cache.NewEventsBatcher(m.Options().Context, 3*time.Second, 20*time.Second, 2000, true, func(ctx context.Context, msg ...*tree.NodeChangeEvent) {
-						subscriber.HandleNodeChange(ctx, msg[0])
-					})
-					m.Init(micro.BeforeStop(func() error {
-						batcher.Stop()
-						return nil
-					}))
-					if err := s.Subscribe(s.NewSubscriber(common.TopicTreeChanges, func(ctx context.Context, msg *tree.NodeChangeEvent) error {
-						// Always ignore events on Temporary nodes and internal nodes
+				dao := servicecontext.GetDAO(c).(activity.DAO)
+				// Register Subscribers
+				subscriber := NewEventsSubscriber(dao)
+				batcher := cache.NewEventsBatcher(c, 3*time.Second, 20*time.Second, 2000, true, func(ctx context.Context, msg ...*tree.NodeChangeEvent) {
+					subscriber.HandleNodeChange(ctx, msg[0])
+				})
+
+				u1, e := broker.Subscribe(common.TopicTreeChanges, func(message broker.Message) error {
+					msg := &tree.NodeChangeEvent{}
+					if ctx, e := message.Unmarshal(msg); e == nil {
 						if msg.Target != nil && (msg.Target.Etag == common.NodeFlagEtagTemporary || msg.Target.HasMetaKey(common.MetaNamespaceDatasourceInternal)) {
 							return nil
 						}
@@ -90,32 +96,59 @@ func init() {
 							return nil
 						}
 						batcher.Events <- &cache.EventWithContext{NodeChangeEvent: msg, Ctx: ctx}
-						return nil
-					})); err != nil {
-						return err
 					}
-					if err := s.Subscribe(s.NewSubscriber(common.TopicMetaChanges, func(ctx context.Context, msg *tree.NodeChangeEvent) error {
+					return nil
+				})
+				if e != nil {
+					return e
+				}
+
+				u2, e := broker.Subscribe(common.TopicMetaChanges, func(message broker.Message) error {
+					msg := &tree.NodeChangeEvent{}
+					if ctx, e := message.Unmarshal(msg); e == nil {
 						if msg.Optimistic || msg.Type != tree.NodeChangeEvent_UPDATE_USER_META {
 							return nil
 						}
 						batcher.Events <- &cache.EventWithContext{NodeChangeEvent: msg, Ctx: ctx}
-						return nil
-					})); err != nil {
-						return err
 					}
-
-					if err := s.Subscribe(s.NewSubscriber(common.TopicIdmEvent, func(ctx context.Context, msg *idm.ChangeEvent) error {
-						return subscriber.HandleIdmChange(ctx, msg)
-					})); err != nil {
-						return err
-					}
-
-					proto.RegisterActivityServiceHandler(m.Options().Server, new(Handler))
-					tree.RegisterNodeProviderStreamerHandler(m.Options().Server, new(MetaProvider))
-
 					return nil
-				}),
-			*/
+				})
+				if e != nil {
+					return e
+				}
+
+				u3, e := broker.Subscribe(common.TopicIdmEvent, func(message broker.Message) error {
+					msg := &idm.ChangeEvent{}
+					if ctx, e := message.Unmarshal(msg); e == nil {
+						return subscriber.HandleIdmChange(ctx, msg)
+					}
+					return nil
+				})
+				if e != nil {
+					return e
+				}
+
+				proto.RegisterActivityServiceServer(srv, new(Handler))
+				tree.RegisterNodeProviderStreamerServer(srv, new(MetaProvider))
+
+				/*
+					m.Init(micro.BeforeStop(func() error {
+						batcher.Stop()
+						return nil
+					}))
+				*/
+
+				go func() {
+					<-c.Done()
+					batcher.Stop()
+					// Unsubscribes
+					_ = u1()
+					_ = u2()
+					_ = u3()
+				}()
+
+				return nil
+			}),
 		)
 	})
 }
