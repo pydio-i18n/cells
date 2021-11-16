@@ -23,10 +23,12 @@ package grpc
 
 import (
 	"context"
-
-	"github.com/pydio/cells/v4/common/plugins"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/micro/broker"
+	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service"
 )
 
@@ -38,18 +40,21 @@ func init() {
 			service.Tag(common.ServiceTagData),
 			service.Description("Encryption Keys server"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceMeta, []string{}),
-			/*
-				service.WithStorage(key.NewDAO, "data_key"),
-				service.WithMicro(func(m micro.Service) error {
-					h := &NodeKeyManagerHandler{}
-					encryption.RegisterNodeKeyManagerHandler(m.Options().Server, h)
-					if err := m.Options().Server.Subscribe(m.Options().Server.NewSubscriber(common.TopicTreeChanges, h.HandleTreeChanges)); err != nil {
-						return err
+
+			//service.WithStorage(key.NewDAO, "data_key"),
+
+			service.WithGRPC(func(src *grpc.Server) error {
+				h := &NodeKeyManagerHandler{}
+				//encryption.RegisterNodeKeyManagerHandler(m.Options().Server, h)
+				broker.Subscribe(common.TopicTreeChanges, func(message broker.Message) error {
+					msg := &tree.NodeChangeEvent{}
+					if ctx, e := message.Unmarshal(msg); e == nil {
+						return h.HandleTreeChanges(ctx, msg)
 					}
 					return nil
-				}),
-
-			*/
+				})
+				return nil
+			}),
 		)
 	})
 }

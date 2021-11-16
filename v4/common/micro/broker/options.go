@@ -20,7 +20,9 @@
 
 package broker
 
-import "context"
+import (
+	"context"
+)
 
 // Options to the broker
 type Options struct {
@@ -55,5 +57,53 @@ type PublishOption func(options *PublishOptions)
 func WithContext(ctx context.Context) PublishOption {
 	return func(options *PublishOptions) {
 		options.Context = ctx
+	}
+}
+
+type SubscribeOptions struct {
+	// Handler executed when errors occur processing messages
+	ErrorHandler func(error)
+
+	// Subscribers with the same queue name
+	// will create a shared subscription where each
+	// receives a subset of messages.
+	Queue string
+
+	// Other options for implementations of the interface
+	// can be stored in a context
+	Context context.Context
+}
+
+type SubscribeOption func(*SubscribeOptions)
+
+func NewSubscribeOptions(opts ...SubscribeOption) SubscribeOptions {
+	opt := SubscribeOptions{}
+
+	for _, o := range opts {
+		o(&opt)
+	}
+
+	return opt
+}
+
+// ErrorHandler will catch all broker errors that cant be handled
+// in normal way, for example Codec errors
+func HandleError(h func(error)) SubscribeOption {
+	return func(o *SubscribeOptions) {
+		o.ErrorHandler = h
+	}
+}
+
+// Queue sets the name of the queue to share messages on
+func Queue(name string) SubscribeOption {
+	return func(o *SubscribeOptions) {
+		o.Queue = name
+	}
+}
+
+// SubscribeContext set context
+func SubscribeContext(ctx context.Context) SubscribeOption {
+	return func(o *SubscribeOptions) {
+		o.Context = ctx
 	}
 }

@@ -38,6 +38,7 @@ import (
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	defaults "github.com/pydio/cells/v4/common/micro"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/object"
@@ -91,20 +92,58 @@ func NewSubscriber(parentContext context.Context, client client.Client, srv serv
 	})
 
 	// Use a "Queue" mechanism to make sure events are distributed across tasks instances
-	opts := func(o *server.SubscriberOptions) {
-		o.Queue = "tasks"
-	}
-	srv.Subscribe(srv.NewSubscriber(common.TopicJobConfigEvent, s.jobsChangeEvent, opts))
-	srv.Subscribe(srv.NewSubscriber(common.TopicTreeChanges, s.nodeEvent, opts))
-	srv.Subscribe(srv.NewSubscriber(common.TopicMetaChanges, func(ctx context.Context, e *tree.NodeChangeEvent) error {
-		if e.Type == tree.NodeChangeEvent_UPDATE_META || e.Type == tree.NodeChangeEvent_UPDATE_USER_META {
-			return s.nodeEvent(ctx, e)
-		} else {
-			return nil
+	opt := broker.Queue("tasks")
+
+	// srv.Subscribe(srv.NewSubscriber(common.TopicJobConfigEvent, s.jobsChangeEvent, opts))
+	broker.Subscribe(common.TopicJobTaskEvent, func(message broker.Message) error {
+		js := &jobs.JobChangeEvent{}
+		if ctx, e := message.Unmarshal(js); e == nil {
+			return s.jobsChangeEvent(ctx, js)
 		}
-	}, opts))
-	srv.Subscribe(srv.NewSubscriber(common.TopicTimerEvent, s.timerEvent, opts))
-	srv.Subscribe(srv.NewSubscriber(common.TopicIdmEvent, s.idmEvent, opts))
+		return nil
+	}, opt)
+
+	//srv.Subscribe(srv.NewSubscriber(common.TopicTreeChanges, s.nodeEvent, opts))
+	broker.Subscribe(common.TopicTreeChanges, func(message broker.Message) error {
+		target := &tree.NodeChangeEvent{}
+		if ctx, e := message.Unmarshal(target); e == nil {
+			return s.nodeEvent(ctx, target)
+		}
+		return nil
+	}, opt)
+
+	//	srv.Subscribe(srv.NewSubscriber(common.TopicMetaChanges, func(ctx context.Context, e *tree.NodeChangeEvent) error {
+	//		if e.Type == tree.NodeChangeEvent_UPDATE_META || e.Type == tree.NodeChangeEvent_UPDATE_USER_META {
+	//			return s.nodeEvent(ctx, e)
+	//		} else {
+	//			return nil
+	//		}
+	//	}, opts))
+	broker.Subscribe(common.TopicMetaChanges, func(message broker.Message) error {
+		target := &tree.NodeChangeEvent{}
+		if ctx, e := message.Unmarshal(target); e == nil && (target.Type == tree.NodeChangeEvent_UPDATE_META || target.Type == tree.NodeChangeEvent_UPDATE_USER_META) {
+			return s.nodeEvent(ctx, target)
+		}
+		return nil
+	}, opt)
+
+	//srv.Subscribe(srv.NewSubscriber(common.TopicTimerEvent, s.timerEvent, opts))
+	broker.Subscribe(common.TopicTimerEvent, func(message broker.Message) error {
+		target := &jobs.JobTriggerEvent{}
+		if ctx, e := message.Unmarshal(target); e == nil {
+			return s.timerEvent(ctx, target)
+		}
+		return nil
+	}, opt)
+
+	// srv.Subscribe(srv.NewSubscriber(common.TopicIdmEvent, s.idmEvent, opts))
+	broker.Subscribe(common.TopicTreeChanges, func(message broker.Message) error {
+		target := &idm.ChangeEvent{}
+		if ctx, e := message.Unmarshal(target); e == nil {
+			return s.idmEvent(ctx, target)
+		}
+		return nil
+	}, opt)
 
 	s.listenToQueue()
 	s.taskChannelSubscription()

@@ -63,9 +63,41 @@ func MustPublish(ctx context.Context, topic string, message interface{}, opts ..
 	}
 }
 
+func Subscribe(topic string, handler SubscriberHandler, opts ...SubscribeOption) (UnSubscriber, error) {
+
+	so := &SubscribeOptions{}
+	for _, o := range opts {
+		o(so)
+	}
+	var mopts []broker.SubscribeOption
+	if so.Context != nil {
+		mopts = append(mopts, broker.SubscribeContext(so.Context))
+	}
+	if so.Queue != "" {
+		mopts = append(mopts, broker.Queue(so.Queue))
+	}
+	if so.ErrorHandler != nil {
+		mopts = append(mopts, broker.HandleError(func(message *broker.Message, err error) {
+			so.ErrorHandler(err)
+		}))
+	}
+
+	sub, er := std.Subscribe(topic, func(message *broker.Message) error {
+		subMsg := &SubMessage{Message: message}
+		return handler(subMsg)
+	}, mopts...)
+	if er != nil {
+		return nil, er
+	}
+	return sub.Unsubscribe, nil
+
+}
+
+/*
 func Subscribe(s string, h broker.Handler, opts ...broker.SubscribeOption) (broker.Subscriber, error) {
 	return std.Subscribe(s, h, opts...)
 }
+*/
 
 // Options wraps standard function
 func (b *brokerwrap) Options() broker.Options {

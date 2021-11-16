@@ -36,7 +36,6 @@ import (
 	"time"
 
 	"github.com/manifoldco/promptui"
-	mbroker "github.com/micro/micro/v3/service/broker"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -393,8 +392,6 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 	// handleSignals()
 	// })
 
-
-
 	// initServices()
 
 	// Installing the JS data
@@ -461,7 +458,7 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 	cmd.Println(promptui.Styler(promptui.BGMagenta, promptui.FGWhite)("Listening to: " + proxyConf.GetBinds()[0]))
 	cmd.Println("")
 
-	subscriber, err := broker.Subscribe(common.TopicProxyRestarted, func(p *mbroker.Message) error {
+	unSubscriber, err := broker.Subscribe(common.TopicProxyRestarted, func(p broker.Message) error {
 
 		url := proxyConf.ReverseProxyURL
 		if url == "" {
@@ -493,7 +490,7 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 
 	}()
 
-	defer subscriber.Unsubscribe()
+	defer unSubscriber()
 
 	select {
 	case <-instanceDone:

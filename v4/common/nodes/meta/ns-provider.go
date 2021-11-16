@@ -25,12 +25,9 @@ import (
 	"strings"
 	"sync"
 
-	mbroker "github.com/micro/micro/v3/service/broker"
-	"github.com/pydio/cells/v4/common/micro/broker"
-	"google.golang.org/protobuf/proto"
-
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/micro"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/tree"
 )
@@ -184,12 +181,11 @@ func (p *NsProvider) Clear() {
 
 // Watch watches idm ChangeEvents to force reload when metadata namespaces are modified
 func (p *NsProvider) Watch() {
-	broker.Subscribe(common.TopicIdmEvent, func(message *mbroker.Message) error {
+	// Todo - Store ref to Subscriber to Unsubscribe on Stop()
+	_, _ = broker.Subscribe(common.TopicIdmEvent, func(message broker.Message) error {
 		var ce idm.ChangeEvent
-		if e := proto.Unmarshal(message.Body, &ce); e == nil {
-			if ce.MetaNamespace != nil {
-				p.Clear()
-			}
+		if _, e := message.Unmarshal(&ce); e == nil && ce.MetaNamespace != nil {
+			p.Clear()
 		}
 		return nil
 	})

@@ -23,12 +23,10 @@ package permissions
 import (
 	"time"
 
-	"google.golang.org/protobuf/proto"
-	"github.com/micro/micro/v3/service/broker"
-	// "github.com/micro/micro/v3/protobuf/proto"
 	"github.com/patrickmn/go-cache"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/idm"
 )
 
@@ -38,10 +36,9 @@ var (
 
 func initAclCache() {
 	aclCache = cache.New(500*time.Millisecond, 30*time.Second)
-	broker.Subscribe(common.TopicIdmEvent, func(message *broker.Message) error {
+	_, _ = broker.Subscribe(common.TopicIdmEvent, func(message broker.Message) error {
 		event := &idm.ChangeEvent{}
-		if e := proto.Unmarshal(message.Body, event); e != nil {
-			//fmt.Println("Cannot unmarshall")
+		if _, e := message.Unmarshal(event); e != nil {
 			return e
 		}
 		switch event.Type {
