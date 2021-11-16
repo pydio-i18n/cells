@@ -32,7 +32,7 @@ func NewAuthTokenRevokerClient(cc grpc.ClientConnInterface) AuthTokenRevokerClie
 
 func (c *authTokenRevokerClient) Revoke(ctx context.Context, in *RevokeTokenRequest, opts ...grpc.CallOption) (*RevokeTokenResponse, error) {
 	out := new(RevokeTokenResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.AuthTokenRevoker/Revoke", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.AuthTokenRevoker/Revoke", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func _AuthTokenRevoker_Revoke_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.AuthTokenRevoker/Revoke",
+		FullMethod: "/auth.AuthTokenRevoker/Revoke",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthTokenRevokerServer).Revoke(ctx, req.(*RevokeTokenRequest))
@@ -90,7 +90,7 @@ func _AuthTokenRevoker_Revoke_Handler(srv interface{}, ctx context.Context, dec 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AuthTokenRevoker_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cells.auth.AuthTokenRevoker",
+	ServiceName: "auth.AuthTokenRevoker",
 	HandlerType: (*AuthTokenRevokerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -99,7 +99,7 @@ var AuthTokenRevoker_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "cellsauth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // AuthTokenPrunerClient is the client API for AuthTokenPruner service.
@@ -120,7 +120,7 @@ func NewAuthTokenPrunerClient(cc grpc.ClientConnInterface) AuthTokenPrunerClient
 
 func (c *authTokenPrunerClient) PruneTokens(ctx context.Context, in *PruneTokensRequest, opts ...grpc.CallOption) (*PruneTokensResponse, error) {
 	out := new(PruneTokensResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.AuthTokenPruner/PruneTokens", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.AuthTokenPruner/PruneTokens", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +166,7 @@ func _AuthTokenPruner_PruneTokens_Handler(srv interface{}, ctx context.Context, 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.AuthTokenPruner/PruneTokens",
+		FullMethod: "/auth.AuthTokenPruner/PruneTokens",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthTokenPrunerServer).PruneTokens(ctx, req.(*PruneTokensRequest))
@@ -178,7 +178,7 @@ func _AuthTokenPruner_PruneTokens_Handler(srv interface{}, ctx context.Context, 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AuthTokenPruner_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cells.auth.AuthTokenPruner",
+	ServiceName: "auth.AuthTokenPruner",
 	HandlerType: (*AuthTokenPrunerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -187,7 +187,7 @@ var AuthTokenPruner_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "cellsauth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // LoginProviderClient is the client API for LoginProvider service.
@@ -209,7 +209,7 @@ func NewLoginProviderClient(cc grpc.ClientConnInterface) LoginProviderClient {
 
 func (c *loginProviderClient) GetLogin(ctx context.Context, in *GetLoginRequest, opts ...grpc.CallOption) (*GetLoginResponse, error) {
 	out := new(GetLoginResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.LoginProvider/GetLogin", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.LoginProvider/GetLogin", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -218,7 +218,7 @@ func (c *loginProviderClient) GetLogin(ctx context.Context, in *GetLoginRequest,
 
 func (c *loginProviderClient) CreateLogin(ctx context.Context, in *CreateLoginRequest, opts ...grpc.CallOption) (*CreateLoginResponse, error) {
 	out := new(CreateLoginResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.LoginProvider/CreateLogin", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.LoginProvider/CreateLogin", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -227,7 +227,7 @@ func (c *loginProviderClient) CreateLogin(ctx context.Context, in *CreateLoginRe
 
 func (c *loginProviderClient) AcceptLogin(ctx context.Context, in *AcceptLoginRequest, opts ...grpc.CallOption) (*AcceptLoginResponse, error) {
 	out := new(AcceptLoginResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.LoginProvider/AcceptLogin", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.LoginProvider/AcceptLogin", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -280,7 +280,7 @@ func _LoginProvider_GetLogin_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.LoginProvider/GetLogin",
+		FullMethod: "/auth.LoginProvider/GetLogin",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LoginProviderServer).GetLogin(ctx, req.(*GetLoginRequest))
@@ -298,7 +298,7 @@ func _LoginProvider_CreateLogin_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.LoginProvider/CreateLogin",
+		FullMethod: "/auth.LoginProvider/CreateLogin",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LoginProviderServer).CreateLogin(ctx, req.(*CreateLoginRequest))
@@ -316,7 +316,7 @@ func _LoginProvider_AcceptLogin_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.LoginProvider/AcceptLogin",
+		FullMethod: "/auth.LoginProvider/AcceptLogin",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LoginProviderServer).AcceptLogin(ctx, req.(*AcceptLoginRequest))
@@ -328,7 +328,7 @@ func _LoginProvider_AcceptLogin_Handler(srv interface{}, ctx context.Context, de
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var LoginProvider_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cells.auth.LoginProvider",
+	ServiceName: "auth.LoginProvider",
 	HandlerType: (*LoginProviderServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -345,7 +345,7 @@ var LoginProvider_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "cellsauth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // ConsentProviderClient is the client API for ConsentProvider service.
@@ -367,7 +367,7 @@ func NewConsentProviderClient(cc grpc.ClientConnInterface) ConsentProviderClient
 
 func (c *consentProviderClient) GetConsent(ctx context.Context, in *GetConsentRequest, opts ...grpc.CallOption) (*GetConsentResponse, error) {
 	out := new(GetConsentResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.ConsentProvider/GetConsent", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.ConsentProvider/GetConsent", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -376,7 +376,7 @@ func (c *consentProviderClient) GetConsent(ctx context.Context, in *GetConsentRe
 
 func (c *consentProviderClient) CreateConsent(ctx context.Context, in *CreateConsentRequest, opts ...grpc.CallOption) (*CreateConsentResponse, error) {
 	out := new(CreateConsentResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.ConsentProvider/CreateConsent", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.ConsentProvider/CreateConsent", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -385,7 +385,7 @@ func (c *consentProviderClient) CreateConsent(ctx context.Context, in *CreateCon
 
 func (c *consentProviderClient) AcceptConsent(ctx context.Context, in *AcceptConsentRequest, opts ...grpc.CallOption) (*AcceptConsentResponse, error) {
 	out := new(AcceptConsentResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.ConsentProvider/AcceptConsent", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.ConsentProvider/AcceptConsent", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -438,7 +438,7 @@ func _ConsentProvider_GetConsent_Handler(srv interface{}, ctx context.Context, d
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.ConsentProvider/GetConsent",
+		FullMethod: "/auth.ConsentProvider/GetConsent",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ConsentProviderServer).GetConsent(ctx, req.(*GetConsentRequest))
@@ -456,7 +456,7 @@ func _ConsentProvider_CreateConsent_Handler(srv interface{}, ctx context.Context
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.ConsentProvider/CreateConsent",
+		FullMethod: "/auth.ConsentProvider/CreateConsent",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ConsentProviderServer).CreateConsent(ctx, req.(*CreateConsentRequest))
@@ -474,7 +474,7 @@ func _ConsentProvider_AcceptConsent_Handler(srv interface{}, ctx context.Context
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.ConsentProvider/AcceptConsent",
+		FullMethod: "/auth.ConsentProvider/AcceptConsent",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ConsentProviderServer).AcceptConsent(ctx, req.(*AcceptConsentRequest))
@@ -486,7 +486,7 @@ func _ConsentProvider_AcceptConsent_Handler(srv interface{}, ctx context.Context
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ConsentProvider_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cells.auth.ConsentProvider",
+	ServiceName: "auth.ConsentProvider",
 	HandlerType: (*ConsentProviderServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -503,7 +503,7 @@ var ConsentProvider_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "cellsauth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // LogoutProviderClient is the client API for LogoutProvider service.
@@ -524,7 +524,7 @@ func NewLogoutProviderClient(cc grpc.ClientConnInterface) LogoutProviderClient {
 
 func (c *logoutProviderClient) CreateLogout(ctx context.Context, in *CreateLogoutRequest, opts ...grpc.CallOption) (*CreateLogoutResponse, error) {
 	out := new(CreateLogoutResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.LogoutProvider/CreateLogout", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.LogoutProvider/CreateLogout", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -533,7 +533,7 @@ func (c *logoutProviderClient) CreateLogout(ctx context.Context, in *CreateLogou
 
 func (c *logoutProviderClient) AcceptLogout(ctx context.Context, in *AcceptLogoutRequest, opts ...grpc.CallOption) (*AcceptLogoutResponse, error) {
 	out := new(AcceptLogoutResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.LogoutProvider/AcceptLogout", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.LogoutProvider/AcceptLogout", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -582,7 +582,7 @@ func _LogoutProvider_CreateLogout_Handler(srv interface{}, ctx context.Context, 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.LogoutProvider/CreateLogout",
+		FullMethod: "/auth.LogoutProvider/CreateLogout",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LogoutProviderServer).CreateLogout(ctx, req.(*CreateLogoutRequest))
@@ -600,7 +600,7 @@ func _LogoutProvider_AcceptLogout_Handler(srv interface{}, ctx context.Context, 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.LogoutProvider/AcceptLogout",
+		FullMethod: "/auth.LogoutProvider/AcceptLogout",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LogoutProviderServer).AcceptLogout(ctx, req.(*AcceptLogoutRequest))
@@ -612,7 +612,7 @@ func _LogoutProvider_AcceptLogout_Handler(srv interface{}, ctx context.Context, 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var LogoutProvider_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cells.auth.LogoutProvider",
+	ServiceName: "auth.LogoutProvider",
 	HandlerType: (*LogoutProviderServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -625,7 +625,7 @@ var LogoutProvider_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "cellsauth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // AuthCodeProviderClient is the client API for AuthCodeProvider service.
@@ -645,7 +645,7 @@ func NewAuthCodeProviderClient(cc grpc.ClientConnInterface) AuthCodeProviderClie
 
 func (c *authCodeProviderClient) CreateAuthCode(ctx context.Context, in *CreateAuthCodeRequest, opts ...grpc.CallOption) (*CreateAuthCodeResponse, error) {
 	out := new(CreateAuthCodeResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.AuthCodeProvider/CreateAuthCode", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.AuthCodeProvider/CreateAuthCode", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -690,7 +690,7 @@ func _AuthCodeProvider_CreateAuthCode_Handler(srv interface{}, ctx context.Conte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.AuthCodeProvider/CreateAuthCode",
+		FullMethod: "/auth.AuthCodeProvider/CreateAuthCode",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthCodeProviderServer).CreateAuthCode(ctx, req.(*CreateAuthCodeRequest))
@@ -702,7 +702,7 @@ func _AuthCodeProvider_CreateAuthCode_Handler(srv interface{}, ctx context.Conte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AuthCodeProvider_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cells.auth.AuthCodeProvider",
+	ServiceName: "auth.AuthCodeProvider",
 	HandlerType: (*AuthCodeProviderServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -711,7 +711,7 @@ var AuthCodeProvider_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "cellsauth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // AuthTokenVerifierClient is the client API for AuthTokenVerifier service.
@@ -732,7 +732,7 @@ func NewAuthTokenVerifierClient(cc grpc.ClientConnInterface) AuthTokenVerifierCl
 
 func (c *authTokenVerifierClient) Verify(ctx context.Context, in *VerifyTokenRequest, opts ...grpc.CallOption) (*VerifyTokenResponse, error) {
 	out := new(VerifyTokenResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.AuthTokenVerifier/Verify", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.AuthTokenVerifier/Verify", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -778,7 +778,7 @@ func _AuthTokenVerifier_Verify_Handler(srv interface{}, ctx context.Context, dec
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.AuthTokenVerifier/Verify",
+		FullMethod: "/auth.AuthTokenVerifier/Verify",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthTokenVerifierServer).Verify(ctx, req.(*VerifyTokenRequest))
@@ -790,7 +790,7 @@ func _AuthTokenVerifier_Verify_Handler(srv interface{}, ctx context.Context, dec
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AuthTokenVerifier_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cells.auth.AuthTokenVerifier",
+	ServiceName: "auth.AuthTokenVerifier",
 	HandlerType: (*AuthTokenVerifierServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -799,7 +799,7 @@ var AuthTokenVerifier_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "cellsauth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // AuthCodeExchangerClient is the client API for AuthCodeExchanger service.
@@ -819,7 +819,7 @@ func NewAuthCodeExchangerClient(cc grpc.ClientConnInterface) AuthCodeExchangerCl
 
 func (c *authCodeExchangerClient) Exchange(ctx context.Context, in *ExchangeRequest, opts ...grpc.CallOption) (*ExchangeResponse, error) {
 	out := new(ExchangeResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.AuthCodeExchanger/Exchange", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.AuthCodeExchanger/Exchange", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -864,7 +864,7 @@ func _AuthCodeExchanger_Exchange_Handler(srv interface{}, ctx context.Context, d
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.AuthCodeExchanger/Exchange",
+		FullMethod: "/auth.AuthCodeExchanger/Exchange",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthCodeExchangerServer).Exchange(ctx, req.(*ExchangeRequest))
@@ -876,7 +876,7 @@ func _AuthCodeExchanger_Exchange_Handler(srv interface{}, ctx context.Context, d
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AuthCodeExchanger_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cells.auth.AuthCodeExchanger",
+	ServiceName: "auth.AuthCodeExchanger",
 	HandlerType: (*AuthCodeExchangerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -885,7 +885,7 @@ var AuthCodeExchanger_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "cellsauth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // PasswordCredentialsTokenClient is the client API for PasswordCredentialsToken service.
@@ -905,7 +905,7 @@ func NewPasswordCredentialsTokenClient(cc grpc.ClientConnInterface) PasswordCred
 
 func (c *passwordCredentialsTokenClient) PasswordCredentialsToken(ctx context.Context, in *PasswordCredentialsTokenRequest, opts ...grpc.CallOption) (*PasswordCredentialsTokenResponse, error) {
 	out := new(PasswordCredentialsTokenResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.PasswordCredentialsToken/PasswordCredentialsToken", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.PasswordCredentialsToken/PasswordCredentialsToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -951,7 +951,7 @@ func _PasswordCredentialsToken_PasswordCredentialsToken_Handler(srv interface{},
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.PasswordCredentialsToken/PasswordCredentialsToken",
+		FullMethod: "/auth.PasswordCredentialsToken/PasswordCredentialsToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PasswordCredentialsTokenServer).PasswordCredentialsToken(ctx, req.(*PasswordCredentialsTokenRequest))
@@ -963,7 +963,7 @@ func _PasswordCredentialsToken_PasswordCredentialsToken_Handler(srv interface{},
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var PasswordCredentialsToken_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cells.auth.PasswordCredentialsToken",
+	ServiceName: "auth.PasswordCredentialsToken",
 	HandlerType: (*PasswordCredentialsTokenServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -972,7 +972,7 @@ var PasswordCredentialsToken_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "cellsauth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // AuthTokenRefresherClient is the client API for AuthTokenRefresher service.
@@ -992,7 +992,7 @@ func NewAuthTokenRefresherClient(cc grpc.ClientConnInterface) AuthTokenRefresher
 
 func (c *authTokenRefresherClient) Refresh(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*RefreshTokenResponse, error) {
 	out := new(RefreshTokenResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.AuthTokenRefresher/Refresh", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.AuthTokenRefresher/Refresh", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1037,7 +1037,7 @@ func _AuthTokenRefresher_Refresh_Handler(srv interface{}, ctx context.Context, d
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.AuthTokenRefresher/Refresh",
+		FullMethod: "/auth.AuthTokenRefresher/Refresh",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthTokenRefresherServer).Refresh(ctx, req.(*RefreshTokenRequest))
@@ -1049,7 +1049,7 @@ func _AuthTokenRefresher_Refresh_Handler(srv interface{}, ctx context.Context, d
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AuthTokenRefresher_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cells.auth.AuthTokenRefresher",
+	ServiceName: "auth.AuthTokenRefresher",
 	HandlerType: (*AuthTokenRefresherServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -1058,7 +1058,7 @@ var AuthTokenRefresher_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "cellsauth.proto",
+	Metadata: "cells-auth.proto",
 }
 
 // PersonalAccessTokenServiceClient is the client API for PersonalAccessTokenService service.
@@ -1080,7 +1080,7 @@ func NewPersonalAccessTokenServiceClient(cc grpc.ClientConnInterface) PersonalAc
 
 func (c *personalAccessTokenServiceClient) Generate(ctx context.Context, in *PatGenerateRequest, opts ...grpc.CallOption) (*PatGenerateResponse, error) {
 	out := new(PatGenerateResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.PersonalAccessTokenService/Generate", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.PersonalAccessTokenService/Generate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1089,7 +1089,7 @@ func (c *personalAccessTokenServiceClient) Generate(ctx context.Context, in *Pat
 
 func (c *personalAccessTokenServiceClient) Revoke(ctx context.Context, in *PatRevokeRequest, opts ...grpc.CallOption) (*PatRevokeResponse, error) {
 	out := new(PatRevokeResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.PersonalAccessTokenService/Revoke", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.PersonalAccessTokenService/Revoke", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1098,7 +1098,7 @@ func (c *personalAccessTokenServiceClient) Revoke(ctx context.Context, in *PatRe
 
 func (c *personalAccessTokenServiceClient) List(ctx context.Context, in *PatListRequest, opts ...grpc.CallOption) (*PatListResponse, error) {
 	out := new(PatListResponse)
-	err := c.cc.Invoke(ctx, "/cells.auth.PersonalAccessTokenService/List", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/auth.PersonalAccessTokenService/List", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1152,7 +1152,7 @@ func _PersonalAccessTokenService_Generate_Handler(srv interface{}, ctx context.C
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.PersonalAccessTokenService/Generate",
+		FullMethod: "/auth.PersonalAccessTokenService/Generate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PersonalAccessTokenServiceServer).Generate(ctx, req.(*PatGenerateRequest))
@@ -1170,7 +1170,7 @@ func _PersonalAccessTokenService_Revoke_Handler(srv interface{}, ctx context.Con
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.PersonalAccessTokenService/Revoke",
+		FullMethod: "/auth.PersonalAccessTokenService/Revoke",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PersonalAccessTokenServiceServer).Revoke(ctx, req.(*PatRevokeRequest))
@@ -1188,7 +1188,7 @@ func _PersonalAccessTokenService_List_Handler(srv interface{}, ctx context.Conte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cells.auth.PersonalAccessTokenService/List",
+		FullMethod: "/auth.PersonalAccessTokenService/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PersonalAccessTokenServiceServer).List(ctx, req.(*PatListRequest))
@@ -1200,7 +1200,7 @@ func _PersonalAccessTokenService_List_Handler(srv interface{}, ctx context.Conte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var PersonalAccessTokenService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cells.auth.PersonalAccessTokenService",
+	ServiceName: "auth.PersonalAccessTokenService",
 	HandlerType: (*PersonalAccessTokenServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -1217,5 +1217,5 @@ var PersonalAccessTokenService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "cellsauth.proto",
+	Metadata: "cells-auth.proto",
 }
