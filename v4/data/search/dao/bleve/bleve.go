@@ -24,6 +24,7 @@ package bleve
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common"
 	"os"
 	"strings"
 	"time"
@@ -96,7 +97,7 @@ type BleveServer struct {
 	deletes chan string
 	done    chan bool
 
-	nsProvider *meta.NamespacesProvider
+	nsProvider *meta.NsProvider
 }
 
 func NewBleveEngine(indexContent bool, configs map[string]interface{}) (*BleveServer, error) {
@@ -469,7 +470,7 @@ func (s *BleveServer) SearchNodes(c context.Context, queryObject *tree.Query, fr
 	searchRequest.AddFacet("Date", dateFacet)
 
 	if s.nsProvider == nil {
-		s.nsProvider = meta.NewNamespacesProvider()
+		s.nsProvider = meta.NewNsProvider()
 	}
 	nss := s.nsProvider.Namespaces()
 	for metaName := range s.nsProvider.IncludedIndexes() {
@@ -556,7 +557,7 @@ func (s *BleveServer) SearchNodes(c context.Context, queryObject *tree.Query, fr
 			node.Path = p.(string)
 		}
 		if b, ok := hit.Fields["Basename"]; ok {
-			node.SetMeta("name", b.(string))
+			node.MustSetMeta(common.MetaNamespaceNodeName, b.(string))
 		}
 		if t, ok := hit.Fields["NodeType"]; ok {
 			if t.(string) == "file" {
@@ -576,7 +577,7 @@ func (s *BleveServer) SearchNodes(c context.Context, queryObject *tree.Query, fr
 		}
 		for k := range hit.Locations {
 			if k == "TextContent" {
-				node.SetMeta("document_content_hit", true)
+				node.MustSetMeta(common.MetaFlagDocumentContentHit, true)
 				contentFacet.Count++
 			} else if k == "Basename" {
 				basenameFacet.Count++

@@ -99,9 +99,9 @@ func TestThumbnailExtractor_Run(t *testing.T) {
 			Type: tree.NodeType_LEAF,
 			Uuid: uuidNode,
 		}
-		node.SetMeta("name", uuidNode+".jpg")
-		node.SetMeta(common.MetaNamespaceDatasourceName, "dsname")
-		node.SetMeta(common.MetaNamespaceNodeTestLocalFolder, tmpDir)
+		node.MustSetMeta(common.MetaNamespaceNodeName, uuidNode+".jpg")
+		node.MustSetMeta(common.MetaNamespaceDatasourceName, "dsname")
+		node.MustSetMeta(common.MetaNamespaceNodeTestLocalFolder, tmpDir)
 
 		status := make(chan string)
 		progress := make(chan float32)

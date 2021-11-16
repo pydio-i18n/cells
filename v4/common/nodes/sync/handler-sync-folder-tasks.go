@@ -95,7 +95,7 @@ func (h *FolderTasksHandler) DeleteNode(ctx context.Context, in *tree.DeleteNode
 			fakeChild := node.Clone()
 			fakeChild.Path = pFile
 			initMetaPath := fakeChild.GetStringMeta(common.MetaNamespaceDatasourcePath)
-			fakeChild.SetMeta(common.MetaNamespaceDatasourcePath, path.Join(initMetaPath, common.PydioSyncHiddenFile))
+			fakeChild.MustSetMeta(common.MetaNamespaceDatasourcePath, path.Join(initMetaPath, common.PydioSyncHiddenFile))
 			_, err = h.Next.DeleteNode(ctx, &tree.DeleteNodeRequest{Node: fakeChild})
 		} else {
 			_, err = h.Next.DeleteNode(ctx, &tree.DeleteNodeRequest{Node: node.Clone()})
@@ -123,7 +123,7 @@ func (h *FolderTasksHandler) UpdateNode(ctx context.Context, in *tree.UpdateNode
 		// Make sure DATASOURCE_NAME is set
 		if source.GetStringMeta(common.MetaNamespaceDatasourceName) == "" {
 			log.Logger(ctx).Info("[FolderTasksHandler] Updating DS name in Source")
-			source.SetMeta(common.MetaNamespaceDatasourceName, f.Name)
+			source.MustSetMeta(common.MetaNamespaceDatasourceName, f.Name)
 		}
 	}
 	go func() {

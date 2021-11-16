@@ -33,27 +33,26 @@ import (
 	"github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	"github.com/pydio/cells/v4/common/registry"
 )
 
-// NamespacesProvider lists all namespaces info from services declared ServiceMetaNsProvider
+// NsProvider lists all namespaces info from services declared ServiceMetaNsProvider
 // It watches events to maintain the list
-type NamespacesProvider struct {
+type NsProvider struct {
 	sync.RWMutex // this handles a lock for the namespaces field
 	namespaces   []*idm.UserMetaNamespace
 	loaded       bool
 	streamers    []tree.NodeProviderStreamer_ReadNodeStreamClient
 }
 
-// NewNamespacesProvider creates a new namespace provider
-func NewNamespacesProvider() *NamespacesProvider {
-	ns := &NamespacesProvider{}
+// NewNsProvider creates a new namespace provider
+func NewNsProvider() *NsProvider {
+	ns := &NsProvider{}
 	ns.Watch()
 	return ns
 }
 
 // Namespaces lists all known usermeta namespaces
-func (p *NamespacesProvider) Namespaces() map[string]*idm.UserMetaNamespace {
+func (p *NsProvider) Namespaces() map[string]*idm.UserMetaNamespace {
 	if !p.loaded {
 		p.Load()
 	}
@@ -67,7 +66,7 @@ func (p *NamespacesProvider) Namespaces() map[string]*idm.UserMetaNamespace {
 }
 
 // ExcludeIndexes lists namespaces that should not be indexed by search engines
-func (p *NamespacesProvider) ExcludeIndexes() map[string]struct{} {
+func (p *NsProvider) ExcludeIndexes() map[string]struct{} {
 	if !p.loaded {
 		p.Load()
 	}
@@ -83,7 +82,7 @@ func (p *NamespacesProvider) ExcludeIndexes() map[string]struct{} {
 }
 
 // IncludedIndexes lists namespaces that should be indexed by search engines
-func (p *NamespacesProvider) IncludedIndexes() map[string]struct{} {
+func (p *NsProvider) IncludedIndexes() map[string]struct{} {
 	if !p.loaded {
 		p.Load()
 	}
@@ -99,16 +98,12 @@ func (p *NamespacesProvider) IncludedIndexes() map[string]struct{} {
 }
 
 // Load finds all services declared as ServiceMetaNsProvider and call them to list the namespaces they declare
-func (p *NamespacesProvider) Load() {
+func (p *NsProvider) Load() {
 	// Other Meta Providers (running services only)
-	var services []registry.Service
-	/*
-		TODO V4
-		services, err := registry.ListServicesWithMicroMeta(ServiceMetaNsProvider, "list")
-		if err != nil {
-			return
-		}
-	*/
+	services, err := servicesWithMeta(ServiceMetaNsProvider, "list")
+	if err != nil {
+		return
+	}
 	defer func() {
 		p.loaded = true
 	}()
@@ -133,26 +128,22 @@ func (p *NamespacesProvider) Load() {
 }
 
 // InitStreamers prepares a set of NodeProviderStreamerClients ready to be requested
-func (p *NamespacesProvider) InitStreamers(ctx context.Context) error {
-	/*
-		TODO V4
-		services, err := registry.ListServicesWithMicroMeta(ServiceMetaNsProvider, "list")
-		if err != nil {
-			return err
+func (p *NsProvider) InitStreamers(ctx context.Context) error {
+	services, err := servicesWithMeta(ServiceMetaNsProvider, "list")
+	if err != nil {
+		return err
+	}
+	for _, srv := range services {
+		c := tree.NewNodeProviderStreamerClient(defaults.NewClientConn(strings.TrimPrefix(srv.Name(), common.ServiceGrpcNamespace_)))
+		if s, e := c.ReadNodeStream(ctx); e == nil {
+			p.streamers = append(p.streamers, s)
 		}
-		for _, srv := range services {
-			c := tree.NewNodeProviderStreamerClient(srv.Name(), defaults.NewClient())
-			if s, e := c.ReadNodeStream(ctx); e == nil {
-				p.streamers = append(p.streamers, s)
-			}
-		}
-
-	*/
+	}
 	return nil
 }
 
 // CloseStreamers closes all prepared streamer clients
-func (p *NamespacesProvider) CloseStreamers() error {
+func (p *NsProvider) CloseStreamers() error {
 	var ers []error
 	for _, s := range p.streamers {
 		if e := s.CloseSend(); e != nil {
@@ -167,7 +158,7 @@ func (p *NamespacesProvider) CloseStreamers() error {
 }
 
 // ReadNode goes through all prepared streamers to collect metadata
-func (p *NamespacesProvider) ReadNode(node *tree.Node) (*tree.Node, error) {
+func (p *NsProvider) ReadNode(node *tree.Node) (*tree.Node, error) {
 	out := node.Clone()
 	if out.MetaStore == nil {
 		out.MetaStore = make(map[string]string)
@@ -184,7 +175,7 @@ func (p *NamespacesProvider) ReadNode(node *tree.Node) (*tree.Node, error) {
 }
 
 // Clear unload cached data to force reload at next call
-func (p *NamespacesProvider) Clear() {
+func (p *NsProvider) Clear() {
 	p.Lock()
 	p.namespaces = nil
 	p.loaded = false
@@ -192,7 +183,7 @@ func (p *NamespacesProvider) Clear() {
 }
 
 // Watch watches idm ChangeEvents to force reload when metadata namespaces are modified
-func (p *NamespacesProvider) Watch() {
+func (p *NsProvider) Watch() {
 	broker.Subscribe(common.TopicIdmEvent, func(message *mbroker.Message) error {
 		var ce idm.ChangeEvent
 		if e := proto.Unmarshal(message.Body, &ce); e == nil {

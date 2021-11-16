@@ -21,6 +21,7 @@
 package tree
 
 import (
+	"github.com/pydio/cells/v4/common"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -166,7 +167,7 @@ func (i *IndexableNode) MemLoad() {
 	i.Meta = i.AllMetaDeserialized(nil)
 	i.ModifTime = time.Unix(i.MTime, 0)
 	var basename string
-	i.GetMeta("name", &basename)
+	i.GetMeta(common.MetaNamespaceNodeName, &basename)
 	i.Basename = basename
 	if i.Type == 1 {
 		i.NodeType = "file"
@@ -174,7 +175,7 @@ func (i *IndexableNode) MemLoad() {
 	} else {
 		i.NodeType = "folder"
 	}
-	i.GetMeta("GeoLocation", &i.GeoPoint)
+	i.GetMeta(common.MetaNamespaceGeoLocation, &i.GeoPoint)
 	i.MetaStore = nil
 }
 

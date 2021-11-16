@@ -62,11 +62,8 @@ func UpgradeTo120(ctx context.Context) error {
 			nodeUuid := strings.TrimPrefix(wsPath, "uuid:")
 			std.Retry(ctx, func() error {
 				log.Logger(ctx).Info("Loading metadata for node to check if it's a CellNode root")
-				if r, e := metaClient.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Uuid: nodeUuid}}); e == nil {
-					var cellNode bool
-					if er := r.Node.GetMeta("CellNode", &cellNode); er == nil && cellNode {
-						addRecycleAcl = true
-					}
+				if r, e := metaClient.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Uuid: nodeUuid}}); e == nil && r.Node.GetMetaBool(common.MetaFlagCellNode) {
+					addRecycleAcl = true
 				}
 				return nil
 			}, 4*time.Second)

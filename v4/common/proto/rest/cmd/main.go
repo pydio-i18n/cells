@@ -30,9 +30,11 @@ import (
 )
 
 var (
-	base     = filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "pydio", "cells", "v4", "common", "proto", "rest")
-	template = `package rest
-var SwaggerJson = ` + "`%s`"
+	base = filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "pydio", "cells", "v4", "common", "proto", "rest")
+	/*
+		template = `package rest
+	var SwaggerJson = ` + "`%s`"
+	*/
 	replaces = map[string]string{
 		`          "default": {
             "description": "An unexpected error response.",
@@ -99,24 +101,26 @@ var SwaggerJson = ` + "`%s`"
 )
 
 func main() {
-	if content, err := ioutil.ReadFile(filepath.Join(base, "rest.swagger.json")); err == nil {
+	if content, err := ioutil.ReadFile(filepath.Join(base, "cellsapi-rest.swagger.json")); err == nil {
 		fmt.Println("** Monkey Patching json file with error responses")
 		c1 := string(content)
 		for k, v := range replaces {
 			c1 = strings.ReplaceAll(c1, k, v)
 		}
 		content = []byte(c1)
-		ioutil.WriteFile(filepath.Join(base, "rest.swagger.json"), []byte(c1), 0777)
+		ioutil.WriteFile(filepath.Join(base, "cellsapi-rest.swagger.json"), []byte(c1), 0777)
 
-		fmt.Println("** Transforming json file to go file")
-		clean := strings.Replace(string(content), "`", "", -1)
-		toStore := fmt.Sprintf(template, clean)
-		err2 := ioutil.WriteFile(filepath.Join(base, "swagger.go"), []byte(toStore), 0777)
-		if err2 == nil {
-			fmt.Println("File swagger.go was written")
-		} else {
-			fmt.Println("Cannot write target file" + err2.Error())
-		}
+		/*
+			fmt.Println("** Transforming json file to go file")
+			clean := strings.Replace(string(content), "`", "", -1)
+			toStore := fmt.Sprintf(template, clean)
+			err2 := ioutil.WriteFile(filepath.Join(base, "swagger.go"), []byte(toStore), 0777)
+			if err2 == nil {
+				fmt.Println("File swagger.go was written")
+			} else {
+				fmt.Println("Cannot write target file" + err2.Error())
+			}
+		*/
 	} else {
 		fmt.Println("Cannot read original file" + err.Error())
 	}

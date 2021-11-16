@@ -124,7 +124,7 @@ func (a *Handler) GetObject(ctx context.Context, node *tree.Node, requestData *m
 			// Send a ReadNodeRequest.ObjectStats on folder to check for specific download permission
 			if _, e := a.Next.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{
 				Path:      testFolder,
-				MetaStore: map[string]string{"acl-check-download": "true"},
+				MetaStore: map[string]string{nodes.MetaAclCheckDownload: "true"},
 			}}); e != nil {
 				return nil, e
 			}
@@ -166,7 +166,7 @@ func (a *Handler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts .
 			if statNode.Size == 0 {
 				statNode.Size = -1
 			}
-			statNode.SetMeta(common.MetaNamespaceNodeName, path.Base(statNode.Path))
+			statNode.MustSetMeta(common.MetaNamespaceNodeName, path.Base(statNode.Path))
 		}
 		return &tree.ReadNodeResponse{Node: statNode}, err
 	}
@@ -294,7 +294,7 @@ func (a *Handler) archiveFakeStat(ctx context.Context, nodePath string) (node *t
 			n.Node.Type = tree.NodeType_LEAF
 			n.Node.Path = nodePath
 			n.Node.Size = -1 // This will avoid a Content-Length discrepancy
-			n.Node.SetMeta(common.MetaNamespaceNodeName, path.Base(nodePath))
+			n.Node.MustSetMeta(common.MetaNamespaceNodeName, path.Base(nodePath))
 			log.Logger(ctx).Debug("This is a zip, sending folder info instead", zap.Any("node", n.Node))
 			return n.Node, nil
 		}

@@ -149,6 +149,10 @@ const (
 	MetaNamespaceRecycleRestore      = "pydio:recycle_restore"
 	MetaNamespaceNodeName            = "name"
 	MetaNamespaceMime                = "mime"
+	MetaNamespaceVersionId           = "versionId"
+	MetaNamespaceVersionDesc         = "versionDescription"
+	MetaNamespaceGeoLocation         = "GeoLocation"
+	MetaNamespaceContents            = "Contents"
 	RecycleBinName                   = "recycle_bin"
 
 	PydioThumbstoreNamespace       = "pydio-thumbstore"
@@ -199,6 +203,18 @@ const (
 	MetaFlagVirtualRoot          = "virtual_root"
 	MetaFlagBucket               = "ds_bucket"
 	NodeFlagEtagTemporary        = "temporary"
+	MetaFlagCellNode             = "CellNode"
+	MetaFlagChildrenCount        = "ChildrenCount"
+	MetaFlagChildrenFolders      = "ChildrenFolders"
+	MetaFlagChildrenFiles        = "ChildrenFiles"
+	MetaFlagWorkspaceSkipRecycle = "ws_skip_recycle"
+	MetaFlagContentLock          = "content_lock"
+	MetaFlagWorkspacesShares     = "workspaces_shares"
+	MetaFlagUserSubscriptions    = "user_subscriptions"
+	MetaFlagDocumentContentHit   = "document_content_hit"
+	MetaFlagWorkspaceRepoId      = "repository_id"
+	MetaFlagWorkspaceRepoDisplay = "repository_display"
+	MetaFlagWorkspaceEventId     = "EventWorkspaceId"
 )
 
 var (

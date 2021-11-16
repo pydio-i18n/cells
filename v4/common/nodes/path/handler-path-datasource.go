@@ -82,7 +82,7 @@ func (v *DataSourceHandler) updateInputBranch(ctx context.Context, node *tree.No
 			log.Logger(ctx).Debug("updateInput", zap.Any("source", source))
 			if len(parts) > 1 {
 				dsPath := strings.Join(parts[1:], "/")
-				out.SetMeta(common.MetaNamespaceDatasourcePath, dsPath)
+				out.MustSetMeta(common.MetaNamespaceDatasourcePath, dsPath)
 			}
 			if source.ObjectsBucket == "" {
 				parts := strings.Split(strings.Trim(node.Path, "/"), "/")
@@ -90,7 +90,7 @@ func (v *DataSourceHandler) updateInputBranch(ctx context.Context, node *tree.No
 					// Read bucket name from second segment
 					source = nodes.WithBucketName(source, parts[1])
 					// Remove from datasource_path
-					out.SetMeta(common.MetaNamespaceDatasourcePath, strings.Join(parts[2:], "/"))
+					out.MustSetMeta(common.MetaNamespaceDatasourcePath, strings.Join(parts[2:], "/"))
 				}
 			}
 			branchInfo.LoadedSource = source
@@ -115,7 +115,7 @@ func (v *DataSourceHandler) updateInputBranch(ctx context.Context, node *tree.No
 				// Read bucket name from second segment
 				source = nodes.WithBucketName(source, parts[1])
 				// Remove from datasource_path
-				out.SetMeta(common.MetaNamespaceDatasourcePath, strings.Join(parts[2:], "/"))
+				out.MustSetMeta(common.MetaNamespaceDatasourcePath, strings.Join(parts[2:], "/"))
 			}
 		}
 		branchInfo.LoadedSource = source
@@ -147,12 +147,12 @@ func (v *DataSourceHandler) updateOutputNode(ctx context.Context, node *tree.Nod
 		if sLen == 1 {
 			// The root of the datasource is at the bucket level, set flag readonly
 			n := node.Clone()
-			n.SetMeta(common.MetaFlagLevelReadonly, "true")
+			n.MustSetMeta(common.MetaFlagLevelReadonly, "true")
 			return ctx, n, nil
 		} else if sLen == 2 {
 			// Set a specific flag that can adapt the display
 			n := node.Clone()
-			n.SetMeta(common.MetaFlagBucket, "true")
+			n.MustSetMeta(common.MetaFlagBucket, "true")
 			return ctx, n, nil
 		}
 	}

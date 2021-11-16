@@ -115,7 +115,7 @@ func fromPydioNodeObjectInfo(bucket string, node *tree.Node) minio.ObjectInfo {
 	userDefined := map[string]string{
 		"Content-Type": cType,
 	}
-	vId := node.GetStringMeta("versionId")
+	vId := node.GetStringMeta(common.MetaNamespaceVersionId)
 
 	nodePath := node.Path
 	if node.Type == tree.NodeType_COLLECTION {
@@ -305,7 +305,7 @@ func (l *pydioObjects) GetObjectInfo(ctx context.Context, bucket string, object 
 		Path: path,
 	}
 	if opts.VersionID != "" {
-		node.SetMeta("versionId", opts.VersionID)
+		node.MustSetMeta(common.MetaNamespaceVersionId, opts.VersionID)
 	}
 	readNodeResponse, err := l.Router.ReadNode(ctx, &tree.ReadNodeRequest{Node: node})
 	if err != nil {

@@ -297,7 +297,7 @@ func userToNode(u *idm.User) *tree.Node {
 			n.Etag = hasher.CreateHash(u.Password)
 		}
 	}
-	n.SetMeta("name", u.Login)
+	n.MustSetMeta(common.MetaNamespaceNodeName, u.Login)
 	return n
 
 }

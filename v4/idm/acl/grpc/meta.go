@@ -80,7 +80,7 @@ func (h *Handler) ReadNodeStream(ctx context.Context, stream tree.NodeProviderSt
 		}
 
 		if contentLock != "" {
-			node.SetMeta("content_lock", contentLock)
+			node.MustSetMeta(common.MetaFlagContentLock, contentLock)
 		}
 
 		var shares []*idm.Workspace
@@ -117,7 +117,7 @@ func (h *Handler) ReadNodeStream(ctx context.Context, stream tree.NodeProviderSt
 		}
 
 		if len(shares) > 0 {
-			node.SetMeta("workspaces_shares", shares)
+			node.MustSetMeta(common.MetaFlagWorkspacesShares, shares)
 		}
 
 		stream.Send(&tree.ReadNodeResponse{Node: node})

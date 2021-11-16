@@ -157,7 +157,7 @@ func (s *MetaServer) ReadNode(ctx context.Context, req *tree.ReadNodeRequest, re
 					}
 					var metaValue interface{}
 					json.Unmarshal([]byte(v), &metaValue)
-					respNode.SetMeta(k, metaValue)
+					respNode.MustSetMeta(k, metaValue)
 				}
 				resp.Node = respNode
 				return nil
@@ -188,7 +188,7 @@ func (s *MetaServer) ReadNode(ctx context.Context, req *tree.ReadNodeRequest, re
 	for k, v := range metadata {
 		var metaValue interface{}
 		json.Unmarshal([]byte(v), &metaValue)
-		respNode.SetMeta(k, metaValue)
+		respNode.MustSetMeta(k, metaValue)
 	}
 	resp.Node = respNode
 

@@ -98,8 +98,8 @@ func (v *Handler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts
 				vNode.Etag = string(vResp.Version.Data)
 				vNode.MTime = vResp.Version.MTime
 				vNode.Size = vResp.Version.Size
-				vNode.SetMeta("versionId", vResp.Version.Uuid)
-				vNode.SetMeta("versionDescription", vResp.Version.Description)
+				vNode.MustSetMeta(common.MetaNamespaceVersionId, vResp.Version.Uuid)
+				vNode.MustSetMeta(common.MetaNamespaceVersionDesc, vResp.Version.Description)
 				streamer.Send(&tree.ListNodesResponse{
 					Node: vNode,
 				})
@@ -116,7 +116,7 @@ func (v *Handler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts
 // ReadNode retrieves information about a specific version
 func (v *Handler) ReadNode(ctx context.Context, req *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 
-	if vId := req.Node.GetStringMeta("versionId"); vId != "" {
+	if vId := req.Node.GetStringMeta(common.MetaNamespaceVersionId); vId != "" {
 		// Load Info from Version Service?
 		log.Logger(ctx).Debug("Reading Node with Version ID", zap.String("versionId", vId))
 		node := req.Node

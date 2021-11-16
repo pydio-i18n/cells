@@ -164,7 +164,7 @@ func (h *Handler) GetBulkMeta(req *restful.Request, resp *restful.Response) {
 
 	for _, folderNode := range folderNodes {
 		var childrenCount, total, childrenLoaded int32
-		if e := folderNode.GetMeta("ChildrenCount", &childrenCount); e == nil && childrenCount > 0 {
+		if e := folderNode.GetMeta(common.MetaFlagChildrenCount, &childrenCount); e == nil && childrenCount > 0 {
 			total = childrenCount
 		}
 		streamer, err := h.GetRouter().ListNodes(ctx, &tree.ListNodesRequest{
@@ -276,7 +276,7 @@ func (h *Handler) SetMeta(req *restful.Request, resp *restful.Response) {
 		var mm map[string]interface{}
 		e := json.Unmarshal([]byte(m.JsonMeta), &mm)
 		if e == nil {
-			node.SetMeta(ns, mm)
+			node.MustSetMeta(ns, mm)
 		}
 	}
 	ctx := req.Request.Context()
@@ -314,7 +314,7 @@ func (h *Handler) DeleteMeta(req *restful.Request, resp *restful.Response) {
 		return
 	}
 	for _, ns := range nsRequest.Namespace {
-		node.SetMeta(ns, "")
+		node.MustSetMeta(ns, "")
 	}
 
 	ctx := req.Request.Context()

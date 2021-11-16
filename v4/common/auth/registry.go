@@ -27,15 +27,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/jmoiron/sqlx"
 	"github.com/ory/fosite"
 	"github.com/ory/hydra/client"
-	"github.com/ory/hydra/consent"
 	"github.com/ory/hydra/driver"
-	"github.com/ory/hydra/jwk"
-	"github.com/ory/hydra/oauth2"
-	"github.com/ory/hydra/x"
-	"github.com/ory/x/logrusx"
 	"github.com/ory/x/sqlcon"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -58,55 +52,58 @@ var (
 )
 
 func InitRegistry(dao sql.DAO) {
-	once.Do(func() {
+	/*
+		// TODO V4
+			once.Do(func() {
 
-		db := sqlx.NewDb(dao.DB(), dao.Driver())
-		l := logrusx.New("oauth", "1", logrusx.ForceLevel(logrus.PanicLevel))
-		//l.SetLevel(logrus.PanicLevel)
+				db := sqlx.NewDb(dao.DB(), dao.Driver())
+				l := logrusx.New("oauth", "1", logrusx.ForceLevel(logrus.PanicLevel))
+				//l.SetLevel(logrus.PanicLevel)
 
-		reg = driver.NewRegistrySQL().WithConfig(defaultConf.GetProvider()).WithLogger(l)
-		r := reg.(*driver.RegistrySQL).WithDB(db)
-		if err := r.Init(); err != nil {
-			log.Error("Error registering oauth registry", zap.Error(err))
-		}
+				reg = driver.NewRegistrySQL().WithConfig(defaultConf.GetProvider()).WithLogger(l)
+				r := reg.(*driver.RegistrySQL).WithDB(db)
+				if err := r.Init(); err != nil {
+					log.Error("Error registering oauth registry", zap.Error(err))
+				}
 
-		sql.LockMigratePackage()
-		defer func() {
-			sql.UnlockMigratePackage()
-		}()
-		if _, err := r.ClientManager().(*client.SQLManager).CreateSchemas(dao.Driver()); err != nil {
-			log.Warn("Failed to create client schemas", zap.Error(err))
-			return
-		}
+				sql.LockMigratePackage()
+				defer func() {
+					sql.UnlockMigratePackage()
+				}()
+				if _, err := r.ClientManager().(*client.SQLManager).CreateSchemas(dao.Driver()); err != nil {
+					log.Warn("Failed to create client schemas", zap.Error(err))
+					return
+				}
 
-		km := r.KeyManager().(*jwk.SQLManager)
-		if _, err := km.CreateSchemas(dao.Driver()); err != nil {
-			log.Warn("Failed to create key schemas", zap.Error(err))
-			return
-		} else {
-			if err := jwk.EnsureAsymmetricKeypairExists(context.Background(), r, new(jwk.RS256Generator), x.OpenIDConnectKeyName); err != nil {
-				log.Info("Could not ensure key exists, deleting...", zap.String("key", x.OpenIDConnectKeyName))
-				km.DeleteKeySet(context.Background(), x.OpenIDConnectKeyName)
-			}
+				km := r.KeyManager().(*jwk.SQLManager)
+				if _, err := km.CreateSchemas(dao.Driver()); err != nil {
+					log.Warn("Failed to create key schemas", zap.Error(err))
+					return
+				} else {
+					if err := jwk.EnsureAsymmetricKeypairExists(context.Background(), r, new(jwk.RS256Generator), x.OpenIDConnectKeyName); err != nil {
+						log.Info("Could not ensure key exists, deleting...", zap.String("key", x.OpenIDConnectKeyName))
+						km.DeleteKeySet(context.Background(), x.OpenIDConnectKeyName)
+					}
 
-			if err := jwk.EnsureAsymmetricKeypairExists(context.Background(), r, new(jwk.RS256Generator), x.OAuth2JWTKeyName); err != nil {
-				log.Info("Could not ensure key exists, deleting...", zap.String("key", x.OAuth2JWTKeyName))
-				km.DeleteKeySet(context.Background(), x.OAuth2JWTKeyName)
-			}
-		}
+					if err := jwk.EnsureAsymmetricKeypairExists(context.Background(), r, new(jwk.RS256Generator), x.OAuth2JWTKeyName); err != nil {
+						log.Info("Could not ensure key exists, deleting...", zap.String("key", x.OAuth2JWTKeyName))
+						km.DeleteKeySet(context.Background(), x.OAuth2JWTKeyName)
+					}
+				}
 
-		if _, err := r.ConsentManager().(*consent.SQLManager).CreateSchemas(dao.Driver()); err != nil {
-			log.Warn("Failed to create consent schemas", zap.Error(err))
-			return
-		}
+				if _, err := r.ConsentManager().(*consent.SQLManager).CreateSchemas(dao.Driver()); err != nil {
+					log.Warn("Failed to create consent schemas", zap.Error(err))
+					return
+				}
 
-		store := oauth2.NewFositeSQLStore(db, r, defaultConf)
-		if _, err := store.CreateSchemas(dao.Driver()); err != nil {
-			log.Warn("Failed to create fosite sql store schemas", zap.Error(err))
-		}
+				store := oauth2.NewFositeSQLStore(db, r, defaultConf)
+				if _, err := store.CreateSchemas(dao.Driver()); err != nil {
+					log.Warn("Failed to create fosite sql store schemas", zap.Error(err))
+				}
 
-		RegisterOryProvider(r.OAuth2Provider())
-	})
+				RegisterOryProvider(r.OAuth2Provider())
+			})
+	*/
 
 	if err := syncClients(context.Background(), reg.ClientManager(), defaultConf.Clients()); err != nil {
 		log.Warn("Failed to sync clients", zap.Error(err))
@@ -129,7 +126,7 @@ func GetRegistry() driver.Registry {
 func DuplicateRegistryForConf(c ConfigurationProvider) driver.Registry {
 	l := logrus.New()
 	l.SetLevel(logrus.PanicLevel)
-	return driver.NewRegistrySQL().WithConfig(c).WithLogger(l)
+	return driver.NewRegistrySQL() //TODO V4 .WithConfig(c).WithLogger(l)
 }
 
 func GetRegistrySQL() *driver.RegistrySQL {
@@ -186,7 +183,8 @@ func syncClients(ctx context.Context, s client.Storage, c common.Scanner) error 
 			}
 		}
 
-		delete(old, cli.GetID())
+		//TODO V4
+		//delete(old, cli.GetID())
 	}
 
 	for _, cli := range old {

@@ -105,7 +105,7 @@ func (m *Handler) getOrCreatePutNode(ctx context.Context, nodePath string, reque
 	}
 
 	if requestData.MetaContentType() != "" {
-		tmpNode.SetMeta(common.MetaNamespaceMime, requestData.MetaContentType())
+		tmpNode.MustSetMeta(common.MetaNamespaceMime, requestData.MetaContentType())
 	}
 
 	log.Logger(ctx).Debug("[PUT HANDLER] > Create Node", zap.String("UUID", tmpNode.Uuid), zap.String("Path", tmpNode.Path))
@@ -137,7 +137,7 @@ func (m *Handler) createParentIfNotExist(ctx context.Context, node *tree.Node) e
 	if parentNode.Path == "/" || parentNode.Path == "" || parentNode.Path == "." {
 		return nil
 	}
-	parentNode.SetMeta(common.MetaNamespaceDatasourcePath, path.Dir(parentNode.GetStringMeta(common.MetaNamespaceDatasourcePath)))
+	parentNode.MustSetMeta(common.MetaNamespaceDatasourcePath, path.Dir(parentNode.GetStringMeta(common.MetaNamespaceDatasourcePath)))
 	parentNode.Type = tree.NodeType_COLLECTION
 	if _, e := m.Next.ReadNode(ctx, &tree.ReadNodeRequest{Node: parentNode}); e != nil {
 		if er := m.createParentIfNotExist(ctx, parentNode); er != nil {

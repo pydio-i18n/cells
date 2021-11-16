@@ -133,7 +133,7 @@ func WrapReaderForMime(ctx context.Context, clone *tree.Node, reader io.Reader) 
 		if result.GetError() == nil && result.GetMime() != "" {
 			// Store in metadata service
 			clone.MetaStore = make(map[string]string, 1)
-			clone.SetMeta(common.MetaNamespaceMime, result.GetMime())
+			clone.MustSetMeta(common.MetaNamespaceMime, result.GetMime())
 			if _, e := mimeMetaClient.CreateNode(bgCtx, &tree.CreateNodeRequest{
 				Node:           clone,
 				UpdateIfExists: true,

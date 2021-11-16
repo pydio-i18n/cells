@@ -140,7 +140,7 @@ func (s *TreeServer) updateDataSourceNode(node *tree.Node, dataSourceName string
 	newPath := dataSourceName + "/" + dsPath
 
 	node.Path = newPath
-	node.SetMeta(common.MetaNamespaceDatasourcePath, dsPath)
+	node.MustSetMeta(common.MetaNamespaceDatasourcePath, dsPath)
 	if node.Uuid == "ROOT" {
 		node.Uuid = "DATASOURCE:" + dataSourceName
 	}
@@ -379,7 +379,7 @@ func (s *TreeServer) ListNodesWithLimit(ctx context.Context, metaStreamer meta.L
 				Uuid: "DATASOURCE:" + name,
 				Path: name,
 			}
-			outputNode.SetMeta("name", name)
+			outputNode.MustSetMeta(common.MetaNamespaceNodeName, name)
 			if size, er := s.dsSize(ctx, s.DataSources[name]); er == nil {
 				outputNode.Size = size
 			} else {

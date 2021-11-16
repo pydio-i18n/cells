@@ -64,9 +64,9 @@ func NewPathMultipleRootsHandler() *MultipleRootsHandler {
 func (m *MultipleRootsHandler) setWorkspaceRootFlag(ws *idm.Workspace, node *tree.Node) *tree.Node {
 	if strings.Trim(node.Path, "/") == "" {
 		out := node.Clone()
-		out.SetMeta(common.MetaFlagWorkspaceRoot, "true")
+		out.MustSetMeta(common.MetaFlagWorkspaceRoot, "true")
 		if attributes := ws.LoadAttributes(); attributes.SkipRecycle {
-			out.SetMeta("ws_skip_recycle", "true")
+			out.MustSetMeta(common.MetaFlagWorkspaceSkipRecycle, "true")
 		}
 		return out
 	} else {
@@ -122,10 +122,10 @@ func (m *MultipleRootsHandler) updateOutputBranch(ctx context.Context, node *tre
 	out := node.Clone()
 	if set && branch.UUID != "ROOT" {
 		if branch.EncryptionMode != object.EncryptionMode_CLEAR {
-			out.SetMeta(common.MetaFlagEncrypted, "true")
+			out.MustSetMeta(common.MetaFlagEncrypted, "true")
 		}
 		if branch.VersioningPolicyName != "" {
-			out.SetMeta(common.MetaFlagVersioning, "true")
+			out.MustSetMeta(common.MetaFlagVersioning, "true")
 		}
 	}
 	if !set || branch.UUID == "ROOT" || len(branch.RootUUIDs) < 2 {
@@ -173,9 +173,9 @@ func (m *MultipleRootsHandler) ListNodes(ctx context.Context, in *tree.ListNodes
 				node = t.Node
 				node.Path = rKey
 				if strings.HasPrefix(node.GetUuid(), "DATASOURCE:") {
-					node.SetMeta(common.MetaNamespaceNodeName, strings.TrimPrefix(node.GetUuid(), "DATASOURCE:"))
+					node.MustSetMeta(common.MetaNamespaceNodeName, strings.TrimPrefix(node.GetUuid(), "DATASOURCE:"))
 				}
-				node.SetMeta(common.MetaFlagWorkspaceRoot, "true")
+				node.MustSetMeta(common.MetaFlagWorkspaceRoot, "true")
 				log.Logger(ctx).Debug("[Multiple Root] Sending back node", node.Zap())
 				streamer.Send(&tree.ListNodesResponse{Node: node})
 			}
@@ -212,10 +212,10 @@ func (m *MultipleRootsHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRe
 				fakeNode.MTime = node.MTime
 			}
 		}
-		fakeNode.SetMeta(common.MetaNamespaceNodeName, branch.Workspace.Label)
-		fakeNode.SetMeta(common.MetaFlagVirtualRoot, "true")
+		fakeNode.MustSetMeta(common.MetaNamespaceNodeName, branch.Workspace.Label)
+		fakeNode.MustSetMeta(common.MetaFlagVirtualRoot, "true")
 		if branch.Workspace.Scope != idm.WorkspaceScope_LINK {
-			fakeNode.SetMeta(common.MetaFlagLevelReadonly, "true")
+			fakeNode.MustSetMeta(common.MetaFlagLevelReadonly, "true")
 		}
 		return &tree.ReadNodeResponse{Success: true, Node: fakeNode}, nil
 	}

@@ -671,10 +671,10 @@ func (c *FSClient) loadNodeExtendedStats(ctx context.Context, node *tree.Node) e
 	}
 	if totalSize > 0 {
 		node.Size = totalSize
-		node.SetMeta("RecursiveChildrenSize", totalSize)
+		node.MustSetMeta(model.MetaRecursiveChildrenSize, totalSize)
 	}
-	node.SetMeta("RecursiveChildrenFiles", files)
-	node.SetMeta("RecursiveChildrenFolders", folders)
+	node.MustSetMeta(model.MetaRecursiveChildrenFiles, files)
+	node.MustSetMeta(model.MetaRecursiveChildrenFolders, folders)
 	return nil
 }
 

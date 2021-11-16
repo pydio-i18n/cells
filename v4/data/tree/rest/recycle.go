@@ -52,7 +52,7 @@ func newDeleteJobs() *deleteJobs {
 func sourceInRecycle(ctx context.Context, source *tree.Node, ancestors []*tree.Node) bool {
 
 	for _, n := range ancestors {
-		if n.GetStringMeta("name") == common.RecycleBinName {
+		if n.GetStringMeta(common.MetaNamespaceNodeName) == common.RecycleBinName {
 			return true
 		}
 	}

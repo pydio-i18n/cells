@@ -82,15 +82,15 @@ func (a *FilterHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, 
 	if !accessList.CanRead(ctx, parents...) && !accessList.CanWrite(ctx, parents...) {
 		return nil, pathNotReadable
 	}
-	checkDl := in.Node.HasMetaKey("acl-check-download")
-	checkSync := in.Node.HasMetaKey("acl-check-syncable")
+	checkDl := in.Node.HasMetaKey(nodes.MetaAclCheckDownload)
+	checkSync := in.Node.HasMetaKey(nodes.MetaAclCheckSyncable)
 	response, err := a.Next.ReadNode(ctx, in, opts...)
 	if err != nil {
 		return nil, err
 	}
 	if accessList.CanRead(ctx, parents...) && !accessList.CanWrite(ctx, parents...) {
 		n := response.Node.Clone()
-		n.SetMeta(common.MetaFlagReadonly, "true")
+		n.MustSetMeta(common.MetaFlagReadonly, "true")
 		response.Node = n
 	}
 	updatedParents := append([]*tree.Node{response.GetNode()}, parents[1:]...)
@@ -99,7 +99,7 @@ func (a *FilterHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, 
 	}
 	if checkSync && accessList.HasExplicitDeny(ctx, permissions.FlagSync, updatedParents...) {
 		n := response.Node.Clone()
-		n.SetMeta(common.MetaFlagWorkspaceSyncable, false)
+		n.MustSetMeta(common.MetaFlagWorkspaceSyncable, false)
 		response.Node = n
 	}
 	return response, err
@@ -148,7 +148,7 @@ func (a *FilterHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest
 			}
 			if accessList.CanRead(ctx, newBranch...) && !accessList.CanWrite(ctx, newBranch...) {
 				n := resp.Node.Clone()
-				n.SetMeta(common.MetaFlagReadonly, "true")
+				n.MustSetMeta(common.MetaFlagReadonly, "true")
 				resp.Node = n
 			}
 			s.Send(resp)
@@ -330,7 +330,7 @@ func (a *FilterHandler) WrappedCanApply(srcCtx context.Context, targetCtx contex
 
 	case tree.NodeChangeEvent_READ:
 
-		if operation.GetSource().HasMetaKey("acl-check-download") {
+		if operation.GetSource().HasMetaKey(nodes.MetaAclCheckDownload) {
 			rwErr = a.checkPerm(srcCtx, operation.GetSource(), "in", false, true, false, permissions.FlagDownload)
 		} else {
 			rwErr = a.checkPerm(srcCtx, operation.GetSource(), "in", false, true, false)

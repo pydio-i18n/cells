@@ -194,11 +194,8 @@ func (h *SharesHandler) LoadAdminRootNodes(ctx context.Context, detectedRoots []
 		request := &tree.ReadNodeRequest{Node: &tree.Node{Uuid: rootId}}
 		if resp, err := router.ReadNode(ctx, request); err == nil {
 			node := resp.Node
-			if metaResp, e := metaClient.ReadNode(ctx, request); e == nil {
-				var isRoomNode bool
-				if metaResp.GetNode().GetMeta("CellNode", &isRoomNode); err == nil && isRoomNode {
-					node.SetMeta("CellNode", true)
-				}
+			if metaResp, e := metaClient.ReadNode(ctx, request); e == nil && metaResp.GetNode().GetMetaBool(common.MetaFlagCellNode) {
+				node.MustSetMeta(common.MetaFlagCellNode, true)
 			}
 			rootNodes[node.GetUuid()] = node.WithoutReservedMetas()
 		} else {

@@ -107,7 +107,7 @@ func (e *Handler) GetObject(ctx context.Context, node *tree.Node, requestData *m
 		} else {
 			return nil, errors.New("views.handler.encryption.GetObject", "cannot find datasource name", 500)
 		}
-		clone.SetMeta(common.MetaNamespaceDatasourceName, dsName)
+		clone.MustSetMeta(common.MetaNamespaceDatasourceName, dsName)
 	}
 
 	info, offset, length, skipBytesCount, err := e.getNodeInfoForRead(ctx, clone, requestData)
@@ -209,7 +209,7 @@ func (e *Handler) PutObject(ctx context.Context, node *tree.Node, reader io.Read
 
 	dsName := clone.GetStringMeta(common.MetaNamespaceDatasourceName)
 	if dsName == "" {
-		_ = clone.SetMeta(common.MetaNamespaceDatasourceName, branchInfo.Name)
+		clone.MustSetMeta(common.MetaNamespaceDatasourceName, branchInfo.Name)
 	}
 
 	keyProtectionTool, err := e.getKeyProtectionTool(ctx)
@@ -440,7 +440,7 @@ func (e *Handler) MultipartCreate(ctx context.Context, target *tree.Node, reques
 
 	dsName := clone.GetStringMeta(common.MetaNamespaceDatasourceName)
 	if dsName == "" {
-		_ = clone.SetMeta(common.MetaNamespaceDatasourceName, branchInfo.Name)
+		clone.MustSetMeta(common.MetaNamespaceDatasourceName, branchInfo.Name)
 	}
 
 	keyProtectionTool, err := e.getKeyProtectionTool(ctx)
@@ -525,7 +525,7 @@ func (e *Handler) MultipartPutObjectPart(ctx context.Context, target *tree.Node,
 
 	dsName := clone.GetStringMeta(common.MetaNamespaceDatasourceName)
 	if dsName == "" {
-		_ = clone.SetMeta(common.MetaNamespaceDatasourceName, branchInfo.Name)
+		clone.MustSetMeta(common.MetaNamespaceDatasourceName, branchInfo.Name)
 	}
 
 	keyProtectionTool, err := e.getKeyProtectionTool(ctx)

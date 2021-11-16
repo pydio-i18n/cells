@@ -306,7 +306,7 @@ func CopyMoveNodes(ctx context.Context, router Handler, sourceNode *tree.Node, t
 					folderNode.Uuid = childNode.Uuid
 				}
 				if targetDsPath != "" {
-					folderNode.SetMeta(common.MetaNamespaceDatasourcePath, path.Join(targetDsPath, relativePath))
+					folderNode.MustSetMeta(common.MetaNamespaceDatasourcePath, path.Join(targetDsPath, relativePath))
 				}
 				log.Logger(ctx).Info("Creating folder", folderNode.ZapPath(), folderNode.ZapUuid())
 				_, e := router.CreateNode(createContext, &tree.CreateNodeRequest{Node: folderNode, IndexationSession: sess, UpdateIfExists: true})
@@ -502,7 +502,7 @@ func processCopyMove(ctx context.Context, handler Handler, session string, move,
 	targetPath := prefixPathTarget + "/" + relativePath
 	targetNode := &tree.Node{Path: targetPath}
 	if targetDsPath != "" {
-		targetNode.SetMeta(common.MetaNamespaceDatasourcePath, path.Join(targetDsPath, relativePath))
+		targetNode.MustSetMeta(common.MetaNamespaceDatasourcePath, path.Join(targetDsPath, relativePath))
 	}
 	var justCopied *tree.Node
 	justCopied = nil

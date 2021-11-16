@@ -292,8 +292,8 @@ func (m *VirtualNodesManager) resolvePathWithClaims(ctx context.Context, vNode *
 	resolved.Type = vNode.Type
 
 	parts := strings.Split(resolved.Path, "/")
-	resolved.SetMeta(common.MetaNamespaceDatasourceName, parts[0])
-	resolved.SetMeta(common.MetaNamespaceDatasourcePath, strings.Join(parts[1:], "/"))
+	resolved.MustSetMeta(common.MetaNamespaceDatasourceName, parts[0])
+	resolved.MustSetMeta(common.MetaNamespaceDatasourcePath, strings.Join(parts[1:], "/"))
 
 	return resolved, nil
 

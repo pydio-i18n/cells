@@ -155,7 +155,7 @@ func TestHandler_Encrypted(t *testing.T) {
 	Convey("Test Put Object w. Enc", t, func() {
 		reqData := &models.PutRequestData{}
 		node := tree.Node{Path: "test", Uuid: "test"}
-		_ = node.SetMeta(common.MetaNamespaceDatasourceName, "test")
+		node.MustSetMeta(common.MetaNamespaceDatasourceName, "test")
 		_, e := handler.PutObject(ctx, &node, strings.NewReader(data), reqData)
 		So(e, ShouldBeNil)
 	})
@@ -163,7 +163,7 @@ func TestHandler_Encrypted(t *testing.T) {
 	Convey("Test Get Object w. encryption", t, func() {
 		reqData := &models.GetRequestData{StartOffset: 0, Length: -1}
 		node := tree.Node{Path: "test", Uuid: "test", Size: int64(len(data))}
-		_ = node.SetMeta(common.MetaNamespaceDatasourceName, "test")
+		node.MustSetMeta(common.MetaNamespaceDatasourceName, "test")
 		reader, e := handler.GetObject(ctx, &node, reqData)
 		So(reader, ShouldNotBeNil)
 		So(e, ShouldBeNil)
@@ -181,7 +181,7 @@ func TestHandler_Encrypted(t *testing.T) {
 			StartOffset: int64(rangeOffset),
 		}
 		node := tree.Node{Path: "test", Uuid: "test", Size: int64(len(data))}
-		_ = node.SetMeta(common.MetaNamespaceDatasourceName, "test")
+		node.MustSetMeta(common.MetaNamespaceDatasourceName, "test")
 		reader, e := handler.GetObject(ctx, &node, reqData)
 		So(reader, ShouldNotBeNil)
 		So(e, ShouldBeNil)
@@ -199,7 +199,7 @@ func TestHandler_Encrypted(t *testing.T) {
 			StartOffset: int64(rangeOffset),
 		}
 		node := tree.Node{Path: "test", Uuid: "test", Size: int64(len(data))}
-		_ = node.SetMeta(common.MetaNamespaceDatasourceName, "test")
+		node.MustSetMeta(common.MetaNamespaceDatasourceName, "test")
 		reader, e := handler.GetObject(ctx, &node, reqData)
 		So(reader, ShouldNotBeNil)
 		So(e, ShouldBeNil)
@@ -217,7 +217,7 @@ func TestHandler_Encrypted(t *testing.T) {
 			StartOffset: int64(rangeOffset),
 		}
 		node := tree.Node{Path: "test", Uuid: "test", Size: int64(len(data))}
-		_ = node.SetMeta(common.MetaNamespaceDatasourceName, "test")
+		node.MustSetMeta(common.MetaNamespaceDatasourceName, "test")
 		reader, e := handler.GetObject(ctx, &node, reqData)
 		So(reader, ShouldNotBeNil)
 		So(e, ShouldBeNil)
@@ -235,7 +235,7 @@ func TestHandler_Encrypted(t *testing.T) {
 			StartOffset: int64(rangeOffset),
 		}
 		node := tree.Node{Path: "test", Uuid: "test", Size: int64(len(data))}
-		_ = node.SetMeta(common.MetaNamespaceDatasourceName, "test")
+		node.MustSetMeta(common.MetaNamespaceDatasourceName, "test")
 		reader, e := handler.GetObject(ctx, &node, reqData)
 		So(e, ShouldNotBeNil)
 		So(reader, ShouldBeNil)
@@ -291,7 +291,7 @@ func TestRangeHandler_Encrypted(t *testing.T) {
 
 		reqData := &models.PutRequestData{}
 		node := tree.Node{Path: "encTest", Uuid: "encTest"}
-		_ = node.SetMeta(common.MetaNamespaceDatasourceName, "test")
+		node.MustSetMeta(common.MetaNamespaceDatasourceName, "test")
 		_, e := handler.PutObject(ctx, &node, file, reqData)
 		_ = file.Close()
 		So(e, ShouldBeNil)
@@ -322,7 +322,7 @@ func TestRangeHandler_Encrypted(t *testing.T) {
 			reqData.Length = int64(len(buff))
 
 			node := tree.Node{Path: "encTest", Uuid: "encTest", Size: int64(fileSize)}
-			_ = node.SetMeta(common.MetaNamespaceDatasourceName, "test")
+			node.MustSetMeta(common.MetaNamespaceDatasourceName, "test")
 			reader, e := handler.GetObject(ctx, &node, reqData)
 			So(e, ShouldBeNil)
 			So(reader, ShouldNotBeNil)

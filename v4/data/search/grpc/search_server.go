@@ -45,7 +45,7 @@ type SearchServer struct {
 	Engine           dao.SearchEngine
 	eventsChannel    chan *cache.EventWithContext
 	TreeClient       tree.NodeProviderClient
-	NsProvider       *meta.NamespacesProvider
+	NsProvider       *meta.NsProvider
 	ReIndexThrottler chan struct{}
 }
 
@@ -72,9 +72,9 @@ func (s *SearchServer) initEventsChannel() {
 	}()
 }
 
-func (s *SearchServer) NamespacesProvider() *meta.NamespacesProvider {
+func (s *SearchServer) NamespacesProvider() *meta.NsProvider {
 	if s.NsProvider == nil {
-		s.NsProvider = meta.NewNamespacesProvider()
+		s.NsProvider = meta.NewNsProvider()
 	}
 	return s.NsProvider
 }

@@ -88,7 +88,7 @@ func TestNodeMeta(t *testing.T) {
 			TestString: "mystring",
 			TestInt:    256,
 		}
-		e := node.SetMeta("jsondata", inputStruct)
+		e := node.MustSetMeta("jsondata", inputStruct)
 		So(e, ShouldBeNil)
 
 		outputStuct := &struct {

@@ -37,6 +37,12 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 )
 
+const (
+	ViewsLibraryName     = "pydio.lib.views"
+	MetaAclCheckDownload = "acl-check-download"
+	MetaAclCheckSyncable = "acl-check-syncable"
+)
+
 // Client the main accessor to access nodes while going through a preset stack of Handler.
 // Actual implementations are composed of a Core Handler (executor), a Pool and ordered middlewares.
 // It implements all methods of a Handler
@@ -47,10 +53,6 @@ type Client interface {
 	CanApply(ctx context.Context, operation *tree.NodeChangeEvent) (*tree.NodeChangeEvent, error)
 	GetClientsPool() SourcesPool
 }
-
-const (
-	ViewsLibraryName = "pydio.lib.views"
-)
 
 var (
 	// IsUnitTestEnv flag prevents among others the ClientPool to look for declared

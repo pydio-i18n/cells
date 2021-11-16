@@ -312,9 +312,9 @@ func (s *TreeServer) ReadNode(ctx context.Context, req *tree.ReadNodeRequest, re
 
 	if req.WithExtendedStats && !node.IsLeaf() {
 		folderCount, fileCount := dao.GetNodeChildrenCounts(node.MPath)
-		node.SetMeta("ChildrenCount", folderCount+fileCount)
-		node.SetMeta("ChildrenFolders", folderCount)
-		node.SetMeta("ChildrenFiles", fileCount)
+		node.SetMeta(common.MetaFlagChildrenCount, folderCount+fileCount)
+		node.SetMeta(common.MetaFlagChildrenFolders, folderCount)
+		node.SetMeta(common.MetaFlagChildrenFiles, fileCount)
 	}
 
 	resp.Node = node.Node
