@@ -23,6 +23,14 @@ package grpc
 
 import (
 	"context"
+	"path"
+
+	"github.com/pydio/cells/v4/broker/log"
+	"github.com/pydio/cells/v4/common/config"
+	proto "github.com/pydio/cells/v4/common/proto/log"
+	"github.com/pydio/cells/v4/common/proto/sync"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
@@ -37,36 +45,34 @@ func init() {
 			service.Tag(common.ServiceTagBroker),
 			service.Description("Syslog index store"),
 			service.Unique(true),
-			/*
-				service.WithMicro(func(m micro.Service) error {
-					serviceDir, e := config.ServiceDataDir(common.ServiceGrpcNamespace_ + common.ServiceLog)
-					if e != nil {
-						return e
-					}
-					rotationSize := log.DefaultRotationSize
-					if r := servicecontext.GetConfig(m.Options().Context).Val("bleveRotationSize").Int(); r > 0 {
-						rotationSize = int64(r)
-					}
-					repo, err := log.NewSyslogServer(path.Join(serviceDir, "syslog.bleve"), "sysLog", rotationSize)
-					if err != nil {
-						return err
-					}
 
-					handler := &Handler{
-						Repo: repo,
-					}
+			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
+				serviceDir, e := config.ServiceDataDir(common.ServiceGrpcNamespace_ + common.ServiceLog)
+				if e != nil {
+					return e
+				}
+				rotationSize := log.DefaultRotationSize
+				if r := servicecontext.GetConfig(c).Val("bleveRotationSize").Int(); r > 0 {
+					rotationSize = int64(r)
+				}
+				repo, err := log.NewSyslogServer(path.Join(serviceDir, "syslog.bleve"), "sysLog", rotationSize)
+				if err != nil {
+					return err
+				}
 
-					proto.RegisterLogRecorderHandler(m.Options().Server, handler)
-					sync.RegisterSyncEndpointHandler(m.Options().Server, handler)
+				handler := &Handler{
+					Repo: repo,
+				}
+				proto.RegisterLogRecorderServer(server, handler)
+				sync.RegisterSyncEndpointServer(server, handler)
 
-					m.Init(micro.BeforeStop(func() error {
-						repo.Close()
-						return nil
-					}))
+				go func() {
+					<-c.Done()
+					repo.Close()
+				}()
 
-					return nil
-				}),
-			*/
+				return nil
+			}),
 		)
 	})
 }

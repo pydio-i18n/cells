@@ -27,25 +27,26 @@ package grpc
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/broker/activity"
-	"github.com/pydio/cells/v4/common/micro/broker"
-	proto "github.com/pydio/cells/v4/common/proto/activity"
-	"github.com/pydio/cells/v4/common/proto/tree"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
-	"github.com/pydio/cells/v4/common/utils/cache"
-	"google.golang.org/grpc"
 	"time"
 
+	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
 
+	"github.com/pydio/cells/v4/broker/activity"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	defaults "github.com/pydio/cells/v4/common/micro"
+	"github.com/pydio/cells/v4/common/micro/broker"
+	"github.com/pydio/cells/v4/common/nodes/meta"
 	"github.com/pydio/cells/v4/common/plugins"
+	proto "github.com/pydio/cells/v4/common/proto/activity"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	serviceproto "github.com/pydio/cells/v4/common/proto/service"
+	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/utils/cache"
 	"github.com/pydio/cells/v4/common/utils/std"
 )
 
@@ -62,19 +63,18 @@ func init() {
 			service.Description("Activity Service is collecting activity for users and nodes"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceJobs, []string{}),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceTree, []string{}),
+			service.Metadata(meta.ServiceMetaProvider, "stream"),
+			service.Migrations([]*service.Migration{
+				{
+					TargetVersion: service.FirstRun(),
+					Up:            RegisterDigestJob,
+				},
+			}),
 			/*
-				service.Migrations([]*service.Migration{
-					{
-						TargetVersion: service.FirstRun(),
-						Up:            RegisterDigestJob,
-					},
-				}),
 				service.WithStorage(activity.NewDAO, "broker_activity"),
 			*/
 			service.Unique(true),
 			service.WithGRPC(func(c context.Context, srv *grpc.Server) error {
-				// TODO V4
-				//service.AddMicroMeta(m, meta.ServiceMetaProvider, "stream")
 
 				dao := servicecontext.GetDAO(c).(activity.DAO)
 				// Register Subscribers
@@ -132,6 +132,7 @@ func init() {
 				tree.RegisterNodeProviderStreamerServer(srv, new(MetaProvider))
 
 				/*
+					// TODO V4 Replaced by below ?
 					m.Init(micro.BeforeStop(func() error {
 						batcher.Stop()
 						return nil

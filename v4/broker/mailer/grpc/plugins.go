@@ -25,6 +25,11 @@ import (
 	"context"
 	"time"
 
+	"github.com/pydio/cells/v4/common/proto/mailer"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
+
 	"github.com/pydio/cells/v4/common/utils/std"
 
 	"github.com/pydio/cells/v4/common"
@@ -53,37 +58,34 @@ func init() {
 			service.Description("MailSender Service"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceJobs, []string{}),
 			service.Unique(true),
-			/*
-				service.AutoRestart(true),
-				service.Migrations([]*service.Migration{
-					{
-						TargetVersion: service.FirstRun(),
-						Up:            RegisterQueueJob,
-					},
-				}),
-				service.WithMicro(func(m micro.Service) error {
-					ctx := m.Options().Context
-					conf := servicecontext.GetConfig(ctx)
-					handler, err := NewHandler(ctx, conf)
-					if err != nil {
-						log.Logger(ctx).Error("Init handler", zap.Error(err))
-						return err
+			//				service.AutoRestart(true), // TODO V4
+			service.Migrations([]*service.Migration{
+				{
+					TargetVersion: service.FirstRun(),
+					Up:            RegisterQueueJob,
+				},
+			}),
+			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
+
+				conf := servicecontext.GetConfig(c)
+				handler, err := NewHandler(ctx, conf)
+				if err != nil {
+					log.Logger(ctx).Error("Init handler", zap.Error(err))
+					return err
+				}
+				log.Logger(ctx).Debug("Init handler OK", zap.Any("h", handler))
+
+				mailer.RegisterMailerServiceServer(server, handler)
+
+				go func() {
+					<-c.Done()
+					if handler.queue != nil {
+						handler.queue.Close()
 					}
-					log.Logger(ctx).Debug("Init handler OK", zap.Any("h", handler))
+				}()
 
-					mailer.RegisterMailerServiceHandler(m.Options().Server, handler)
-
-					m.Init(
-						micro.BeforeStop(func() error {
-							if handler.queue != nil {
-								return handler.queue.Close()
-							}
-							return nil
-						}),
-					)
-					return nil
-				}),
-			*/
+				return nil
+			}),
 		)
 	})
 }

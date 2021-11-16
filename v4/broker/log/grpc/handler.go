@@ -28,7 +28,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-openapi/errors"
+	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/broker/log"
@@ -42,11 +42,13 @@ import (
 
 // Handler is the gRPC interface for the log service.
 type Handler struct {
+	sync.UnimplementedSyncEndpointServer
+	proto.UnimplementedLogRecorderServer
 	Repo log.MessageRepository
 }
 
 // PutLog retrieves the log messages from the proto stream and stores them in the index.
-func (h *Handler) PutLog(ctx context.Context, stream proto.LogRecorder_PutLogStream) error {
+func (h *Handler) PutLog(stream proto.LogRecorder_PutLogServer) error {
 
 	var logCount int32
 	for {
@@ -65,7 +67,7 @@ func (h *Handler) PutLog(ctx context.Context, stream proto.LogRecorder_PutLogStr
 }
 
 // ListLogs is a simple gateway from protobuf to the indexer search engine.
-func (h *Handler) ListLogs(ctx context.Context, req *proto.ListLogRequest, stream proto.LogRecorder_ListLogsStream) error {
+func (h *Handler) ListLogs(req *proto.ListLogRequest, stream proto.LogRecorder_ListLogsServer) error {
 
 	q := req.GetQuery()
 	p := req.GetPage()
@@ -86,25 +88,27 @@ func (h *Handler) ListLogs(ctx context.Context, req *proto.ListLogRequest, strea
 	return nil
 }
 
-func (h *Handler) DeleteLogs(ctx context.Context, req *proto.ListLogRequest, resp *proto.DeleteLogsResponse) error {
+// DeleteLogs removes logs based on a ListLogRequest
+func (h *Handler) DeleteLogs(ctx context.Context, req *proto.ListLogRequest) (*proto.DeleteLogsResponse, error) {
 
 	d, e := h.Repo.DeleteLogs(req.Query)
 	if e != nil {
-		return e
+		return nil, e
 	}
-	resp.Deleted = d
+	return &proto.DeleteLogsResponse{
+		Deleted: d,
+	}, nil
 
-	return nil
 }
 
 // AggregatedLogs retrieves aggregated figures from the indexer to generate charts and reports.
-func (h *Handler) AggregatedLogs(ctx context.Context, req *proto.TimeRangeRequest, stream proto.LogRecorder_AggregatedLogsStream) error {
-	return errors.NotImplemented("cannot aggregate syslogs")
+func (h *Handler) AggregatedLogs(req *proto.TimeRangeRequest, stream proto.LogRecorder_AggregatedLogsServer) error {
+	return errors.InternalServerError("not.implemented", "cannot aggregate syslogs")
 }
 
 // TriggerResync uses the request.Path as parameter. If nothing is passed, it reads all the logs from index and
 // reconstructs a new index entirely. If truncate/{int64} is passed, it truncates the log to the given size (or closer)
-func (h *Handler) TriggerResync(ctx context.Context, request *sync.ResyncRequest, response *sync.ResyncResponse) error {
+func (h *Handler) TriggerResync(ctx context.Context, request *sync.ResyncRequest) (*sync.ResyncResponse, error) {
 
 	var l *zap.Logger
 	var closeTask func(e error)
@@ -141,7 +145,7 @@ func (h *Handler) TriggerResync(ctx context.Context, request *sync.ResyncRequest
 			er = fmt.Errorf("wrong format for truncate (use bytesize)")
 		}
 		closeTask(er)
-		return er
+		return nil, er
 	}
 
 	go func() {
@@ -156,5 +160,5 @@ func (h *Handler) TriggerResync(ctx context.Context, request *sync.ResyncRequest
 		closeTask(e)
 	}()
 
-	return nil
+	return &sync.ResyncResponse{}, nil
 }
