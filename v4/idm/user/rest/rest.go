@@ -28,7 +28,6 @@ import (
 	"time"
 
 	"github.com/emicklei/go-restful"
-	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -45,6 +44,7 @@ import (
 	"github.com/pydio/cells/v4/common/service"
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/service/resources"
+	"github.com/pydio/cells/v4/common/utils/cache"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/idm/user/grpc"
@@ -846,12 +846,12 @@ func paramsAclsToAttributes(ctx context.Context, users []*idm.User) {
 
 }
 
-var cachedParams *cache.Cache
+var cachedParams cache.Short
 
 func allowedAclKey(k string, contextEditable bool) bool {
 	var params []*front.ExposedParameter
 	if cachedParams == nil {
-		cachedParams = cache.New(20*time.Second, 1*time.Minute)
+		cachedParams = cache.NewShort(cache.WithEviction(20*time.Second), cache.WithCleanWindow(1*time.Minute))
 	}
 	if pp, ok := cachedParams.Get("params"); ok {
 		params = pp.([]*front.ExposedParameter)
@@ -866,7 +866,7 @@ func allowedAclKey(k string, contextEditable bool) bool {
 			return false
 		}
 		params = resp.Parameters
-		cachedParams.Set("params", resp.Parameters, cache.DefaultExpiration)
+		cachedParams.Set("params", resp.Parameters)
 	}
 
 	// Find params that contain user scope but not only that scope

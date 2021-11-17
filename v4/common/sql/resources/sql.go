@@ -26,12 +26,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/patrickmn/go-cache"
 	migrate "github.com/rubenv/sql-migrate"
 	"gopkg.in/doug-martin/goqu.v4"
 
 	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/sql"
+	"github.com/pydio/cells/v4/common/utils/cache"
 	"github.com/pydio/cells/v4/common/utils/statics"
 	"github.com/pydio/cells/v4/x/configx"
 )
@@ -54,13 +54,13 @@ type ResourcesSQL struct {
 	*sql.Handler
 
 	LeftIdentifier string
-	cache          *cache.Cache
+	cache          cache.Short
 }
 
 // Init performs necessary up migration.
 func (s *ResourcesSQL) Init(options configx.Values) error {
 
-	s.cache = cache.New(30*time.Second, 2*time.Minute)
+	s.cache = cache.NewShort(cache.WithEviction(30*time.Second), cache.WithCleanWindow(2*time.Minute))
 
 	migrations := &sql.FSMigrationSource{
 		Box:         statics.AsFS(migrations, "migrations"),
@@ -187,7 +187,7 @@ func (s *ResourcesSQL) GetPoliciesForResource(resourceId string) ([]*service.Res
 		res = append(res, rule)
 	}
 
-	s.cache.Set(resourceId, res, cache.DefaultExpiration)
+	s.cache.Set(resourceId, res)
 
 	return res, nil
 }
@@ -211,16 +211,16 @@ func (s *ResourcesSQL) DeletePoliciesForResource(resourceId string) error {
 func (s *ResourcesSQL) DeletePoliciesBySubject(subject string) error {
 
 	// Delete cache items that would contain this subject
-	for k, i := range s.cache.Items() {
-		if rules, ok := i.Object.([]*service.ResourcePolicy); ok {
+	s.cache.Iterate(func(key string, val interface{}) {
+		if rules, ok := val.([]*service.ResourcePolicy); ok {
 			for _, pol := range rules {
 				if pol.Subject == subject {
-					s.cache.Delete(k)
+					s.cache.Delete(key)
 					break
 				}
 			}
 		}
-	}
+	})
 
 	prepared, er := s.GetStmt("DeleteRulesForSubject")
 	if er != nil {

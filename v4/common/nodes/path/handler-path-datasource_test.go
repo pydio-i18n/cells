@@ -26,7 +26,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/patrickmn/go-cache"
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/pydio/cells/v4/common"
@@ -35,6 +34,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/errors"
+	"github.com/pydio/cells/v4/common/utils/cache"
 )
 
 func newTestHandlerBranchTranslator(pool *nodes.ClientsPool) (*DataSourceHandler, *nodes.HandlerMock) {
@@ -47,8 +47,8 @@ func newTestHandlerBranchTranslator(pool *nodes.ClientsPool) (*DataSourceHandler
 	testRootNode.MustSetMeta(common.MetaNamespaceDatasourceName, "datasource")
 	testRootNode.MustSetMeta(common.MetaNamespaceDatasourcePath, "root")
 	b := newDataSourceHandler()
-	b.RootNodesCache = cache.New(1*time.Second, 10*time.Second)
-	b.RootNodesCache.Set("root-node-uuid", testRootNode, cache.DefaultExpiration)
+	b.RootNodesCache = cache.NewShort(cache.WithEviction(1*time.Second), cache.WithCleanWindow(10*time.Second))
+	b.RootNodesCache.Set("root-node-uuid", testRootNode)
 	mock := nodes.NewHandlerMock()
 	mock.Nodes["datasource/root/inner/path"] = &tree.Node{
 		Path: "datasource/root/inner/path",

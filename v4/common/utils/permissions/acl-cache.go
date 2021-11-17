@@ -23,19 +23,18 @@ package permissions
 import (
 	"time"
 
-	"github.com/patrickmn/go-cache"
-
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/proto/idm"
+	"github.com/pydio/cells/v4/common/utils/cache"
 )
 
 var (
-	aclCache *cache.Cache
+	aclCache cache.Short
 )
 
 func initAclCache() {
-	aclCache = cache.New(500*time.Millisecond, 30*time.Second)
+	aclCache = cache.NewShort(cache.WithEviction(500*time.Millisecond), cache.WithCleanWindow(30*time.Second))
 	_, _ = broker.Subscribe(common.TopicIdmEvent, func(message broker.Message) error {
 		event := &idm.ChangeEvent{}
 		if _, e := message.Unmarshal(event); e != nil {
@@ -43,15 +42,13 @@ func initAclCache() {
 		}
 		switch event.Type {
 		case idm.ChangeEventType_CREATE, idm.ChangeEventType_UPDATE, idm.ChangeEventType_DELETE:
-			for k := range aclCache.Items() {
-				aclCache.Delete(k)
-			}
+			return aclCache.Reset()
 		}
 		return nil
 	})
 }
 
-func getAclCache() *cache.Cache {
+func getAclCache() cache.Short {
 	if aclCache == nil {
 		initAclCache()
 	}

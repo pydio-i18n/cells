@@ -36,18 +36,16 @@ import (
 	defaults "github.com/pydio/cells/v4/common/micro"
 	proto "github.com/pydio/cells/v4/common/proto/activity"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	"github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/errors"
 )
 
 type Handler struct {
 	proto.UnimplementedActivityServiceServer
+	dao activity.DAO
 }
 
 func (h *Handler) PostActivity(stream proto.ActivityService_PostActivityServer) error {
 	ctx := stream.Context()
-	dao := servicecontext.GetDAO(ctx).(activity.DAO)
-	// defer stream.Close() - TODO V4 ?
 	for {
 		request, e := stream.Recv()
 		if e == io.EOF {
@@ -63,9 +61,9 @@ func (h *Handler) PostActivity(stream proto.ActivityService_PostActivityServer) 
 		case "outbox":
 			boxName = activity.BoxOutbox
 		default:
-			return fmt.Errorf("unrecongnized box name")
+			return fmt.Errorf("unrecognized box name")
 		}
-		if e := dao.PostActivity(request.OwnerType, request.OwnerId, boxName, request.Activity, ctx); e != nil {
+		if e := h.dao.PostActivity(request.OwnerType, request.OwnerId, boxName, request.Activity, ctx); e != nil {
 			return e
 		}
 	}
@@ -74,9 +72,6 @@ func (h *Handler) PostActivity(stream proto.ActivityService_PostActivityServer) 
 func (h *Handler) StreamActivities(request *proto.StreamActivitiesRequest, stream proto.ActivityService_StreamActivitiesServer) error {
 
 	ctx := stream.Context()
-	dao := servicecontext.GetDAO(ctx).(activity.DAO)
-	//defer stream.Close()
-
 	log.Logger(ctx).Debug("Should get activities", zap.Any("r", request))
 	treeStreamer := tree.NewNodeProviderStreamerClient(defaults.NewClientConn(common.ServiceTree))
 	sClient, e := treeStreamer.ReadNodeStream(ctx)
@@ -134,14 +129,14 @@ func (h *Handler) StreamActivities(request *proto.StreamActivitiesRequest, strea
 	}
 
 	if request.Context == proto.StreamContext_NODE_ID {
-		dao.ActivitiesFor(proto.OwnerType_NODE, request.ContextData, boxName, "", request.Offset, request.Limit, result, done)
+		h.dao.ActivitiesFor(proto.OwnerType_NODE, request.ContextData, boxName, "", request.Offset, request.Limit, result, done)
 		wg.Wait()
 	} else if request.Context == proto.StreamContext_USER_ID {
 		var refBoxOffset activity.BoxName
 		if request.AsDigest {
 			refBoxOffset = activity.BoxLastSent
 		}
-		dao.ActivitiesFor(proto.OwnerType_USER, request.ContextData, boxName, refBoxOffset, request.Offset, request.Limit, result, done)
+		h.dao.ActivitiesFor(proto.OwnerType_USER, request.ContextData, boxName, refBoxOffset, request.Offset, request.Limit, result, done)
 		wg.Wait()
 	}
 
@@ -150,9 +145,7 @@ func (h *Handler) StreamActivities(request *proto.StreamActivitiesRequest, strea
 
 func (h *Handler) Subscribe(ctx context.Context, request *proto.SubscribeRequest) (*proto.SubscribeResponse, error) {
 
-	dao := servicecontext.GetDAO(ctx).(activity.DAO)
-
-	if e := dao.UpdateSubscription(request.Subscription); e != nil {
+	if e := h.dao.UpdateSubscription(request.Subscription); e != nil {
 		return nil, e
 	}
 	return &proto.SubscribeResponse{
@@ -163,11 +156,6 @@ func (h *Handler) Subscribe(ctx context.Context, request *proto.SubscribeRequest
 
 func (h *Handler) SearchSubscriptions(request *proto.SearchSubscriptionsRequest, stream proto.ActivityService_SearchSubscriptionsServer) error {
 
-	ctx := stream.Context()
-	//defer stream.Close()
-
-	dao := servicecontext.GetDAO(ctx).(activity.DAO)
-
 	var userId string
 	var objectType = proto.OwnerType_NODE
 	if len(request.ObjectIds) == 0 {
@@ -176,7 +164,7 @@ func (h *Handler) SearchSubscriptions(request *proto.SearchSubscriptionsRequest,
 	if len(request.UserIds) > 0 {
 		userId = request.UserIds[0]
 	}
-	users, err := dao.ListSubscriptions(objectType, request.ObjectIds)
+	users, err := h.dao.ListSubscriptions(objectType, request.ObjectIds)
 	if err != nil {
 		return err
 	}
@@ -196,9 +184,7 @@ func (h *Handler) SearchSubscriptions(request *proto.SearchSubscriptionsRequest,
 
 func (h *Handler) UnreadActivitiesNumber(ctx context.Context, request *proto.UnreadActivitiesRequest) (*proto.UnreadActivitiesResponse, error) {
 
-	dao := servicecontext.GetDAO(ctx).(activity.DAO)
-
-	number := dao.CountUnreadForUser(request.UserId)
+	number := h.dao.CountUnreadForUser(request.UserId)
 	return &proto.UnreadActivitiesResponse{
 		Number: int32(number),
 	}, nil
@@ -207,18 +193,16 @@ func (h *Handler) UnreadActivitiesNumber(ctx context.Context, request *proto.Unr
 
 func (h *Handler) SetUserLastActivity(ctx context.Context, request *proto.UserLastActivityRequest) (*proto.UserLastActivityResponse, error) {
 
-	dao := servicecontext.GetDAO(ctx).(activity.DAO)
-
 	var boxName activity.BoxName
 	if request.BoxName == "lastread" {
 		boxName = activity.BoxLastRead
 	} else if request.BoxName == "lastsent" {
 		boxName = activity.BoxLastSent
 	} else {
-		return nil, fmt.Errorf("Invalid box name")
+		return nil, fmt.Errorf("invalid box name")
 	}
 
-	if err := dao.StoreLastUserInbox(request.UserId, boxName, nil, request.ActivityId); err == nil {
+	if err := h.dao.StoreLastUserInbox(request.UserId, boxName, nil, request.ActivityId); err == nil {
 		return &proto.UserLastActivityResponse{Success: true}, nil
 	} else {
 		return nil, err
@@ -236,13 +220,13 @@ func (h *Handler) PurgeActivities(ctx context.Context, request *proto.PurgeActiv
 		count++
 		log.TasksLogger(ctx).Info(s)
 	}
-	dao := servicecontext.GetDAO(ctx).(activity.DAO)
+
 	var updated time.Time
 	if request.UpdatedBeforeTimestamp > 0 {
 		updated = time.Unix(int64(request.UpdatedBeforeTimestamp), 0)
 	}
 
-	e := dao.Purge(logger, request.OwnerType, request.OwnerID, activity.BoxName(request.BoxName), int(request.MinCount), int(request.MaxCount), updated, request.CompactDB, request.ClearBackups)
+	e := h.dao.Purge(logger, request.OwnerType, request.OwnerID, activity.BoxName(request.BoxName), int(request.MinCount), int(request.MaxCount), updated, request.CompactDB, request.ClearBackups)
 	return &proto.PurgeActivitiesResponse{
 		Success:      true,
 		DeletedCount: count,

@@ -36,7 +36,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	gocache "github.com/patrickmn/go-cache"
 	migrate "github.com/rubenv/sql-migrate"
 	"go.uber.org/zap"
 
@@ -44,6 +43,7 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/sql"
+	cache2 "github.com/pydio/cells/v4/common/utils/cache"
 	"github.com/pydio/cells/v4/common/utils/mtree"
 	"github.com/pydio/cells/v4/common/utils/statics"
 	"github.com/pydio/cells/v4/common/utils/uuid"
@@ -351,14 +351,14 @@ type IndexSQL struct {
 
 	rootNodeId string
 
-	shortCache     *gocache.Cache
+	shortCache     cache2.Short
 	shortCacheLock sync.Mutex
 }
 
 // Init handles the db version migration and prepare the statements
 func (dao *IndexSQL) Init(options configx.Values) error {
 
-	dao.shortCache = gocache.New(5*time.Second, 10*time.Second)
+	dao.shortCache = cache2.NewShort(cache2.WithEviction(5*time.Second), cache2.WithCleanWindow(10*time.Second))
 
 	migrations := &sql.FSMigrationSource{
 		Box:         statics.AsFS(migrationsFS, "migrations"),
@@ -912,7 +912,7 @@ func (dao *IndexSQL) GetNodeFirstAvailableChildIndex(reqPath mtree.MPath) (avail
 
 	dao.shortCacheLock.Lock()
 	defer func() {
-		dao.shortCache.Set(append(reqPath, available).String(), true, gocache.DefaultExpiration)
+		dao.shortCache.Set(append(reqPath, available).String(), true)
 		dao.shortCacheLock.Unlock()
 	}()
 	// All is just [0], return 1 or next ones

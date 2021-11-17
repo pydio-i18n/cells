@@ -22,12 +22,7 @@ package activity
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"strconv"
 	"time"
-
-	"github.com/allegro/bigcache"
 
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/proto/activity"
@@ -37,34 +32,20 @@ import (
 )
 
 func WithCache(dao DAO) DAO {
-	cacheConfig := bigcache.DefaultConfig(5 * time.Minute)
-	cacheConfig.Shards = 64
-	cacheConfig.MaxEntriesInWindow = 10 * 60 * 64
-	cacheConfig.MaxEntrySize = 200
-	cacheConfig.HardMaxCacheSize = 8
-	if limit := os.Getenv("CELLS_CACHES_HARD_LIMIT"); limit != "" {
-		if l, e := strconv.ParseInt(limit, 10, 64); e == nil {
-			if l < 8 {
-				fmt.Println("[ENV] ## WARNING ## CELLS_CACHES_HARD_LIMIT cannot use a value lower than 8 (MB).")
-			} else {
-				cacheConfig.HardMaxCacheSize = int(l)
-			}
-		}
-	}
 	useBatch := false
 	if _, o := dao.(batchDAO); o {
 		useBatch = true
 	}
 	return &Cache{
 		dao:      dao,
-		cache:    cache.NewInstrumentedCache("activities", cacheConfig),
+		cache:    cache.NewSharded("activities", cache.WithEviction(5*time.Minute)),
 		useBatch: useBatch,
 	}
 }
 
 type Cache struct {
 	dao   DAO
-	cache *cache.InstrumentedCache
+	cache cache.Sharded
 
 	useBatch bool
 	done     chan bool

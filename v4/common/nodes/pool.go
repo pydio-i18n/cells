@@ -23,13 +23,12 @@ package nodes
 import (
 	"context"
 	"fmt"
-	"go.uber.org/zap/zapcore"
 	"sync"
 	"time"
 
 	microregistry "github.com/micro/micro/v3/service/registry"
-	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
@@ -39,12 +38,6 @@ import (
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/x/configx"
-)
-
-var (
-	ancestorsCacheExpiration = 800 * time.Millisecond
-	ancestorsParentsCache    = cache.New(ancestorsCacheExpiration, 5*time.Second)
-	ancestorsNodesCache      = cache.New(ancestorsCacheExpiration, 5*time.Second)
 )
 
 type sourceAlias struct {

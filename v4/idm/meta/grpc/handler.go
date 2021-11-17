@@ -44,12 +44,12 @@ type Handler struct {
 	idm.UnimplementedUserMetaServiceServer
 	tree.UnimplementedNodeProviderStreamerServer
 
-	searchCache *cache.InstrumentedCache
+	searchCache cache.Sharded
 }
 
 func NewHandler(ctx context.Context) *Handler {
 	h := &Handler{}
-	h.searchCache = cache.NewInstrumentedCache(common.ServiceGrpcNamespace_ + common.ServiceUserMeta)
+	h.searchCache = cache.NewSharded(common.ServiceGrpcNamespace_ + common.ServiceUserMeta)
 	go func() {
 		<-ctx.Done()
 		h.Stop()
@@ -282,23 +282,11 @@ func (h *Handler) clearCacheForNode(nodeId string) {
 	if h.searchCache == nil {
 		return
 	}
-	it := h.searchCache.Iterator()
-	var clears []string
-	for {
-		if !it.SetNext() {
-			break
+	if clears, e := h.searchCache.KeysByPrefix(nodeId + "-"); e == nil {
+		for _, k := range clears {
+			//log.Logger(context.Background()).Info("User-Meta - Clear Cache Key: " + k)
+			_ = h.searchCache.Delete(k)
 		}
-		info, e := it.Value()
-		if e != nil {
-			break
-		}
-		if strings.HasPrefix(info.Key(), fmt.Sprintf("%s-", nodeId)) {
-			clears = append(clears, info.Key())
-		}
-	}
-	for _, k := range clears {
-		//log.Logger(context.Background()).Info("User-Meta - Clear Cache Key: " + k)
-		h.searchCache.Delete(k)
 	}
 
 }

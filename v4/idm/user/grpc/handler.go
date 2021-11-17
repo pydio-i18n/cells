@@ -29,7 +29,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -43,6 +42,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/errors"
+	"github.com/pydio/cells/v4/common/utils/cache"
 	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 	"github.com/pydio/cells/v4/idm/user"
@@ -55,7 +55,7 @@ var (
 		{Subject: "profile:standard", Action: service.ResourcePolicyAction_READ, Effect: service.ResourcePolicy_allow},
 		{Subject: "profile:admin", Action: service.ResourcePolicyAction_WRITE, Effect: service.ResourcePolicy_allow},
 	}
-	autoAppliesCache *cache.Cache
+	autoAppliesCache cache.Short
 )
 
 // ByOverride implements sort.Interface for []Role based on the ForceOverride field.
@@ -495,9 +495,9 @@ func (h *Handler) loadAutoAppliesRoles(ctx context.Context) (autoApplies map[str
 
 	// Save to cache
 	if autoAppliesCache == nil {
-		autoAppliesCache = cache.New(10*time.Second, 20*time.Second)
+		autoAppliesCache = cache.NewShort(cache.WithEviction(10*time.Second), cache.WithCleanWindow(20*time.Second))
 	}
-	autoAppliesCache.Set("autoApplies", autoApplies, 0) // 0 means use cache default
+	autoAppliesCache.Set("autoApplies", autoApplies)
 
 	return
 }

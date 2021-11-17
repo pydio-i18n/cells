@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -34,13 +35,38 @@ import (
 	"github.com/pydio/cells/v4/common/service/metrics"
 )
 
+type Sharded interface {
+	Set(key string, entry []byte) error
+	Get(key string) ([]byte, error)
+	Delete(key string) error
+	Reset() error
+	KeysByPrefix(prefix string) ([]string, error)
+	Close() error
+}
+
 var (
 	defaultConfig bigcache.Config
 	o             = sync.Once{}
 )
 
-// NewInstrumentedCache creates a BigCache instance with a regular report of statistics
-func NewInstrumentedCache(serviceName string, cacheConfig ...bigcache.Config) *InstrumentedCache {
+// NewSharded creates a cache instance instrumented with a regular report of statistics
+func NewSharded(identifier string, opts ...Option) Sharded {
+	opt := &Options{}
+	for _, o := range opts {
+		o(opt)
+	}
+	bcConf := DefaultBigCacheConfig()
+	if opt.EvictionTime > 0 {
+		bcConf.LifeWindow = opt.EvictionTime
+	}
+	if opt.CleanWindow > 0 {
+		bcConf.CleanWindow = opt.CleanWindow
+	}
+	return newInstrumentedCache(identifier, bcConf)
+}
+
+// newInstrumentedCache creates a BigCache instance with a regular report of statistics
+func newInstrumentedCache(serviceName string, cacheConfig ...bigcache.Config) *InstrumentedCache {
 	scope := metrics.GetMetricsForService(serviceName)
 	conf := DefaultBigCacheConfig()
 	if len(cacheConfig) > 0 {
@@ -72,9 +98,36 @@ type InstrumentedCache struct {
 	ticker *time.Ticker
 }
 
+func (i *InstrumentedCache) Delete(key string) error {
+	return i.BigCache.Delete(key)
+}
+
+func (i *InstrumentedCache) Reset() error {
+	return i.BigCache.Reset()
+}
+
+func (i *InstrumentedCache) KeysByPrefix(prefix string) (res []string, e error) {
+	it := i.BigCache.Iterator()
+	for {
+		if !it.SetNext() {
+			break
+		}
+		info, er := it.Value()
+		if er != nil {
+			e = er
+			break
+		}
+		if strings.HasPrefix(info.Key(), prefix) {
+			res = append(res, info.Key())
+		}
+	}
+	return
+}
+
 // Close stops internal timer for reporting statistics
-func (i *InstrumentedCache) Close() {
+func (i *InstrumentedCache) Close() error {
 	i.ticker.Stop()
+	return i.BigCache.Close()
 }
 
 // Set adds a key/value to the cache.

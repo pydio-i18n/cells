@@ -29,7 +29,6 @@ import (
 
 	"github.com/ory/ladon"
 	"github.com/ory/ladon/manager/memory"
-	"github.com/patrickmn/go-cache"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth/claim"
@@ -38,6 +37,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
+	"github.com/pydio/cells/v4/common/utils/cache"
 	"github.com/pydio/cells/v4/idm/policy/converter"
 )
 
@@ -122,7 +122,7 @@ func PolicyContextFromNode(policyContext map[string]string, node *tree.Node) {
 	}
 }
 
-var checkersCache = cache.New(1*time.Minute, 10*time.Minute)
+var checkersCache = cache.NewShort(cache.WithEviction(1*time.Minute), cache.WithCleanWindow(10*time.Minute))
 
 func loadPoliciesByResourcesType(ctx context.Context, resType string) ([]*idm.Policy, error) {
 
@@ -171,7 +171,7 @@ func CachedPoliciesChecker(ctx context.Context, resType string) (ladon.Warden, e
 		}
 	}
 
-	checkersCache.Set(resType, w, cache.DefaultExpiration)
+	checkersCache.Set(resType, w)
 	return w, nil
 }
 

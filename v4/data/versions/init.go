@@ -25,9 +25,6 @@ import (
 	"path"
 	"time"
 
-	"github.com/pydio/cells/v4/x/configx"
-
-	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -37,11 +34,13 @@ import (
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/proto/docstore"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/utils/cache"
 	"github.com/pydio/cells/v4/scheduler/actions"
+	"github.com/pydio/cells/v4/x/configx"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
-var policiesCache *cache.Cache
+var policiesCache cache.Short
 
 func init() {
 
@@ -65,7 +64,7 @@ func init() {
 func PolicyForNode(ctx context.Context, node *tree.Node) *tree.VersioningPolicy {
 
 	if policiesCache == nil {
-		policiesCache = cache.New(1*time.Hour, 1*time.Hour)
+		policiesCache = cache.NewShort(cache.WithEviction(1*time.Hour), cache.WithCleanWindow(1*time.Hour))
 	}
 
 	dataSourceName := node.GetStringMeta(common.MetaNamespaceDatasourceName)
@@ -90,7 +89,7 @@ func PolicyForNode(ctx context.Context, node *tree.Node) *tree.VersioningPolicy 
 	var p *tree.VersioningPolicy
 	if er := json.Unmarshal([]byte(r.Document.Data), &p); er == nil {
 		log.Logger(ctx).Debug("[VERSION] found policy for node", zap.Any("p", p))
-		policiesCache.Set(policyName, p, cache.DefaultExpiration)
+		policiesCache.Set(policyName, p)
 		return p
 	}
 

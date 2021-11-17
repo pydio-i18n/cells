@@ -28,7 +28,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -44,6 +43,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/errors"
+	"github.com/pydio/cells/v4/common/utils/cache"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 )
 
@@ -58,7 +58,7 @@ func WithQuota() nodes.Option {
 // QuotaFilter applies storage quota limitation on a per-workspace basis.
 type QuotaFilter struct {
 	abstract.Handler
-	readCache *cache.Cache
+	readCache cache.Short
 }
 
 func (a *QuotaFilter) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
@@ -84,7 +84,7 @@ func (a *QuotaFilter) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, op
 		u  int64
 	}
 	if a.readCache == nil {
-		a.readCache = cache.New(1*time.Minute, 5*time.Minute)
+		a.readCache = cache.NewShort(cache.WithEviction(1*time.Minute), cache.WithCleanWindow(5*time.Minute))
 	}
 	var cacheKey string
 	if claims, ok := ctx.Value(claim.ContextKey).(claim.Claims); ok {
@@ -108,10 +108,10 @@ func (a *QuotaFilter) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, op
 		n.MustSetMeta("ws_quota_usage", u)
 		resp.Node = n
 		if cacheKey != "" {
-			a.readCache.Set(cacheKey, &qCache{q: q, u: u}, cache.DefaultExpiration)
+			a.readCache.Set(cacheKey, &qCache{q: q, u: u})
 		}
 	} else if cacheKey != "" {
-		a.readCache.Set(cacheKey, &qCache{no: true}, cache.DefaultExpiration)
+		a.readCache.Set(cacheKey, &qCache{no: true})
 	}
 	return resp, err
 }

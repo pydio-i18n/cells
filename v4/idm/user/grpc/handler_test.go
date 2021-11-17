@@ -22,30 +22,25 @@ package grpc
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"sync"
 	"testing"
 	"time"
 
+	_ "github.com/mattn/go-sqlite3"
+	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/metadata"
-
-	cache "github.com/patrickmn/go-cache"
 	"google.golang.org/protobuf/types/known/anypb"
 
+	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/sql"
+	"github.com/pydio/cells/v4/common/utils/cache"
 	"github.com/pydio/cells/v4/idm/user"
 	"github.com/pydio/cells/v4/x/configx"
-
-	. "github.com/smartystreets/goconvey/convey"
-	// SQLite Driver
-
-	"fmt"
-
-	_ "github.com/mattn/go-sqlite3"
-	"github.com/pydio/cells/v4/common"
 )
 
 var (
@@ -56,10 +51,10 @@ var (
 func TestMain(m *testing.M) {
 
 	// Use the cache mechanism to avoid trying to retrieve the role service
-	autoAppliesCache = cache.New(3600*time.Second, 7200*time.Second)
+	autoAppliesCache = cache.NewShort(cache.WithEviction(3600*time.Second), cache.WithCleanWindow(7200*time.Second))
 	autoAppliesCache.Set("autoApplies", map[string][]*idm.Role{
 		"autoApplyProfile": {{Uuid: "auto-apply", AutoApplies: []string{"autoApplyProfile"}}},
-	}, 0)
+	})
 
 	sqlDao := sql.NewDAO("sqlite3", "file::memory:?mode=memory&cache=shared", "idm_user")
 	if sqlDao == nil {

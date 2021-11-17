@@ -30,7 +30,6 @@ import (
 	"time"
 
 	"go.uber.org/zap"
-
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -128,8 +127,8 @@ func init() {
 					return e
 				}
 
-				proto.RegisterActivityServiceServer(srv, new(Handler))
-				tree.RegisterNodeProviderStreamerServer(srv, new(MetaProvider))
+				proto.RegisterActivityServiceServer(srv, &Handler{dao: dao})
+				tree.RegisterNodeProviderStreamerServer(srv, &MetaProvider{dao: dao})
 
 				return nil
 			}),

@@ -25,9 +25,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pydio/cells/v4/common/nodes/encryption"
-
-	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common/log"
@@ -36,18 +33,20 @@ import (
 	"github.com/pydio/cells/v4/common/nodes/acl"
 	"github.com/pydio/cells/v4/common/nodes/archive"
 	"github.com/pydio/cells/v4/common/nodes/core"
+	"github.com/pydio/cells/v4/common/nodes/encryption"
 	"github.com/pydio/cells/v4/common/nodes/path"
 	"github.com/pydio/cells/v4/common/nodes/put"
 	"github.com/pydio/cells/v4/common/nodes/version"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/utils/cache"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 )
 
 // Reverse is an extended clientImpl used mainly to filter events sent from inside to outside the application
 type Reverse struct {
 	nodes.Client
-	rootsCache *cache.Cache
+	rootsCache cache.Short
 }
 
 func ReverseClient(oo ...nodes.Option) *Reverse {
@@ -70,7 +69,7 @@ func ReverseClient(oo ...nodes.Option) *Reverse {
 	cl := newClient(opts...)
 	return &Reverse{
 		Client:     cl,
-		rootsCache: cache.New(120*time.Second, 10*time.Minute),
+		rootsCache: cache.NewShort(cache.WithEviction(120*time.Second), cache.WithCleanWindow(10*time.Minute)),
 	}
 }
 
@@ -145,7 +144,7 @@ func (r *Reverse) getRoot(ctx context.Context, rootId string) *tree.Node {
 	resp, e := r.GetClientsPool().GetTreeClient().ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Uuid: rootId}})
 	if e == nil && resp.Node != nil {
 		resp.Node.Path = strings.Trim(resp.Node.Path, "/")
-		r.rootsCache.Set(rootId, resp.Node.Clone(), cache.DefaultExpiration)
+		r.rootsCache.Set(rootId, resp.Node.Clone())
 		return resp.Node
 	}
 	return nil

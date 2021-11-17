@@ -27,7 +27,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/allegro/bigcache"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
@@ -45,7 +44,7 @@ import (
 )
 
 var (
-	syncCache       *cache.InstrumentedCache
+	syncCache       cache.Sharded
 	cacheNodePrefix = "__node__"
 	cacheDiffPrefix = "__diff__"
 )
@@ -83,13 +82,7 @@ func newCacheHandler() *CacheHandler {
 	s := &CacheHandler{}
 
 	if syncCache == nil {
-		c := bigcache.DefaultConfig(30 * time.Second)
-		c.CleanWindow = time.Minute
-		c.Shards = 64
-		c.MaxEntriesInWindow = 10 * 60 * 64
-		c.MaxEntrySize = 200
-		c.HardMaxCacheSize = 8
-		syncCache = cache.NewInstrumentedCache(nodes.ViewsLibraryName, c)
+		syncCache = cache.NewSharded(nodes.ViewsLibraryName, cache.WithEviction(30*time.Second), cache.WithCleanWindow(time.Minute))
 		_, _ = broker.Subscribe(common.TopicTreeChanges, func(publication broker.Message) error {
 			var event tree.NodeChangeEvent
 			if ctx, e := publication.Unmarshal(&event); e == nil && !event.Optimistic {

@@ -27,7 +27,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -45,30 +44,29 @@ import (
 	"github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/service/errors"
+	"github.com/pydio/cells/v4/common/utils/cache"
 	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 )
 
 type MicroEventsSubscriber struct {
 	sync.Mutex
-	treeClient tree.NodeProviderClient
-	usrClient  idm.UserServiceClient
-	roleClient idm.RoleServiceClient
-	wsClient   idm.WorkspaceServiceClient
+	treeClient   tree.NodeProviderClient
+	usrClient    idm.UserServiceClient
+	roleClient   idm.RoleServiceClient
+	wsClient     idm.WorkspaceServiceClient
+	parentsCache cache.Short
+	dao          activity.DAO
 
-	parentsCache     *cache.Cache
-	accessListsCache *cache.Cache
-	changeEvents     []*idm.ChangeEvent
-	aclsChan         chan *idm.ChangeEvent
-	dao              activity.DAO
+	changeEvents []*idm.ChangeEvent
+	aclsChan     chan *idm.ChangeEvent
 }
 
 func NewEventsSubscriber(dao activity.DAO) *MicroEventsSubscriber {
 	m := &MicroEventsSubscriber{
-		dao:              dao,
-		aclsChan:         make(chan *idm.ChangeEvent),
-		parentsCache:     cache.New(3*time.Minute, 10*time.Minute),
-		accessListsCache: cache.New(20*time.Second, 60*time.Second),
+		dao:          dao,
+		aclsChan:     make(chan *idm.ChangeEvent),
+		parentsCache: cache.NewShort(cache.WithEviction(3*time.Minute), cache.WithCleanWindow(10*time.Minute)),
 	}
 	go m.DebounceAclsEvents()
 	return m
@@ -281,10 +279,10 @@ func (e *MicroEventsSubscriber) parentsFromCache(ctx context.Context, node *tree
 			resp, err := e.getTreeClient().ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Path: parentPath}})
 			if err == nil {
 				uuid := resp.Node.Uuid
-				e.parentsCache.Set(parentPath, uuid, cache.DefaultExpiration)
+				e.parentsCache.Set(parentPath, uuid)
 				parentUuids = append(parentUuids, uuid)
 			} else if errors.Parse(err.Error()).Code == 404 {
-				e.parentsCache.Set(parentPath, "**DELETED**", cache.DefaultExpiration)
+				e.parentsCache.Set(parentPath, "**DELETED**")
 			}
 		}
 	}

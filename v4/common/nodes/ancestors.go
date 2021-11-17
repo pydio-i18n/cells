@@ -26,10 +26,19 @@ import (
 	"io"
 	"path"
 	"strings"
+	"time"
 
 	"google.golang.org/grpc/status"
 
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/utils/cache"
+)
+
+var (
+	ancestorsCacheExpiration = cache.WithEviction(800 * time.Millisecond)
+	ancestorsCacheWindow     = cache.WithCleanWindow(5 * time.Second)
+	ancestorsParentsCache    = cache.NewShort(ancestorsCacheExpiration, ancestorsCacheExpiration)
+	ancestorsNodesCache      = cache.NewShort(ancestorsCacheExpiration, ancestorsCacheWindow)
 )
 
 // BuildAncestorsList uses ListNodes with "Ancestors" flag to build the list of parent nodes.
@@ -53,7 +62,7 @@ func BuildAncestorsList(ctx context.Context, treeClient tree.NodeProviderClient,
 					if er != nil {
 						return parentUuids, er
 					}
-					ancestorsNodesCache.SetDefault(node.GetPath(), r.GetNode())
+					ancestorsNodesCache.Set(node.GetPath(), r.GetNode())
 					parentUuids = append(parentUuids, r.GetNode())
 				}
 				parentUuids = append(parentUuids, parents...)
@@ -70,7 +79,7 @@ func BuildAncestorsList(ctx context.Context, treeClient tree.NodeProviderClient,
 		return parentUuids, lErr
 	}
 	defer ancestorStream.CloseSend()
-	
+
 	for {
 		parent, e := ancestorStream.Recv()
 		if e != nil {
@@ -91,8 +100,8 @@ func BuildAncestorsList(ctx context.Context, treeClient tree.NodeProviderClient,
 	if dirPath != "" && parentUuids != nil && len(parentUuids) > 1 {
 		cNode := parentUuids[0]
 		pNodes := parentUuids[1:]
-		ancestorsNodesCache.SetDefault(node.GetPath(), cNode)
-		ancestorsParentsCache.SetDefault(dirPath, pNodes)
+		ancestorsNodesCache.Set(node.GetPath(), cNode)
+		ancestorsParentsCache.Set(dirPath, pNodes)
 	}
 	return parentUuids, err
 }

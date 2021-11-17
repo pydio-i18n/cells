@@ -47,13 +47,13 @@ type MetaServer struct {
 
 	//	Dao           DAO
 	eventsChannel chan *cache.EventWithContext
-	cache         *cache.InstrumentedCache
+	cache         cache.Sharded
 	cacheMutex    *cache.KeyMutex
 }
 
 func NewMetaServer(c context.Context) *MetaServer {
 	m := &MetaServer{}
-	m.cache = cache.NewInstrumentedCache(common.ServiceGrpcNamespace_ + common.ServiceMeta)
+	m.cache = cache.NewSharded(common.ServiceGrpcNamespace_ + common.ServiceMeta)
 	m.cacheMutex = cache.NewKeyMutex()
 	go func() {
 		<-c.Done()

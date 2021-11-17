@@ -24,11 +24,11 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
+	"github.com/pydio/cells/v4/common/utils/cache"
 	"io"
 	"strings"
 	"time"
 
-	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
@@ -46,7 +46,7 @@ type BranchFilter struct {
 	Handler
 	InputMethod    nodes.FilterFunc
 	OutputMethod   nodes.FilterFunc
-	RootNodesCache *cache.Cache
+	RootNodesCache cache.Short
 }
 
 func (v *BranchFilter) LookupRoot(uuid string) (*tree.Node, error) {
@@ -56,7 +56,7 @@ func (v *BranchFilter) LookupRoot(uuid string) (*tree.Node, error) {
 	}
 
 	if v.RootNodesCache == nil {
-		v.RootNodesCache = cache.New(time.Second*10, time.Second*60)
+		v.RootNodesCache = cache.NewShort(cache.WithEviction(time.Second*10), cache.WithCleanWindow(time.Second*60))
 	}
 
 	if n, ok := v.RootNodesCache.Get(uuid); ok {
@@ -69,7 +69,7 @@ func (v *BranchFilter) LookupRoot(uuid string) (*tree.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	v.RootNodesCache.Set(uuid, resp.Node, cache.DefaultExpiration)
+	v.RootNodesCache.Set(uuid, resp.Node)
 
 	return resp.Node, nil
 }

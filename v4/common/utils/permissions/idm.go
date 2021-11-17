@@ -27,7 +27,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -40,15 +39,16 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/service/errors"
+	"github.com/pydio/cells/v4/common/utils/cache"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 var (
-	usersCache *cache.Cache
+	usersCache cache.Short
 )
 
 func init() {
-	usersCache = cache.New(5*time.Second, 30*time.Second)
+	usersCache = cache.NewShort(cache.WithEviction(5*time.Second), cache.WithCleanWindow(30*time.Second))
 }
 
 // GetRolesForUser loads the roles of a given user.
@@ -417,7 +417,7 @@ func AccessListFromContextClaims(ctx context.Context) (accessList *AccessList, e
 	for _, workspace := range idmWorkspaces {
 		accessList.Workspaces[workspace.UUID] = workspace
 	}
-	getAclCache().Set(claims.SessionID+claims.Subject, accessList, cache.DefaultExpiration)
+	getAclCache().Set(claims.SessionID+claims.Subject, accessList)
 	return accessList, nil
 }
 
@@ -496,8 +496,8 @@ func SearchUniqueUser(ctx context.Context, login string, uuid string, queries ..
 	}
 	// Store to quick cache
 	if len(queries) == 0 {
-		usersCache.Set(login, user, cache.DefaultExpiration)
-		usersCache.Set(uuid, user, cache.DefaultExpiration)
+		usersCache.Set(login, user)
+		usersCache.Set(uuid, user)
 	}
 	return
 }
