@@ -47,20 +47,15 @@ func init() {
 			service.WithGRPC(func(c context.Context, srv *grpc.Server) error {
 				h := &NodeKeyManagerHandler{}
 				encryption.RegisterNodeKeyManagerServer(srv, h)
-				sub, e := broker.Subscribe(common.TopicTreeChanges, func(message broker.Message) error {
+				if e := broker.SubscribeCancellable(c, common.TopicTreeChanges, func(message broker.Message) error {
 					msg := &tree.NodeChangeEvent{}
 					if ctx, e := message.Unmarshal(msg); e == nil {
 						return h.HandleTreeChanges(ctx, msg)
 					}
 					return nil
-				})
-				if e != nil {
+				}); e != nil {
 					return e
 				}
-				go func() {
-					<-c.Done()
-					_ = sub()
-				}()
 				return nil
 			}),
 		)

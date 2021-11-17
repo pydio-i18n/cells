@@ -59,20 +59,16 @@ func init() {
 
 				// Clean role on user deletion
 				cleaner := NewCleaner(handler, servicecontext.GetDAO(ctx))
-				u, e := broker.Subscribe(common.TopicIdmEvent, func(message broker.Message) error {
+				if e := broker.SubscribeCancellable(ctx, common.TopicIdmEvent, func(message broker.Message) error {
 					ic := &idm.ChangeEvent{}
 					if ct, e := message.Unmarshal(ic); e == nil {
 						return cleaner.Handle(ct, ic)
 					}
 					return nil
-				})
-				if e != nil {
+				}); e != nil {
 					return e
 				}
-				go func() {
-					<-ctx.Done()
-					_ = u()
-				}()
+
 				return nil
 			}),
 		)

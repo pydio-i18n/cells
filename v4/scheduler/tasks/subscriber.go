@@ -71,6 +71,7 @@ type Subscriber struct {
 
 // NewSubscriber creates a multiplexer for tasks managements and messages
 // by maintaining a map of dispatcher, one for each job definition.
+// Todo v4 : make sure everything is properly closed on ctx.Done() signal
 func NewSubscriber(parentContext context.Context) *Subscriber {
 
 	s := &Subscriber{
@@ -91,7 +92,7 @@ func NewSubscriber(parentContext context.Context) *Subscriber {
 	opt := broker.Queue("tasks")
 
 	// srv.Subscribe(srv.NewSubscriber(common.TopicJobConfigEvent, s.jobsChangeEvent, opts))
-	broker.Subscribe(common.TopicJobTaskEvent, func(message broker.Message) error {
+	_ = broker.SubscribeCancellable(parentContext, common.TopicJobTaskEvent, func(message broker.Message) error {
 		js := &jobs.JobChangeEvent{}
 		if ctx, e := message.Unmarshal(js); e == nil {
 			return s.jobsChangeEvent(ctx, js)
@@ -100,7 +101,7 @@ func NewSubscriber(parentContext context.Context) *Subscriber {
 	}, opt)
 
 	//srv.Subscribe(srv.NewSubscriber(common.TopicTreeChanges, s.nodeEvent, opts))
-	broker.Subscribe(common.TopicTreeChanges, func(message broker.Message) error {
+	_ = broker.SubscribeCancellable(parentContext, common.TopicTreeChanges, func(message broker.Message) error {
 		target := &tree.NodeChangeEvent{}
 		if ctx, e := message.Unmarshal(target); e == nil {
 			return s.nodeEvent(ctx, target)
@@ -115,7 +116,7 @@ func NewSubscriber(parentContext context.Context) *Subscriber {
 	//			return nil
 	//		}
 	//	}, opts))
-	broker.Subscribe(common.TopicMetaChanges, func(message broker.Message) error {
+	_ = broker.SubscribeCancellable(parentContext, common.TopicMetaChanges, func(message broker.Message) error {
 		target := &tree.NodeChangeEvent{}
 		if ctx, e := message.Unmarshal(target); e == nil && (target.Type == tree.NodeChangeEvent_UPDATE_META || target.Type == tree.NodeChangeEvent_UPDATE_USER_META) {
 			return s.nodeEvent(ctx, target)
@@ -124,7 +125,7 @@ func NewSubscriber(parentContext context.Context) *Subscriber {
 	}, opt)
 
 	//srv.Subscribe(srv.NewSubscriber(common.TopicTimerEvent, s.timerEvent, opts))
-	broker.Subscribe(common.TopicTimerEvent, func(message broker.Message) error {
+	_ = broker.SubscribeCancellable(parentContext, common.TopicTimerEvent, func(message broker.Message) error {
 		target := &jobs.JobTriggerEvent{}
 		if ctx, e := message.Unmarshal(target); e == nil {
 			return s.timerEvent(ctx, target)
@@ -133,7 +134,7 @@ func NewSubscriber(parentContext context.Context) *Subscriber {
 	}, opt)
 
 	// srv.Subscribe(srv.NewSubscriber(common.TopicIdmEvent, s.idmEvent, opts))
-	broker.Subscribe(common.TopicTreeChanges, func(message broker.Message) error {
+	_ = broker.SubscribeCancellable(parentContext, common.TopicTreeChanges, func(message broker.Message) error {
 		target := &idm.ChangeEvent{}
 		if ctx, e := message.Unmarshal(target); e == nil {
 			return s.idmEvent(ctx, target)

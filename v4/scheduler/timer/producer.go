@@ -67,6 +67,8 @@ func NewEventProducer(rootCtx context.Context) *EventProducer {
 				} else {
 					broker.MustPublish(e.Context, common.TopicTimerEvent, event)
 				}
+			case <-rootCtx.Done():
+				e.StopAll()
 			case <-e.StopChan:
 				return
 			}

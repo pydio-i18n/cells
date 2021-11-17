@@ -58,21 +58,15 @@ func init() {
 
 				go watchRegistry(ctx, treeServer)
 
-				unsub, err := broker.Subscribe(common.TopicIndexChanges, func(message broker.Message) error {
+				if err := broker.SubscribeCancellable(ctx, common.TopicIndexChanges, func(message broker.Message) error {
 					msg := &tree.NodeChangeEvent{}
 					if ct, e := message.Unmarshal(msg); e == nil {
 						return eventSubscriber.Handle(ct, msg)
 					}
 					return nil
-				}, broker.Queue("tree"))
-				if err != nil {
+				}, broker.Queue("tree")); err != nil {
 					return err
 				}
-
-				go func() {
-					<-ctx.Done()
-					_ = unsub()
-				}()
 
 				return nil
 			}),

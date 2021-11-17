@@ -78,20 +78,15 @@ func init() {
 				// Register a cleaner for removing a workspace when there are no more ACLs on it.
 				dao := servicecontext.GetDAO(ctx).(user.DAO)
 				cleaner := &RolesCleaner{Dao: dao}
-				u, e := broker.Subscribe(common.TopicIdmEvent, func(message broker.Message) error {
+				if e := broker.SubscribeCancellable(ctx, common.TopicIdmEvent, func(message broker.Message) error {
 					ev := &idm.ChangeEvent{}
 					if ct, e := message.Unmarshal(ev); e == nil {
 						return cleaner.Handle(ct, ev)
 					}
 					return nil
-				})
-				if e != nil {
+				}); e != nil {
 					return e
 				}
-				go func() {
-					<-ctx.Done()
-					_ = u()
-				}()
 
 				return nil
 			}),

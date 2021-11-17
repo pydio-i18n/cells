@@ -22,7 +22,6 @@ package bleve
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common"
 	"io/ioutil"
 	"log"
 	"os"
@@ -31,15 +30,17 @@ import (
 	"testing"
 	"time"
 
+	"github.com/pydio/cells/v4/common"
+
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/pydio/cells/v4/common/proto/tree"
 )
 
-func getTmpIndex(createNodes bool) (s *BleveServer, dir string) {
+func getTmpIndex(createNodes bool) (s *Server, dir string) {
 	tmpDir, _ := ioutil.TempDir("", "bleve")
-	BleveIndexPath = filepath.Join(tmpDir, "pydio")
-	server, _ := NewBleveEngine(false, nil)
+	IndexPath = filepath.Join(tmpDir, "pydio")
+	server, _ := NewEngine(context.Background(), false, nil)
 
 	if createNodes {
 
@@ -84,7 +85,7 @@ func getTmpIndex(createNodes bool) (s *BleveServer, dir string) {
 	return server, tmpDir
 }
 
-func search(ctx context.Context, index *BleveServer, queryObject *tree.Query) ([]*tree.Node, error) {
+func search(ctx context.Context, index *Server, queryObject *tree.Query) ([]*tree.Node, error) {
 
 	resultsChan := make(chan *tree.Node)
 	facetsChan := make(chan *tree.SearchFacet)
@@ -120,18 +121,18 @@ func search(ctx context.Context, index *BleveServer, queryObject *tree.Query) ([
 func TestNewBleveEngine(t *testing.T) {
 
 	tmpDir, _ := ioutil.TempDir("", "bleve")
-	BleveIndexPath = filepath.Join(tmpDir, "pydio")
+	IndexPath = filepath.Join(tmpDir, "pydio")
 	defer os.RemoveAll(tmpDir)
 
 	Convey("Test create bleve engine then reopen it", t, func() {
-		server, err := NewBleveEngine(false, nil)
+		server, err := NewEngine(context.Background(), false, nil)
 		So(err, ShouldBeNil)
 		So(server, ShouldNotBeNil)
 
 		e := server.Close()
 		So(e, ShouldBeNil)
 
-		server, err = NewBleveEngine(false, nil)
+		server, err = NewEngine(context.Background(), false, nil)
 		So(err, ShouldBeNil)
 		So(server, ShouldNotBeNil)
 

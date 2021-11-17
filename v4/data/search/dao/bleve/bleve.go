@@ -24,10 +24,11 @@ package bleve
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/pydio/cells/v4/common"
 
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/analysis/analyzer/keyword"
@@ -81,11 +82,12 @@ const (
 )
 
 var (
-	BleveIndexPath = ""
-	BatchSize      = 2000
+	IndexPath = ""
+	BatchSize = 2000
 )
 
-type BleveServer struct {
+type Server struct {
+	Ctx          context.Context
 	Router       nodes.Handler
 	Engine       bleve.Index
 	IndexContent bool
@@ -100,27 +102,28 @@ type BleveServer struct {
 	nsProvider *meta.NsProvider
 }
 
-func NewBleveEngine(indexContent bool, configs map[string]interface{}) (*BleveServer, error) {
+func NewEngine(ctx context.Context, indexContent bool, configs map[string]interface{}) (*Server, error) {
 
-	if BleveIndexPath == "" {
-		return nil, fmt.Errorf("please setup BleveIndexPath before opening engine")
+	if IndexPath == "" {
+		return nil, fmt.Errorf("please setup IndexPath before opening engine")
 	}
 	bnA, cA, er := extractConfigs(configs)
 	if er != nil {
 		return nil, er
 	}
-	_, e := os.Stat(BleveIndexPath)
+	_, e := os.Stat(IndexPath)
 	var index bleve.Index
 	var err error
 	if e == nil {
-		index, err = bleve.Open(BleveIndexPath)
+		index, err = bleve.Open(IndexPath)
 	} else {
-		index, err = createIndex(BleveIndexPath, bnA, cA)
+		index, err = createIndex(IndexPath, bnA, cA)
 	}
 	if err != nil {
 		return nil, err
 	}
-	server := &BleveServer{
+	server := &Server{
+		Ctx:              ctx,
 		Engine:           index,
 		IndexContent:     indexContent,
 		basenameAnalyzer: bnA,
@@ -133,7 +136,7 @@ func NewBleveEngine(indexContent bool, configs map[string]interface{}) (*BleveSe
 	return server, nil
 }
 
-func (s *BleveServer) watchOperations() {
+func (s *Server) watchOperations() {
 	batch := NewBatch(BatchOptions{IndexContent: s.IndexContent})
 	for {
 		select {
@@ -149,6 +152,8 @@ func (s *BleveServer) watchOperations() {
 			}
 		case <-time.After(3 * time.Second):
 			batch.Flush(s.Engine)
+		case <-s.Ctx.Done():
+			s.Close()
 		case <-s.done:
 			batch.Flush(s.Engine)
 			s.Engine.Close()
@@ -201,7 +206,7 @@ func createIndex(indexPath string, bnAna, cAna string) (bleve.Index, error) {
 
 }
 
-func (s *BleveServer) Close() error {
+func (s *Server) Close() error {
 	close(s.done)
 	return nil
 }
@@ -246,7 +251,7 @@ func extractConfigs(conf map[string]interface{}) (basenameAnalyzer, contentAnaly
 	return
 }
 
-func (s *BleveServer) IndexNode(c context.Context, n *tree.Node, reloadCore bool, excludes map[string]struct{}) error {
+func (s *Server) IndexNode(c context.Context, n *tree.Node, reloadCore bool, excludes map[string]struct{}) error {
 
 	if n.GetUuid() == "" {
 		return fmt.Errorf("missing uuid")
@@ -265,21 +270,21 @@ func (s *BleveServer) IndexNode(c context.Context, n *tree.Node, reloadCore bool
 	return nil
 }
 
-func (s *BleveServer) DeleteNode(c context.Context, n *tree.Node) error {
+func (s *Server) DeleteNode(c context.Context, n *tree.Node) error {
 
 	s.deletes <- n.GetUuid()
 	return nil
 
 }
 
-func (s *BleveServer) ClearIndex(ctx context.Context) error {
+func (s *Server) ClearIndex(ctx context.Context) error {
 	s.done <- true
 	// Make sure it's properly closed...
 	<-time.After(1 * time.Second)
-	if e := os.RemoveAll(BleveIndexPath); e != nil {
+	if e := os.RemoveAll(IndexPath); e != nil {
 		return e
 	}
-	index, e := createIndex(BleveIndexPath, s.basenameAnalyzer, s.contentAnalyzer)
+	index, e := createIndex(IndexPath, s.basenameAnalyzer, s.contentAnalyzer)
 	if e != nil {
 		return e
 	}
@@ -288,7 +293,7 @@ func (s *BleveServer) ClearIndex(ctx context.Context) error {
 	return nil
 }
 
-func (s *BleveServer) makeBaseNameField(term string, boost float64) query.Query {
+func (s *Server) makeBaseNameField(term string, boost float64) query.Query {
 	if s.basenameAnalyzer == defaultBasenameAnalyzer && !strings.Contains(term, " ") {
 		term = strings.Trim(strings.ToLower(term), "* ")
 		wCard := bleve.NewWildcardQuery("*" + term + "*")
@@ -308,14 +313,14 @@ func (s *BleveServer) makeBaseNameField(term string, boost float64) query.Query 
 	}
 }
 
-func (s *BleveServer) makeContentField(term string) query.Query {
+func (s *Server) makeContentField(term string) query.Query {
 	cQuery := bleve.NewMatchQuery(term)
 	cQuery.Analyzer = s.contentAnalyzer
 	cQuery.SetField("TextContent")
 	return cQuery
 }
 
-func (s *BleveServer) makeDateTimeFacet(field string) *bleve.FacetRequest {
+func (s *Server) makeDateTimeFacet(field string) *bleve.FacetRequest {
 	dateFacet := bleve.NewFacetRequest(field, 5)
 	now := time.Now()
 	last5 := now.Add(-5 * time.Minute)
@@ -328,7 +333,7 @@ func (s *BleveServer) makeDateTimeFacet(field string) *bleve.FacetRequest {
 	return dateFacet
 }
 
-func (s *BleveServer) makeDateTimeFacetAsNum(field string) *bleve.FacetRequest {
+func (s *Server) makeDateTimeFacetAsNum(field string) *bleve.FacetRequest {
 	dateFacet := bleve.NewFacetRequest(field, 5)
 	now := time.Now()
 	last5 := now.Add(-5 * time.Minute)
@@ -346,7 +351,7 @@ func (s *BleveServer) makeDateTimeFacetAsNum(field string) *bleve.FacetRequest {
 	return dateFacet
 }
 
-func (s *BleveServer) SearchNodes(c context.Context, queryObject *tree.Query, from int32, size int32, resultChan chan *tree.Node, facets chan *tree.SearchFacet, doneChan chan bool) error {
+func (s *Server) SearchNodes(c context.Context, queryObject *tree.Query, from int32, size int32, resultChan chan *tree.Node, facets chan *tree.SearchFacet, doneChan chan bool) error {
 
 	boolean := bleve.NewBooleanQuery()
 	if term := queryObject.GetFileNameOrContent(); term != "" {

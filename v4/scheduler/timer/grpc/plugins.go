@@ -49,14 +49,13 @@ func init() {
 				subscriber := &timer.JobsEventsSubscriber{
 					Producer: producer,
 				}
-				unSubscriber, er := broker.Subscribe(common.TopicJobConfigEvent, func(message broker.Message) error {
+				if er := broker.SubscribeCancellable(c, common.TopicJobConfigEvent, func(message broker.Message) error {
 					msg := &jobs.JobChangeEvent{}
 					if ctx, e := message.Unmarshal(msg); e == nil {
 						return subscriber.Handle(ctx, msg)
 					}
 					return nil
-				})
-				if er != nil {
+				}); er != nil {
 					return fmt.Errorf("cannot subscribe on JobConfigEvent topic %v", er)
 				}
 
@@ -67,8 +66,6 @@ func init() {
 				select {
 				case <-c.Done():
 					fmt.Println("Handler is done")
-					producer.StopAll()
-					_ = unSubscriber()
 				}
 				return nil
 

@@ -23,6 +23,7 @@ package broker
 import (
 	"context"
 	"fmt"
+
 	"github.com/micro/micro/v3/service/broker"
 	"github.com/micro/micro/v3/service/broker/memory"
 	"github.com/micro/micro/v3/service/client"
@@ -64,6 +65,18 @@ func MustPublish(ctx context.Context, topic string, message interface{}, opts ..
 	if err != nil {
 		fmt.Printf("[Message Publication Error] Topic: %s, Error: %v\n", topic, err)
 	}
+}
+
+func SubscribeCancellable(ctx context.Context, topic string, handler SubscriberHandler, opts ...SubscribeOption) error {
+	unsub, e := Subscribe(topic, handler, opts...)
+	if e != nil {
+		return e
+	}
+	go func() {
+		<-ctx.Done()
+		_ = unsub()
+	}()
+	return nil
 }
 
 func Subscribe(topic string, handler SubscriberHandler, opts ...SubscribeOption) (UnSubscriber, error) {

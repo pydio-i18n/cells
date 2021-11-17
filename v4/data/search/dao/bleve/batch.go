@@ -47,8 +47,9 @@ import (
 // Batch avoids overflowing bleve index by batching indexation events (index/delete)
 type Batch struct {
 	sync.Mutex
-	inserts    map[string]*tree.IndexableNode
-	deletes    map[string]struct{}
+	inserts map[string]*tree.IndexableNode
+	deletes map[string]struct{}
+	// TODO V4 - Make Shared Provider for this package & SearchServer
 	nsProvider *meta.NsProvider
 	options    BatchOptions
 	ctx        context.Context

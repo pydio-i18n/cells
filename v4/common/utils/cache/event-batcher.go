@@ -37,6 +37,7 @@ type EventWithContext struct {
 }
 
 // EventsBatcher debounces events on a given timeframe and calls process on them afterward
+// Use globalCtx.Done() to stop listening to events
 type EventsBatcher struct {
 	Events chan *EventWithContext
 	Done   chan bool
@@ -54,7 +55,6 @@ type EventsBatcher struct {
 func NewEventsBatcher(ctx context.Context, debounce time.Duration, idle time.Duration, max int, atomic bool, process func(context.Context, ...*tree.NodeChangeEvent)) *EventsBatcher {
 	b := &EventsBatcher{
 		Events: make(chan *EventWithContext),
-		Done:   make(chan bool, 1),
 
 		globalCtx:       ctx,
 		debounce:        debounce,
@@ -81,16 +81,11 @@ func (b *EventsBatcher) Start() {
 		case <-time.After(next):
 			b.process()
 			next = b.idle
-		case <-b.Done:
+		case <-b.globalCtx.Done():
 			b.process()
 			return
 		}
 	}
-}
-
-// Stop stops listening to incoming events
-func (b *EventsBatcher) Stop() {
-	b.Done <- true
 }
 
 func (b *EventsBatcher) process() {

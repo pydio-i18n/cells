@@ -51,10 +51,14 @@ type MetaServer struct {
 	cacheMutex    *cache.KeyMutex
 }
 
-func NewMetaServer() *MetaServer {
+func NewMetaServer(c context.Context) *MetaServer {
 	m := &MetaServer{}
 	m.cache = cache.NewInstrumentedCache(common.ServiceGrpcNamespace_ + common.ServiceMeta)
 	m.cacheMutex = cache.NewKeyMutex()
+	go func() {
+		<-c.Done()
+		m.Stop()
+	}()
 	return m
 }
 

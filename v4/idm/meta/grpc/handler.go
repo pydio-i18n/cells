@@ -47,9 +47,13 @@ type Handler struct {
 	searchCache *cache.InstrumentedCache
 }
 
-func NewHandler() *Handler {
+func NewHandler(ctx context.Context) *Handler {
 	h := &Handler{}
 	h.searchCache = cache.NewInstrumentedCache(common.ServiceGrpcNamespace_ + common.ServiceUserMeta)
+	go func() {
+		<-ctx.Done()
+		h.Stop()
+	}()
 	return h
 }
 

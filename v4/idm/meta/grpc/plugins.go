@@ -63,29 +63,22 @@ func init() {
 				},
 			}),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
-				handler := NewHandler()
+				handler := NewHandler(ctx)
 
 				idm.RegisterUserMetaServiceServer(server, handler)
 				tree.RegisterNodeProviderStreamerServer(server, handler)
 
 				// Clean role on user deletion
 				cleaner := NewCleaner(servicecontext.GetDAO(ctx))
-				u, e := broker.Subscribe(common.TopicIdmEvent, func(message broker.Message) error {
+				if e := broker.SubscribeCancellable(ctx, common.TopicIdmEvent, func(message broker.Message) error {
 					ev := &idm.ChangeEvent{}
 					if ct, e := message.Unmarshal(ev); e == nil {
 						return cleaner.Handle(ct, ev)
 					}
 					return nil
-				})
-				if e != nil {
+				}); e != nil {
 					return e
 				}
-
-				go func() {
-					<-ctx.Done()
-					_ = u()
-					handler.Stop()
-				}()
 
 				return nil
 			}),

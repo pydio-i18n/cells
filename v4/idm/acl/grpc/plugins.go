@@ -59,31 +59,26 @@ func init() {
 
 				// Clean acls on Ws or Roles deletion
 				rCleaner := &WsRolesCleaner{Handler: handler}
-				unsub1, e := broker.Subscribe(common.TopicIdmEvent, func(message broker.Message) error {
+				if e := broker.SubscribeCancellable(ctx, common.TopicIdmEvent, func(message broker.Message) error {
 					ev := &idm.ChangeEvent{}
 					if ct, e := message.Unmarshal(ev); e == nil {
 						return rCleaner.Handle(ct, ev)
 					}
 					return nil
-				})
-				if e != nil {
+				}); e != nil {
 					return e
 				}
 
 				nCleaner := newNodesCleaner(ctx, handler)
-				unsub2, e := broker.Subscribe(common.TopicTreeChanges, func(message broker.Message) error {
+				if e := broker.SubscribeCancellable(ctx, common.TopicTreeChanges, func(message broker.Message) error {
 					ev := &tree.NodeChangeEvent{}
 					if ct, e := message.Unmarshal(ev); e == nil {
 						return nCleaner.Handle(ct, ev)
 					}
 					return nil
-				})
-
-				go func() {
-					<-ctx.Done()
-					_ = unsub1()
-					_ = unsub2()
-				}()
+				}); e != nil {
+					return e
+				}
 
 				// For when it will be used: clean locks at startup
 				//	dao := servicecontext.GetDAO(m.Options().Context).(acl.DAO)

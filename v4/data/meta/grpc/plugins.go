@@ -45,7 +45,7 @@ func init() {
 			service.WithStorage(meta.NewDAO, "data_meta"),
 			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
 
-				engine := NewMetaServer()
+				engine := NewMetaServer(c)
 
 				tree.RegisterNodeProviderServer(server, engine)
 				tree.RegisterNodeProviderStreamerServer(server, engine)
@@ -53,24 +53,17 @@ func init() {
 				tree.RegisterSearcherServer(server, engine)
 
 				// Register Subscribers
-				sub := engine.Subscriber(ctx)
-				unsub, e := broker.Subscribe(common.TopicTreeChanges, func(message broker.Message) error {
+				sub := engine.Subscriber(c)
+				if e := broker.SubscribeCancellable(c, common.TopicTreeChanges, func(message broker.Message) error {
 					msg := &tree.NodeChangeEvent{}
 					if ctx, e := message.Unmarshal(msg); e == nil {
 						return sub.Handle(ctx, msg)
 					}
 					return nil
-				})
-				if e != nil {
+				}); e != nil {
 					engine.Stop()
 					return e
 				}
-
-				go func() {
-					<-c.Done()
-					engine.Stop()
-					_ = unsub()
-				}()
 
 				return nil
 			}),

@@ -29,6 +29,8 @@ import (
 	"context"
 	"time"
 
+	"go.uber.org/zap"
+
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -77,11 +79,14 @@ func init() {
 				dao := servicecontext.GetDAO(c).(activity.DAO)
 				// Register Subscribers
 				subscriber := NewEventsSubscriber(dao)
+				// Start batcher - it is stopped by c.Done()
 				batcher := cache.NewEventsBatcher(c, 3*time.Second, 20*time.Second, 2000, true, func(ctx context.Context, msg ...*tree.NodeChangeEvent) {
-					subscriber.HandleNodeChange(ctx, msg[0])
+					if e := subscriber.HandleNodeChange(ctx, msg[0]); e != nil {
+						log.Logger(c).Warn("Error while handling event", zap.Error(e))
+					}
 				})
 
-				u1, e := broker.Subscribe(common.TopicTreeChanges, func(message broker.Message) error {
+				if e := broker.SubscribeCancellable(c, common.TopicTreeChanges, func(message broker.Message) error {
 					msg := &tree.NodeChangeEvent{}
 					if ctx, e := message.Unmarshal(msg); e == nil {
 						if msg.Target != nil && (msg.Target.Etag == common.NodeFlagEtagTemporary || msg.Target.HasMetaKey(common.MetaNamespaceDatasourceInternal)) {
@@ -96,12 +101,11 @@ func init() {
 						batcher.Events <- &cache.EventWithContext{NodeChangeEvent: msg, Ctx: ctx}
 					}
 					return nil
-				})
-				if e != nil {
+				}); e != nil {
 					return e
 				}
 
-				u2, e := broker.Subscribe(common.TopicMetaChanges, func(message broker.Message) error {
+				if e := broker.SubscribeCancellable(c, common.TopicMetaChanges, func(message broker.Message) error {
 					msg := &tree.NodeChangeEvent{}
 					if ctx, e := message.Unmarshal(msg); e == nil {
 						if msg.Optimistic || msg.Type != tree.NodeChangeEvent_UPDATE_USER_META {
@@ -110,41 +114,22 @@ func init() {
 						batcher.Events <- &cache.EventWithContext{NodeChangeEvent: msg, Ctx: ctx}
 					}
 					return nil
-				})
-				if e != nil {
+				}); e != nil {
 					return e
 				}
 
-				u3, e := broker.Subscribe(common.TopicIdmEvent, func(message broker.Message) error {
+				if e := broker.SubscribeCancellable(c, common.TopicIdmEvent, func(message broker.Message) error {
 					msg := &idm.ChangeEvent{}
 					if ctx, e := message.Unmarshal(msg); e == nil {
 						return subscriber.HandleIdmChange(ctx, msg)
 					}
 					return nil
-				})
-				if e != nil {
+				}); e != nil {
 					return e
 				}
 
 				proto.RegisterActivityServiceServer(srv, new(Handler))
 				tree.RegisterNodeProviderStreamerServer(srv, new(MetaProvider))
-
-				/*
-					// TODO V4 Replaced by below ?
-					m.Init(micro.BeforeStop(func() error {
-						batcher.Stop()
-						return nil
-					}))
-				*/
-
-				go func() {
-					<-c.Done()
-					batcher.Stop()
-					// Unsubscribes
-					_ = u1()
-					_ = u2()
-					_ = u3()
-				}()
 
 				return nil
 			}),

@@ -73,12 +73,12 @@ func init() {
 				}
 
 				dir, _ := config.ServiceDataDir(Name)
-				bleve.BleveIndexPath = filepath.Join(dir, "searchengine.bleve")
-				bleveConfs := make(map[string]interface{})
-				bleveConfs["basenameAnalyzer"] = cfg.Val("basenameAnalyzer").String()
-				bleveConfs["contentAnalyzer"] = cfg.Val("contentAnalyzer").String()
+				bleve.IndexPath = filepath.Join(dir, "searchengine.bleve")
+				bleveCfg := make(map[string]interface{})
+				bleveCfg["basenameAnalyzer"] = cfg.Val("basenameAnalyzer").String()
+				bleveCfg["contentAnalyzer"] = cfg.Val("contentAnalyzer").String()
 
-				bleveEngine, err := bleve.NewBleveEngine(indexContent, bleveConfs)
+				bleveEngine, err := bleve.NewEngine(c, indexContent, bleveCfg)
 				if err != nil {
 					return err
 				}
@@ -93,14 +93,13 @@ func init() {
 				sync.RegisterSyncEndpointServer(server, searcher)
 
 				subscriber := searcher.Subscriber()
-				un, e := broker.Subscribe(common.TopicMetaChanges, func(message broker.Message) error {
+				if e := broker.SubscribeCancellable(c, common.TopicMetaChanges, func(message broker.Message) error {
 					msg := &tree.NodeChangeEvent{}
 					if ct, e := message.Unmarshal(msg); e == nil {
 						return subscriber.Handle(ct, msg)
 					}
 					return nil
-				})
-				if e != nil {
+				}); e != nil {
 					_ = bleveEngine.Close()
 					return e
 				}
@@ -108,7 +107,6 @@ func init() {
 				go func() {
 					<-c.Done()
 					_ = bleveEngine.Close()
-					_ = un()
 				}()
 
 				return nil
