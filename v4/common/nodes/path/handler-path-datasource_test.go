@@ -26,7 +26,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/patrickmn/go-cache"
 	. "github.com/smartystreets/goconvey/convey"
 
@@ -35,6 +34,7 @@ import (
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/errors"
 )
 
 func newTestHandlerBranchTranslator(pool *nodes.ClientsPool) (*DataSourceHandler, *nodes.HandlerMock) {

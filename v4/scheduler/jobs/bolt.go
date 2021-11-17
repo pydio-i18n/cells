@@ -26,7 +26,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/errors"
 	bolt "go.etcd.io/bbolt"
 	"go.uber.org/zap"
 
@@ -36,6 +35,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/errors"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
 

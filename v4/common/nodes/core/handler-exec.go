@@ -24,25 +24,25 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"io"
 	"io/ioutil"
 	"path"
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/context/metadata"
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
+	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/abstract"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
+	"github.com/pydio/cells/v4/common/service/errors"
 	context2 "github.com/pydio/cells/v4/common/utils/context"
 )
 

@@ -27,9 +27,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/context/metadata"
-
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 const (
@@ -52,7 +51,7 @@ const (
 // HttpRequestInfoToMetadata extracts as much HTTP metadata as possible and stores it in the context as metadata.
 func HttpRequestInfoToMetadata(ctx context.Context, req *http.Request) context.Context {
 
-	meta := metadata.Metadata{}
+	meta := map[string]string{}
 	if existing, ok := metadata.FromContext(ctx); ok {
 		if _, already := existing[HttpMetaExtracted]; already {
 			return ctx

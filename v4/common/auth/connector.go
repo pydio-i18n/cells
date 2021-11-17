@@ -24,8 +24,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/golang/protobuf/proto"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common/log"
 )

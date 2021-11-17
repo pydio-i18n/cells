@@ -27,10 +27,6 @@ import (
 	"strings"
 	"time"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
-
-	"github.com/micro/micro/v3/service/context/metadata"
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -42,6 +38,9 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
+	"github.com/pydio/cells/v4/common/service/errors"
+	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 var (

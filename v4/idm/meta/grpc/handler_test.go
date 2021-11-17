@@ -26,10 +26,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/micro/micro/v3/service/context/metadata"
-
 	"github.com/pydio/cells/v4/common/proto/idm"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/idm/meta"
 	"github.com/pydio/cells/v4/x/configx"

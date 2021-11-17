@@ -33,7 +33,6 @@ import (
 	"sync"
 
 	"github.com/emicklei/go-restful"
-	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/pborman/uuid"
 	exifremove "github.com/scottleedavis/go-exif-remove"
 	"go.uber.org/zap"
@@ -50,6 +49,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/rest"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/service/frontend"
 	"github.com/pydio/cells/v4/common/service/resources"
 	"github.com/pydio/cells/v4/common/utils/permissions"

@@ -36,13 +36,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/minio-go/v7/pkg/credentials"
-
-	"github.com/minio/minio-go/v7/pkg/notification"
-
-	errors2 "github.com/micro/micro/v3/service/errors"
-
 	minio "github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
+	"github.com/minio/minio-go/v7/pkg/notification"
 	"github.com/pborman/uuid"
 	"go.uber.org/zap"
 	"golang.org/x/text/unicode/norm"
@@ -50,6 +46,7 @@ import (
 	servicescommon "github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	errors2 "github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/sync/model"
 )
 

@@ -27,15 +27,13 @@ import (
 	"time"
 
 	bolt "go.etcd.io/bbolt"
-
-	json "github.com/pydio/cells/v4/x/jsonx"
-
-	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/docstore"
+	"github.com/pydio/cells/v4/common/service/errors"
+	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 var (

@@ -29,7 +29,6 @@ import (
 
 	"github.com/cskr/pubsub"
 	"github.com/golang/protobuf/ptypes"
-	"github.com/micro/micro/v3/service/context/metadata"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -42,6 +41,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/utils/cache"
 	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
@@ -254,7 +254,7 @@ func (s *Subscriber) prepareTaskContext(ctx context.Context, job *jobs.Job, addS
 	// Add System User if necessary
 	if addSystemUser {
 		if u, _ := permissions.FindUserNameInContext(ctx); u == "" {
-			ctx = metadata.NewContext(ctx, metadata.Metadata{common.PydioContextUserKey: common.PydioSystemUsername})
+			ctx = metadata.NewContext(ctx, map[string]string{common.PydioContextUserKey: common.PydioSystemUsername})
 			ctx = context.WithValue(ctx, common.PydioContextUserKey, common.PydioSystemUsername)
 		}
 	}

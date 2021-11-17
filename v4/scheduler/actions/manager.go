@@ -24,10 +24,9 @@ import (
 	"context"
 	"sync"
 
-	"github.com/micro/micro/v3/service/errors"
-
 	"github.com/pydio/cells/v4/common/forms"
 	"github.com/pydio/cells/v4/common/proto/jobs"
+	"github.com/pydio/cells/v4/common/service/errors"
 )
 
 var (

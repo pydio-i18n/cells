@@ -25,7 +25,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/pydio/melody"
 	"go.uber.org/zap"
 	"golang.org/x/time/rate"
@@ -38,6 +37,7 @@ import (
 	"github.com/pydio/cells/v4/common/nodes/abstract"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 )
@@ -118,7 +118,7 @@ func prepareRemoteContext(session *melody.Session) (context.Context, error) {
 	metaCtx := auth.ContextFromClaims(context.Background(), claims.(claim.Claims))
 	metaCtx = servicecontext.WithServiceName(metaCtx, common.ServiceGatewayNamespace_+common.ServiceWebSocket)
 	if md, o := session.Get(SessionMetaContext); o {
-		metaCtx = context2.WithAdditionalMetadata(metaCtx, md.(metadata.Metadata))
+		metaCtx = context2.WithAdditionalMetadata(metaCtx, md.(map[string]string))
 	}
 	return metaCtx, nil
 }

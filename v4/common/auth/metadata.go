@@ -24,10 +24,9 @@ import (
 	"context"
 	"strings"
 
-	"github.com/micro/micro/v3/service/context/metadata"
-
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth/claim"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )

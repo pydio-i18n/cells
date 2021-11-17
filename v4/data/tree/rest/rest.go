@@ -28,7 +28,6 @@ import (
 	"time"
 
 	"github.com/emicklei/go-restful"
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -48,6 +47,7 @@ import (
 	service2 "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/i18n"
 	"github.com/pydio/cells/v4/common/utils/mtree"
 	"github.com/pydio/cells/v4/common/utils/permissions"

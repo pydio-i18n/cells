@@ -28,21 +28,19 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/pydio/cells/v4/common/nodes"
-
-	defaults "github.com/pydio/cells/v4/common/micro"
-
-	"github.com/golang/protobuf/proto"
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/rwcarlsen/goexif/exif"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/forms"
 	"github.com/pydio/cells/v4/common/log"
+	defaults "github.com/pydio/cells/v4/common/micro"
+	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/scheduler/actions"
 )
 

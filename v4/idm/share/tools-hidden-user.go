@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -17,6 +16,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/rest"
 	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/errors"
 	permissions2 "github.com/pydio/cells/v4/common/utils/permissions"
 )
 

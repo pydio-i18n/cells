@@ -25,9 +25,10 @@ import (
 	"net/http"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/pborman/uuid"
 	"google.golang.org/grpc"
+
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 type spanContextKey struct{}
@@ -63,7 +64,7 @@ func NewSpanFromParent(s *Span) *Span {
 }
 
 func WithSpan(ctx context.Context, s *Span) context.Context {
-	md := metadata.Metadata{}
+	md := map[string]string{}
 	if meta, ok := metadata.FromContext(ctx); ok {
 		for k, v := range meta {
 			md[k] = v
@@ -85,7 +86,7 @@ func SpanFromContext(ctx context.Context) (*Span, bool) {
 	}
 }
 
-func SpanFromHeader(md metadata.Metadata) (*Span, bool) {
+func SpanFromHeader(md map[string]string) (*Span, bool) {
 	if md == nil {
 		return nil, false
 	}
@@ -133,7 +134,7 @@ func SpanUnaryClientInterceptor() grpc.UnaryClientInterceptor {
 			ctx = WithSpan(ctx, s)
 		}
 		if opID, _ := GetOperationID(ctx); opID != "" {
-			md := metadata.Metadata{}
+			md := map[string]string{}
 			if meta, ok := metadata.FromContext(ctx); ok {
 				for k, v := range meta {
 					md[k] = v
@@ -155,7 +156,7 @@ func SpanStreamClientInterceptor() grpc.StreamClientInterceptor {
 			ctx = WithSpan(ctx, s)
 		}
 		if opID, _ := GetOperationID(ctx); opID != "" {
-			md := metadata.Metadata{}
+			md := map[string]string{}
 			if meta, ok := metadata.FromContext(ctx); ok {
 				for k, v := range meta {
 					md[k] = v

@@ -31,9 +31,6 @@ import (
 
 	"google.golang.org/protobuf/types/known/anypb"
 
-	"github.com/pydio/cells/v4/common/utils/statics"
-
-	"github.com/micro/micro/v3/service/errors"
 	migrate "github.com/rubenv/sql-migrate"
 	"go.uber.org/zap"
 	"golang.org/x/text/transform"
@@ -45,10 +42,12 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/common/sql/index"
 	"github.com/pydio/cells/v4/common/sql/resources"
 	"github.com/pydio/cells/v4/common/utils/mtree"
+	"github.com/pydio/cells/v4/common/utils/statics"
 	"github.com/pydio/cells/v4/x/configx"
 )
 

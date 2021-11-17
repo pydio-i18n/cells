@@ -25,7 +25,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/ory/ladon"
 	"go.uber.org/zap"
 
@@ -34,6 +33,7 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 )
 

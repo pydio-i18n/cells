@@ -27,7 +27,6 @@ import (
 	"sort"
 	"strings"
 
-	errors2 "github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 
@@ -35,6 +34,7 @@ import (
 	"github.com/pydio/cells/v4/common/auth/claim"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/idm"
+	errors2 "github.com/pydio/cells/v4/common/service/errors"
 	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 )

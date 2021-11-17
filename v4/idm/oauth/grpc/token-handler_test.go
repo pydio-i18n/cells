@@ -8,11 +8,11 @@ import (
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/micro/micro/v3/service/errors"
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/pydio/cells/v4/common/proto/auth"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/idm/oauth"
 	"github.com/pydio/cells/v4/x/configx"

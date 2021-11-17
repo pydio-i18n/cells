@@ -1,6 +1,6 @@
 package nodes
 
-import "github.com/micro/micro/v3/service/errors"
+import "github.com/pydio/cells/v4/common/service/errors"
 
 // ErrFileNotFound returns a 404 error
 func ErrFileNotFound(format string, a ...interface{}) error {

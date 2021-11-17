@@ -29,9 +29,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/micro/micro/v3/service/errors"
-
 	"github.com/pydio/cells/v4/common/proto/rest"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/statics"
 )
 

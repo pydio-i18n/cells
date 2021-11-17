@@ -26,8 +26,8 @@ import (
 	migrate "github.com/rubenv/sql-migrate"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/pydio/cells/v4/common/proto/encryption"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/common/utils/statics"
 	"github.com/pydio/cells/v4/x/configx"

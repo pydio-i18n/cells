@@ -24,7 +24,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/micro/micro/v3/service/errors"
+	"github.com/pydio/cells/v4/common/service/errors"
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/pydio/cells/v4/common/proto/jobs"

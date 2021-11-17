@@ -25,7 +25,6 @@ import (
 	"fmt"
 
 	"github.com/gosimple/slug"
-	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -33,6 +32,7 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/idm/workspace"
 )
 

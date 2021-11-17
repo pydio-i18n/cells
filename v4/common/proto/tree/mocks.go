@@ -22,14 +22,15 @@ package tree
 
 import (
 	"context"
-	"google.golang.org/grpc/metadata"
 	"io"
 	"reflect"
 	"sort"
 
-	"github.com/micro/micro/v3/service/errors"
+	"google.golang.org/grpc/metadata"
+
 	"github.com/micro/micro/v3/service/server"
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"google.golang.org/grpc"
 )
 

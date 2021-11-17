@@ -26,7 +26,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/micro/micro/v3/service/errors"
 	bolt "go.etcd.io/bbolt"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
@@ -35,6 +34,7 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/errors"
 )
 
 var (

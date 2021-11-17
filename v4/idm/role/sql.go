@@ -25,21 +25,19 @@ import (
 	"strings"
 	"time"
 
-	"google.golang.org/protobuf/types/known/anypb"
-
-	"github.com/pydio/cells/v4/common/utils/statics"
-
 	"github.com/golang/protobuf/ptypes"
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
 	migrate "github.com/rubenv/sql-migrate"
+	"google.golang.org/protobuf/types/known/anypb"
 	"gopkg.in/doug-martin/goqu.v4"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service "github.com/pydio/cells/v4/common/proto/service"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/common/sql/resources"
+	"github.com/pydio/cells/v4/common/utils/statics"
 	"github.com/pydio/cells/v4/x/configx"
 )
 

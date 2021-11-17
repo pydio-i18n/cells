@@ -27,18 +27,17 @@ import (
 	"sync"
 	"time"
 
-	defaults "github.com/pydio/cells/v4/common/micro"
-
-	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 	"golang.org/x/net/context"
 
 	"github.com/pydio/cells/v4/broker/activity"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
+	defaults "github.com/pydio/cells/v4/common/micro"
 	proto "github.com/pydio/cells/v4/common/proto/activity"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/errors"
 )
 
 type Handler struct {

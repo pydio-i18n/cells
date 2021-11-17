@@ -27,14 +27,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/errors"
-
-	"github.com/pydio/cells/v4/common/utils/net"
-
 	"github.com/dchest/uniuri"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/proto/object"
+	"github.com/pydio/cells/v4/common/service/errors"
+	"github.com/pydio/cells/v4/common/utils/net"
 	"github.com/pydio/cells/v4/x/configx"
 )
 

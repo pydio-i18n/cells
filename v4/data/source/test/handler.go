@@ -25,7 +25,6 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
-	"github.com/pydio/cells/v4/common/utils/std"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -33,11 +32,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minio/minio-go/v7"
+	"github.com/pydio/cells/v4/common/utils/std"
+
+	minio "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/notification"
 	"github.com/pborman/uuid"
 
-	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
@@ -46,6 +46,7 @@ import (
 	"github.com/pydio/cells/v4/common/nodes/objects/mc"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/test"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 type Handler struct{}

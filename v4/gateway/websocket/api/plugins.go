@@ -25,12 +25,12 @@ import (
 	"context"
 
 	"github.com/micro/micro/v3/service/broker"
-	"github.com/micro/micro/v3/service/context/metadata"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/gateway/websocket"
 )
 

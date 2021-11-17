@@ -25,7 +25,6 @@ import (
 	"fmt"
 
 	hermes "github.com/matcornic/hermes/v2"
-	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 	protobuf "google.golang.org/protobuf/proto"
 
@@ -36,6 +35,7 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	proto "github.com/pydio/cells/v4/common/proto/mailer"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/x/configx"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )

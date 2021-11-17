@@ -26,10 +26,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/micro/micro/v3/service/context/metadata"
 	"golang.org/x/net/http/httpguts"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 // MinioMetaFromContext prepares metadata for minio client, merging context medata

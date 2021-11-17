@@ -29,7 +29,6 @@ import (
 	sync2 "sync"
 	"time"
 
-	"github.com/micro/micro/v3/service/context/metadata"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -47,6 +46,7 @@ import (
 	protosync "github.com/pydio/cells/v4/common/proto/sync"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/sync/endpoints/index"
 	"github.com/pydio/cells/v4/common/sync/endpoints/s3"
 	"github.com/pydio/cells/v4/common/sync/merger"

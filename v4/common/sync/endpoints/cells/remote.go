@@ -32,13 +32,13 @@ import (
 
 	"github.com/micro/micro/v3/service/client"
 	microgrpc "github.com/micro/micro/v3/service/client/grpc"
-	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/pborman/uuid"
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/sync/endpoints/cells/transport"
 	"github.com/pydio/cells/v4/common/sync/endpoints/cells/transport/mc"
 	"github.com/pydio/cells/v4/common/sync/endpoints/cells/transport/oidc"
@@ -207,11 +207,11 @@ func (f *remoteClientFactory) getClient(ctx context.Context) (context.Context, *
 	}
 
 	microClient := microgrpc.NewClient(opts...)
-	var md metadata.Metadata
+	var md map[string]string
 	if m, ok := metadata.FromContext(ctx); ok {
 		md = m
 	} else {
-		md = metadata.Metadata{}
+		md = map[string]string{}
 	}
 	md["x-pydio-bearer"] = jwt
 	if f.config.CustomHeaders != nil {

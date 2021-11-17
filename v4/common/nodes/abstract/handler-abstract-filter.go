@@ -28,7 +28,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -38,6 +37,7 @@ import (
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/errors"
 )
 
 // BranchFilter is a ready-made Handler that can be used by all handlers that just modify the path in one way

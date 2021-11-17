@@ -25,12 +25,12 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/micro/micro/v3/service/errors"
 	bolt "go.etcd.io/bbolt"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/boltdb"
 	"github.com/pydio/cells/v4/common/proto/chat"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/x/configx"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )

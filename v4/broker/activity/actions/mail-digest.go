@@ -24,8 +24,6 @@ import (
 	"context"
 	"strings"
 
-	"github.com/micro/micro/v3/service/errors"
-
 	activity2 "github.com/pydio/cells/v4/broker/activity"
 	"github.com/pydio/cells/v4/broker/activity/render"
 	"github.com/pydio/cells/v4/common"
@@ -38,6 +36,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/mailer"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/i18n"
 	"github.com/pydio/cells/v4/scheduler/actions"
 )

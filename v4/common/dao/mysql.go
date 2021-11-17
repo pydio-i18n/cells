@@ -26,7 +26,7 @@ import (
 	"sync"
 
 	mysqltools "github.com/go-sql-driver/mysql"
-	"github.com/micro/micro/v3/service/errors"
+	"github.com/pydio/cells/v4/common/service/errors"
 )
 
 var (

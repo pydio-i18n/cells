@@ -27,7 +27,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -36,6 +35,7 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	enc "github.com/pydio/cells/v4/common/proto/encryption"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/idm/key"
 )
 

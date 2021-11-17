@@ -24,12 +24,11 @@ import (
 	"embed"
 	"time"
 
-	"github.com/pydio/cells/v4/common/utils/statics"
-
-	"github.com/micro/micro/v3/service/errors"
 	migrate "github.com/rubenv/sql-migrate"
 
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/sql"
+	"github.com/pydio/cells/v4/common/utils/statics"
 	"github.com/pydio/cells/v4/x/configx"
 )
 

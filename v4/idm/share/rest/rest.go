@@ -31,8 +31,8 @@ import (
 
 	"github.com/emicklei/go-restful"
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 

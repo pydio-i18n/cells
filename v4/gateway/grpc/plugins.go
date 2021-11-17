@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/micro/micro/v3/service/server"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
@@ -20,6 +19,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/utils/net"
 )
 
@@ -192,7 +192,7 @@ func httpMetaWrapper() func(handlerFunc server.HandlerFunc) server.HandlerFunc {
 
 func ctxRequestInfoToMetadata(ctx context.Context) context.Context {
 
-	meta := metadata.Metadata{}
+	meta := map[string]string{}
 	if existing, ok := metadata.FromContext(ctx); ok {
 		if _, already := existing[servicecontext.HttpMetaExtracted]; already {
 			return ctx

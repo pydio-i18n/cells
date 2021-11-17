@@ -28,7 +28,9 @@ import (
 	"time"
 
 	"github.com/allegro/bigcache"
-	"github.com/micro/micro/v3/service/errors"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
+
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/log"
@@ -37,10 +39,9 @@ import (
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/cache"
 	json "github.com/pydio/cells/v4/x/jsonx"
-	"go.uber.org/zap"
-	"google.golang.org/grpc"
 )
 
 var (

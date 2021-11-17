@@ -32,7 +32,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 	"golang.org/x/text/unicode/norm"
 	"google.golang.org/grpc"
@@ -43,6 +42,7 @@ import (
 	"github.com/pydio/cells/v4/common/nodes/abstract"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/errors"
 )
 
 func WithPutInterceptor() nodes.Option {

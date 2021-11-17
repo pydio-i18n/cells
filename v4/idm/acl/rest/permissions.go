@@ -25,7 +25,6 @@ import (
 	"io"
 	"strings"
 
-	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -39,6 +38,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 )
 

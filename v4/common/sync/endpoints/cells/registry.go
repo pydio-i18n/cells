@@ -30,11 +30,11 @@ import (
 	"strings"
 
 	"github.com/micro/micro/v3/service/client"
-	muerrors "github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/registry"
 	"github.com/micro/micro/v3/service/registry/memory"
 	"github.com/pkg/errors"
 
+	muerrors "github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/sync/endpoints/cells/transport"
 	"github.com/pydio/cells/v4/common/sync/model"
 	json "github.com/pydio/cells/v4/x/jsonx"

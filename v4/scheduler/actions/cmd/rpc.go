@@ -25,7 +25,7 @@ import (
 
 	json "github.com/pydio/cells/v4/x/jsonx"
 
-	"github.com/micro/micro/v3/service/errors"
+	"github.com/pydio/cells/v4/common/service/errors"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/forms"

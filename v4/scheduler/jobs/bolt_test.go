@@ -28,7 +28,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/micro/micro/v3/service/errors"
 	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -36,6 +35,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/errors"
 )
 
 func TestNewBoltStore(t *testing.T) {

@@ -24,12 +24,12 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/micro/micro/v3/service/errors"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
 	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
+	"github.com/pydio/cells/v4/common/service/errors"
 )
 
 var (

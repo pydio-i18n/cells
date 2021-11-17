@@ -23,7 +23,7 @@ package context_wrapper
 import (
 	"context"
 
-	"github.com/micro/micro/v3/service/context/metadata"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 

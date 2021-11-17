@@ -20,7 +20,7 @@
 
 package templates
 
-import "github.com/micro/micro/v3/service/errors"
+import "github.com/pydio/cells/v4/common/service/errors"
 
 var (
 	registeredDAOs []DAO

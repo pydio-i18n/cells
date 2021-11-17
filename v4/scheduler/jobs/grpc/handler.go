@@ -26,7 +26,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
 	log3 "github.com/pydio/cells/v4/broker/log"
@@ -37,6 +36,7 @@ import (
 	proto "github.com/pydio/cells/v4/common/proto/jobs"
 	log2 "github.com/pydio/cells/v4/common/proto/log"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/scheduler/jobs"
 	"github.com/pydio/cells/v4/scheduler/lang"
 )

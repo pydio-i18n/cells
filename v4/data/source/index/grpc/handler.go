@@ -28,8 +28,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/context/metadata"
-	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -37,6 +35,8 @@ import (
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
+	"github.com/pydio/cells/v4/common/service/errors"
 	cindex "github.com/pydio/cells/v4/common/sql/index"
 	"github.com/pydio/cells/v4/common/utils/mtree"
 	"github.com/pydio/cells/v4/data/source/index"

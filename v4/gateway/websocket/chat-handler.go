@@ -28,7 +28,6 @@ import (
 	"time"
 
 	lkauth "github.com/livekit/protocol/auth"
-	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/pydio/melody"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -469,7 +468,7 @@ func (c *ChatHandler) sendVideoInfoIfSupported(ctx context.Context, roomUuid str
 	}
 	var lkUrl string
 	if mc, ok := session.Get(SessionMetaContext); ok {
-		meta := mc.(metadata.Metadata)
+		meta := mc.(map[string]string)
 		if host, o := meta[servicecontext.HttpMetaHost]; o && host != "" {
 			lkUrl = "wss://" + host
 		}

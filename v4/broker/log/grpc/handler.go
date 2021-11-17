@@ -28,7 +28,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/broker/log"
@@ -38,6 +37,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	proto "github.com/pydio/cells/v4/common/proto/log"
 	"github.com/pydio/cells/v4/common/proto/sync"
+	"github.com/pydio/cells/v4/common/service/errors"
 )
 
 // Handler is the gRPC interface for the log service.

@@ -37,7 +37,6 @@ import (
 	"sync"
 
 	"github.com/karrick/godirwalk"
-	errors2 "github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
 	"github.com/rjeczalik/notify"
 	"github.com/spf13/afero"
@@ -47,6 +46,7 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	errors2 "github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/sync/merger"
 	"github.com/pydio/cells/v4/common/sync/model"
 	"github.com/pydio/cells/v4/common/sync/proc"

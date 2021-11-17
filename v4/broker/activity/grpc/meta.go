@@ -23,7 +23,6 @@ package grpc
 import (
 	"strings"
 
-	"github.com/micro/micro/v3/service/context/metadata"
 	"go.uber.org/zap"
 
 	activity "github.com/pydio/cells/v4/broker/activity"
@@ -32,6 +31,7 @@ import (
 	activity2 "github.com/pydio/cells/v4/common/proto/activity"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 type MetaProvider struct {

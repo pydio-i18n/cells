@@ -28,7 +28,6 @@ import (
 
 	"github.com/emicklei/go-restful"
 	"github.com/go-openapi/spec"
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/registry"
 	"github.com/ory/ladon"
 	"github.com/spf13/viper"
@@ -47,6 +46,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/i18n"
 	"github.com/pydio/cells/v4/common/utils/net"
 	"github.com/pydio/cells/v4/discovery/config/lang"

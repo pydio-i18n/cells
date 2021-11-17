@@ -31,13 +31,13 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/rjeczalik/notify"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/spf13/afero"
 
 	servicescommon "github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/sync/model"
 )
 

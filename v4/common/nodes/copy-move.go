@@ -30,7 +30,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/nicksnyder/go-i18n/i18n"
 	"github.com/pborman/uuid"
 	"go.uber.org/zap"
@@ -41,6 +40,7 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/errors"
 	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 )

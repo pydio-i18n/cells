@@ -24,7 +24,6 @@ import (
 	"context"
 	"io"
 
-	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
@@ -38,6 +37,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/docstore"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/errors"
 	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 	json "github.com/pydio/cells/v4/x/jsonx"

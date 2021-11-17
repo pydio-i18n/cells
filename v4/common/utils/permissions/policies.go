@@ -27,20 +27,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pydio/cells/v4/idm/policy/converter"
-
 	"github.com/ory/ladon"
 	"github.com/ory/ladon/manager/memory"
 	"github.com/patrickmn/go-cache"
+
 	"github.com/pydio/cells/v4/common"
-	defaults "github.com/pydio/cells/v4/common/micro"
-
-	"github.com/micro/micro/v3/service/context/metadata"
-
 	"github.com/pydio/cells/v4/common/auth/claim"
+	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
+	"github.com/pydio/cells/v4/idm/policy/converter"
 )
 
 const (

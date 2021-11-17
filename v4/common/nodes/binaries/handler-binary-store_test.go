@@ -25,14 +25,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/pydio/cells/v4/common/nodes"
-
-	"github.com/micro/micro/v3/service/errors"
 	. "github.com/smartystreets/goconvey/convey"
 
+	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/errors"
 )
 
 var (

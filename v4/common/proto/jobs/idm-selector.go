@@ -24,7 +24,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/micro/micro/v3/service/context/metadata"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -33,6 +32,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 func (m *IdmSelector) MultipleSelection() bool {

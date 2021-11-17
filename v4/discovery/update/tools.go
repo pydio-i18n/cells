@@ -41,19 +41,18 @@ import (
 	"sort"
 	"strings"
 
-	"google.golang.org/protobuf/encoding/protojson"
-
 	"github.com/hashicorp/go-version"
 	update2 "github.com/inconshreveable/go-update"
 	"github.com/kardianos/osext"
-	"github.com/micro/micro/v3/service/errors"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/update"
 	"github.com/pydio/cells/v4/common/service"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/filesystem"
 	"github.com/pydio/cells/v4/common/utils/net"
 	"github.com/pydio/cells/v4/x/configx"

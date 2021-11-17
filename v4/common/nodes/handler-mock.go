@@ -30,12 +30,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	errors2 "github.com/micro/micro/v3/service/errors"
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	errors2 "github.com/pydio/cells/v4/common/service/errors"
 )
 
 func NewHandlerMock() *HandlerMock {
