@@ -23,6 +23,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/pydio/cells/v4/common/log"
+	"google.golang.org/grpc/metadata"
 	"io"
 	"sync"
 	"testing"
@@ -44,6 +46,7 @@ import (
 var (
 	ctx context.Context
 	wg  sync.WaitGroup
+	dao index.DAO
 )
 
 type List struct {
@@ -51,8 +54,20 @@ type List struct {
 	r *io.PipeReader
 }
 
-func (l *List) Context() context.Context {
+func (l *List) SetHeader(md metadata.MD) error {
 	panic("implement me")
+}
+
+func (l *List) SendHeader(md metadata.MD) error {
+	panic("implement me")
+}
+
+func (l *List) SetTrailer(md metadata.MD) {
+	panic("implement me")
+}
+
+func (l *List) Context() context.Context {
+	return ctx
 }
 
 func NewList() *List {
@@ -121,7 +136,7 @@ func TestMain(m *testing.M) {
 		fmt.Print("Could not start test ", err)
 		return
 	}
-
+	dao = d.(index.DAO)
 	ctx = servicecontext.WithDAO(context.Background(), d)
 
 	m.Run()
@@ -131,38 +146,30 @@ func TestMain(m *testing.M) {
 func send(s *TreeServer, req string, args interface{}) (interface{}, error) {
 	switch req {
 	case "CreateNode":
-		resp := &tree.CreateNodeResponse{}
-		err := s.CreateNode(ctx, args.(*tree.CreateNodeRequest), resp)
-
-		return resp, err
+		return s.CreateNode(ctx, args.(*tree.CreateNodeRequest))
 	case "GetNode":
-		resp := &tree.ReadNodeResponse{}
-		err := s.ReadNode(ctx, args.(*tree.ReadNodeRequest), resp)
+		resp, err := s.ReadNode(ctx, args.(*tree.ReadNodeRequest))
 
 		So(err, ShouldBeNil)
 		So(resp, ShouldNotBeNil)
 
 		return resp, err
 	case "UpdateNode":
-		resp := &tree.UpdateNodeResponse{}
+		return s.UpdateNode(ctx, args.(*tree.UpdateNodeRequest))
 
-		err := s.UpdateNode(ctx, args.(*tree.UpdateNodeRequest), resp)
-
-		return resp, err
 	case "ListNodes":
 
 		resp := NewList()
 		go func() {
-			s.ListNodes(ctx, args.(*tree.ListNodesRequest), resp)
+			_ = s.ListNodes(args.(*tree.ListNodesRequest), resp)
 		}()
 
 		return resp, nil
 	case "DeleteNode":
 
-		resp := &tree.DeleteNodeResponse{}
-		err := s.DeleteNode(ctx, args.(*tree.DeleteNodeRequest), resp)
-
+		_, err := s.DeleteNode(ctx, args.(*tree.DeleteNodeRequest))
 		So(err, ShouldBeNil)
+		return nil, err
 	}
 
 	return nil, errors.New("Doesn't exist")
@@ -170,7 +177,7 @@ func send(s *TreeServer, req string, args interface{}) (interface{}, error) {
 
 func TestIndex(t *testing.T) {
 
-	s := NewTreeServer(&object.DataSource{Name: ""})
+	s := NewTreeServer(&object.DataSource{Name: ""}, dao, log.Logger(ctx))
 
 	wg.Add(1)
 	defer wg.Done()
@@ -316,9 +323,9 @@ func TestIndex(t *testing.T) {
 		So(err2, ShouldBeNil)
 		So(resp2.(*tree.ReadNodeResponse).Node.Uuid, ShouldEqual, "my-accented-node")
 
-		err3 := s.ReadNode(ctx, &tree.ReadNodeRequest{
+		_, err3 := s.ReadNode(ctx, &tree.ReadNodeRequest{
 			Node: &tree.Node{Path: "teste.ext"},
-		}, &tree.ReadNodeResponse{})
+		})
 		So(err3, ShouldNotBeNil)
 
 	})
@@ -505,10 +512,10 @@ func TestIndex(t *testing.T) {
 		f1 := &tree.Node{Path: "/proot/f1", Uuid: "output-f1"}
 		f2 := &tree.Node{Path: "/proot/f1/f2", Uuid: "output-f2"}
 		f3 := &tree.Node{Path: "/proot/f1/f2/f3", Uuid: "output-f3"}
-		s.CreateNode(ctx, &tree.CreateNodeRequest{Node: f}, &tree.CreateNodeResponse{})
-		s.CreateNode(ctx, &tree.CreateNodeRequest{Node: f1}, &tree.CreateNodeResponse{})
-		s.CreateNode(ctx, &tree.CreateNodeRequest{Node: f2}, &tree.CreateNodeResponse{})
-		s.CreateNode(ctx, &tree.CreateNodeRequest{Node: f3}, &tree.CreateNodeResponse{})
+		s.CreateNode(ctx, &tree.CreateNodeRequest{Node: f})
+		s.CreateNode(ctx, &tree.CreateNodeRequest{Node: f1})
+		s.CreateNode(ctx, &tree.CreateNodeRequest{Node: f2})
+		s.CreateNode(ctx, &tree.CreateNodeRequest{Node: f3})
 
 		resp, _ := send(s, "ListNodes", &tree.ListNodesRequest{Node: f1})
 		So(resp, ShouldNotBeNil)
@@ -588,7 +595,7 @@ func TestIndex(t *testing.T) {
 
 func TestIndexLongNode(t *testing.T) {
 
-	s := NewTreeServer(&object.DataSource{Name: ""})
+	s := NewTreeServer(&object.DataSource{Name: ""}, dao, log.Logger(ctx))
 
 	wg.Add(1)
 	defer wg.Done()
