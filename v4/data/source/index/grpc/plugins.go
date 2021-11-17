@@ -26,14 +26,15 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/log"
 	"google.golang.org/grpc"
 	"strings"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/plugins"
-	"github.com/pydio/cells/v4/common/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/data/source/index"
 )
@@ -57,6 +58,7 @@ func init() {
 				service.Fork(true),
 				service.AutoStart(false),
 				service.Unique(true),
+				service.WithLogger(log.Logger(ctx)),
 				service.WithStorage(index.NewDAO, func(o *service.ServiceOptions) string {
 					// Returning a prefix for the dao
 					return strings.Replace(o.Name, ".", "_", -1)
@@ -69,7 +71,7 @@ func init() {
 					if e != nil {
 						return fmt.Errorf("cannot find datasource configuration for " + sourceOpt)
 					}
-					engine := NewTreeServer(dsObject, servicecontext.GetDAO(ctx).(index.DAO))
+					engine := NewTreeServer(dsObject, servicecontext.GetDAO(ctx).(index.DAO), servicecontext.GetLogger(ctx))
 					tree.RegisterNodeReceiverServer(srv, engine)
 					tree.RegisterNodeProviderServer(srv, engine)
 					tree.RegisterNodeReceiverStreamServer(srv, engine)

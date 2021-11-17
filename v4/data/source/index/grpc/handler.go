@@ -33,7 +33,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -49,6 +48,9 @@ type TreeServer struct {
 	// dao
 	dao                index.DAO
 	sessionStore       sessions.DAO
+
+	// logger
+	logger *zap.Logger
 
 	DataSourceName     string
 	DataSourceInternal bool
@@ -84,12 +86,13 @@ func getDAO(ctx context.Context, session string) index.DAO {
 }
 
 // NewTreeServer factory.
-func NewTreeServer(ds *object.DataSource, dao index.DAO) *TreeServer {
+func NewTreeServer(ds *object.DataSource, dao index.DAO, logger *zap.Logger) *TreeServer {
 	return &TreeServer{
 		DataSourceName:     ds.Name,
 		DataSourceInternal: ds.IsInternal(),
 		sessionStore:       sessions.NewSessionMemoryStore(),
 		dao: dao,
+		logger: logger,
 	}
 }
 
@@ -144,7 +147,7 @@ func (s *TreeServer) CreateNode(ctx context.Context, req *tree.CreateNodeRequest
 	reqUUID := req.GetNode().GetUuid()
 	updateIfExists := req.GetUpdateIfExists() || !req.GetNode().IsLeaf()
 
-	log.Logger(ctx).Debug("CreateNode", req.GetNode().Zap())
+	s.logger.Debug("CreateNode", req.GetNode().Zap())
 
 	// Updating node based on UUID
 	if reqUUID != "" {
@@ -229,7 +232,7 @@ func (s *TreeServer) CreateNode(ctx context.Context, req *tree.CreateNodeRequest
 		newEtag := req.GetNode().GetEtag()
 		if node.IsLeaf() && newEtag != common.NodeFlagEtagTemporary && (previousEtag == "" || newEtag != previousEtag) {
 			if err := dao.PushCommit(node); err != nil {
-				log.Logger(ctx).Error("Error while pushing commit for node", node.Zap(), zap.Error(err))
+				s.logger.Error("Error while pushing commit for node", node.Zap(), zap.Error(err))
 			}
 		}
 	*/
@@ -256,7 +259,7 @@ func (s *TreeServer) CreateNode(ctx context.Context, req *tree.CreateNodeRequest
 func (s *TreeServer) ReadNode(ctx context.Context, req *tree.ReadNodeRequest) (resp *tree.ReadNodeResponse, err error) {
 	resp = &tree.ReadNodeResponse{}
 	
-	defer track(ctx, "ReadNode", time.Now(), req, resp)
+	defer track(s.logger, "ReadNode", time.Now(), req, resp)
 
 	// TODO v4
 	//var session = ""
@@ -342,7 +345,7 @@ func (s *TreeServer) ListNodes(req *tree.ListNodesRequest, resp tree.NodeProvide
 
 	ctx := resp.Context()
 
-	defer track(ctx, "ListNodes", time.Now(), req, resp)
+	defer track(s.logger, "ListNodes", time.Now(), req, resp)
 
 	// todo v4
 	//dao := getDAO(ctx, "")
@@ -417,7 +420,7 @@ func (s *TreeServer) ListNodes(req *tree.ListNodesRequest, resp tree.NodeProvide
 		if req.WithCommits {
 			rootNode, _ := dao.GetNode(path)
 			if err := dao.ResyncDirtyEtags(rootNode); err != nil {
-				log.Logger(ctx).Error("could not re-sync dirty etags", rootNode.Zap(), zap.Error(err))
+				s.logger.Error("could not re-sync dirty etags", rootNode.Zap(), zap.Error(err))
 			}
 		}
 
@@ -433,7 +436,7 @@ func (s *TreeServer) ListNodes(req *tree.ListNodesRequest, resp tree.NodeProvide
 		hasFilter := metaFilter.Parse()
 		limitDepth := metaFilter.LimitDepth()
 
-		log.Logger(ctx).Debug("Listing nodes on DS with Filter", zap.Int32("req.FilterType", int32(req.FilterType)), zap.Bool("true", req.FilterType == tree.NodeType_COLLECTION))
+		s.logger.Debug("Listing nodes on DS with Filter", zap.Int32("req.FilterType", int32(req.FilterType)), zap.Bool("true", req.FilterType == tree.NodeType_COLLECTION))
 
 		names := strings.Split(reqPath, "/")
 		var receivedErr error
@@ -489,14 +492,14 @@ func (s *TreeServer) ListNodes(req *tree.ListNodesRequest, resp tree.NodeProvide
 func (s *TreeServer) UpdateNode(ctx context.Context, req *tree.UpdateNodeRequest) (resp *tree.UpdateNodeResponse, err error) {
 	resp = &tree.UpdateNodeResponse{}
 
-	defer track(ctx, "UpdateNode", time.Now(), req, resp)
+	defer track(s.logger, "UpdateNode", time.Now(), req, resp)
 
-	log.Logger(ctx).Debug("Entering UpdateNode")
+	s.logger.Debug("Entering UpdateNode")
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("panic recovered in UpdateNode: %s. Params From:%s, To:%s", r, req.From.Path, req.To.Path)
 		}
-		log.Logger(ctx).Debug("Finished UpdateNode")
+		s.logger.Debug("Finished UpdateNode")
 	}()
 
 	// dao := servicecontext.GetDAO(ctx).(index.DAO)
@@ -574,8 +577,8 @@ func (s *TreeServer) DeleteNode(ctx context.Context, req *tree.DeleteNodeRequest
 
 	resp = &tree.DeleteNodeResponse{}
 
-	log.Logger(ctx).Debug("DeleteNode", zap.Any("request", req))
-	defer track(ctx, "DeleteNode", time.Now(), req, resp)
+	s.logger.Debug("DeleteNode", zap.Any("request", req))
+	defer track(s.logger, "DeleteNode", time.Now(), req, resp)
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("panic recovered in DeleteNode: %s. Node path was %s", r, req.Node.Path)
@@ -666,7 +669,7 @@ func (s *TreeServer) DeleteNode(ctx context.Context, req *tree.DeleteNodeRequest
 
 // OpenSession opens an indexer session.
 func (s *TreeServer) OpenSession(ctx context.Context, req *tree.OpenSessionRequest) (resp *tree.OpenSessionResponse, err error) {
-	log.Logger(ctx).Info("Opening Indexation Session " + req.GetSession().GetUuid())
+	s.logger.Info("Opening Indexation Session " + req.GetSession().GetUuid())
 
 	s.sessionStore.PutSession(req.GetSession())
 	resp.Session = req.GetSession()
@@ -678,13 +681,13 @@ func (s *TreeServer) OpenSession(ctx context.Context, req *tree.OpenSessionReque
 func (s *TreeServer) FlushSession(ctx context.Context, req *tree.FlushSessionRequest) (resp *tree.FlushSessionResponse, err error) {
 	session, _, _ := s.sessionStore.ReadSession(req.GetSession().GetUuid())
 	if session != nil {
-		log.Logger(ctx).Info("Flushing Indexation Session " + req.GetSession().GetUuid())
+		s.logger.Info("Flushing Indexation Session " + req.GetSession().GetUuid())
 
 		// todo v4 dao := getDAO(ctx, session.GetUuid())
 		dao := s.dao
 		err := dao.Flush(false)
 		if err != nil {
-			log.Logger(ctx).Error("Error while flushing indexation Session "+req.GetSession().GetUuid(), zap.Error(err))
+			s.logger.Error("Error while flushing indexation Session "+req.GetSession().GetUuid(), zap.Error(err))
 			return nil, err
 		}
 	}
@@ -698,7 +701,7 @@ func (s *TreeServer) CloseSession(ctx context.Context, req *tree.CloseSessionReq
 
 	session, batcher, _ := s.sessionStore.ReadSession(req.GetSession().GetUuid())
 	if session != nil {
-		log.Logger(ctx).Info("Closing Indexation Session " + req.GetSession().GetUuid())
+		s.logger.Info("Closing Indexation Session " + req.GetSession().GetUuid())
 
 		// todo v4 dao := getDAO(ctx, session.GetUuid())
 		dao := s.dao
@@ -708,7 +711,7 @@ func (s *TreeServer) CloseSession(ctx context.Context, req *tree.CloseSessionReq
 
 		s.sessionStore.DeleteSession(req.GetSession())
 		if err != nil {
-			log.Logger(ctx).Error("Error while closing (flush) indexation Session "+req.GetSession().GetUuid(), zap.Error(err))
+			s.logger.Error("Error while closing (flush) indexation Session "+req.GetSession().GetUuid(), zap.Error(err))
 			return nil, err
 		}
 	}
@@ -806,8 +809,8 @@ func (s *TreeServer) UpdateParentsAndNotify(ctx context.Context, dao index.DAO, 
 	return nil
 }
 
-func track(ctx context.Context, fn string, start time.Time, req interface{}, resp interface{}) {
-	log.Logger(ctx).Debug(fn, zap.Duration("time", time.Since(start)), zap.Any("req", req), zap.Any("resp", resp))
+func track(logger *zap.Logger, fn string, start time.Time, req interface{}, resp interface{}) {
+	logger.Debug(fn, zap.Duration("time", time.Since(start)), zap.Any("req", req), zap.Any("resp", resp))
 }
 
 func safePath(str string) string {

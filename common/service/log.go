@@ -22,6 +22,7 @@ package service
 
 import (
 	"context"
+	"github.com/pydio/cells/vendor/github.com/micro/go-micro"
 	"net/http"
 
 	"github.com/micro/go-micro"
@@ -59,6 +60,5 @@ func NewLogHTTPHandlerWrapper(h http.Handler, serviceName string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r = r.WithContext(servicecontext.WithServiceName(r.Context(), serviceName))
 		h.ServeHTTP(w, r)
-
 	})
 }

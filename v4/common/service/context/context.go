@@ -23,6 +23,7 @@ package servicecontext
 
 import (
 	"context"
+	"go.uber.org/zap"
 
 	"github.com/pkg/errors"
 
@@ -38,6 +39,7 @@ const (
 	operationLabelKey
 	daoKey
 	configKey
+	loggerKey
 
 	ContextMetaJobUuid        = "X-Pydio-Job-Uuid"
 	ContextMetaTaskUuid       = "X-Pydio-Task-Uuid"
@@ -61,6 +63,11 @@ func WithOperationID(ctx context.Context, operationID string, operationLabel ...
 // WithDAO links a dao to the context
 func WithDAO(ctx context.Context, dao dao.DAO) context.Context {
 	return context.WithValue(ctx, daoKey, dao)
+}
+
+// WithLogger links a logger to the context
+func WithLogger(ctx context.Context, logger *zap.Logger) context.Context {
+	return context.WithValue(ctx, loggerKey, logger)
 }
 
 // WithConfig links a config to the context
@@ -92,6 +99,15 @@ func GetOperationID(ctx context.Context) (string, string) {
 func GetDAO(ctx context.Context) dao.DAO {
 	if db, ok := ctx.Value(daoKey).(dao.DAO); ok {
 		return db
+	}
+
+	return nil
+}
+
+
+func GetLogger(ctx context.Context) *zap.Logger {
+	if logger, ok := ctx.Value(loggerKey).(*zap.Logger); ok {
+		return logger
 	}
 
 	return nil

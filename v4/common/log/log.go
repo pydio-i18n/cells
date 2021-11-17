@@ -194,7 +194,12 @@ func SetLoggerInit(f func() *zap.Logger) {
 
 // Logger returns a zap logger with as much context as possible.
 func Logger(ctx context.Context) *zap.Logger {
-	return contextWrapper(ctx, mainLogger.get())
+	l := servicecontext.GetLogger(ctx)
+	if l == nil {
+		return contextWrapper(ctx, mainLogger.get())
+	}
+
+	return l
 }
 
 // SetAuditerInit defines what function to use to init the auditer
