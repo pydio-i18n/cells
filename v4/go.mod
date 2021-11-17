@@ -12,7 +12,6 @@ require (
 	github.com/caddyserver/caddy v1.0.5
 	github.com/caddyserver/caddy/v2 v2.4.5
 	github.com/cskr/pubsub v1.0.2
-	github.com/dchest/uniuri v0.0.0-20200228104902-7aecb25e1fe5
 	github.com/disintegration/imaging v1.6.2
 	github.com/dustin/go-humanize v1.0.1-0.20200219035652-afde56e7acac
 	github.com/emicklei/go-restful v2.15.0+incompatible

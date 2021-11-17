@@ -28,9 +28,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dchest/uniuri"
-	"github.com/gosimple/slug"
-
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/forms"
 	"github.com/pydio/cells/v4/common/log"
@@ -38,6 +35,8 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/service"
+	"github.com/pydio/cells/v4/common/utils/slug"
+	"github.com/pydio/cells/v4/common/utils/std"
 	"github.com/pydio/cells/v4/scheduler/actions"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
@@ -208,7 +207,7 @@ func (f *FakeUsersAction) Run(ctx context.Context, channels *actions.RunnableCha
 	}
 	if len(values) == 0 {
 		for i := int64(0); i < number; i++ {
-			s := uniuri.NewLen(4)
+			s := std.Randkey(4)
 			login := fmt.Sprintf("%s-%s-%d", prefix, s, i+1)
 			values = append(values, Value{
 				Login:  login,
