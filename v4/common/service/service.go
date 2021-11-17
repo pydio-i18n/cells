@@ -11,7 +11,7 @@ import (
 
 // Service for the pydio app
 type service struct {
-	opts ServiceOptions
+	opts *ServiceOptions
 }
 
 var (

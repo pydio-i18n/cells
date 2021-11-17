@@ -147,14 +147,14 @@ func Dependency(n string, t []string) ServiceOption {
 	}
 }
 
-func newOptions(opts ...ServiceOption) ServiceOptions {
-	opt := ServiceOptions{}
+func newOptions(opts ...ServiceOption) *ServiceOptions {
+	opt := &ServiceOptions{}
 
 	opt.ID = uuid.New().String()
 	opt.Metadata = make(map[string]string)
 
 	for _, o := range opts {
-		o(&opt)
+		o(opt)
 	}
 
 	return opt
