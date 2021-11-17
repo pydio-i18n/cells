@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/gosimple/slug"
-	"github.com/pborman/uuid"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -19,6 +18,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/permissions"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 type ContextEditableChecker interface {
@@ -415,7 +415,7 @@ func GetOrCreateWorkspace(ctx context.Context, ownerUser *idm.User, wsUuid strin
 			return nil, false, errors.BadRequest(common.ServiceShare, "please provide a non-empty label for this workspace")
 		}
 		// Create Workspace
-		wsUuid = uuid.NewUUID().String()
+		wsUuid = uuid.New()
 		wsResp, err := wsClient.CreateWorkspace(ctx, &idm.CreateWorkspaceRequest{Workspace: &idm.Workspace{
 			UUID:        wsUuid,
 			Label:       label,

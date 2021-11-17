@@ -30,7 +30,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -40,6 +39,7 @@ import (
 	"github.com/pydio/cells/v4/common/sync/model"
 	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 type Client struct {
@@ -189,7 +189,7 @@ func (i *Client) MoveNode(ctx context.Context, oldPath string, newPath string) (
 
 func (i *Client) StartSession(ctx context.Context, rootNode *tree.Node, silent bool) (*tree.IndexationSession, error) {
 	sess := &tree.IndexationSession{
-		Uuid:        uuid.New().String(),
+		Uuid:        uuid.New(),
 		Description: "Indexation",
 		RootNode:    rootNode,
 		Silent:      silent,

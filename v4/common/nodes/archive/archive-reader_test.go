@@ -28,7 +28,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/pborman/uuid"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/zap"
 
@@ -37,6 +36,7 @@ import (
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/errors"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 func getTempArchive(formatOrName string) (*tree.Node, string, error) {
@@ -54,7 +54,7 @@ func getTempArchive(formatOrName string) (*tree.Node, string, error) {
 	}
 
 	refFile := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "pydio", "cells", "common", "nodes", "testdata", fName)
-	nodeUuid := uuid.NewUUID().String()
+	nodeUuid := uuid.New()
 	tmpDir := os.TempDir()
 	refData, e := ioutil.ReadFile(refFile)
 	if e != nil {

@@ -26,7 +26,6 @@ import (
 	"time"
 
 	"github.com/emicklei/go-restful"
-	"github.com/pborman/uuid"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -44,6 +43,7 @@ import (
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/i18n"
 	"github.com/pydio/cells/v4/common/utils/permissions"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/idm/oauth/lang"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
@@ -116,7 +116,7 @@ func (a *TokenHandler) ResetPasswordToken(req *restful.Request, resp *restful.Re
 	T = lang.Bundle().GetTranslationFunc(uLang)
 
 	// Create token and store as document
-	token := uuid.NewUUID().String()
+	token := uuid.New()
 	expiration := time.Now().Add(20 * time.Minute).Unix()
 	keyData, _ := json.Marshal(&ResetToken{
 		UserLogin:  u.Login,

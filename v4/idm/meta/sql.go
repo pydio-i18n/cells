@@ -25,7 +25,6 @@ import (
 	"embed"
 	"time"
 
-	"github.com/google/uuid"
 	migrate "github.com/rubenv/sql-migrate"
 	"go.uber.org/zap"
 	"gopkg.in/doug-martin/goqu.v4"
@@ -36,6 +35,7 @@ import (
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/common/sql/resources"
 	"github.com/pydio/cells/v4/common/utils/statics"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/idm/meta/namespace"
 	"github.com/pydio/cells/v4/x/configx"
 )
@@ -134,7 +134,7 @@ func (dao *sqlimpl) Set(meta *idm.UserMeta) (*idm.UserMeta, string, error) {
 			previousValue = ""
 		}
 	} else {
-		metaId = uuid.New().String()
+		metaId = uuid.New()
 	}
 
 	if update {

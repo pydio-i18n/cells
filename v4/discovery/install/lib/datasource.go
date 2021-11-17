@@ -29,11 +29,11 @@ import (
 
 	"github.com/dchest/uniuri"
 	"google.golang.org/protobuf/proto"
-	"github.com/pborman/uuid"
 
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/proto/install"
 	"github.com/pydio/cells/v4/common/proto/object"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 // actionDatasourceAdd created default datasources at install

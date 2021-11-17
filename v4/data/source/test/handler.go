@@ -32,11 +32,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pydio/cells/v4/common/utils/std"
-
 	minio "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/notification"
-	"github.com/pborman/uuid"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
@@ -47,6 +44,8 @@ import (
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/test"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
+	"github.com/pydio/cells/v4/common/utils/std"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 type Handler struct{}

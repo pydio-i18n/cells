@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/gosimple/slug"
-	"github.com/pborman/uuid"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -24,6 +23,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/permissions"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 // LoadDetectedRootNodes find actual nodes in the tree, and enrich their metadata if they appear

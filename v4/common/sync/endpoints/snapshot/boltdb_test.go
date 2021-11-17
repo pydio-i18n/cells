@@ -29,13 +29,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pborman/uuid"
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/sync/endpoints/memory"
 	"github.com/pydio/cells/v4/common/sync/model"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 func basicDiff(l, r model.PathSyncSource) error {

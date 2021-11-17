@@ -30,11 +30,9 @@ import (
 	"time"
 
 	"github.com/emicklei/go-restful"
-	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/pborman/uuid"
-	"github.com/pydio/cells/v4/common/service/errors"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth/claim"
@@ -44,8 +42,10 @@ import (
 	"github.com/pydio/cells/v4/common/proto/rest"
 	service2 "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/service"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/service/resources"
 	"github.com/pydio/cells/v4/common/utils/permissions"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/idm/share"
 )
 
@@ -623,6 +623,6 @@ func (h *SharesHandler) UpdateSharePolicies(req *restful.Request, rsp *restful.R
 
 func (h *SharesHandler) docStoreStatus() error {
 	s := service2.NewServiceClient(defaults.NewClientConn(common.ServiceDocStore))
-	_, err := s.Status(context.Background(), &empty.Empty{})
+	_, err := s.Status(context.Background(), &emptypb.Empty{})
 	return err
 }

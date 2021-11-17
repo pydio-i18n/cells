@@ -21,7 +21,7 @@
 package config
 
 import (
-	"github.com/pborman/uuid"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/x/configx"
 )
 

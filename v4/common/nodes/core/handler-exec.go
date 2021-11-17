@@ -30,7 +30,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pborman/uuid"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
@@ -44,6 +43,7 @@ import (
 	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/service/errors"
 	context2 "github.com/pydio/cells/v4/common/utils/context"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 var (

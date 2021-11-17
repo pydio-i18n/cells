@@ -26,8 +26,6 @@ import (
 	"fmt"
 
 	"github.com/emicklei/go-restful"
-	"github.com/google/uuid"
-	"github.com/pydio/cells/v4/common/service/errors"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -38,7 +36,9 @@ import (
 	"github.com/pydio/cells/v4/common/proto/rest"
 	"github.com/pydio/cells/v4/common/proto/service"
 	service2 "github.com/pydio/cells/v4/common/service"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/service/resources"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 // WorkspaceHandler defines the specific handler struc for workspace management.
@@ -92,7 +92,7 @@ func (h *WorkspaceHandler) PutWorkspace(req *restful.Request, rsp *restful.Respo
 	} else {
 		// Create a new Uuid
 		if inputWorkspace.UUID == "" {
-			inputWorkspace.UUID = uuid.New().String()
+			inputWorkspace.UUID = uuid.New()
 		}
 		// If Policies are empty, create default policies
 		if len(inputWorkspace.Policies) == 0 {

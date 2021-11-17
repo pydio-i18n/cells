@@ -28,7 +28,6 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/ory/ladon"
-	"github.com/pborman/uuid"
 	migrate "github.com/rubenv/sql-migrate"
 	"go.uber.org/zap"
 
@@ -37,6 +36,7 @@ import (
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/common/sql/ladon-manager"
 	"github.com/pydio/cells/v4/common/utils/statics"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/idm/policy/converter"
 	"github.com/pydio/cells/v4/x/configx"
 )
@@ -108,7 +108,7 @@ func (s *sqlimpl) Init(options configx.Values) error {
 func (s *sqlimpl) StorePolicyGroup(ctx context.Context, group *idm.PolicyGroup) (*idm.PolicyGroup, error) {
 
 	if group.Uuid == "" {
-		group.Uuid = uuid.NewUUID().String()
+		group.Uuid = uuid.New()
 	} else {
 		// Gather remove policies
 		var delPolicies []string
@@ -160,7 +160,7 @@ func (s *sqlimpl) StorePolicyGroup(ctx context.Context, group *idm.PolicyGroup) 
 	// Insert or update Policies first
 	for _, policy := range group.Policies {
 		if policy.Id == "" { // must be a new policy
-			policy.Id = uuid.NewUUID().String()
+			policy.Id = uuid.New()
 			err := s.Manager.Create(converter.ProtoToLadonPolicy(policy))
 			if err != nil {
 				log.Logger(ctx).Error(fmt.Sprintf("cannot create new ladon policy with description: %s", policy.Description), zap.Error(err))

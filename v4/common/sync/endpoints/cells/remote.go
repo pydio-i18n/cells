@@ -32,7 +32,6 @@ import (
 
 	"github.com/micro/micro/v3/service/client"
 	microgrpc "github.com/micro/micro/v3/service/client/grpc"
-	"github.com/pborman/uuid"
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
@@ -43,6 +42,7 @@ import (
 	"github.com/pydio/cells/v4/common/sync/endpoints/cells/transport/mc"
 	"github.com/pydio/cells/v4/common/sync/endpoints/cells/transport/oidc"
 	"github.com/pydio/cells/v4/common/sync/model"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 // RemoteConfig is a dependency-free struct similar to SdkConfig

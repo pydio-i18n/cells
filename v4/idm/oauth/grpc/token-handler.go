@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/ory/fosite/token/hmac"
 	"github.com/ory/fosite/token/jwt"
 	"go.uber.org/zap"
@@ -20,6 +19,7 @@ import (
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/permissions"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/idm/oauth"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
@@ -111,7 +111,7 @@ func (p *PatHandler) Verify(ctx context.Context, request *auth.VerifyTokenReques
 func (p *PatHandler) Generate(ctx context.Context, request *auth.PatGenerateRequest, response *auth.PatGenerateResponse) error {
 	dao := p.getDao(ctx)
 	token := &auth.PersonalAccessToken{
-		Uuid:              uuid.New().String(),
+		Uuid:              uuid.New(),
 		Type:              request.Type,
 		Label:             request.Label,
 		UserUuid:          request.UserUuid,

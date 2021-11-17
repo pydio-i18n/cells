@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/google/uuid"
-
 	"github.com/pydio/cells/v4/common"
 	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/utils/permissions"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 func InheritPolicies(ctx context.Context, policyName string, read, write bool) (string, error) {
@@ -70,7 +69,7 @@ func derivePolicy(policy *idm.PolicyGroup, read, write bool, suffix string) (*id
 	for _, p := range policy.Policies {
 		// Deny : append policy
 		if p.Effect == idm.PolicyEffect_deny {
-			p.Id = uuid.New().String()
+			p.Id = uuid.New()
 			p.Subjects = []string{"policy:" + newG.Uuid}
 			newG.Policies = append(newG.Policies, p)
 			continue
@@ -95,7 +94,7 @@ func derivePolicy(policy *idm.PolicyGroup, read, write bool, suffix string) (*id
 		return nil, fmt.Errorf("cannot assign write as parent policy does not provide write access")
 	}
 	// Reset actions
-	allowPol.Id = uuid.New().String()
+	allowPol.Id = uuid.New()
 	allowPol.Subjects = []string{"policy:" + newG.Uuid}
 	allowPol.Actions = []string{}
 	if read {

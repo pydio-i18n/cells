@@ -28,14 +28,13 @@ import (
 	"path/filepath"
 	"testing"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
-
-	"github.com/pborman/uuid"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/scheduler/actions"
+	json "github.com/pydio/cells/v4/x/jsonx"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -75,7 +74,7 @@ func TestExifProcessor_Run(t *testing.T) {
 		action.metaClient = nodes.NewHandlerMock()
 
 		tmpDir := os.TempDir()
-		uuidNode := uuid.NewUUID().String()
+		uuidNode := uuid.New()
 		testDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "pydio", "cells", "v4", "scheduler", "actions", "images", "testdata")
 
 		data, err := ioutil.ReadFile(filepath.Join(testDir, "exif.jpg"))

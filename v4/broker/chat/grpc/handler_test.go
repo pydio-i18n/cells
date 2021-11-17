@@ -3,20 +3,20 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/nodes/mocks"
-	"github.com/pydio/cells/v4/common/server/stubs"
-	"github.com/pydio/cells/v4/x/configx"
 	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/google/uuid"
 	. "github.com/smartystreets/goconvey/convey"
 
 	chat2 "github.com/pydio/cells/v4/broker/chat"
 	"github.com/pydio/cells/v4/common/boltdb"
+	"github.com/pydio/cells/v4/common/nodes/mocks"
 	"github.com/pydio/cells/v4/common/proto/chat"
+	"github.com/pydio/cells/v4/common/server/stubs"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/utils/uuid"
+	"github.com/pydio/cells/v4/x/configx"
 )
 
 type msgSrvStub struct {
@@ -40,7 +40,7 @@ func (s *roomsSrvStub) Send(response *chat.ListRoomsResponse) error {
 }
 
 func initializedHandler() (context.Context, *ChatHandler, func(), error) {
-	tmpFile := filepath.Join(os.TempDir(), uuid.New().String()+".db")
+	tmpFile := filepath.Join(os.TempDir(), uuid.New()+".db")
 	coreDao := boltdb.NewDAO("boltdb", tmpFile, "")
 	dao := chat2.NewDAO(coreDao).(chat2.DAO)
 	if e := dao.Init(configx.New()); e != nil {

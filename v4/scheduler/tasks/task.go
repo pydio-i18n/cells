@@ -25,12 +25,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pborman/uuid"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/scheduler/actions"
 )
 

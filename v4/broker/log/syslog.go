@@ -34,11 +34,11 @@ import (
 	"github.com/blevesearch/bleve/index/scorch"
 	"github.com/blevesearch/bleve/index/store/boltdb"
 	"github.com/blevesearch/bleve/mapping"
-	"github.com/pborman/uuid"
 	"github.com/rs/xid"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common/proto/log"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 const (

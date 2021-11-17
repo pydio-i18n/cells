@@ -28,16 +28,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/uuid"
-
 	"github.com/dustin/go-humanize"
-	"github.com/pydio/cells/v4/x/jsonx"
 	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/pydio/cells/v4/common/boltdb"
 	"github.com/pydio/cells/v4/common/proto/activity"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/x/configx"
+	"github.com/pydio/cells/v4/x/jsonx"
 )
 
 var (
@@ -251,7 +250,7 @@ func TestCursor(t *testing.T) {
 				Actor: &activity.Object{
 					Type: activity.ObjectType_Person,
 					Name: "Random User",
-					Id:   uuid.New().String(),
+					Id:   uuid.New(),
 				},
 			}
 			err := dao.PostActivity(activity.OwnerType_USER, "charles", BoxInbox, ac, nil)
@@ -331,7 +330,7 @@ func TestCursor(t *testing.T) {
 				Actor: &activity.Object{
 					Type: activity.ObjectType_Person,
 					Name: "Random User",
-					Id:   uuid.New().String(),
+					Id:   uuid.New(),
 				},
 			}
 			err := dao.PostActivity(activity.OwnerType_USER, "charles", BoxInbox, ac, nil)

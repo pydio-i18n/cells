@@ -25,12 +25,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/pydio/cells/v4/common/nodes/compose"
-
-	"github.com/pborman/uuid"
 	"github.com/pkg/errors"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/nodes/compose"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	//	"github.com/pydio/cells/v4/common/micro/registry"
 	//	"github.com/pydio/cells/v4/common/micro/transport/grpc"
 	"github.com/pydio/cells/v4/common/nodes"

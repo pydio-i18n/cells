@@ -25,13 +25,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pborman/uuid"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/sql"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/x/configx"
 
 	// Run tests against SQLite
@@ -90,8 +90,8 @@ func TestCrud(t *testing.T) {
 
 	Convey("Get Role", t, func() {
 
-		roleUuid := uuid.NewUUID().String()
-		gRoleUuid := uuid.NewUUID().String()
+		roleUuid := uuid.New()
+		gRoleUuid := uuid.New()
 		roleTime := int32(time.Now().Unix())
 		_, _, err := mockDAO.Add(&idm.Role{
 			Uuid:        roleUuid,
@@ -108,7 +108,7 @@ func TestCrud(t *testing.T) {
 		})
 		So(err2, ShouldBeNil)
 		_, _, err3 := mockDAO.Add(&idm.Role{
-			Uuid:        uuid.NewUUID().String(),
+			Uuid:        uuid.New(),
 			Label:       "User Role",
 			LastUpdated: roleTime,
 			UserRole:    true,

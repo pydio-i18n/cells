@@ -25,10 +25,10 @@ import (
 	"net/http"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/pborman/uuid"
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common/service/context/metadata"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 type spanContextKey struct{}
@@ -47,7 +47,7 @@ type Span struct {
 
 func NewSpan() *Span {
 	return &Span{
-		SpanId: uuid.NewUUID().String(),
+		SpanId: uuid.New(),
 	}
 }
 
@@ -57,7 +57,7 @@ func NewSpanFromParent(s *Span) *Span {
 		root = s.SpanId
 	}
 	return &Span{
-		SpanId:       uuid.NewUUID().String(),
+		SpanId:       uuid.New(),
 		ParentId:     s.SpanId,
 		RootParentId: root,
 	}

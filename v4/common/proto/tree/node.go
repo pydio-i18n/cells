@@ -26,14 +26,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pborman/uuid"
-
-	"github.com/golang/protobuf/proto"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/utils/std"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
 

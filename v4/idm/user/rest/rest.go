@@ -27,13 +27,10 @@ import (
 	"strings"
 	"time"
 
-	"google.golang.org/protobuf/types/known/anypb"
-
 	"github.com/emicklei/go-restful"
 	"github.com/patrickmn/go-cache"
-	"github.com/pborman/uuid"
-	"github.com/pydio/cells/v4/common/service/errors"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
@@ -46,8 +43,10 @@ import (
 	"github.com/pydio/cells/v4/common/proto/rest"
 	service2 "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/service"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/service/resources"
 	"github.com/pydio/cells/v4/common/utils/permissions"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/idm/user/grpc"
 )
 

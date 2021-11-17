@@ -6,8 +6,7 @@ import (
 
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/server"
-
-	"github.com/google/uuid"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 // ServiceOptions stores all options for a pydio service
@@ -150,7 +149,7 @@ func Dependency(n string, t []string) ServiceOption {
 func newOptions(opts ...ServiceOption) *ServiceOptions {
 	opt := &ServiceOptions{}
 
-	opt.ID = uuid.New().String()
+	opt.ID = uuid.New()
 	opt.Metadata = make(map[string]string)
 
 	for _, o := range opts {

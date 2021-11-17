@@ -26,12 +26,12 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/pborman/uuid"
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/scheduler/actions"
 )
 
@@ -88,7 +88,7 @@ func TestWGetAction_Run(t *testing.T) {
 		})
 
 		tmpDir := os.TempDir()
-		uuidNode := uuid.NewUUID().String()
+		uuidNode := uuid.New()
 
 		node := &tree.Node{
 			Path: "path/to/local/Architecture.jpg",

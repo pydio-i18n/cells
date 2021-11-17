@@ -28,7 +28,6 @@ import (
 	"time"
 
 	"github.com/emicklei/go-restful"
-	"github.com/pborman/uuid"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -52,6 +51,7 @@ import (
 	"github.com/pydio/cells/v4/common/utils/mtree"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 	"github.com/pydio/cells/v4/common/utils/std"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	rest_meta "github.com/pydio/cells/v4/data/meta/rest"
 	"github.com/pydio/cells/v4/data/templates"
 	"github.com/pydio/cells/v4/scheduler/lang"

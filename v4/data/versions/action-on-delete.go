@@ -27,8 +27,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pborman/uuid"
-
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -38,6 +36,7 @@ import (
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/scheduler/actions"
 )
 

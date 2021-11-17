@@ -28,7 +28,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/google/uuid"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -38,6 +37,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/update"
 	"github.com/pydio/cells/v4/common/utils/permissions"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	update2 "github.com/pydio/cells/v4/discovery/update"
 )
 
@@ -92,7 +92,7 @@ func (h *Handler) ApplyUpdate(ctx context.Context, request *update.ApplyUpdateRe
 
 	response := &update.ApplyUpdateResponse{
 		Success: true,
-		Message: uuid.New().String(),
+		Message: uuid.New(),
 	}
 	task := &jobs.Task{
 		ID:            response.Message,

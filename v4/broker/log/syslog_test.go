@@ -27,11 +27,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/uuid"
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/proto/log"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
@@ -127,7 +127,7 @@ func TestNewBleveEngine(t *testing.T) {
 func TestSizeRotation(t *testing.T) {
 	blockingInserts = true
 	Convey("Test Rotation", t, func() {
-		p := filepath.Join(os.TempDir(), uuid.New().String(), "syslog.bleve")
+		p := filepath.Join(os.TempDir(), uuid.New(), "syslog.bleve")
 		os.MkdirAll(filepath.Dir(p), 0777)
 		fmt.Println("Storing temporary index in", p)
 		s, e := NewSyslogServer(p, "sysLog", 1*1024*1024)

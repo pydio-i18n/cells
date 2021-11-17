@@ -26,7 +26,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pborman/uuid"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/broker/activity"
@@ -40,6 +39,7 @@ import (
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/i18n"
 	"github.com/pydio/cells/v4/common/utils/permissions"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/data/versions"
 )
 
@@ -64,7 +64,7 @@ func (h *Handler) buildVersionDescription(ctx context.Context, version *tree.Cha
 func NewChangeLogFromNode(ctx context.Context, node *tree.Node, event *tree.NodeChangeEvent) *tree.ChangeLog {
 
 	c := &tree.ChangeLog{}
-	c.Uuid = uuid.NewUUID().String()
+	c.Uuid = uuid.New()
 	c.Data = []byte(node.Etag)
 	c.MTime = node.MTime
 	c.Size = node.Size

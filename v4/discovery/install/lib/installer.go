@@ -27,10 +27,10 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/google/uuid"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/proto/install"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/x/configx"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
@@ -160,7 +160,7 @@ func PerformCheck(ctx context.Context, name string, c *install.InstallConfig) *i
 			}
 		}
 		data["buckets"] = buckets
-		testBC := uuid.New().String()
+		testBC := uuid.New()
 		if er := mc.MakeBucketWithContext(ctx, testBC, c.GetDsS3CustomRegion()); er == nil {
 			mc.RemoveBucketWithContext(ctx, testBC)
 			data["canCreate"] = true

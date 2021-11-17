@@ -39,7 +39,6 @@ import (
 	minio "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/minio/minio-go/v7/pkg/notification"
-	"github.com/pborman/uuid"
 	"go.uber.org/zap"
 	"golang.org/x/text/unicode/norm"
 
@@ -48,6 +47,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 	errors2 "github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/sync/model"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 var (

@@ -24,8 +24,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/google/uuid"
-
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -34,6 +32,7 @@ import (
 	"github.com/pydio/cells/v4/common/sync/endpoints/index"
 	"github.com/pydio/cells/v4/common/sync/model"
 	"github.com/pydio/cells/v4/common/sync/task"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 // FlatScanEmpty uses s3 client to feed index from bucket (basic mono-directional sync)
@@ -44,7 +43,7 @@ func (s *Handler) FlatScanEmpty(ctx context.Context, syncStatus chan model.Statu
 	if !ok {
 		return nil, fmt.Errorf("cannot convert client to PathSyncSource")
 	}
-	session := &tree.IndexationSession{Uuid: uuid.New().String()}
+	session := &tree.IndexationSession{Uuid: uuid.New()}
 	s.indexClientSession.OpenSession(ctx, &tree.OpenSessionRequest{Session: session})
 	defer s.indexClientSession.CloseSession(ctx, &tree.CloseSessionRequest{Session: session})
 	var nodesCreated int

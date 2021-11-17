@@ -24,13 +24,13 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/google/uuid"
 	bolt "go.etcd.io/bbolt"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/boltdb"
 	"github.com/pydio/cells/v4/common/proto/chat"
 	"github.com/pydio/cells/v4/common/service/errors"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/x/configx"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
@@ -136,7 +136,7 @@ func (h *boltdbimpl) PutRoom(room *chat.ChatRoom) (*chat.ChatRoom, error) {
 			return err
 		}
 		if room.Uuid == "" {
-			room.Uuid = uuid.New().String()
+			room.Uuid = uuid.New()
 		}
 		serialized, _ := json.Marshal(room)
 		return bucket.Put([]byte(room.Uuid), serialized)
@@ -325,7 +325,7 @@ func (h *boltdbimpl) ListMessages(request *chat.ListMessagesRequest) (messages [
 func (h *boltdbimpl) PostMessage(msg *chat.ChatMessage) (*chat.ChatMessage, error) {
 
 	if msg.Uuid == "" {
-		msg.Uuid = uuid.New().String()
+		msg.Uuid = uuid.New()
 	}
 
 	err := h.DB().Update(func(tx *bolt.Tx) error {

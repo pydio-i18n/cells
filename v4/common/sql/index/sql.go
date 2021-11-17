@@ -37,7 +37,6 @@ import (
 	"time"
 
 	gocache "github.com/patrickmn/go-cache"
-	"github.com/pborman/uuid"
 	migrate "github.com/rubenv/sql-migrate"
 	"go.uber.org/zap"
 
@@ -47,6 +46,7 @@ import (
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/common/utils/mtree"
 	"github.com/pydio/cells/v4/common/utils/statics"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/x/configx"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )

@@ -31,7 +31,6 @@ import (
 	"time"
 
 	"github.com/nicksnyder/go-i18n/i18n"
-	"github.com/pborman/uuid"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
@@ -43,6 +42,7 @@ import (
 	"github.com/pydio/cells/v4/common/service/errors"
 	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 type (

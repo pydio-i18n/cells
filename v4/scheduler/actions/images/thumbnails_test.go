@@ -28,13 +28,13 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/pborman/uuid"
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/scheduler/actions"
 )
 
@@ -83,7 +83,7 @@ func TestThumbnailExtractor_Run(t *testing.T) {
 		action.metaClient = nodes.NewHandlerMock()
 
 		tmpDir := os.TempDir()
-		uuidNode := uuid.NewUUID().String()
+		uuidNode := uuid.New()
 		testDir := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "pydio", "cells", "scheduler", "actions", "images", "testdata")
 
 		data, err := ioutil.ReadFile(filepath.Join(testDir, "photo-hires.jpg"))

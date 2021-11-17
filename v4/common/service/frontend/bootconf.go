@@ -30,10 +30,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pborman/uuid"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/utils/i18n"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 type BackendConf struct {

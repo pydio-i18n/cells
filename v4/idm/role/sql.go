@@ -25,9 +25,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
-	"github.com/pborman/uuid"
 	migrate "github.com/rubenv/sql-migrate"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 	"gopkg.in/doug-martin/goqu.v4"
 
@@ -38,6 +37,7 @@ import (
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/common/sql/resources"
 	"github.com/pydio/cells/v4/common/utils/statics"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/x/configx"
 )
 
@@ -112,7 +112,7 @@ func (s *sqlimpl) Add(role *idm.Role) (*idm.Role, bool, error) {
 			update = true
 		}
 	} else {
-		role.Uuid = uuid.NewUUID().String()
+		role.Uuid = uuid.New()
 	}
 	if role.Label == "" {
 		return nil, false, errors.BadRequest(common.ServiceRole, "Role cannot have an empty label")
@@ -268,7 +268,7 @@ type queryBuilder idm.RoleSingleQuery
 func (c *queryBuilder) Convert(val *anypb.Any, driver string) (goqu.Expression, bool) {
 
 	q := new(idm.RoleSingleQuery)
-	if err := ptypes.UnmarshalAny(val, q); err != nil {
+	if err := anypb.UnmarshalTo(val, q, proto.UnmarshalOptions{}); err != nil {
 		return nil, false
 	}
 	var expressions []goqu.Expression

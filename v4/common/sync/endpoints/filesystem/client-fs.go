@@ -37,7 +37,6 @@ import (
 	"sync"
 
 	"github.com/karrick/godirwalk"
-	"github.com/pborman/uuid"
 	"github.com/rjeczalik/notify"
 	"github.com/spf13/afero"
 	"go.uber.org/zap"
@@ -51,6 +50,7 @@ import (
 	"github.com/pydio/cells/v4/common/sync/model"
 	"github.com/pydio/cells/v4/common/sync/proc"
 	"github.com/pydio/cells/v4/common/utils/filesystem"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 const (

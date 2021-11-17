@@ -34,7 +34,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pborman/uuid"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
@@ -43,6 +42,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/sync/model"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 var (

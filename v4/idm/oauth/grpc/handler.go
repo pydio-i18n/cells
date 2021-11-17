@@ -35,7 +35,6 @@ import (
 	"github.com/ory/hydra/oauth2"
 	"github.com/ory/x/sqlxx"
 	"github.com/ory/x/urlx"
-	"github.com/pborman/uuid"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
@@ -44,6 +43,7 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	pauth "github.com/pydio/cells/v4/common/proto/auth"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
 

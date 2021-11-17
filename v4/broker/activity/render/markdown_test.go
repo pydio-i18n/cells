@@ -24,11 +24,10 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/google/uuid"
-
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/pydio/cells/v4/common/proto/activity"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 func TestMarkdown(t *testing.T) {
@@ -54,7 +53,7 @@ func TestMarkdown(t *testing.T) {
 	Convey("Test markdown rendering", t, func() {
 
 		create := &activity.Object{
-			Id:    uuid.New().String(),
+			Id:    uuid.New(),
 			Type:  activity.ObjectType_Create,
 			Name:  "File Create",
 			Actor: user,
@@ -66,7 +65,7 @@ func TestMarkdown(t *testing.T) {
 		}
 
 		update := &activity.Object{
-			Id:    uuid.New().String(),
+			Id:    uuid.New(),
 			Name:  "File Update",
 			Type:  activity.ObjectType_Update,
 			Actor: user,
@@ -78,7 +77,7 @@ func TestMarkdown(t *testing.T) {
 		}
 
 		update2 := &activity.Object{
-			Id:    uuid.New().String(),
+			Id:    uuid.New(),
 			Name:  "File Update",
 			Type:  activity.ObjectType_Update,
 			Actor: user,
@@ -90,7 +89,7 @@ func TestMarkdown(t *testing.T) {
 		}
 
 		folder := &activity.Object{
-			Id:    uuid.New().String(),
+			Id:    uuid.New(),
 			Name:  "Folder Accessed",
 			Type:  activity.ObjectType_Read,
 			Actor: user,

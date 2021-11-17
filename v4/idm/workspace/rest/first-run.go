@@ -25,7 +25,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
@@ -73,7 +73,7 @@ func FirstRun(ctx context.Context) error {
 	if hasPersonal {
 		log.Logger(ctx).Info("Creating a Personal workspace")
 		ws := &idm.Workspace{
-			UUID:        uuid.New().String(),
+			UUID:        uuid.New(),
 			Label:       "Personal Files",
 			Description: "User personal data",
 			Slug:        "personal-files",
@@ -84,7 +84,7 @@ func FirstRun(ctx context.Context) error {
 	if commonDS != "" {
 		log.Logger(ctx).Info("Creating a Common Files workspace on " + commonDS)
 		ws := &idm.Workspace{
-			UUID:        uuid.New().String(),
+			UUID:        uuid.New(),
 			Label:       "Common Files",
 			Description: "Data shared by all users",
 			Slug:        "common-files",
