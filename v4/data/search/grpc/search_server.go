@@ -75,17 +75,10 @@ func (s *SearchServer) initEventsChannel() {
 	}()
 }
 
-func (s *SearchServer) NamespacesProvider() *meta.NsProvider {
-	if s.NsProvider == nil {
-		s.NsProvider = meta.NewNsProvider()
-	}
-	return s.NsProvider
-}
-
 func (s *SearchServer) processEvent(ctx context.Context, e *tree.NodeChangeEvent) {
 
 	log.Logger(ctx).Debug("processEvent", zap.Any("event", e))
-	excludes := s.NamespacesProvider().ExcludeIndexes()
+	excludes := s.NsProvider.ExcludeIndexes()
 
 	switch e.GetType() {
 	case tree.NodeChangeEvent_CREATE:
@@ -196,7 +189,7 @@ func (s *SearchServer) TriggerResync(c context.Context, req *protosync.ResyncReq
 	go func() {
 		bg := context.Background()
 		s.Engine.ClearIndex(bg)
-		excludes := s.NamespacesProvider().ExcludeIndexes()
+		excludes := s.NsProvider.ExcludeIndexes()
 
 		dsStream, err := s.TreeClient.ListNodes(bg, &tree.ListNodesRequest{
 			Node:      &tree.Node{Path: ""},

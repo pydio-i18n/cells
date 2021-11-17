@@ -102,7 +102,7 @@ type Server struct {
 	nsProvider *meta.NsProvider
 }
 
-func NewEngine(ctx context.Context, indexContent bool, configs map[string]interface{}) (*Server, error) {
+func NewEngine(ctx context.Context, nsProvider *meta.NsProvider, indexContent bool, configs map[string]interface{}) (*Server, error) {
 
 	if IndexPath == "" {
 		return nil, fmt.Errorf("please setup IndexPath before opening engine")
@@ -131,13 +131,14 @@ func NewEngine(ctx context.Context, indexContent bool, configs map[string]interf
 		inserts:          make(chan *tree.IndexableNode),
 		deletes:          make(chan string),
 		done:             make(chan bool, 1),
+		nsProvider:       nsProvider,
 	}
 	go server.watchOperations()
 	return server, nil
 }
 
 func (s *Server) watchOperations() {
-	batch := NewBatch(BatchOptions{IndexContent: s.IndexContent})
+	batch := NewBatch(s.nsProvider, BatchOptions{IndexContent: s.IndexContent})
 	for {
 		select {
 		case n := <-s.inserts:
@@ -474,9 +475,6 @@ func (s *Server) SearchNodes(c context.Context, queryObject *tree.Query, from in
 	dateFacet := s.makeDateTimeFacet("ModifTime")
 	searchRequest.AddFacet("Date", dateFacet)
 
-	if s.nsProvider == nil {
-		s.nsProvider = meta.NewNsProvider()
-	}
 	nss := s.nsProvider.Namespaces()
 	for metaName := range s.nsProvider.IncludedIndexes() {
 		def, _ := nss[metaName].UnmarshallDefinition()

@@ -61,11 +61,12 @@ type BatchOptions struct {
 	IndexContent bool
 }
 
-func NewBatch(options BatchOptions) *Batch {
+func NewBatch(nsProvider *meta.NsProvider, options BatchOptions) *Batch {
 	b := &Batch{
-		options: options,
-		inserts: make(map[string]*tree.IndexableNode),
-		deletes: make(map[string]struct{}),
+		options:    options,
+		inserts:    make(map[string]*tree.IndexableNode),
+		deletes:    make(map[string]struct{}),
+		nsProvider: nsProvider,
 	}
 	b.ctx = b.createBackgroundContext()
 	return b
@@ -101,9 +102,9 @@ func (b *Batch) Flush(index bleve.Index) error {
 	}
 	log.Logger(b.ctx).Info("Flushing search batch", zap.Int("size", l))
 	batch := index.NewBatch()
-	excludes := b.NamespacesProvider().ExcludeIndexes()
-	b.NamespacesProvider().InitStreamers(b.ctx)
-	defer b.NamespacesProvider().CloseStreamers()
+	excludes := b.nsProvider.ExcludeIndexes()
+	b.nsProvider.InitStreamers(b.ctx)
+	defer b.nsProvider.CloseStreamers()
 	for uuid, node := range b.inserts {
 		if e := b.LoadIndexableNode(node, excludes); e == nil {
 			batch.Index(uuid, node)
@@ -132,7 +133,7 @@ func (b *Batch) LoadIndexableNode(indexNode *tree.IndexableNode, excludes map[st
 			indexNode.Node = *rNode
 		}
 	} else if indexNode.ReloadNs {
-		if resp, e := b.NamespacesProvider().ReadNode(&indexNode.Node); e != nil {
+		if resp, e := b.nsProvider.ReadNode(&indexNode.Node); e != nil {
 			return e
 		} else {
 			indexNode.Node = *resp
@@ -180,13 +181,6 @@ func (b *Batch) createBackgroundContext() context.Context {
 	})
 	ctx = servicecontext.WithServiceName(ctx, common.ServiceGrpcNamespace_+common.ServiceSearch)
 	return ctx
-}
-
-func (b *Batch) NamespacesProvider() *meta.NsProvider {
-	if b.nsProvider == nil {
-		b.nsProvider = meta.NewNsProvider()
-	}
-	return b.nsProvider
 }
 
 func (b *Batch) getUuidRouter() nodes.Handler {

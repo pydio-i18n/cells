@@ -27,6 +27,8 @@ import (
 	"context"
 	"path/filepath"
 
+	"github.com/pydio/cells/v4/common/nodes/meta"
+
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
@@ -78,13 +80,16 @@ func init() {
 				bleveCfg["basenameAnalyzer"] = cfg.Val("basenameAnalyzer").String()
 				bleveCfg["contentAnalyzer"] = cfg.Val("contentAnalyzer").String()
 
-				bleveEngine, err := bleve.NewEngine(c, indexContent, bleveCfg)
+				nsProvider := meta.NewNsProvider(c)
+
+				bleveEngine, err := bleve.NewEngine(c, nsProvider, indexContent, bleveCfg)
 				if err != nil {
 					return err
 				}
 
 				searcher := &SearchServer{
 					Engine:           bleveEngine,
+					NsProvider:       nsProvider,
 					TreeClient:       tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceTree)),
 					ReIndexThrottler: make(chan struct{}, 5),
 				}
@@ -103,11 +108,6 @@ func init() {
 					_ = bleveEngine.Close()
 					return e
 				}
-
-				go func() {
-					<-c.Done()
-					_ = bleveEngine.Close()
-				}()
 
 				return nil
 			}),

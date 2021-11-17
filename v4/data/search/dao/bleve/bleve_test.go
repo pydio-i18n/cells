@@ -30,17 +30,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pydio/cells/v4/common"
-
 	. "github.com/smartystreets/goconvey/convey"
 
+	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/nodes/meta"
 	"github.com/pydio/cells/v4/common/proto/tree"
 )
 
 func getTmpIndex(createNodes bool) (s *Server, dir string) {
 	tmpDir, _ := ioutil.TempDir("", "bleve")
 	IndexPath = filepath.Join(tmpDir, "pydio")
-	server, _ := NewEngine(context.Background(), false, nil)
+	server, _ := NewEngine(context.Background(), meta.NewNsProvider(context.Background()), false, nil)
 
 	if createNodes {
 
@@ -125,14 +125,14 @@ func TestNewBleveEngine(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 
 	Convey("Test create bleve engine then reopen it", t, func() {
-		server, err := NewEngine(context.Background(), false, nil)
+		server, err := NewEngine(context.Background(), meta.NewNsProvider(context.Background()), false, nil)
 		So(err, ShouldBeNil)
 		So(server, ShouldNotBeNil)
 
 		e := server.Close()
 		So(e, ShouldBeNil)
 
-		server, err = NewEngine(context.Background(), false, nil)
+		server, err = NewEngine(context.Background(), meta.NewNsProvider(context.Background()), false, nil)
 		So(err, ShouldBeNil)
 		So(server, ShouldNotBeNil)
 
@@ -156,7 +156,7 @@ func TestMakeIndexableNode(t *testing.T) {
 		}
 		node.MustSetMeta(common.MetaNamespaceNodeName, "node.txt")
 
-		b := NewBatch(BatchOptions{})
+		b := NewBatch(meta.NewNsProvider(context.Background()), BatchOptions{})
 		indexNode := &tree.IndexableNode{Node: *node}
 		e := b.LoadIndexableNode(indexNode, nil)
 		So(e, ShouldBeNil)
