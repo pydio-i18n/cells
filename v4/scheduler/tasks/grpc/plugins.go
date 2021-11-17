@@ -48,6 +48,10 @@ func init() {
 				jobs.RegisterTaskServiceServer(server, new(Handler))
 				multiplexer := tasks.NewSubscriber(ctx)
 				multiplexer.Init()
+				go func() {
+					<-c.Done()
+					multiplexer.Stop()
+				}()
 				return nil
 			}),
 		)

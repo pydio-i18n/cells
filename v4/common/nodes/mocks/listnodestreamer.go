@@ -27,6 +27,8 @@ import (
 	"context"
 	"io"
 
+	"google.golang.org/grpc/metadata"
+
 	json "github.com/pydio/cells/v4/x/jsonx"
 
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -90,4 +92,16 @@ func (l *ListNodeStreamer) ReceiveAllNodes() (nodes []*tree.Node) {
 	}
 
 	return nodes
+}
+
+func (l *ListNodeStreamer) SetHeader(md metadata.MD) error {
+	panic("implement me")
+}
+
+func (l *ListNodeStreamer) SendHeader(md metadata.MD) error {
+	panic("implement me")
+}
+
+func (l *ListNodeStreamer) SetTrailer(md metadata.MD) {
+	panic("implement me")
 }

@@ -45,18 +45,21 @@ var (
 )
 
 // Handler definition
-type Handler struct{}
+type Handler struct {
+	idm.UnimplementedRoleServiceServer
+}
 
 // CreateRole adds a role and its policies in database
-func (h *Handler) CreateRole(ctx context.Context, req *idm.CreateRoleRequest, resp *idm.CreateRoleResponse) error {
+func (h *Handler) CreateRole(ctx context.Context, req *idm.CreateRoleRequest) (*idm.CreateRoleResponse, error) {
+	resp := &idm.CreateRoleResponse{}
 	dao := servicecontext.GetDAO(ctx).(role.DAO)
 	if req.Role.Uuid != "" && strings.Contains(req.Role.Uuid, ",") {
-		return errors.BadRequest("forbidden.characters", "commas are not allowed in role uuid")
+		return nil, errors.BadRequest("forbidden.characters", "commas are not allowed in role uuid")
 	}
 
 	r, update, err := dao.Add(req.Role)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	resp.Role = r
 	if len(r.Policies) == 0 {
@@ -68,7 +71,7 @@ func (h *Handler) CreateRole(ctx context.Context, req *idm.CreateRoleRequest, re
 	} */
 	err = dao.AddPolicies(update, r.Uuid, r.Policies)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if update {
@@ -104,26 +107,28 @@ func (h *Handler) CreateRole(ctx context.Context, req *idm.CreateRoleRequest, re
 		)
 	}
 
-	return nil
+	return resp, nil
 }
 
 // DeleteRole from database
-func (h *Handler) DeleteRole(ctx context.Context, req *idm.DeleteRoleRequest, response *idm.DeleteRoleResponse) error {
+func (h *Handler) DeleteRole(ctx context.Context, req *idm.DeleteRoleRequest) (*idm.DeleteRoleResponse, error) {
 	dao := servicecontext.GetDAO(ctx).(role.DAO)
 
 	if req.Query == nil {
-		return errors.BadRequest(common.ServiceRole, "cannot send a DeleteRole request with an empty query")
+		return nil, errors.BadRequest(common.ServiceRole, "cannot send a DeleteRole request with an empty query")
 	}
 
 	var roles []*idm.Role
 	if err := dao.Search(req.Query, &roles); err != nil {
-		return err
+		return nil, err
 	}
 
 	numRows, err := dao.Delete(req.Query)
-	response.RowsDeleted = numRows
 	if err != nil {
-		return err
+		return nil, err
+	}
+	response := &idm.DeleteRoleResponse{
+		RowsDeleted: numRows,
 	}
 
 	for _, r := range roles {
@@ -150,46 +155,48 @@ func (h *Handler) DeleteRole(ctx context.Context, req *idm.DeleteRoleRequest, re
 			r.ZapUuid(),
 		)
 	}
-	return nil
+	return response, nil
 }
 
 // SearchRole in database
-func (h *Handler) SearchRole(ctx context.Context, request *idm.SearchRoleRequest, response idm.RoleService_SearchRoleStream) error {
+func (h *Handler) SearchRole(request *idm.SearchRoleRequest, response idm.RoleService_SearchRoleServer) error {
+
+	ctx := response.Context()
 	dao := servicecontext.GetDAO(ctx).(role.DAO)
 
 	var roles []*idm.Role
-
-	defer response.Close()
 
 	if err := dao.Search(request.Query, &roles); err != nil {
 		return err
 	}
 
 	for _, r := range roles {
-		response.Send(&idm.SearchRoleResponse{Role: r})
+		if e := response.Send(&idm.SearchRoleResponse{Role: r}); e != nil {
+			return e
+		}
 	}
 
 	return nil
 }
 
 // CountRole in database
-func (h *Handler) CountRole(ctx context.Context, request *idm.SearchRoleRequest, response *idm.CountRoleResponse) error {
+func (h *Handler) CountRole(ctx context.Context, request *idm.SearchRoleRequest) (*idm.CountRoleResponse, error) {
+
 	dao := servicecontext.GetDAO(ctx).(role.DAO)
 
 	count, err := dao.Count(request.Query)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	response.Count = count
 
-	return nil
+	return &idm.CountRoleResponse{Count: count}, nil
 }
 
 // StreamRole from database
-func (h *Handler) StreamRole(ctx context.Context, streamer idm.RoleService_StreamRoleStream) error {
-	dao := servicecontext.GetDAO(ctx).(role.DAO)
+func (h *Handler) StreamRole(streamer idm.RoleService_StreamRoleServer) error {
 
-	defer streamer.Close()
+	ctx := streamer.Context()
+	dao := servicecontext.GetDAO(ctx).(role.DAO)
 
 	for {
 		incoming, err := streamer.Recv()
@@ -203,10 +210,14 @@ func (h *Handler) StreamRole(ctx context.Context, streamer idm.RoleService_Strea
 		}
 
 		for _, r := range roles {
-			streamer.Send(&idm.SearchRoleResponse{Role: r})
+			if e := streamer.Send(&idm.SearchRoleResponse{Role: r}); e != nil {
+				return e
+			}
 		}
 
-		streamer.Send(nil)
+		if e := streamer.Send(nil); e != nil {
+			return e
+		}
 	}
 
 	return nil

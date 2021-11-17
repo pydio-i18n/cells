@@ -106,7 +106,7 @@ func (e *MicroEventsSubscriber) ignoreForInternal(node *tree.Node) bool {
 	return node.HasMetaKey(common.MetaNamespaceDatasourceInternal)
 }
 
-// Handle processes the received events and sends them to the subscriber
+// HandleNodeChange processes the received events and sends them to the subscriber
 func (e *MicroEventsSubscriber) HandleNodeChange(ctx context.Context, msg *tree.NodeChangeEvent) error {
 
 	dao := servicecontext.GetDAO(ctx).(activity.DAO)

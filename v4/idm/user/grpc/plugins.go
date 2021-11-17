@@ -28,6 +28,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pydio/cells/v4/common/micro/broker"
+	"google.golang.org/grpc"
+
 	"github.com/pydio/cells/v4/common/utils/std"
 
 	"github.com/micro/micro/v3/service/errors"
@@ -63,27 +66,37 @@ func init() {
 			service.Tag(common.ServiceTagIdm),
 			service.Description("Users persistence layer"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceRole, []string{}),
-			/*
-				service.Migrations([]*service.Migration{
-					{
-						TargetVersion: service.FirstRun(),
-						Up:            InitDefaults,
-					},
-				}),
-				service.WithStorage(user.NewDAO, "idm_user"),
-				service.WithMicro(func(m micro.Service) error {
-					idm.RegisterUserServiceHandler(m.Options().Server, new(Handler))
+			service.Migrations([]*service.Migration{
+				{
+					TargetVersion: service.FirstRun(),
+					Up:            InitDefaults,
+				},
+			}),
+			service.WithStorage(user.NewDAO, "idm_user"),
+			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 
-					// Register a cleaner for removing a workspace when there are no more ACLs on it.
-					dao := servicecontext.GetDAO(m.Options().Context).(user.DAO)
-					cleaner := &RolesCleaner{Dao: dao}
-					if err := m.Options().Server.Subscribe(m.Options().Server.NewSubscriber(common.TopicIdmEvent, cleaner)); err != nil {
-						return err
+				idm.RegisterUserServiceServer(server, new(Handler))
+
+				// Register a cleaner for removing a workspace when there are no more ACLs on it.
+				dao := servicecontext.GetDAO(ctx).(user.DAO)
+				cleaner := &RolesCleaner{Dao: dao}
+				u, e := broker.Subscribe(common.TopicIdmEvent, func(message broker.Message) error {
+					ev := &idm.ChangeEvent{}
+					if ct, e := message.Unmarshal(ev); e == nil {
+						return cleaner.Handle(ct, ev)
 					}
-
 					return nil
-				}),
-			*/
+				})
+				if e != nil {
+					return e
+				}
+				go func() {
+					<-ctx.Done()
+					_ = u()
+				}()
+
+				return nil
+			}),
 		)
 	})
 }

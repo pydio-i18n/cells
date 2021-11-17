@@ -148,7 +148,7 @@ func NewSubscriber(parentContext context.Context) *Subscriber {
 }
 
 // Init subscriber with current list of jobs from Jobs service
-func (s *Subscriber) Init() error {
+func (s *Subscriber) Init() {
 
 	go std.Retry(context.Background(), func() error {
 		// Load Jobs Definitions
@@ -178,7 +178,6 @@ func (s *Subscriber) Init() error {
 		return nil
 	}, 3*time.Second, 20*time.Second)
 
-	return nil
 }
 
 // Stop closes internal EventsBatcher

@@ -66,30 +66,35 @@ func (a ByOverride) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByOverride) Less(i, j int) bool { return !a[i].ForceOverride && a[j].ForceOverride }
 
 // Handler definition
-type Handler struct{}
+type Handler struct {
+	idm.UnimplementedUserServiceServer
+}
 
 // BindUser binds a user with login/password
-func (h *Handler) BindUser(ctx context.Context, req *idm.BindUserRequest, resp *idm.BindUserResponse) error {
+func (h *Handler) BindUser(ctx context.Context, req *idm.BindUserRequest) (*idm.BindUserResponse, error) {
+
 	if servicecontext.GetDAO(ctx) == nil {
-		return fmt.Errorf("no DAO found, wrong initialization")
+		return nil, fmt.Errorf("no DAO found, wrong initialization")
 	}
 
 	dao := servicecontext.GetDAO(ctx).(user.DAO)
 	u, err := dao.Bind(req.UserName, req.Password)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	resp.User = u
-	resp.User.Password = ""
+	u.Password = ""
+	resp := &idm.BindUserResponse{
+		User: u,
+	}
+	return resp, nil
 
-	return nil
 }
 
 // CreateUser adds or creates a user or a group in the underlying database.
-func (h *Handler) CreateUser(ctx context.Context, req *idm.CreateUserRequest, resp *idm.CreateUserResponse) error {
+func (h *Handler) CreateUser(ctx context.Context, req *idm.CreateUserRequest) (*idm.CreateUserResponse, error) {
 
 	if servicecontext.GetDAO(ctx) == nil {
-		return fmt.Errorf("no DAO found, wrong initialization")
+		return nil, fmt.Errorf("no DAO found, wrong initialization")
 	}
 	dao := servicecontext.GetDAO(ctx).(user.DAO)
 
@@ -98,8 +103,9 @@ func (h *Handler) CreateUser(ctx context.Context, req *idm.CreateUserRequest, re
 	newUser, createdNodes, err := dao.Add(req.User)
 	if err != nil {
 		log.Logger(ctx).Error("cannot put user "+req.User.Login, req.User.ZapUuid(), zap.Error(err))
-		return err
+		return nil, err
 	}
+	resp := &idm.CreateUserResponse{}
 
 	out := newUser.(*idm.User)
 	if passChange != "" {
@@ -107,7 +113,7 @@ func (h *Handler) CreateUser(ctx context.Context, req *idm.CreateUserRequest, re
 		ctxLogin, _ := permissions.FindUserNameInContext(ctx)
 		if l, ok := out.Attributes["locks"]; ok && strings.Contains(l, "pass_change") && ctxLogin == out.Login {
 			if req.User.OldPassword == out.Password {
-				return fmt.Errorf("new password is the same as the old password, please use a different one")
+				return nil, fmt.Errorf("new password is the same as the old password, please use a different one")
 			}
 			var locks, newLocks []string
 			json.Unmarshal([]byte(l), &locks)
@@ -140,14 +146,14 @@ func (h *Handler) CreateUser(ctx context.Context, req *idm.CreateUserRequest, re
 	}
 	log.Logger(ctx).Debug("ADDING POLICIES NOW", zap.Int("p length", len(req.User.Policies)), zap.Int("createdNodes length", len(createdNodes)))
 	if err := dao.AddPolicies(len(createdNodes) == 0, out.Uuid, req.User.Policies); err != nil {
-		return err
+		return nil, err
 	}
 	for _, g := range createdNodes {
 		if g.Uuid != out.Uuid && g.Type == tree.NodeType_COLLECTION {
 			// Groups where created in the process, add default policies on them
 			log.Logger(ctx).Info("Setting Default Policies on groups that were created automatically", zap.Any("groupPath", g.Path))
 			if err := dao.AddPolicies(false, g.Uuid, defaultPolicies); err != nil {
-				return err
+				return nil, err
 			}
 		}
 	}
@@ -196,13 +202,13 @@ func (h *Handler) CreateUser(ctx context.Context, req *idm.CreateUserRequest, re
 			)
 		}
 	}
-	return nil
+	return resp, nil
 }
 
 // DeleteUser from database
-func (h *Handler) DeleteUser(ctx context.Context, req *idm.DeleteUserRequest, response *idm.DeleteUserResponse) error {
+func (h *Handler) DeleteUser(ctx context.Context, req *idm.DeleteUserRequest) (*idm.DeleteUserResponse, error) {
 	if servicecontext.GetDAO(ctx) == nil {
-		return fmt.Errorf("no DAO found, wrong initialization")
+		return nil, fmt.Errorf("no DAO found, wrong initialization")
 	}
 	usersChan := make(chan *idm.User)
 	done := make(chan bool)
@@ -229,7 +235,7 @@ func (h *Handler) DeleteUser(ctx context.Context, req *idm.DeleteUserRequest, re
 
 	i, err := dao.Count(req.Query, true)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	total := float32(i)
 	wg := &sync.WaitGroup{}
@@ -295,22 +301,23 @@ func (h *Handler) DeleteUser(ctx context.Context, req *idm.DeleteUserRequest, re
 			task.Status = jobs.TaskStatus_Error
 			taskChan <- task
 		}
-		return err
+		return nil, err
 	}
 	wg.Wait()
 	if taskChan != nil {
 		close(taskChan)
 	}
-	response.RowsDeleted = numRows
-	return nil
+	return &idm.DeleteUserResponse{RowsDeleted: numRows}, nil
+
 }
 
 // SearchUser in database
-func (h *Handler) SearchUser(ctx context.Context, request *idm.SearchUserRequest, response idm.UserService_SearchUserStream) error {
+func (h *Handler) SearchUser(request *idm.SearchUserRequest, response idm.UserService_SearchUserServer) error {
+
+	ctx := response.Context()
 	if servicecontext.GetDAO(ctx) == nil {
 		return fmt.Errorf("no DAO found, wrong initialization")
 	}
-	defer response.Close()
 	dao := servicecontext.GetDAO(ctx).(user.DAO)
 	autoApplies, er := h.loadAutoAppliesRoles(ctx)
 	if er != nil {
@@ -341,28 +348,29 @@ func (h *Handler) SearchUser(ctx context.Context, request *idm.SearchUserRequest
 }
 
 // CountUser in database
-func (h *Handler) CountUser(ctx context.Context, request *idm.SearchUserRequest, response *idm.CountUserResponse) error {
+func (h *Handler) CountUser(ctx context.Context, request *idm.SearchUserRequest) (*idm.CountUserResponse, error) {
+
 	if servicecontext.GetDAO(ctx) == nil {
-		return fmt.Errorf("no DAO found, wrong initialization")
+		return nil, fmt.Errorf("no DAO found, wrong initialization")
 	}
 	dao := servicecontext.GetDAO(ctx).(user.DAO)
 
 	total, err := dao.Count(request.Query)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	response.Count = int32(total)
+	return &idm.CountUserResponse{Count: int32(total)}, nil
 
-	return nil
 }
 
 // StreamUser from database
-func (h *Handler) StreamUser(ctx context.Context, streamer idm.UserService_StreamUserStream) error {
+func (h *Handler) StreamUser(streamer idm.UserService_StreamUserServer) error {
+
+	ctx := streamer.Context()
 	if servicecontext.GetDAO(ctx) == nil {
 		return fmt.Errorf("no DAO found, wrong initialization")
 	}
 	dao := servicecontext.GetDAO(ctx).(user.DAO)
-	defer streamer.Close()
 
 	autoApplies, e := h.loadAutoAppliesRoles(ctx)
 	if e != nil {

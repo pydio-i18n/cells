@@ -54,9 +54,9 @@ func (c *Cleaner) Handle(ctx context.Context, msg *idm.ChangeEvent) error {
 	q, _ := anypb.New(&idm.RoleSingleQuery{
 		Uuid: []string{msg.User.Uuid},
 	})
-	if err := c.handler.DeleteRole(ctx, &idm.DeleteRoleRequest{
+	if _, err := c.handler.DeleteRole(ctx, &idm.DeleteRoleRequest{
 		Query: &service.Query{SubQueries: []*anypb.Any{q}},
-	}, &idm.DeleteRoleResponse{}); err != nil {
+	}); err != nil {
 		log.Logger(ctx).Error("Error while deleting role associated to user", zap.Error(err))
 		return err
 	}

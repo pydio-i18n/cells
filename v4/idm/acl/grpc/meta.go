@@ -21,8 +21,6 @@
 package grpc
 
 import (
-	"context"
-
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
@@ -38,11 +36,11 @@ import (
 )
 
 // ReadNodeStream implements method to be a MetaProvider
-func (h *Handler) ReadNodeStream(ctx context.Context, stream tree.NodeProviderStreamer_ReadNodeStreamStream) error {
+func (h *Handler) ReadNodeStream(stream tree.NodeProviderStreamer_ReadNodeStreamServer) error {
 
+	ctx := stream.Context()
 	dao := servicecontext.GetDAO(ctx).(acl.DAO)
 	workspaceClient := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
-	defer stream.Close()
 
 	for {
 		req, er := stream.Recv()

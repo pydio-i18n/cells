@@ -26,6 +26,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"google.golang.org/grpc/metadata"
+
 	proto "github.com/pydio/cells/v4/common/proto/docstore"
 	"github.com/pydio/cells/v4/data/docstore"
 	. "github.com/smartystreets/goconvey/convey"
@@ -33,10 +35,23 @@ import (
 
 type listDocsTestStreamer struct {
 	Docs []*proto.ListDocumentsResponse
+	Ctx  context.Context
+}
+
+func (l *listDocsTestStreamer) SetHeader(md metadata.MD) error {
+	panic("implement me")
+}
+
+func (l *listDocsTestStreamer) SendHeader(md metadata.MD) error {
+	panic("implement me")
+}
+
+func (l *listDocsTestStreamer) SetTrailer(md metadata.MD) {
+	panic("implement me")
 }
 
 func (l *listDocsTestStreamer) Context() context.Context {
-	panic("implement me")
+	return l.Ctx
 }
 
 func newPath(tmpName string) string {
@@ -117,7 +132,7 @@ func TestHandler_CRUD(t *testing.T) {
 		h := createTestHandler("crud")
 		defer h.Close()
 
-		e := h.PutDocument(ctx, &proto.PutDocumentRequest{
+		_, e := h.PutDocument(ctx, &proto.PutDocumentRequest{
 			StoreID: "any-store",
 			Document: &proto.Document{
 				Type:          proto.DocumentType_JSON,
@@ -126,34 +141,31 @@ func TestHandler_CRUD(t *testing.T) {
 				Data:          "Hello World Data",
 				IndexableMeta: `{"key1":"value1"}`,
 			},
-		}, &proto.PutDocumentResponse{})
+		})
 		So(e, ShouldBeNil)
 
-		getDocResp := &proto.GetDocumentResponse{}
-		e2 := h.GetDocument(ctx, &proto.GetDocumentRequest{
+		getDocResp, e2 := h.GetDocument(ctx, &proto.GetDocumentRequest{
 			StoreID:    "any-store",
 			DocumentID: "my-doc-id",
-		}, getDocResp)
+		})
 		So(e2, ShouldBeNil)
 		So(getDocResp.Document.Data, ShouldResemble, "Hello World Data")
 
-		delDocResp := &proto.DeleteDocumentsResponse{}
-		e3 := h.DeleteDocuments(ctx, &proto.DeleteDocumentsRequest{
+		delDocResp, e3 := h.DeleteDocuments(ctx, &proto.DeleteDocumentsRequest{
 			StoreID:    "any-store",
 			DocumentID: "my-doc-id",
-		}, delDocResp)
+		})
 		So(e3, ShouldBeNil)
 		So(delDocResp.Success, ShouldBeTrue)
 		So(delDocResp.DeletionCount, ShouldEqual, 1)
 
 		// Try to get deleted doc
-		getDocResp2 := &proto.GetDocumentResponse{}
-		e4 := h.GetDocument(ctx, &proto.GetDocumentRequest{
+		getDocResp2, e4 := h.GetDocument(ctx, &proto.GetDocumentRequest{
 			StoreID:    "any-store",
 			DocumentID: "my-doc-id",
-		}, getDocResp2)
+		})
 		So(e4, ShouldNotBeNil)
-		So(getDocResp2.Document, ShouldBeNil)
+		So(getDocResp2, ShouldBeNil)
 
 	})
 
@@ -167,7 +179,7 @@ func TestHandler_Search(t *testing.T) {
 		h := createTestHandler("list")
 		defer h.Close()
 
-		e := h.PutDocument(ctx, &proto.PutDocumentRequest{
+		_, e := h.PutDocument(ctx, &proto.PutDocumentRequest{
 			StoreID: "any-store",
 			Document: &proto.Document{
 				Type:          proto.DocumentType_JSON,
@@ -176,10 +188,10 @@ func TestHandler_Search(t *testing.T) {
 				Data:          "Hello World Data",
 				IndexableMeta: `{"key":"value", "key2":"value2", "key3":45}`,
 			},
-		}, &proto.PutDocumentResponse{})
+		})
 		So(e, ShouldBeNil)
 
-		e = h.PutDocument(ctx, &proto.PutDocumentRequest{
+		_, e = h.PutDocument(ctx, &proto.PutDocumentRequest{
 			StoreID: "any-store",
 			Document: &proto.Document{
 				Type:          proto.DocumentType_JSON,
@@ -188,11 +200,11 @@ func TestHandler_Search(t *testing.T) {
 				Data:          "Other Test Data",
 				IndexableMeta: `{"key":"value", "key2":"other", "key3":50}`,
 			},
-		}, &proto.PutDocumentResponse{})
+		})
 		So(e, ShouldBeNil)
 
-		streamer := &listDocsTestStreamer{}
-		e1 := h.ListDocuments(ctx, &proto.ListDocumentsRequest{
+		streamer := &listDocsTestStreamer{Ctx: ctx}
+		e1 := h.ListDocuments(&proto.ListDocumentsRequest{
 			StoreID: "any-store",
 			Query: &proto.DocumentQuery{
 				Owner: "admin",
@@ -201,8 +213,8 @@ func TestHandler_Search(t *testing.T) {
 		So(e1, ShouldBeNil)
 		So(streamer.Docs, ShouldHaveLength, 1)
 
-		streamer = &listDocsTestStreamer{}
-		e1 = h.ListDocuments(ctx, &proto.ListDocumentsRequest{
+		streamer = &listDocsTestStreamer{Ctx: ctx}
+		e1 = h.ListDocuments(&proto.ListDocumentsRequest{
 			StoreID: "any-store",
 			Query: &proto.DocumentQuery{
 				Owner: "unknwown",
@@ -211,8 +223,8 @@ func TestHandler_Search(t *testing.T) {
 		So(e1, ShouldBeNil)
 		So(streamer.Docs, ShouldHaveLength, 0)
 
-		streamer = &listDocsTestStreamer{}
-		e1 = h.ListDocuments(ctx, &proto.ListDocumentsRequest{
+		streamer = &listDocsTestStreamer{Ctx: ctx}
+		e1 = h.ListDocuments(&proto.ListDocumentsRequest{
 			StoreID: "any-store",
 			Query: &proto.DocumentQuery{
 				MetaQuery: "+key:value",
@@ -221,8 +233,8 @@ func TestHandler_Search(t *testing.T) {
 		So(e1, ShouldBeNil)
 		So(streamer.Docs, ShouldHaveLength, 2)
 
-		streamer = &listDocsTestStreamer{}
-		e1 = h.ListDocuments(ctx, &proto.ListDocumentsRequest{
+		streamer = &listDocsTestStreamer{Ctx: ctx}
+		e1 = h.ListDocuments(&proto.ListDocumentsRequest{
 			StoreID: "any-store",
 			Query: &proto.DocumentQuery{
 				MetaQuery: "+key2:value2",
@@ -231,8 +243,8 @@ func TestHandler_Search(t *testing.T) {
 		So(e1, ShouldBeNil)
 		So(streamer.Docs, ShouldHaveLength, 1)
 
-		streamer = &listDocsTestStreamer{}
-		e1 = h.ListDocuments(ctx, &proto.ListDocumentsRequest{
+		streamer = &listDocsTestStreamer{Ctx: ctx}
+		e1 = h.ListDocuments(&proto.ListDocumentsRequest{
 			StoreID: "any-store",
 			Query: &proto.DocumentQuery{
 				MetaQuery: "+key3:<49",
@@ -241,8 +253,8 @@ func TestHandler_Search(t *testing.T) {
 		So(e1, ShouldBeNil)
 		So(streamer.Docs, ShouldHaveLength, 1)
 
-		streamer = &listDocsTestStreamer{}
-		e1 = h.ListDocuments(ctx, &proto.ListDocumentsRequest{
+		streamer = &listDocsTestStreamer{Ctx: ctx}
+		e1 = h.ListDocuments(&proto.ListDocumentsRequest{
 			StoreID: "any-store",
 			Query: &proto.DocumentQuery{
 				MetaQuery: "+key3:<45",
@@ -251,8 +263,8 @@ func TestHandler_Search(t *testing.T) {
 		So(e1, ShouldBeNil)
 		So(streamer.Docs, ShouldHaveLength, 0)
 
-		streamer = &listDocsTestStreamer{}
-		e1 = h.ListDocuments(ctx, &proto.ListDocumentsRequest{
+		streamer = &listDocsTestStreamer{Ctx: ctx}
+		e1 = h.ListDocuments(&proto.ListDocumentsRequest{
 			StoreID: "any-store",
 			Query: &proto.DocumentQuery{
 				MetaQuery: "+key3:>45 +key2:value2",
@@ -262,13 +274,12 @@ func TestHandler_Search(t *testing.T) {
 		So(streamer.Docs, ShouldHaveLength, 0)
 
 		// NOW DELETE DOCS
-		delDocs := &proto.DeleteDocumentsResponse{}
-		e1 = h.DeleteDocuments(ctx, &proto.DeleteDocumentsRequest{
+		delDocs, e1 := h.DeleteDocuments(ctx, &proto.DeleteDocumentsRequest{
 			StoreID: "any-store",
 			Query: &proto.DocumentQuery{
 				MetaQuery: "+key:value",
 			},
-		}, delDocs)
+		})
 		So(e1, ShouldBeNil)
 		So(delDocs.DeletionCount, ShouldEqual, 2)
 

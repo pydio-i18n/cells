@@ -70,9 +70,7 @@ func init() {
 					Up:            RegisterDigestJob,
 				},
 			}),
-			/*
-				service.WithStorage(activity.NewDAO, "broker_activity"),
-			*/
+			service.WithStorage(activity.NewDAO, "broker_activity"),
 			service.Unique(true),
 			service.WithGRPC(func(c context.Context, srv *grpc.Server) error {
 

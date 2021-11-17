@@ -25,11 +25,21 @@ package grpc
 
 import (
 	"context"
+	"path/filepath"
+
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
+	"github.com/pydio/cells/v4/common/log"
+	defaults "github.com/pydio/cells/v4/common/micro"
+	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/proto/sync"
+	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/data/search/dao/bleve"
 )
 
 var (
@@ -50,55 +60,59 @@ func init() {
 			/*
 				service.RouterDependencies(),
 				service.AutoRestart(true),
-				service.WithMicro(func(m micro.Service) error {
-
-					ctx := m.Options().Context
-					cfg := servicecontext.GetConfig(ctx)
-
-					indexContent := cfg.Val("indexContent").Bool()
-					if indexContent {
-						log.Logger(m.Options().Context).Info("Enabling content indexation in search engine")
-					} else {
-						log.Logger(m.Options().Context).Info("disabling content indexation in search engine")
-					}
-
-					dir, _ := config.ServiceDataDir(Name)
-					bleve.BleveIndexPath = filepath.Join(dir, "searchengine.bleve")
-					bleveConfs := make(map[string]interface{})
-					bleveConfs["basenameAnalyzer"] = cfg.Val("basenameAnalyzer").String()
-					bleveConfs["contentAnalyzer"] = cfg.Val("contentAnalyzer").String()
-
-					bleveEngine, err := bleve.NewBleveEngine(indexContent, bleveConfs)
-					if err != nil {
-						return err
-					}
-
-					server := &SearchServer{
-						Engine:           bleveEngine,
-						TreeClient:       tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceTree)),
-						ReIndexThrottler: make(chan struct{}, 5),
-					}
-
-					tree.RegisterSearcherHandler(m.Options().Server, server)
-					sync.RegisterSyncEndpointHandler(m.Options().Server, server)
-
-					m.Init(
-						micro.BeforeStop(bleveEngine.Close),
-					)
-
-					// Register Subscribers
-					if err := m.Options().Server.Subscribe(
-						m.Options().Server.NewSubscriber(
-							common.TopicMetaChanges,
-							server.CreateNodeChangeSubscriber(),
-						),
-					); err != nil {
-						return err
-					}
-
-					return nil
-				}),
 			*/
+			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
+
+				cfg := servicecontext.GetConfig(c)
+
+				indexContent := cfg.Val("indexContent").Bool()
+				if indexContent {
+					log.Logger(c).Info("Enabling content indexation in search engine")
+				} else {
+					log.Logger(c).Info("disabling content indexation in search engine")
+				}
+
+				dir, _ := config.ServiceDataDir(Name)
+				bleve.BleveIndexPath = filepath.Join(dir, "searchengine.bleve")
+				bleveConfs := make(map[string]interface{})
+				bleveConfs["basenameAnalyzer"] = cfg.Val("basenameAnalyzer").String()
+				bleveConfs["contentAnalyzer"] = cfg.Val("contentAnalyzer").String()
+
+				bleveEngine, err := bleve.NewBleveEngine(indexContent, bleveConfs)
+				if err != nil {
+					return err
+				}
+
+				searcher := &SearchServer{
+					Engine:           bleveEngine,
+					TreeClient:       tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceTree)),
+					ReIndexThrottler: make(chan struct{}, 5),
+				}
+
+				tree.RegisterSearcherServer(server, searcher)
+				sync.RegisterSyncEndpointServer(server, searcher)
+
+				subscriber := searcher.Subscriber()
+				un, e := broker.Subscribe(common.TopicMetaChanges, func(message broker.Message) error {
+					msg := &tree.NodeChangeEvent{}
+					if ct, e := message.Unmarshal(msg); e == nil {
+						return subscriber.Handle(ct, msg)
+					}
+					return nil
+				})
+				if e != nil {
+					_ = bleveEngine.Close()
+					return e
+				}
+
+				go func() {
+					<-c.Done()
+					_ = bleveEngine.Close()
+					_ = un()
+				}()
+
+				return nil
+			}),
 		)
 	})
 }

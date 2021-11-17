@@ -23,11 +23,13 @@ package grpc
 
 import (
 	"context"
+
 	"google.golang.org/grpc"
 
+	"github.com/pydio/cells/v4/broker/chat"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
-	"github.com/pydio/cells/v4/common/proto/chat"
+	proto "github.com/pydio/cells/v4/common/proto/chat"
 	"github.com/pydio/cells/v4/common/service"
 )
 
@@ -38,13 +40,10 @@ func init() {
 			service.Context(ctx),
 			service.Tag(common.ServiceTagBroker),
 			service.Description("Chat Service to attach real-time chats to various object. Coupled with WebSocket"),
-			/*
-				// TODO V4
-				service.WithStorage(chat.NewDAO, "broker_chat"),
-				service.Unique(true),
-			*/
+			service.WithStorage(chat.NewDAO, "broker_chat"),
+			service.Unique(true),
 			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
-				chat.RegisterChatServiceServer(server, new(ChatHandler))
+				proto.RegisterChatServiceServer(server, new(ChatHandler))
 				return nil
 			}),
 		)

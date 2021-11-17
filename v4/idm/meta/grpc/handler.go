@@ -41,6 +41,9 @@ import (
 
 // Handler definition.
 type Handler struct {
+	idm.UnimplementedUserMetaServiceServer
+	tree.UnimplementedNodeProviderStreamerServer
+
 	searchCache *cache.InstrumentedCache
 }
 
@@ -55,9 +58,10 @@ func (h *Handler) Stop() {
 }
 
 // UpdateUserMeta adds, updates or deletes user meta.
-func (h *Handler) UpdateUserMeta(ctx context.Context, request *idm.UpdateUserMetaRequest, response *idm.UpdateUserMetaResponse) error {
+func (h *Handler) UpdateUserMeta(ctx context.Context, request *idm.UpdateUserMetaRequest) (*idm.UpdateUserMetaResponse, error) {
 
 	dao := servicecontext.GetDAO(ctx).(meta.DAO)
+	response := &idm.UpdateUserMetaResponse{}
 	namespaces, _ := dao.GetNamespaceDao().List()
 	nodes := make(map[string]*tree.Node)
 	sources := make(map[string]*tree.Node)
@@ -68,21 +72,21 @@ func (h *Handler) UpdateUserMeta(ctx context.Context, request *idm.UpdateUserMet
 			// Check JsonValue is valid json
 			var data interface{}
 			if er := json.Unmarshal([]byte(metaData.GetJsonValue()), &data); er != nil {
-				return fmt.Errorf("make sure to use JSON format for metadata: %s", er.Error())
+				return nil, fmt.Errorf("make sure to use JSON format for metadata: %s", er.Error())
 			}
 			// ADD / UPDATE
 			if newMeta, prev, err := dao.Set(metaData); err == nil {
 				response.MetaDatas = append(response.MetaDatas, newMeta)
 				prevValue = prev
 			} else {
-				return err
+				return nil, err
 			}
 		} else {
 			// DELETE
 			if prev, err := dao.Del(metaData); err == nil {
 				prevValue = prev
 			} else {
-				return err
+				return nil, err
 			}
 		}
 		var src *tree.Node
@@ -133,30 +137,32 @@ func (h *Handler) UpdateUserMeta(ctx context.Context, request *idm.UpdateUserMet
 		}
 	}()
 
-	return nil
+	return response, nil
 
 }
 
 // SearchUserMeta retrieves meta based on various criteria.
-func (h *Handler) SearchUserMeta(ctx context.Context, request *idm.SearchUserMetaRequest, stream idm.UserMetaService_SearchUserMetaStream) error {
+func (h *Handler) SearchUserMeta(request *idm.SearchUserMetaRequest, stream idm.UserMetaService_SearchUserMetaServer) error {
 
-	defer stream.Close()
+	ctx := stream.Context()
 	dao := servicecontext.GetDAO(ctx).(meta.DAO)
 	results, err := dao.Search(request.MetaUuids, request.NodeUuids, request.Namespace, request.ResourceSubjectOwner, request.ResourceQuery)
 	if err != nil {
 		return err
 	}
 	for _, result := range results {
-		stream.Send(&idm.SearchUserMetaResponse{UserMeta: result})
+		if e := stream.Send(&idm.SearchUserMetaResponse{UserMeta: result}); e != nil {
+			return e
+		}
 	}
 	return nil
 
 }
 
 // ReadNodeStream Implements ReadNodeStream to be a meta provider.
-func (h *Handler) ReadNodeStream(ctx context.Context, stream tree.NodeProviderStreamer_ReadNodeStreamStream) error {
+func (h *Handler) ReadNodeStream(stream tree.NodeProviderStreamer_ReadNodeStreamServer) error {
 
-	defer stream.Close()
+	ctx := stream.Context()
 	dao := servicecontext.GetDAO(ctx).(meta.DAO)
 	bgCtx := context2.NewBackgroundWithMetaCopy(ctx)
 	subjects, e := auth.SubjectsForResourcePolicyQuery(bgCtx, nil)
@@ -198,12 +204,13 @@ func (h *Handler) ReadNodeStream(ctx context.Context, stream tree.NodeProviderSt
 }
 
 // UpdateUserMetaNamespace Update/Delete a namespace.
-func (h *Handler) UpdateUserMetaNamespace(ctx context.Context, request *idm.UpdateUserMetaNamespaceRequest, response *idm.UpdateUserMetaNamespaceResponse) error {
+func (h *Handler) UpdateUserMetaNamespace(ctx context.Context, request *idm.UpdateUserMetaNamespaceRequest) (*idm.UpdateUserMetaNamespaceResponse, error) {
 
+	response := &idm.UpdateUserMetaNamespaceResponse{}
 	dao := servicecontext.GetDAO(ctx).(meta.DAO).GetNamespaceDao()
 	for _, metaNameSpace := range request.Namespaces {
 		if err := dao.Del(metaNameSpace); err != nil {
-			return err
+			return nil, err
 		} else {
 			broker.MustPublish(ctx, common.TopicIdmEvent, &idm.ChangeEvent{
 				Type:          idm.ChangeEventType_DELETE,
@@ -214,7 +221,7 @@ func (h *Handler) UpdateUserMetaNamespace(ctx context.Context, request *idm.Upda
 	if request.Operation == idm.UpdateUserMetaNamespaceRequest_PUT {
 		for _, metaNameSpace := range request.Namespaces {
 			if err := dao.Add(metaNameSpace); err != nil {
-				return err
+				return nil, err
 			} else {
 				broker.MustPublish(ctx, common.TopicIdmEvent, &idm.ChangeEvent{
 					Type:          idm.ChangeEventType_CREATE,
@@ -224,14 +231,14 @@ func (h *Handler) UpdateUserMetaNamespace(ctx context.Context, request *idm.Upda
 			response.Namespaces = append(response.Namespaces, metaNameSpace)
 		}
 	}
-	return nil
+	return response, nil
 
 }
 
 // ListUserMetaNamespace List all namespaces from underlying DAO.
-func (h *Handler) ListUserMetaNamespace(ctx context.Context, request *idm.ListUserMetaNamespaceRequest, stream idm.UserMetaService_ListUserMetaNamespaceStream) error {
+func (h *Handler) ListUserMetaNamespace(request *idm.ListUserMetaNamespaceRequest, stream idm.UserMetaService_ListUserMetaNamespaceServer) error {
 
-	defer stream.Close()
+	ctx := stream.Context()
 	dao := servicecontext.GetDAO(ctx).(meta.DAO).GetNamespaceDao()
 	if results, err := dao.List(); err == nil {
 		for _, result := range results {

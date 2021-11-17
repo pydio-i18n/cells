@@ -42,7 +42,9 @@ type NodeInfoMessage struct {
 	Message interface{}
 }
 
-type NodeKeyManagerHandler struct{}
+type NodeKeyManagerHandler struct {
+	encryption.UnimplementedNodeKeyManagerServer
+}
 
 func getDAO(ctx context.Context) (key.DAO, error) {
 	dao := servicecontext.GetDAO(ctx)
@@ -62,28 +64,30 @@ func (km *NodeKeyManagerHandler) HandleTreeChanges(ctx context.Context, msg *tre
 		req := &encryption.DeleteNodeRequest{
 			NodeId: msg.Source.Uuid,
 		}
-		return km.DeleteNode(ctx, req, &encryption.DeleteNodeResponse{})
+		_, e := km.DeleteNode(ctx, req)
+		return e
 	}
 	return nil
 }
 
-func (km *NodeKeyManagerHandler) GetNodeInfo(ctx context.Context, req *encryption.GetNodeInfoRequest, rsp *encryption.GetNodeInfoResponse) error {
+func (km *NodeKeyManagerHandler) GetNodeInfo(ctx context.Context, req *encryption.GetNodeInfoRequest) (*encryption.GetNodeInfoResponse, error) {
 	dao, err := getDAO(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
+	rsp := &encryption.GetNodeInfoResponse{}
 
 	rsp.NodeInfo = new(encryption.NodeInfo)
 
 	rsp.NodeInfo.Node, err = dao.GetNode(req.NodeId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	rsp.NodeInfo.NodeKey, err = dao.GetNodeKey(req.NodeId, req.UserId)
 	if err != nil {
 		log.Logger(ctx).Debug("data.key.handler: failed to get node key for "+req.NodeId+" - "+req.UserId, zap.Error(err))
-		return err
+		return nil, err
 	}
 
 	if rsp.NodeInfo.Node.Legacy {
@@ -91,7 +95,7 @@ func (km *NodeKeyManagerHandler) GetNodeInfo(ctx context.Context, req *encryptio
 		block, err := dao.GetEncryptedLegacyBlockInfo(req.NodeId)
 		if err != nil {
 			log.Logger(ctx).Error("data.key.handler: failed to load legacy block info", zap.Error(err))
-			return err
+			return nil, err
 		}
 		rsp.NodeInfo.Block = &encryption.Block{
 			BlockSize: block.BlockSize,
@@ -102,7 +106,7 @@ func (km *NodeKeyManagerHandler) GetNodeInfo(ctx context.Context, req *encryptio
 		cursor, err := dao.ListEncryptedBlockInfo(req.NodeId)
 		if err != nil {
 			log.Logger(ctx).Error("failed to list node blocks", zap.String("id", rsp.NodeInfo.Node.NodeId))
-			return err
+			return nil, err
 		}
 		defer cursor.Close()
 
@@ -157,7 +161,7 @@ func (km *NodeKeyManagerHandler) GetNodeInfo(ctx context.Context, req *encryptio
 		}
 
 		if !foundEncryptedOffset {
-			return errors.InternalServerError("offset.not.found", "Cannot find proper offset for range %d %d", req.PlainOffset, req.PlainLength)
+			return nil, errors.InternalServerError("offset.not.found", "Cannot find proper offset for range %d %d", req.PlainOffset, req.PlainLength)
 		}
 
 		if !foundEncryptedLimit {
@@ -165,23 +169,23 @@ func (km *NodeKeyManagerHandler) GetNodeInfo(ctx context.Context, req *encryptio
 		}
 	}
 
-	return err
+	return rsp, err
 }
 
-func (km *NodeKeyManagerHandler) GetNodePlainSize(ctx context.Context, req *encryption.GetNodePlainSizeRequest, rsp *encryption.GetNodePlainSizeResponse) error {
+func (km *NodeKeyManagerHandler) GetNodePlainSize(ctx context.Context, req *encryption.GetNodePlainSizeRequest) (*encryption.GetNodePlainSizeResponse, error) {
 
 	dao, err := getDAO(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	cursor, err := dao.ListEncryptedBlockInfo(req.NodeId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer cursor.Close()
 
-	rsp.Size = 0
+	rsp := &encryption.GetNodePlainSizeResponse{}
 
 	for cursor.HasNext() {
 		next, _ := cursor.Next()
@@ -191,10 +195,12 @@ func (km *NodeKeyManagerHandler) GetNodePlainSize(ctx context.Context, req *encr
 
 		rsp.Size += plainBlockSize * int64(count)
 	}
-	return nil
+	return rsp, nil
 }
 
-func (km *NodeKeyManagerHandler) SetNodeInfo(ctx context.Context, stream encryption.NodeKeyManager_SetNodeInfoStream) error {
+func (km *NodeKeyManagerHandler) SetNodeInfo(stream encryption.NodeKeyManager_SetNodeInfoServer) error {
+
+	ctx := stream.Context()
 	dao, err := getDAO(ctx)
 	if err != nil {
 		return err
@@ -291,39 +297,43 @@ func (km *NodeKeyManagerHandler) SetNodeInfo(ctx context.Context, stream encrypt
 	return err
 }
 
-func (km *NodeKeyManagerHandler) CopyNodeInfo(ctx context.Context, req *encryption.CopyNodeInfoRequest, rsp *encryption.CopyNodeInfoResponse) error {
+func (km *NodeKeyManagerHandler) CopyNodeInfo(ctx context.Context, req *encryption.CopyNodeInfoRequest) (*encryption.CopyNodeInfoResponse, error) {
 	dao, err := getDAO(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return dao.CopyNode(req.NodeUuid, req.NodeCopyUuid)
+	rsp := &encryption.CopyNodeInfoResponse{}
+	return rsp, dao.CopyNode(req.NodeUuid, req.NodeCopyUuid)
 }
 
-func (km *NodeKeyManagerHandler) DeleteNode(ctx context.Context, req *encryption.DeleteNodeRequest, rsp *encryption.DeleteNodeResponse) error {
+func (km *NodeKeyManagerHandler) DeleteNode(ctx context.Context, req *encryption.DeleteNodeRequest) (*encryption.DeleteNodeResponse, error) {
 	dao, err := getDAO(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return dao.DeleteNode(req.NodeId)
+	rsp := &encryption.DeleteNodeResponse{}
+	return rsp, dao.DeleteNode(req.NodeId)
 }
 
-func (km *NodeKeyManagerHandler) DeleteNodeKey(ctx context.Context, req *encryption.DeleteNodeKeyRequest, rsp *encryption.DeleteNodeKeyResponse) error {
+func (km *NodeKeyManagerHandler) DeleteNodeKey(ctx context.Context, req *encryption.DeleteNodeKeyRequest) (*encryption.DeleteNodeKeyResponse, error) {
 	dao, err := getDAO(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return dao.DeleteNodeKey(&encryption.NodeKey{
+	rsp := &encryption.DeleteNodeKeyResponse{}
+	return rsp, dao.DeleteNodeKey(&encryption.NodeKey{
 		UserId: req.UserId,
 		NodeId: req.NodeId,
 	})
 }
 
-func (km *NodeKeyManagerHandler) DeleteNodeSharedKey(ctx context.Context, req *encryption.DeleteNodeSharedKeyRequest, rsp *encryption.DeleteNodeSharedKeyResponse) error {
+func (km *NodeKeyManagerHandler) DeleteNodeSharedKey(ctx context.Context, req *encryption.DeleteNodeSharedKeyRequest) (*encryption.DeleteNodeSharedKeyResponse, error) {
 	dao, err := getDAO(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return dao.DeleteNodeKey(&encryption.NodeKey{
+	rsp := &encryption.DeleteNodeSharedKeyResponse{}
+	return rsp, dao.DeleteNodeKey(&encryption.NodeKey{
 		UserId: req.UserId,
 		NodeId: req.NodeId,
 	})

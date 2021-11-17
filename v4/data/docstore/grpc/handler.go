@@ -33,6 +33,8 @@ import (
 )
 
 type Handler struct {
+	proto.UnimplementedDocStoreServer
+	sync.UnimplementedSyncEndpointServer
 	Db      docstore.Store
 	Indexer docstore.Indexer
 }
@@ -47,41 +49,41 @@ func (h *Handler) Close() error {
 	return err
 }
 
-func (h *Handler) PutDocument(ctx context.Context, request *proto.PutDocumentRequest, response *proto.PutDocumentResponse) error {
+func (h *Handler) PutDocument(ctx context.Context, request *proto.PutDocumentRequest) (*proto.PutDocumentResponse, error) {
 	e := h.Db.PutDocument(request.StoreID, request.Document)
 	log.Logger(ctx).Debug("PutDocument", zap.String("store", request.StoreID), zap.String("docId", request.Document.ID))
 	if e != nil {
 		log.Logger(ctx).Error("PutDocument", zap.Error(e))
-		return e
+		return nil, e
 	}
 	e = h.Indexer.IndexDocument(request.StoreID, request.Document)
 	if e != nil {
 		log.Logger(ctx).Error("PutDocument:Index", zap.Error(e))
-		return e
+		return nil, e
 	}
-	response.Document = request.Document
-	return e
+	return &proto.PutDocumentResponse{Document: request.Document}, nil
 }
 
-func (h *Handler) GetDocument(ctx context.Context, request *proto.GetDocumentRequest, response *proto.GetDocumentResponse) error {
+func (h *Handler) GetDocument(ctx context.Context, request *proto.GetDocumentRequest) (*proto.GetDocumentResponse, error) {
 	log.Logger(ctx).Debug("GetDocument", zap.String("store", request.StoreID), zap.String("docId", request.DocumentID))
 	doc, e := h.Db.GetDocument(request.StoreID, request.DocumentID)
 	if e != nil {
-		return fmt.Errorf("document not found")
+		return nil, fmt.Errorf("document not found")
 	}
-	response.Document = doc
-	return nil
+	return &proto.GetDocumentResponse{Document: doc}, nil
 }
 
-func (h *Handler) DeleteDocuments(ctx context.Context, request *proto.DeleteDocumentsRequest, response *proto.DeleteDocumentsResponse) error {
+func (h *Handler) DeleteDocuments(ctx context.Context, request *proto.DeleteDocumentsRequest) (*proto.DeleteDocumentsResponse, error) {
+
+	response := &proto.DeleteDocumentsResponse{}
 
 	if request.Query != nil && request.Query.MetaQuery != "" {
 
 		docIds, _, err := h.Indexer.SearchDocuments(request.StoreID, request.Query, false)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		//log.Logger(ctx).Debug("SEARCH RESULTS", zap.Any("docs", docIds))
+
 		for _, docId := range docIds {
 			log.Logger(ctx).Info("DeleteDocument", zap.String("store", request.StoreID), zap.String("docId", docId))
 			if e := h.Db.DeleteDocument(request.StoreID, docId); e == nil {
@@ -92,42 +94,41 @@ func (h *Handler) DeleteDocuments(ctx context.Context, request *proto.DeleteDocu
 
 		}
 		response.Success = true
-		return nil
+		return response, nil
 
 	} else {
 
 		err := h.Db.DeleteDocument(request.StoreID, request.DocumentID)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		response.Success = true
 		response.DeletionCount = 1
-		return h.Indexer.DeleteDocument(request.StoreID, request.DocumentID)
+		return response, h.Indexer.DeleteDocument(request.StoreID, request.DocumentID)
 
 	}
 }
 
-func (h *Handler) CountDocuments(ctx context.Context, request *proto.ListDocumentsRequest, response *proto.CountDocumentsResponse) error {
+func (h *Handler) CountDocuments(ctx context.Context, request *proto.ListDocumentsRequest) (*proto.CountDocumentsResponse, error) {
 
 	log.Logger(ctx).Debug("CountDocuments", zap.Any("req", request))
 
 	if request.Query == nil || request.Query.MetaQuery == "" {
-		return fmt.Errorf("Please provide at least a meta query")
+		return nil, fmt.Errorf("Please provide at least a meta query")
 	}
 	_, total, err := h.Indexer.SearchDocuments(request.StoreID, request.Query, true)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	response.Total = total
-	return nil
+
+	return &proto.CountDocumentsResponse{Total: total}, nil
 
 }
 
-func (h *Handler) ListDocuments(ctx context.Context, request *proto.ListDocumentsRequest, stream proto.DocStore_ListDocumentsStream) error {
+func (h *Handler) ListDocuments(request *proto.ListDocumentsRequest, stream proto.DocStore_ListDocumentsServer) error {
 
+	ctx := stream.Context()
 	log.Logger(ctx).Debug("ListDocuments", zap.Any("req", request))
-
-	defer stream.Close()
 
 	if request.Query != nil && request.Query.MetaQuery != "" {
 
@@ -138,7 +139,10 @@ func (h *Handler) ListDocuments(ctx context.Context, request *proto.ListDocument
 		for _, docId := range docIds {
 			if doc, e := h.Db.GetDocument(request.StoreID, docId); e == nil && doc != nil {
 				doc.ID = docId
-				stream.Send(&proto.ListDocumentsResponse{Document: doc})
+				if e := stream.Send(&proto.ListDocumentsResponse{Document: doc}); e != nil {
+					return e
+				}
+
 			}
 		}
 
@@ -154,7 +158,9 @@ func (h *Handler) ListDocuments(ctx context.Context, request *proto.ListDocument
 		for {
 			select {
 			case doc := <-results:
-				stream.Send(&proto.ListDocumentsResponse{Document: doc})
+				if e := stream.Send(&proto.ListDocumentsResponse{Document: doc}); e != nil {
+					return e
+				}
 			case <-done:
 				return nil
 			}
@@ -166,14 +172,14 @@ func (h *Handler) ListDocuments(ctx context.Context, request *proto.ListDocument
 }
 
 // TriggerResync clear search index and reindex all docs from DB
-func (h *Handler) TriggerResync(ctx context.Context, request *sync.ResyncRequest, response *sync.ResyncResponse) error {
+func (h *Handler) TriggerResync(ctx context.Context, request *sync.ResyncRequest) (*sync.ResyncResponse, error) {
 
 	stores, e := h.Db.ListStores()
 	if e != nil {
-		return e
+		return nil, e
 	}
 	if e := h.Indexer.Reset(); e != nil {
-		return e
+		return nil, e
 	}
 	go func() {
 		for _, s := range stores {
@@ -194,7 +200,6 @@ func (h *Handler) TriggerResync(ctx context.Context, request *sync.ResyncRequest
 			}
 		}
 	}()
-	response.Success = true
 
-	return nil
+	return &sync.ResyncResponse{Success: true}, nil
 }

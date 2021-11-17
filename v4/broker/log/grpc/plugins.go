@@ -45,7 +45,6 @@ func init() {
 			service.Tag(common.ServiceTagBroker),
 			service.Description("Syslog index store"),
 			service.Unique(true),
-
 			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
 				serviceDir, e := config.ServiceDataDir(common.ServiceGrpcNamespace_ + common.ServiceLog)
 				if e != nil {

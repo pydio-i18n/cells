@@ -58,11 +58,12 @@ func (c *WsRolesCleaner) Handle(ctx context.Context, msg *idm.ChangeEvent) error
 		queries = append(queries, q)
 	}
 	if len(queries) > 0 {
-		return c.Handler.DeleteACL(ctx, &idm.DeleteACLRequest{
+		_, e := c.Handler.DeleteACL(ctx, &idm.DeleteACLRequest{
 			Query: &service.Query{
 				SubQueries: queries,
 			},
-		}, &idm.DeleteACLResponse{})
+		})
+		return e
 	}
 	return nil
 }
@@ -104,6 +105,6 @@ func (c *nodesCleaner) process(ctx context.Context, events ...*tree.NodeChangeEv
 			SubQueries: []*anypb.Any{q},
 		},
 		Timestamp: time.Now().Unix(),
-	}, &idm.ExpireACLResponse{})
+	})
 
 }

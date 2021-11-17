@@ -28,7 +28,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/pborman/uuid"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -41,23 +41,27 @@ import (
 	update2 "github.com/pydio/cells/v4/discovery/update"
 )
 
-type Handler struct{}
+type Handler struct {
+	update.UnimplementedUpdateServiceServer
+}
 
-func (h *Handler) UpdateRequired(ctx context.Context, request *update.UpdateRequest, response *update.UpdateResponse) error {
+func (h *Handler) UpdateRequired(ctx context.Context, request *update.UpdateRequest) (*update.UpdateResponse, error) {
 
 	configs := config.GetUpdatesConfigs()
 	binaries, e := update2.LoadUpdates(ctx, configs, request)
 	if e != nil {
 		log.Logger(ctx).Error("Failed retrieving available updates", zap.Error(e))
-		return e
+		return nil, e
 	}
-	response.Channel = configs.Val("channel").String()
-	response.AvailableBinaries = binaries
+	response := &update.UpdateResponse{
+		Channel:           configs.Val("channel").String(),
+		AvailableBinaries: binaries,
+	}
 
-	return nil
+	return response, nil
 }
 
-func (h *Handler) ApplyUpdate(ctx context.Context, request *update.ApplyUpdateRequest, response *update.ApplyUpdateResponse) error {
+func (h *Handler) ApplyUpdate(ctx context.Context, request *update.ApplyUpdateRequest) (*update.ApplyUpdateResponse, error) {
 
 	configs := config.GetUpdatesConfigs()
 	binaries, e := update2.LoadUpdates(ctx, configs, &update.UpdateRequest{
@@ -65,7 +69,7 @@ func (h *Handler) ApplyUpdate(ctx context.Context, request *update.ApplyUpdateRe
 	})
 	if e != nil {
 		log.Logger(ctx).Error("Failed retrieving available updates", zap.Error(e))
-		return e
+		return nil, e
 	}
 	var apply *update.Package
 	for _, binary := range binaries {
@@ -74,7 +78,7 @@ func (h *Handler) ApplyUpdate(ctx context.Context, request *update.ApplyUpdateRe
 		}
 	}
 	if apply == nil {
-		return fmt.Errorf("cannot find the requested version")
+		return nil, fmt.Errorf("cannot find the requested version")
 	}
 
 	log.Logger(ctx).Info("Update binary now", zap.Any("package", apply))
@@ -85,9 +89,11 @@ func (h *Handler) ApplyUpdate(ctx context.Context, request *update.ApplyUpdateRe
 	pgChan := make(chan float64)
 	errorChan := make(chan error)
 	doneChan := make(chan bool)
-	response.Success = true
-	// Create a fake job UUID
-	response.Message = uuid.New()
+
+	response := &update.ApplyUpdateResponse{
+		Success: true,
+		Message: uuid.New().String(),
+	}
 	task := &jobs.Task{
 		ID:            response.Message,
 		JobID:         response.Message,
@@ -156,5 +162,5 @@ func (h *Handler) ApplyUpdate(ctx context.Context, request *update.ApplyUpdateRe
 
 	go update2.ApplyUpdate(newCtx, apply, configs, false, pgChan, doneChan, errorChan)
 
-	return nil
+	return response, nil
 }
