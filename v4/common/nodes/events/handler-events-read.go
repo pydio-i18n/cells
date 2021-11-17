@@ -22,7 +22,6 @@ package events
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/micro/broker"
 	"io"
 
 	"github.com/micro/micro/v3/service/errors"
@@ -30,6 +29,7 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/log"
 	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"

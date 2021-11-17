@@ -34,7 +34,7 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/boltdb"
-	"github.com/pydio/cells/v4/common/micro/broker"
+	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/proto/activity"
 	"github.com/pydio/cells/v4/x/configx"
 	json "github.com/pydio/cells/v4/x/jsonx"

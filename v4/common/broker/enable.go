@@ -23,13 +23,14 @@ package broker
 import (
 	"fmt"
 
+	service2 "github.com/pydio/cells/v4/common/broker/service"
+
 	"github.com/micro/micro/v3/service/broker/memory"
 	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/server"
 
 	"github.com/pydio/cells/v4/common"
 	defaults "github.com/pydio/cells/v4/common/micro"
-	"github.com/pydio/cells/v4/common/micro/broker/service"
 	"github.com/pydio/cells/v4/common/registry"
 )
 
@@ -154,8 +155,8 @@ func EnableMemory() {
 }
 
 func EnableService(hostname, port string) {
-	b := service.NewBroker(
-		service.WithClientConn(
+	b := service2.NewBroker(
+		service2.WithClientConn(
 			defaults.NewClientConn(common.ServiceBroker),
 		),
 	)

@@ -24,16 +24,16 @@ package grpc
 import (
 	"context"
 
-	"github.com/pydio/cells/v4/common/micro/broker"
-	"github.com/pydio/cells/v4/common/proto/idm"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
-	"github.com/pydio/cells/v4/common/service/resources"
-	"github.com/pydio/cells/v4/idm/workspace"
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/service"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/resources"
+	"github.com/pydio/cells/v4/idm/workspace"
 )
 
 func init() {

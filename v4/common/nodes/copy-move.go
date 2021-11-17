@@ -37,8 +37,8 @@ import (
 	"go.uber.org/zap/zapcore"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/micro/broker"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	context2 "github.com/pydio/cells/v4/common/utils/context"

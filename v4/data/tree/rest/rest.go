@@ -23,29 +23,24 @@ package rest
 
 import (
 	"fmt"
-	"github.com/pydio/cells/v4/common/micro/broker"
 	"io"
 	"strings"
 	"time"
-
-	"github.com/pydio/cells/v4/common/utils/std"
-
-	"google.golang.org/protobuf/types/known/anypb"
-
-	"github.com/pydio/cells/v4/common/nodes/compose"
-
-	"github.com/pydio/cells/v4/common/nodes/acl"
 
 	"github.com/emicklei/go-restful"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/pborman/uuid"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
+	"github.com/pydio/cells/v4/common/nodes/acl"
+	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/docstore"
 	"github.com/pydio/cells/v4/common/proto/jobs"
@@ -56,6 +51,7 @@ import (
 	"github.com/pydio/cells/v4/common/utils/i18n"
 	"github.com/pydio/cells/v4/common/utils/mtree"
 	"github.com/pydio/cells/v4/common/utils/permissions"
+	"github.com/pydio/cells/v4/common/utils/std"
 	rest_meta "github.com/pydio/cells/v4/data/meta/rest"
 	"github.com/pydio/cells/v4/data/templates"
 	"github.com/pydio/cells/v4/scheduler/lang"

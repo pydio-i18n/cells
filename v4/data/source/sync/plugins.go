@@ -23,9 +23,9 @@ package sync
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/micro/broker"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/object"

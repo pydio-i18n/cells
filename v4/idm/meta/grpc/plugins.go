@@ -28,8 +28,8 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/micro/broker"
 	meta2 "github.com/pydio/cells/v4/common/nodes/meta"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/idm"

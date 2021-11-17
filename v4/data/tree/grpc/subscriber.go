@@ -26,7 +26,7 @@ import (
 	"time"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/micro/broker"
+	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	c2 "github.com/pydio/cells/v4/common/utils/context"
 )

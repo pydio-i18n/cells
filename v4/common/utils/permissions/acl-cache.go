@@ -26,7 +26,7 @@ import (
 	"github.com/patrickmn/go-cache"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/micro/broker"
+	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/proto/idm"
 )
 

@@ -23,7 +23,6 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/micro/broker"
 	"math"
 	"strconv"
 	"strings"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	defaults "github.com/pydio/cells/v4/common/micro"

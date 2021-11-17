@@ -33,7 +33,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/micro/broker"
+	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
@@ -46,8 +46,8 @@ import (
 // TreeServer definition.
 type TreeServer struct {
 	// dao
-	dao                index.DAO
-	sessionStore       sessions.DAO
+	dao          index.DAO
+	sessionStore sessions.DAO
 
 	// logger
 	logger *zap.Logger
@@ -61,7 +61,6 @@ type TreeServer struct {
 	tree.UnimplementedNodeProviderStreamerServer
 	tree.UnimplementedSessionIndexerServer
 }
-
 
 /* =============================================================================
  *  Server public Methods
@@ -91,8 +90,8 @@ func NewTreeServer(ds *object.DataSource, dao index.DAO, logger *zap.Logger) *Tr
 		DataSourceName:     ds.Name,
 		DataSourceInternal: ds.IsInternal(),
 		sessionStore:       sessions.NewSessionMemoryStore(),
-		dao: dao,
-		logger: logger,
+		dao:                dao,
+		logger:             logger,
 	}
 }
 
@@ -258,7 +257,7 @@ func (s *TreeServer) CreateNode(ctx context.Context, req *tree.CreateNodeRequest
 // ReadNode implementation for the TreeServer.
 func (s *TreeServer) ReadNode(ctx context.Context, req *tree.ReadNodeRequest) (resp *tree.ReadNodeResponse, err error) {
 	resp = &tree.ReadNodeResponse{}
-	
+
 	defer track(s.logger, "ReadNode", time.Now(), req, resp)
 
 	// TODO v4
@@ -269,7 +268,6 @@ func (s *TreeServer) ReadNode(ctx context.Context, req *tree.ReadNodeRequest) (r
 	//		session = s
 	//	}
 	//}
-
 
 	// dao := getDAO(ctx, session)
 	dao := s.dao
