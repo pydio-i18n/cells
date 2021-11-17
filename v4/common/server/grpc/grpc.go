@@ -26,11 +26,11 @@ func New() server.Server {
 		Server: grpc.NewServer(
 			grpc.ChainUnaryInterceptor(
 				servicecontext.SpanUnaryServerInterceptor(),
-				servicecontext.MetricsUnaryServerInterceptor(),
+				// servicecontext.MetricsUnaryServerInterceptor(),
 			),
 			grpc.ChainStreamInterceptor(
 				servicecontext.SpanStreamServerInterceptor(),
-				servicecontext.MetricsStreamServerInterceptor(),
+				// servicecontext.MetricsStreamServerInterceptor(),
 			),
 		),
 		ServerImpl: &server.ServerImpl{},

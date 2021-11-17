@@ -57,14 +57,13 @@ to quickly create a Cobra application.`,
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("And the args are ", args)
-		lis, err := net.Listen("tcp", ":8001")
+		lisGRPC, err := net.Listen("tcp", viper.GetString("grpc.address"))
 		if err != nil {
 			log.Fatal("error listening", zap.Error(err))
 		}
-		defer lis.Close()
+		defer lisGRPC.Close()
 
-		lisHTTP, err := net.Listen("tcp", ":8002")
+		lisHTTP, err := net.Listen("tcp", viper.GetString("http.address"))
 		if err != nil {
 			log.Fatal("error listening", zap.Error(err))
 		}
@@ -88,7 +87,7 @@ to quickly create a Cobra application.`,
 		}()
 
 		go func() {
-			if err := srvGRPC.Serve(lis); err != nil {
+			if err := srvGRPC.Serve(lisGRPC); err != nil {
 				fmt.Println(err)
 			}
 		}()
@@ -109,6 +108,17 @@ func init() {
 	// Flags for selecting / filtering services
 	StartCmd.Flags().StringArrayVarP(&FilterStartTags, "tags", "t", []string{}, "Select services to start by tags, possible values are 'broker', 'data', 'datasource', 'discovery', 'frontend', 'gateway', 'idm', 'scheduler'")
 	StartCmd.Flags().StringArrayVarP(&FilterStartExclude, "exclude", "x", []string{}, "Select services to start by filtering out some specific ones by name")
+
+	StartCmd.Flags().String("grpc.address", ":8001", "gRPC Server Address")
+	StartCmd.Flags().String("http.address", ":8002", "HTTP Server Address")
+
+	StartCmd.Flags().Bool("fork", false, "Used internally by application when forking processes")
+
+	addRegistryFlags(StartCmd.Flags())
+
+	StartCmd.Flags().MarkHidden("fork")
+	StartCmd.Flags().MarkHidden("registry")
+	StartCmd.Flags().MarkHidden("broker")
 
 	RootCmd.AddCommand(StartCmd)
 

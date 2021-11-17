@@ -18,40 +18,25 @@
  * The latest code can be found at <https://pydio.com>.
  */
 
-package runtime
+package cmd
 
 import (
-	"github.com/spf13/viper"
-	"regexp"
+	"github.com/spf13/pflag"
+
+	"github.com/pydio/cells/v4/common/utils/net"
 )
 
-// IsFork checks if the runtime is originally a fork of a different process
-func IsFork() bool {
-	return viper.GetBool("is_fork")
-}
+// addRegistryFlags registers necessary flags to connect to the registry
+func addRegistryFlags(flags *pflag.FlagSet, hideAll ...bool) {
+	flags.String("registry", "memory", "Registry used to manage services (currently nats only)")
+	flags.String("broker", "memory", "Pub/sub service for events between services (currently nats only)")
+	flags.String("transport", "grpc", "Transport protocol for RPC")
+	flags.Int("port_registry", net.GetAvailableRegistryAltPort(), "Port used to start a registry discovery service")
+	flags.Int("port_broker", net.GetAvailableBrokerAltPort(), "Port used to start a broker discovery service")
 
-// IsLocal check if the environment runtime config is generated locally
-func IsLocal() bool {
-	return viper.GetString("config") == "local"
-}
-
-// IsRemote check if the environment runtime config is a remote server
-func IsRemote() bool {
-	return viper.GetString("config") == "remote" || viper.GetString("config") == "raft"
-}
-
-func IsRequired(serviceName string) bool {
-	args := viper.GetStringSlice("args")
-	if len(args) == 0 {
-		return true
+	if len(hideAll) > 0 && hideAll[0] {
+		flags.MarkHidden("registry")
+		flags.MarkHidden("broker")
+		flags.MarkHidden("transport")
 	}
-
-	for _, arg := range viper.GetStringSlice("args"){
-		re := regexp.MustCompile(arg)
-		if re.MatchString(serviceName) {
-			return true
-		}
-	}
-
-	return false
 }

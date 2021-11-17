@@ -28,7 +28,6 @@ import (
 
 	hconf "github.com/ory/hydra/driver/config"
 	"github.com/ory/hydra/x"
-	"github.com/ory/x/tracing"
 	"github.com/rs/cors"
 
 	"github.com/pydio/cells/v4/common"
@@ -58,7 +57,7 @@ type ConfigurationProvider interface {
 	IDTokenLifespan() time.Duration
 	AuthCodeLifespan() time.Duration
 	ScopeStrategy() string
-	Tracing() *tracing.Config
+	// TODO v4 ? Tracing() *tracing.Config
 	GetCookieSecrets() [][]byte
 	GetRotatedSystemSecrets() [][]byte
 	GetSystemSecret() []byte
@@ -292,9 +291,11 @@ func (v *configurationProvider) TracingProvider() string {
 	return ""
 }
 
+/*
 func (v *configurationProvider) TracingJaegerConfig() *tracing.JaegerConfig {
 	return &tracing.JaegerConfig{}
 }
+*/
 
 func (v *configurationProvider) GetCookieSecrets() [][]byte {
 	return [][]byte{

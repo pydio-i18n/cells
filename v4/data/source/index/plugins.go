@@ -42,7 +42,7 @@ func init() {
 			service.Tag(common.ServiceTagDatasource),
 			service.Description("Starter for data sources indexes"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceTree, []string{}),
-			// service.WithMicroChildrenRunner(Name, ChildPrefix, true, nil), // TODO v4
+			service.WithChildrenRunner(Name, ChildPrefix, true, nil),
 		)
 	})
 }
