@@ -62,7 +62,6 @@ require (
 	github.com/ory/ladon v1.2.0
 	github.com/ory/x v0.0.303
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/pborman/uuid v1.2.1
 	github.com/philopon/go-toposort v0.0.0-20170620085441-9be86dbd762f
 	github.com/pkg/errors v0.9.1
 	github.com/pydio/melody v0.0.0-20190928133520-4271c6513fb6
