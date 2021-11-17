@@ -35,7 +35,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/chat"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/context"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 var (
@@ -143,7 +143,7 @@ func (c *ChatHandler) PostMessage(ctx context.Context, req *chat.PostMessageRequ
 	resp.Success = true
 	go func() {
 		for _, m := range resp.Messages {
-			bgCtx := context2.NewBackgroundWithUserKey(m.Author)
+			bgCtx := metadata.NewBackgroundWithUserKey(m.Author)
 			broker.MustPublish(bgCtx, common.TopicChatEvent, &chat.ChatEvent{
 				Message: m,
 			})
@@ -186,7 +186,7 @@ func (c *ChatHandler) DeleteMessage(ctx context.Context, req *chat.DeleteMessage
 	}
 	go func() {
 		for _, m := range req.Messages {
-			bgCtx := context2.NewBackgroundWithUserKey(m.Author)
+			bgCtx := metadata.NewBackgroundWithUserKey(m.Author)
 			if room, err := db.RoomByUuid(chat.RoomType_NODE, m.RoomUuid); err == nil {
 				if count, e := db.CountMessages(room); e == nil {
 					var meta = ""

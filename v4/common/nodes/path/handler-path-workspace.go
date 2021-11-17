@@ -37,8 +37,8 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/service/errors"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
 )
 
 func WithWorkspace() nodes.Option {
@@ -115,7 +115,7 @@ func (a *WorkspaceHandler) updateBranchInfo(ctx context.Context, node *tree.Node
 		return ctx, node, err
 	} else if ok {
 		branchInfo.Workspace = proto.Clone(ws).(*idm.Workspace)
-		ctx = context2.WithAdditionalMetadata(ctx, map[string]string{
+		ctx = metadata.WithAdditionalMetadata(ctx, map[string]string{
 			servicecontext.CtxWorkspaceUuid: ws.UUID,
 		})
 		return nodes.WithBranchInfo(ctx, identifier, branchInfo), out, nil

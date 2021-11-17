@@ -32,7 +32,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common/log"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 // minPartSize - minimum part size 64MiB per object after which
@@ -59,13 +59,13 @@ func optimalPartInfo(objectSize int64) (totalPartsCount int, partSize int64, las
 	return totalPartsCount, partSize, lastPartSize
 }
 
-func CopyObjectMultipart(ctx context.Context, client *minio.Core, srcObject minio.ObjectInfo, srcBucket, srcPath, destBucket, destPath string, metadata map[string]string, progress io.Reader) error {
+func CopyObjectMultipart(ctx context.Context, client *minio.Core, srcObject minio.ObjectInfo, srcBucket, srcPath, destBucket, destPath string, meta map[string]string, progress io.Reader) error {
 	log.Logger(ctx).Debug("Entering MultipartUpload for COPY")
-	if metadata != nil {
-		ctx = context2.WithAdditionalMetadata(ctx, metadata)
+	if meta != nil {
+		ctx = metadata.WithAdditionalMetadata(ctx, meta)
 	}
 	// We have to use multipart copy
-	uploadID, err := client.NewMultipartUpload(ctx, destBucket, destPath, minio.PutObjectOptions{UserMetadata: metadata})
+	uploadID, err := client.NewMultipartUpload(ctx, destBucket, destPath, minio.PutObjectOptions{UserMetadata: meta})
 	if err != nil {
 		log.Logger(ctx).Error("New Multipart Error", zap.Error(err))
 		return err

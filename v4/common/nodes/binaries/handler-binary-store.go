@@ -26,18 +26,17 @@ import (
 	"path"
 	"strings"
 
-	"github.com/pydio/cells/v4/common/nodes"
-	"github.com/pydio/cells/v4/common/nodes/abstract"
-
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/nodes"
+	"github.com/pydio/cells/v4/common/nodes/abstract"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 func WithStore(name string, transparentGet, allowPut, allowAnonRead bool) nodes.Option {
@@ -107,7 +106,7 @@ func (a *Handler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts .
 				}
 			}
 		*/
-		mm, _ := context2.MinioMetaFromContext(ctx)
+		mm, _ := metadata.MinioMetaFromContext(ctx)
 		objectInfo, err := s3client.StatObject(source.ObjectsBucket, path.Base(in.Node.Path), mm)
 		if err != nil {
 			return nil, err

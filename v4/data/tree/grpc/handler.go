@@ -36,8 +36,8 @@ import (
 	"github.com/pydio/cells/v4/common/nodes/meta"
 	"github.com/pydio/cells/v4/common/nodes/mocks"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/service/errors"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
 )
 
 // changesListener is an autoclosing pipe used for fanning out events
@@ -100,7 +100,7 @@ func (s *TreeServer) ReadNodeStream(streamer tree.NodeProviderStreamer_ReadNodeS
 	// In some cases, initial ctx could be canceled _before_ this function is called
 	// We must make sure that metaStreamers are using a proper context at creation
 	// otherwise it can create a goroutine leak on linux.
-	metaStreamer := meta.NewStreamLoader(context2.NewBackgroundWithMetaCopy(ctx))
+	metaStreamer := meta.NewStreamLoader(metadata.NewBackgroundWithMetaCopy(ctx))
 	defer metaStreamer.Close()
 
 	msCtx := context.WithValue(ctx, "MetaStreamer", metaStreamer)

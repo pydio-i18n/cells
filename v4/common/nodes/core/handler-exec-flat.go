@@ -40,8 +40,8 @@ import (
 	"github.com/pydio/cells/v4/common/proto/encryption"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/service/errors"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
@@ -146,7 +146,7 @@ func (f *FlatStorageHandler) CopyObject(ctx context.Context, from *tree.Node, to
 		tgtCtx := nodes.WithBranchInfo(ctx, "in", destInfo)
 		if requestData.Metadata != nil {
 			if _, ok := requestData.Metadata[common.XPydioMoveUuid]; ok {
-				tgtCtx = context2.WithAdditionalMetadata(tgtCtx, requestData.Metadata)
+				tgtCtx = metadata.WithAdditionalMetadata(tgtCtx, requestData.Metadata)
 			}
 		}
 		// Now store in index
@@ -294,7 +294,7 @@ func (f *FlatStorageHandler) recomputeETag(ctx context.Context, identifier strin
 	}
 	//statOpts := minio.StatObjectOptions{}
 	//getOpts := minio.GetObjectOptions{}
-	if meta, ok := context2.MinioMetaFromContext(ctx); ok {
+	if meta, ok := metadata.MinioMetaFromContext(ctx); ok {
 		for k, v := range meta {
 			//statOpts.Set(k, v)
 			//getOpts.Set(k, v)
@@ -303,7 +303,7 @@ func (f *FlatStorageHandler) recomputeETag(ctx context.Context, identifier strin
 	}
 
 	// Load current metadata
-	mm, _ := context2.MinioMetaFromContext(ctx)
+	mm, _ := metadata.MinioMetaFromContext(ctx)
 	objectInfo, e := src.Client.StatObject(src.ObjectsBucket, node.GetUuid(), mm)
 	if e != nil {
 		return "", e
@@ -317,7 +317,7 @@ func (f *FlatStorageHandler) recomputeETag(ctx context.Context, identifier strin
 
 		// Cannot CopyObject on itself for files bigger than 5GB - compute Md5 and store it as metadata instead
 		// Not necessary for real minio on fs (but required for Minio as S3 gateway or real S3)
-		mm2, _ := context2.MinioMetaFromContext(ctx)
+		mm2, _ := metadata.MinioMetaFromContext(ctx)
 		readCloser, _, e := src.Client.GetObject(src.ObjectsBucket, node.GetUuid(), mm2)
 		if e != nil {
 			return "", e

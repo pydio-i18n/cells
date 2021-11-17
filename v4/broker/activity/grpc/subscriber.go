@@ -45,7 +45,6 @@ import (
 	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/cache"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 )
 
@@ -338,7 +337,7 @@ func (e *MicroEventsSubscriber) ProcessBuffer(cE ...*idm.ChangeEvent) {
 	}
 
 	// Load resources
-	ctx := context2.WithUserNameMetadata(context.Background(), common.PydioSystemUsername)
+	ctx := metadata.WithUserNameMetadata(context.Background(), common.PydioSystemUsername)
 	if er := e.LoadResources(ctx, roles, users, workspaces); er != nil {
 		return
 	}

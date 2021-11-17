@@ -39,8 +39,8 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/service/errors"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 	"github.com/pydio/cells/v4/common/utils/uuid"
 )
@@ -214,7 +214,7 @@ func CopyMoveNodes(ctx context.Context, router Handler, sourceNode *tree.Node, t
 			tgt := ctx
 			if move {
 				tgtUuid = sourceNode.Uuid
-				tgt = context2.WithAdditionalMetadata(tgt, map[string]string{common.XPydioMoveUuid: tgtUuid})
+				tgt = metadata.WithAdditionalMetadata(tgt, map[string]string{common.XPydioMoveUuid: tgtUuid})
 			}
 			if _, e := router.CreateNode(tgt, &tree.CreateNodeRequest{Node: &tree.Node{
 				Uuid:  tgtUuid,
@@ -300,7 +300,7 @@ func CopyMoveNodes(ctx context.Context, router Handler, sourceNode *tree.Node, t
 						log.Logger(ctx).Info("Sending session close on last folder")
 						sess = common.SyncSessionClose_ + session
 					}
-					createContext = context2.WithAdditionalMetadata(createContext, map[string]string{
+					createContext = metadata.WithAdditionalMetadata(createContext, map[string]string{
 						common.XPydioMoveUuid: childNode.Uuid,
 					})
 					folderNode.Uuid = childNode.Uuid
@@ -426,7 +426,7 @@ func CopyMoveNodes(ctx context.Context, router Handler, sourceNode *tree.Node, t
 		}
 		// Remove Source Node
 		if move {
-			ctx = context2.WithAdditionalMetadata(ctx, deleteMeta)
+			ctx = metadata.WithAdditionalMetadata(ctx, deleteMeta)
 			_, moveErr := router.DeleteNode(ctx, &tree.DeleteNodeRequest{Node: sourceNode})
 			if moveErr != nil {
 				logger.Error("-- Delete Source Error / Reverting Copy", zap.Error(moveErr), sourceNode.Zap())
@@ -441,7 +441,7 @@ func CopyMoveNodes(ctx context.Context, router Handler, sourceNode *tree.Node, t
 			// Flat source : remove original folder
 			log.Logger(ctx).Info("Removing source folder after move")
 			// Manually create target folder
-			tgt := context2.WithAdditionalMetadata(ctx, map[string]string{common.XPydioMoveUuid: sourceNode.Uuid})
+			tgt := metadata.WithAdditionalMetadata(ctx, map[string]string{common.XPydioMoveUuid: sourceNode.Uuid})
 			if _, e := router.DeleteNode(tgt, &tree.DeleteNodeRequest{Node: sourceNode}); e != nil {
 				return e
 			}
@@ -561,7 +561,7 @@ func processCopyMove(ctx context.Context, handler Handler, session string, move,
 		}
 		delCtx := ctx
 		if crossDs {
-			delCtx = context2.WithAdditionalMetadata(ctx, map[string]string{common.XPydioMoveUuid: childNode.Uuid})
+			delCtx = metadata.WithAdditionalMetadata(ctx, map[string]string{common.XPydioMoveUuid: childNode.Uuid})
 		}
 		_, moveErr := handler.DeleteNode(delCtx, &tree.DeleteNodeRequest{Node: childNode, IndexationSession: session})
 		if moveErr != nil {

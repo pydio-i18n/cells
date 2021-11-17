@@ -42,9 +42,9 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/cache"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 )
 
@@ -204,7 +204,7 @@ func (m *VirtualNodesManager) ResolveInContext(ctx context.Context, vNode *tree.
 				nodeUuid := newNode.Uuid
 				newNode.MetaStore = make(map[string]string) // Reset metastore !
 				newNode.Uuid = ""
-				createCtx := context2.WithAdditionalMetadata(ctx, map[string]string{common.PydioContextUserKey: common.PydioSystemUsername})
+				createCtx := metadata.WithAdditionalMetadata(ctx, map[string]string{common.PydioContextUserKey: common.PydioSystemUsername})
 				if _, pE := client.PutObject(createCtx, newNode, strings.NewReader(nodeUuid), &models.PutRequestData{Size: int64(len(nodeUuid))}); pE != nil {
 					log.Logger(ctx).Warn("Creating hidden file for resolved node (may not be required)", newNode.Zap("resolved"), zap.Error(pE))
 				}

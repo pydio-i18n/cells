@@ -30,7 +30,7 @@ import (
 	"github.com/pydio/cells/v4/common"
 	defaults "github.com/pydio/cells/v4/common/micro"
 	pb "github.com/pydio/cells/v4/common/proto/broker"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
@@ -93,7 +93,7 @@ func (b *serviceBroker) Subscribe(topic string, handler broker.Handler, opts ...
 	for _, o := range opts {
 		o(&options)
 	}
-	ctx := context2.WithMetadata(context.Background(), map[string]string{"conn-id": uuid.New()})
+	ctx := metadata.NewContext(context.Background(), map[string]string{"conn-id": uuid.New()})
 	stream, err := b.Client.Subscribe(ctx, &pb.SubscribeRequest{
 		Topic: topic,
 		Queue: options.Queue,

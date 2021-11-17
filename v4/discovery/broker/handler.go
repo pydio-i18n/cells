@@ -12,7 +12,6 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/service/errors"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
 )
 
 type Handler struct {
@@ -65,7 +64,7 @@ func (h *Handler) Subscribe(ctx context.Context, req *pb.SubscribeRequest, strea
 
 	errChan := make(chan error, 1)
 	var connId string
-	if md, ok := context2.ContextMetadata(ctx); ok {
+	if md, ok := metadata.FromContext(ctx); ok {
 		if c, o := md["conn-id"]; o {
 			connId = c
 			qq := h.failedQueue(connId)

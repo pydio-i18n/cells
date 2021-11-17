@@ -33,8 +33,6 @@ import (
 	"strconv"
 	"strings"
 
-	defaults "github.com/pydio/cells/v4/common/micro"
-
 	"github.com/disintegration/imaging"
 	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
@@ -44,11 +42,12 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/forms"
 	"github.com/pydio/cells/v4/common/log"
+	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/scheduler/actions"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
@@ -309,7 +308,7 @@ func (t *ThumbnailExtractor) writeSizeFromSrc(ctx context.Context, img image.Ima
 			}
 		*/
 		// First Check if thumb already exists with same original etag
-		meta, _ := context2.MinioMetaFromContext(ctx)
+		meta, _ := metadata.MinioMetaFromContext(ctx)
 		oi, check := thumbsClient.StatObject(thumbsBucket, objectName, meta)
 		logger.Debug("Object Info", zap.Any("object", oi), zap.Error(check))
 		if check == nil {

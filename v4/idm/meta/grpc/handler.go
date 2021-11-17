@@ -33,8 +33,8 @@ import (
 	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/utils/cache"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/idm/meta"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
@@ -112,7 +112,7 @@ func (h *Handler) UpdateUserMeta(ctx context.Context, request *idm.UpdateUserMet
 	}
 
 	go func() {
-		bgCtx := context2.NewBackgroundWithMetaCopy(ctx)
+		bgCtx := metadata.NewBackgroundWithMetaCopy(ctx)
 		subjects, _ := auth.SubjectsForResourcePolicyQuery(bgCtx, nil)
 
 		for nodeId, source := range sources {
@@ -168,7 +168,7 @@ func (h *Handler) ReadNodeStream(stream tree.NodeProviderStreamer_ReadNodeStream
 
 	ctx := stream.Context()
 	dao := servicecontext.GetDAO(ctx).(meta.DAO)
-	bgCtx := context2.NewBackgroundWithMetaCopy(ctx)
+	bgCtx := metadata.NewBackgroundWithMetaCopy(ctx)
 	subjects, e := auth.SubjectsForResourcePolicyQuery(bgCtx, nil)
 	if e != nil {
 		return e

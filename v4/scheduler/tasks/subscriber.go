@@ -43,7 +43,6 @@ import (
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/utils/cache"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 	"github.com/pydio/cells/v4/common/utils/std"
 )
@@ -483,7 +482,7 @@ func (s *Subscriber) jobLevelDataSourceFilterPass(ctx context.Context, event *tr
 
 // contextJobSameUuid checks if JobUuid can already be found in context and detects if it is the same
 func (s *Subscriber) contextJobSameUuid(ctx context.Context, jobId string) bool {
-	if mm, o := context2.ContextMetadata(ctx); o {
+	if mm, o := metadata.FromContext(ctx); o {
 		if knownJob, ok := mm[strings.ToLower(servicecontext.ContextMetaJobUuid)]; ok && knownJob == jobId {
 			return true
 		}
@@ -567,7 +566,7 @@ func logStartMessageFromEvent(ctx context.Context, task *Task, event interface{}
 	if user != "" && user != common.PydioSystemUsername {
 		msg += " (triggered by user " + user + ")"
 	}
-	ctx = context2.WithAdditionalMetadata(ctx, map[string]string{
+	ctx = metadata.WithAdditionalMetadata(ctx, map[string]string{
 		servicecontext.ContextMetaJobUuid:        task.Job.ID,
 		servicecontext.ContextMetaTaskUuid:       task.GetRunUUID(),
 		servicecontext.ContextMetaTaskActionPath: "ROOT",

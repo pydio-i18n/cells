@@ -28,7 +28,7 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	c2 "github.com/pydio/cells/v4/common/utils/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 type EventSubscriber struct {
@@ -114,7 +114,7 @@ func (s *EventSubscriber) enqueueMoves(ctx context.Context, moveUuid string, eve
 // Handle incoming INDEX events and resend them as TREE events
 func (s *EventSubscriber) Handle(ctx context.Context, msg *tree.NodeChangeEvent) error {
 	source, target := msg.Source, msg.Target
-	if meta, ok := c2.ContextMetadata(ctx); ok && (msg.Type == tree.NodeChangeEvent_CREATE || msg.Type == tree.NodeChangeEvent_DELETE) {
+	if meta, ok := metadata.FromContext(ctx); ok && (msg.Type == tree.NodeChangeEvent_CREATE || msg.Type == tree.NodeChangeEvent_DELETE) {
 		if move, o := meta["x-pydio-move"]; o {
 			var uuid = move
 			if source != nil {

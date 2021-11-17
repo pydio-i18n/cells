@@ -34,8 +34,8 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/service/errors"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/scheduler/actions"
 )
 
@@ -61,7 +61,7 @@ func RootRunnable(ctx context.Context, task *Task) Runnable {
 // if such an implementation is found.
 func NewRunnable(ctx context.Context, parentPath string, chainIndex int, task *Task, action *jobs.Action, message jobs.ActionMessage) Runnable {
 	aPath := path.Join(parentPath, fmt.Sprintf(action.ID+"$%d", chainIndex))
-	ctx = context2.WithAdditionalMetadata(ctx, map[string]string{
+	ctx = metadata.WithAdditionalMetadata(ctx, map[string]string{
 		servicecontext.ContextMetaJobUuid:        task.Job.ID,
 		servicecontext.ContextMetaTaskUuid:       task.GetRunUUID(),
 		servicecontext.ContextMetaTaskActionPath: aPath,

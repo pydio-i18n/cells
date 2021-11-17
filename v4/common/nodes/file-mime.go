@@ -32,7 +32,7 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 const mimeReadLimit = 8192
@@ -128,7 +128,7 @@ func WrapReaderForMime(ctx context.Context, clone *tree.Node, reader io.Reader) 
 	if mimeMetaClient == nil {
 		mimeMetaClient = tree.NewNodeReceiverClient(defaults.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceMeta))
 	}
-	bgCtx := context2.NewBackgroundWithMetaCopy(ctx)
+	bgCtx := metadata.NewBackgroundWithMetaCopy(ctx)
 	return NewTeeMimeReader(reader, func(result *MimeResult) {
 		if result.GetError() == nil && result.GetMime() != "" {
 			// Store in metadata service

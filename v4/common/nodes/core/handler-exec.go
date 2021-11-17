@@ -42,7 +42,6 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/service/errors"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
@@ -71,7 +70,7 @@ func (e *Executor) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts 
 		writer := info.Client
 		//		statOpts := minio.StatObjectOptions{}
 		m := map[string]string{}
-		if meta, ok := context2.MinioMetaFromContext(ctx); ok {
+		if meta, ok := metadata.MinioMetaFromContext(ctx); ok {
 			for k, v := range meta {
 				m[k] = v
 				//				statOpts.Set(k, v)
@@ -170,7 +169,7 @@ func (e *Executor) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, o
 	writer := info.Client
 	//	statOpts := minio.StatObjectOptions{}
 	m := map[string]string{}
-	if meta, ok := context2.MinioMetaFromContext(ctx); ok {
+	if meta, ok := metadata.MinioMetaFromContext(ctx); ok {
 		for k, v := range meta {
 			m[k] = v
 			//			statOpts.Set(k, v)
@@ -214,14 +213,14 @@ func (e *Executor) GetObject(ctx context.Context, node *tree.Node, requestData *
 	// Make sure the object exists
 	//var opts = minio.StatObjectOptions{}
 	newCtx := ctx
-	if meta, ok := context2.MinioMetaFromContext(ctx); ok {
+	if meta, ok := metadata.MinioMetaFromContext(ctx); ok {
 		//for k, v := range meta {
 		//	opts.Set(k, v)
 		//}
 		// Store a copy of the meta
-		newCtx = context2.WithMetadata(ctx, meta)
+		newCtx = metadata.NewContext(ctx, meta)
 	}
-	mm, _ := context2.MinioMetaFromContext(ctx)
+	mm, _ := metadata.MinioMetaFromContext(ctx)
 	sObject, sErr := writer.StatObject(info.ObjectsBucket, s3Path, mm)
 	if sErr != nil {
 		return nil, sErr
@@ -292,7 +291,7 @@ func (e *Executor) CopyObject(ctx context.Context, from *tree.Node, to *tree.Nod
 	fromPath := e.buildS3Path(srcInfo, from)
 	toPath := e.buildS3Path(destInfo, to)
 
-	statMeta, _ := context2.MinioMetaFromContext(ctx)
+	statMeta, _ := metadata.MinioMetaFromContext(ctx)
 	/*
 		var ctxAsOptions = minio.StatObjectOptions{}
 		if meta, ok := context2.MinioMetaFromContext(ctx); ok {
@@ -330,7 +329,7 @@ func (e *Executor) CopyObject(ctx context.Context, from *tree.Node, to *tree.Nod
 		// TODO V4
 		if false /* destInfo.StorageType == object.StorageType_S3 && src.Size > s3.MaxCopyObjectSize */ {
 			if dirOk {
-				ctx = context2.WithAdditionalMetadata(ctx, map[string]string{common.XAmzMetaDirective: directive})
+				ctx = metadata.WithAdditionalMetadata(ctx, map[string]string{common.XAmzMetaDirective: directive})
 			}
 			err = fmt.Errorf("not implemented")
 			//err = s3.CopyObjectMultipart(ctx, destClient, src, srcBucket, fromPath, destBucket, toPath, requestData.Metadata, requestData.Progress)
@@ -382,7 +381,7 @@ func (e *Executor) CopyObject(ctx context.Context, from *tree.Node, to *tree.Nod
 			}
 			// append metadata to the context as well, as it may switch to putObjectMultipart
 			ctxMeta := make(map[string]string)
-			if m, ok := context2.MinioMetaFromContext(ctx); ok {
+			if m, ok := metadata.MinioMetaFromContext(ctx); ok {
 				ctxMeta = m
 			}
 			for k, v := range requestData.Metadata {
@@ -391,7 +390,7 @@ func (e *Executor) CopyObject(ctx context.Context, from *tree.Node, to *tree.Nod
 				}
 				ctxMeta[k] = v
 			}
-			ctx = context2.WithMetadata(ctx, ctxMeta)
+			ctx = metadata.NewContext(ctx, ctxMeta)
 		}
 		log.Logger(ctx).Debug("HandlerExec: copy one DS to another", zap.Any("meta", srcStat), zap.Any("requestMeta", requestData.Metadata))
 		opts := e.putOptionsFromRequestMeta(requestData.Metadata)
@@ -531,7 +530,7 @@ func (e *Executor) MultipartComplete(ctx context.Context, target *tree.Node, upl
 			}
 		}
 	*/
-	mm, _ := context2.MinioMetaFromContext(ctx)
+	mm, _ := metadata.MinioMetaFromContext(ctx)
 	oi, er := info.Client.StatObject(info.ObjectsBucket, s3Path, mm)
 	if er != nil {
 		return models.ObjectInfo{}, er

@@ -38,7 +38,6 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 )
 
@@ -118,7 +117,7 @@ func prepareRemoteContext(session *melody.Session) (context.Context, error) {
 	metaCtx := auth.ContextFromClaims(context.Background(), claims.(claim.Claims))
 	metaCtx = servicecontext.WithServiceName(metaCtx, common.ServiceGatewayNamespace_+common.ServiceWebSocket)
 	if md, o := session.Get(SessionMetaContext); o {
-		metaCtx = context2.WithAdditionalMetadata(metaCtx, md.(map[string]string))
+		metaCtx = metadata.WithAdditionalMetadata(metaCtx, md.(map[string]string))
 	}
 	return metaCtx, nil
 }

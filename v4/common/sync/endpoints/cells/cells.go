@@ -42,7 +42,6 @@ import (
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/sync/endpoints/memory"
 	"github.com/pydio/cells/v4/common/sync/model"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
 )
 
 type ObjectsClient interface {
@@ -574,7 +573,7 @@ func (c *Abstract) getContext(ctx ...context.Context) context.Context {
 	} else {
 		ct = context.Background()
 	}
-	ct = context2.WithAdditionalMetadata(ct, map[string]string{
+	ct = metadata.WithAdditionalMetadata(ct, map[string]string{
 		common.XPydioClientUuid: c.ClientUUID,
 	})
 	return ct

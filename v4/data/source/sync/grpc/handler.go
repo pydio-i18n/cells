@@ -52,7 +52,6 @@ import (
 	"github.com/pydio/cells/v4/common/sync/merger"
 	"github.com/pydio/cells/v4/common/sync/model"
 	"github.com/pydio/cells/v4/common/sync/task"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/std"
 	"github.com/pydio/cells/v4/data/source/sync"
 	"github.com/pydio/cells/v4/scheduler/tasks"
@@ -477,7 +476,7 @@ func (s *Handler) TriggerResync(c context.Context, req *protosync.ResyncRequest,
 		statusChan = make(chan model.Status)
 		doneChan = make(chan interface{})
 
-		subCtx := context2.WithUserNameMetadata(context.Background(), common.PydioSystemUsername)
+		subCtx := metadata.WithUserNameMetadata(context.Background(), common.PydioSystemUsername)
 		theTask := req.Task
 		autoClient := tasks.NewTaskReconnectingClient(subCtx)
 		taskChan := make(chan interface{}, 1000)
@@ -550,7 +549,7 @@ func (s *Handler) TriggerResync(c context.Context, req *protosync.ResyncRequest,
 
 	// Copy context
 	bg := context.Background()
-	bg = context2.WithUserNameMetadata(bg, common.PydioSystemUsername)
+	bg = metadata.WithUserNameMetadata(bg, common.PydioSystemUsername)
 	bg = servicecontext.WithServiceName(bg, servicecontext.GetServiceName(c))
 	if s, o := servicecontext.SpanFromContext(c); o {
 		bg = servicecontext.WithSpan(bg, s)

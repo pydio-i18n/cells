@@ -35,8 +35,8 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/service/errors"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 )
 
@@ -118,7 +118,7 @@ func (h *WorkspaceHandler) updateInputBranch(ctx context.Context, node *tree.Nod
 		Workspace:     proto.Clone(workspaces[0]).(*idm.Workspace),
 	}
 	branchInfo.AncestorsList[node.Path] = parents
-	ctx = context2.WithAdditionalMetadata(ctx, map[string]string{
+	ctx = metadata.WithAdditionalMetadata(ctx, map[string]string{
 		servicecontext.CtxWorkspaceUuid: branchInfo.Workspace.UUID,
 	})
 	return nodes.WithBranchInfo(ctx, identifier, branchInfo), node, nil

@@ -38,8 +38,8 @@ import (
 	"github.com/pydio/cells/v4/common/proto/encryption"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/service/errors"
-	context2 "github.com/pydio/cells/v4/common/utils/context"
 )
 
 func WithEncryption() nodes.Option {
@@ -382,7 +382,7 @@ func (e *Handler) CopyObject(ctx context.Context, from *tree.Node, to *tree.Node
 				return 0, er
 			}
 			if move {
-				writeCtx = context2.WithAdditionalMetadata(writeCtx, map[string]string{common.XPydioMoveUuid: cloneTo.Uuid})
+				writeCtx = metadata.WithAdditionalMetadata(writeCtx, map[string]string{common.XPydioMoveUuid: cloneTo.Uuid})
 			}
 		}
 		putReqData := &models.PutRequestData{
