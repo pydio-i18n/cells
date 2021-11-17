@@ -7,7 +7,9 @@ import (
 	"github.com/micro/micro/v3/proto/registry"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"google.golang.org/grpc"
+	"io"
 	"log"
+	"sync"
 
 	_ "github.com/pydio/cells/v4/common/server/grpc"
 )
@@ -44,8 +46,39 @@ func main() {
 	}
 	 */
 
+	nodeReceiverCli := tree.NewNodeReceiverClient(c)
+	if err := createNode(nodeReceiverCli); err != nil {
+		log.Panic(err)
+	}
+	if err := updateNode(nodeReceiverCli); err != nil {
+		log.Panic(err)
+	}
+	if err := deleteNode(nodeReceiverCli); err != nil {
+		log.Panic(err)
+	}
+
 	nodeProviderCli := tree.NewNodeProviderClient(c)
 	if err := readNode(nodeProviderCli); err != nil {
+		log.Panic(err)
+	}
+
+	if err := listNodes(nodeProviderCli); err != nil {
+		log.Panic(err)
+	}
+
+	nodeReceiverStreamCli := tree.NewNodeReceiverStreamClient(c)
+	if err := createNodeStream(nodeReceiverStreamCli); err != nil {
+		log.Panic(err)
+	}
+	if err := updateNodeStream(nodeReceiverStreamCli); err != nil {
+		log.Panic(err)
+	}
+	if err := deleteNodeStream(nodeReceiverStreamCli); err != nil {
+		log.Panic(err)
+	}
+
+	nodeProviderStreamCli := tree.NewNodeProviderStreamerClient(c)
+	if err := readNodeStream(nodeProviderStreamCli); err != nil {
 		log.Panic(err)
 	}
 }
@@ -126,8 +159,66 @@ func watchRegistry(cli registry.RegistryClient) error {
 	}
 }
 
+func createNode(cli tree.NodeReceiverClient) error {
+	req := &tree.CreateNodeRequest{
+		Node: &tree.Node{
+			Path: "/test.txt",
+		},
+	}
+
+	resp, err := cli.CreateNode(context.Background(), req)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(resp)
+
+	return nil
+}
+
+func updateNode(cli tree.NodeReceiverClient) error {
+	req := &tree.UpdateNodeRequest{
+		From: &tree.Node{
+			Path: "/test.txt",
+		},
+		To: &tree.Node{
+			Path: "/test2.txt",
+		},
+	}
+
+	resp, err := cli.UpdateNode(context.Background(), req)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(resp)
+
+	return nil
+}
+
+func deleteNode(cli tree.NodeReceiverClient) error {
+	req := &tree.DeleteNodeRequest{
+		Node: &tree.Node{
+			Path: "/test2.txt",
+		},
+	}
+
+	resp, err := cli.DeleteNode(context.Background(), req)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(resp)
+
+	return nil
+}
+
 func readNode(cli tree.NodeProviderClient) error {
-	req := &tree.ReadNodeRequest{}
+	req := &tree.ReadNodeRequest{
+		Node: &tree.Node{
+			Path: "/",
+		},
+	}
 
 	resp, err := cli.ReadNode(context.Background(), req)
 	if err != nil {
@@ -135,6 +226,197 @@ func readNode(cli tree.NodeProviderClient) error {
 	}
 
 	fmt.Println(resp)
+
+	return nil
+}
+
+func listNodes(cli tree.NodeProviderClient) error {
+	req := &tree.ListNodesRequest{
+		Node: &tree.Node{
+			Path: "",
+
+		},
+		Recursive: true,
+	}
+
+	stream, err := cli.ListNodes(context.Background(), req)
+	if err != nil {
+		return err
+	}
+
+	defer stream.CloseSend()
+	for {
+		resp, err := stream.Recv()
+		if err != nil {
+			if err == io.EOF {
+				return nil
+			}
+
+			return err
+		}
+
+		fmt.Println("List nodes ", resp)
+	}
+
+	return nil
+}
+
+func createNodeStream(cli tree.NodeReceiverStreamClient) error {
+	stream, err := cli.CreateNodeStream(context.Background())
+	if err != nil {
+		return err
+	}
+
+	req := &tree.CreateNodeRequest{
+		Node: &tree.Node{
+			Path: "/test.txt",
+		},
+	}
+
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			resp, err := stream.Recv()
+			if err != nil {
+				return
+			}
+
+			fmt.Println(resp)
+		}
+	}()
+
+	if err := stream.Send(req); err != nil {
+		return err
+	}
+
+	if err := stream.CloseSend(); err != nil {
+		return err
+	}
+
+	wg.Wait()
+
+	return nil
+}
+
+func updateNodeStream(cli tree.NodeReceiverStreamClient) error {
+	stream, err := cli.UpdateNodeStream(context.Background())
+	if err != nil {
+		return err
+	}
+
+	req := &tree.UpdateNodeRequest{
+		From: &tree.Node{
+			Path: "/test.txt",
+		},
+		To: &tree.Node{
+			Path: "/test2.txt",
+		},
+	}
+
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			resp, err := stream.Recv()
+			if err != nil {
+				return
+			}
+
+			fmt.Println(resp)
+		}
+	}()
+
+	if err := stream.Send(req); err != nil {
+		return err
+	}
+
+	if err := stream.CloseSend(); err != nil {
+		return err
+	}
+
+	wg.Wait()
+
+	return nil
+
+}
+
+func deleteNodeStream(cli tree.NodeReceiverStreamClient) error {
+	stream, err := cli.DeleteNodeStream(context.Background())
+	if err != nil {
+		return err
+	}
+
+	req := &tree.DeleteNodeRequest{
+		Node: &tree.Node{
+			Path: "/test2.txt",
+		},
+	}
+
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			resp, err := stream.Recv()
+			if err != nil {
+				return
+			}
+
+			fmt.Println(resp)
+		}
+	}()
+
+	if err := stream.Send(req); err != nil {
+		return err
+	}
+
+	if err := stream.CloseSend(); err != nil {
+		return err
+	}
+
+	wg.Wait()
+
+	return nil
+}
+
+func readNodeStream(cli tree.NodeProviderStreamerClient) error {
+	stream, err := cli.ReadNodeStream(context.Background())
+	if err != nil {
+		return err
+	}
+
+	req := &tree.ReadNodeRequest{
+		Node: &tree.Node{
+			Path: "/",
+		},
+	}
+
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			resp, err := stream.Recv()
+			if err != nil {
+				return
+			}
+
+			fmt.Println(resp)
+		}
+	}()
+
+	if err := stream.Send(req); err != nil {
+		return err
+	}
+
+	if err := stream.CloseSend(); err != nil {
+		return err
+	}
+
+	wg.Wait()
 
 	return nil
 }

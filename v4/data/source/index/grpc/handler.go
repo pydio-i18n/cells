@@ -122,6 +122,8 @@ func (s *TreeServer) updateMeta(dao index.DAO, node *mtree.TreeNode, reqNode *tr
 // CreateNode implementation for the TreeServer.
 func (s *TreeServer) CreateNode(ctx context.Context, req *tree.CreateNodeRequest) (resp *tree.CreateNodeResponse, err error) {
 
+	resp = &tree.CreateNodeResponse{}
+
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("panic recovered in CreateNode: %s. Node path was %s", r, req.Node.Path)
@@ -485,6 +487,8 @@ func (s *TreeServer) ListNodes(req *tree.ListNodesRequest, resp tree.NodeProvide
 
 // UpdateNode implementation for the TreeServer.
 func (s *TreeServer) UpdateNode(ctx context.Context, req *tree.UpdateNodeRequest) (resp *tree.UpdateNodeResponse, err error) {
+	resp = &tree.UpdateNodeResponse{}
+
 	defer track(ctx, "UpdateNode", time.Now(), req, resp)
 
 	log.Logger(ctx).Debug("Entering UpdateNode")
@@ -567,6 +571,8 @@ func (s *TreeServer) UpdateNode(ctx context.Context, req *tree.UpdateNodeRequest
 
 // DeleteNode implementation for the TreeServer.
 func (s *TreeServer) DeleteNode(ctx context.Context, req *tree.DeleteNodeRequest) (resp *tree.DeleteNodeResponse, err error) {
+
+	resp = &tree.DeleteNodeResponse{}
 
 	log.Logger(ctx).Debug("DeleteNode", zap.Any("request", req))
 	defer track(ctx, "DeleteNode", time.Now(), req, resp)

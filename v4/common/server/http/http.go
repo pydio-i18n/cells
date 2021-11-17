@@ -4,6 +4,7 @@ import (
 	"github.com/pydio/cells/v4/common/server"
 	"net"
 	"net/http"
+	"net/http/pprof"
 )
 
 type Server struct {
@@ -21,6 +22,12 @@ func Register(s *Server) {
 
 func New() *Server {
 	mux := http.NewServeMux()
+	mux.HandleFunc("/debug/pprof/", pprof.Index)
+	mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+	mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+	mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
+
 	srv := &http.Server{}
 	srv.Handler = mux
 
