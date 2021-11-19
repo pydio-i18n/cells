@@ -32,7 +32,7 @@ func New() *Server {
 	srv.Handler = mux
 
 	return &Server{
-		Server: srv,
+		Server:     srv,
 		ServerImpl: &server.ServerImpl{},
 	}
 }

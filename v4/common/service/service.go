@@ -28,7 +28,7 @@ var (
 	mandatoryOptions []ServiceOption
 )
 
-type Service interface{
+type Service interface {
 	Init() error
 }
 

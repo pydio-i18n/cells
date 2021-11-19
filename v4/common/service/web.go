@@ -3,6 +3,9 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"github.com/pydio/cells/v4/common/server"
+	httpserver "github.com/pydio/cells/v4/common/server/http"
 	"net/http"
 	"reflect"
 	"strings"
@@ -47,99 +50,105 @@ func WithWeb(handler func() WebHandler) ServiceOption {
 	return func(o *ServiceOptions) {
 		ctx := o.Context
 
-		mux, ok := ctx.Value("httpServerKey").(*http.ServeMux)
-		if !ok {
-			// log.Println("Context does not contain server key")
-			return
+		o.Server = httpserver.Default
+		o.ServerInit = func() error {
+			var srvh *http.Server
+			o.Server.(server.Converter).As(&srvh)
+
+			mux, ok := srvh.Handler.(*http.ServeMux)
+			if !ok {
+				return fmt.Errorf("server is not a mux")
+			}
+
+			// TODO v4
+			// if rateLimit, err := strconv.Atoi(os.Getenv("WEB_RATE_LIMIT")); err == nil {
+			// 	opts = append(opts, micro.WrapHandler(limiter.NewHandlerWrapper(rateLimit)))
+			//}
+
+			// meta := registry.BuildServiceMeta()
+			// meta["description"] = o.Description
+
+			// svc.Init(
+			// 	micro.Metadata(registry.BuildServiceMeta()),
+			// )
+
+			rootPath := "/" + strings.TrimPrefix(o.Name, common.ServiceRestNamespace_)
+			log.Logger(ctx).Info("starting", zap.String("service", o.Name), zap.String("hook router to", rootPath))
+
+			ws := new(restful.WebService)
+			ws.Consumes(restful.MIME_JSON, "application/x-www-form-urlencoded", "multipart/form-data")
+			ws.Produces(restful.MIME_JSON, restful.MIME_OCTET, restful.MIME_XML)
+			ws.Path(rootPath)
+
+			h := handler()
+			swaggerTags := h.SwaggerTags()
+			filter := h.Filter()
+
+			f := reflect.ValueOf(h)
+
+			for path, pathItem := range SwaggerSpec().Spec().Paths.Paths {
+				if pathItem.Get != nil {
+					shortPath, method := operationToRoute(rootPath, swaggerTags, path, pathItem.Get, filter, f)
+					if shortPath != "" {
+						ws.Route(ws.GET(shortPath).To(method))
+					}
+				}
+				if pathItem.Delete != nil {
+					shortPath, method := operationToRoute(rootPath, swaggerTags, path, pathItem.Delete, filter, f)
+					if shortPath != "" {
+						ws.Route(ws.DELETE(shortPath).To(method))
+					}
+				}
+				if pathItem.Put != nil {
+					shortPath, method := operationToRoute(rootPath, swaggerTags, path, pathItem.Put, filter, f)
+					if shortPath != "" {
+						ws.Route(ws.PUT(shortPath).To(method))
+					}
+				}
+				if pathItem.Patch != nil {
+					shortPath, method := operationToRoute(rootPath, swaggerTags, path, pathItem.Patch, filter, f)
+					if shortPath != "" {
+						ws.Route(ws.PATCH(shortPath).To(method))
+					}
+				}
+				if pathItem.Head != nil {
+					shortPath, method := operationToRoute(rootPath, swaggerTags, path, pathItem.Head, filter, f)
+					if shortPath != "" {
+						ws.Route(ws.HEAD(shortPath).To(method))
+					}
+				}
+				if pathItem.Post != nil {
+					shortPath, method := operationToRoute(rootPath, swaggerTags, path, pathItem.Post, filter, f)
+					if shortPath != "" {
+						ws.Route(ws.POST(shortPath).To(method))
+					}
+				}
+			}
+
+			wc := restful.NewContainer()
+			// Enable globally gzip,deflate encoding globally
+			wc.EnableContentEncoding(true)
+			wc.Add(ws)
+
+			// var e error
+			wrapped := http.Handler(wc)
+
+			// for _, wrap := range o.webHandlerWraps {
+			// 	wrapped = wrap(wrapped)
+			//}
+
+			// if wrapped, e = NewConfigHTTPHandlerWrapper(wrapped, name); e != nil {
+			//	return e
+			//}
+			// wrapped = NewLogHTTPHandlerWrapper(wrapped, name)
+
+			wrapped = cors.Default().Handler(wrapped)
+
+			mux.Handle(ws.RootPath(), wrapped)
+			mux.Handle(ws.RootPath()+"/", wrapped)
+
+			return nil
 		}
-
-		log.Logger(ctx).Info("starting ", zap.String("service", o.Name))
-
-		// TODO v4
-		// if rateLimit, err := strconv.Atoi(os.Getenv("WEB_RATE_LIMIT")); err == nil {
-		// 	opts = append(opts, micro.WrapHandler(limiter.NewHandlerWrapper(rateLimit)))
-		//}
-
-		// meta := registry.BuildServiceMeta()
-		// meta["description"] = o.Description
-
-		// svc.Init(
-		// 	micro.Metadata(registry.BuildServiceMeta()),
-		// )
-
-		rootPath := "/" + strings.TrimPrefix(o.Name, common.ServiceRestNamespace_)
-
-		ws := new(restful.WebService)
-		ws.Consumes(restful.MIME_JSON, "application/x-www-form-urlencoded", "multipart/form-data")
-		ws.Produces(restful.MIME_JSON, restful.MIME_OCTET, restful.MIME_XML)
-		ws.Path(rootPath)
-
-		h := handler()
-		swaggerTags := h.SwaggerTags()
-		filter := h.Filter()
-
-		f := reflect.ValueOf(h)
-
-		for path, pathItem := range SwaggerSpec().Spec().Paths.Paths {
-			if pathItem.Get != nil {
-				shortPath, method := operationToRoute(rootPath, swaggerTags, path, pathItem.Get, filter, f)
-				if shortPath != "" {
-					ws.Route(ws.GET(shortPath).To(method))
-				}
-			}
-			if pathItem.Delete != nil {
-				shortPath, method := operationToRoute(rootPath, swaggerTags, path, pathItem.Delete, filter, f)
-				if shortPath != "" {
-					ws.Route(ws.DELETE(shortPath).To(method))
-				}
-			}
-			if pathItem.Put != nil {
-				shortPath, method := operationToRoute(rootPath, swaggerTags, path, pathItem.Put, filter, f)
-				if shortPath != "" {
-					ws.Route(ws.PUT(shortPath).To(method))
-				}
-			}
-			if pathItem.Patch != nil {
-				shortPath, method := operationToRoute(rootPath, swaggerTags, path, pathItem.Patch, filter, f)
-				if shortPath != "" {
-					ws.Route(ws.PATCH(shortPath).To(method))
-				}
-			}
-			if pathItem.Head != nil {
-				shortPath, method := operationToRoute(rootPath, swaggerTags, path, pathItem.Head, filter, f)
-				if shortPath != "" {
-					ws.Route(ws.HEAD(shortPath).To(method))
-				}
-			}
-			if pathItem.Post != nil {
-				shortPath, method := operationToRoute(rootPath, swaggerTags, path, pathItem.Post, filter, f)
-				if shortPath != "" {
-					ws.Route(ws.POST(shortPath).To(method))
-				}
-			}
-		}
-
-		wc := restful.NewContainer()
-		// Enable globally gzip,deflate encoding globally
-		wc.EnableContentEncoding(true)
-		wc.Add(ws)
-
-		// var e error
-		wrapped := http.Handler(wc)
-
-		// for _, wrap := range o.webHandlerWraps {
-		// 	wrapped = wrap(wrapped)
-		//}
-
-		// if wrapped, e = NewConfigHTTPHandlerWrapper(wrapped, name); e != nil {
-		//	return e
-		//}
-		// wrapped = NewLogHTTPHandlerWrapper(wrapped, name)
-
-		wrapped = cors.Default().Handler(wrapped)
-
-		mux.Handle(ws.RootPath(), wrapped)
-		mux.Handle(ws.RootPath()+"/", wrapped)
 
 		return
 	}
