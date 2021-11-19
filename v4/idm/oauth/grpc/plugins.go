@@ -22,89 +22,101 @@
 package grpc
 
 import (
+	"context"
+	"log"
+
+	"google.golang.org/grpc"
+
+	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/auth"
+	"github.com/pydio/cells/v4/common/plugins"
+	auth2 "github.com/pydio/cells/v4/common/proto/auth"
 	"github.com/pydio/cells/v4/common/service"
+	"github.com/pydio/cells/v4/idm/oauth"
 )
 
 func init() {
-	/*
-		plugins.Register("main", func(ctx context.Context) {
+	plugins.Register("main", func(ctx context.Context) {
 
-			service.NewService(
-				service.Name(common.ServiceGrpcNamespace_+common.ServiceOAuth),
-				service.Context(ctx),
-				service.Tag(common.ServiceTagIdm),
-				service.Description("OAuth Provider"),
-				service.WithStorage(oauth.NewDAO, "idm_oauth_"),
-				service.Migrations([]*service.Migration{
-					{
-						TargetVersion: service.FirstRun(),
-						Up:            oauth.InsertPruningJob,
-					},
-				}),
-				service.WithMicro(func(m micro.Service) error {
-					h := &Handler{}
-					proto.RegisterLoginProviderHandler(m.Options().Server, h)
-					proto.RegisterConsentProviderHandler(m.Options().Server, h)
-					proto.RegisterLogoutProviderHandler(m.Options().Server, h)
-					proto.RegisterAuthCodeProviderHandler(m.Options().Server, h)
-					proto.RegisterAuthCodeExchangerHandler(m.Options().Server, h)
-					proto.RegisterAuthTokenVerifierHandler(m.Options().Server, h)
-					proto.RegisterAuthTokenRefresherHandler(m.Options().Server, h)
-					proto.RegisterAuthTokenRevokerHandler(m.Options().Server, h)
-					proto.RegisterAuthTokenPrunerHandler(m.Options().Server, h)
-					proto.RegisterPasswordCredentialsTokenHandler(m.Options().Server, h)
+		service.NewService(
+			service.Name(common.ServiceGrpcNamespace_+common.ServiceOAuth),
+			service.Context(ctx),
+			service.Tag(common.ServiceTagIdm),
+			service.Description("OAuth Provider"),
+			service.WithStorage(oauth.NewDAO, "idm_oauth_"),
+			service.Migrations([]*service.Migration{
+				{
+					TargetVersion: service.FirstRun(),
+					Up:            oauth.InsertPruningJob,
+				},
+			}),
+			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
+				h := &Handler{}
+				auth2.RegisterLoginProviderServer(server, h)
+				auth2.RegisterConsentProviderServer(server, h)
+				auth2.RegisterLogoutProviderServer(server, h)
+				auth2.RegisterAuthCodeProviderServer(server, h)
+				auth2.RegisterAuthCodeExchangerServer(server, h)
+				auth2.RegisterAuthTokenVerifierServer(server, h)
+				auth2.RegisterAuthTokenRefresherServer(server, h)
+				auth2.RegisterAuthTokenRevokerServer(server, h)
+				auth2.RegisterAuthTokenPrunerServer(server, h)
+				auth2.RegisterPasswordCredentialsTokenServer(server, h)
 
-					return nil
-				}),
+				return nil
+			}),
+			/*
+				// TODO V4
 				service.WatchPath("services/"+common.ServiceWebNamespace_+common.ServiceOAuth, func(_ service.Service, c configx.Values) {
 					auth.InitConfiguration(config.Get("services", common.ServiceWebNamespace_+common.ServiceOAuth))
 				}),
 				service.BeforeStart(initialize),
-			)
+			*/
+		)
 
-			service.NewService(
-				service.Name(common.ServiceGrpcNamespace_+common.ServiceToken),
-				service.Context(ctx),
-				service.Tag(common.ServiceTagIdm),
-				service.Description("Personal Access Token Provider"),
-				service.WithStorage(oauth.NewDAO, "idm_oauth_"),
-				service.WithMicro(func(m micro.Service) error {
-					pat := &PatHandler{}
-					proto.RegisterPersonalAccessTokenServiceHandler(m.Options().Server, pat)
-					proto.RegisterAuthTokenVerifierHandler(m.Options().Server, pat)
-					proto.RegisterAuthTokenPrunerHandler(m.Options().Server, pat)
-					return nil
-				}),
-			)
+		service.NewService(
+			service.Name(common.ServiceGrpcNamespace_+common.ServiceToken),
+			service.Context(ctx),
+			service.Tag(common.ServiceTagIdm),
+			service.Description("Personal Access Token Provider"),
+			service.WithStorage(oauth.NewDAO, "idm_oauth_"),
+			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
+				pat := &PatHandler{}
+				auth2.RegisterPersonalAccessTokenServiceServer(server, pat)
+				auth2.RegisterAuthTokenVerifierServer(server, pat)
+				auth2.RegisterAuthTokenPrunerServer(server, pat)
+				return nil
+			}),
+		)
 
-			auth.OnConfigurationInit(func(scanner common.Scanner) {
-				var m []struct {
-					ID   string
-					Name string
-					Type string
+		auth.OnConfigurationInit(func(scanner common.Scanner) {
+			var m []struct {
+				ID   string
+				Name string
+				Type string
+			}
+
+			if err := scanner.Scan(&m); err != nil {
+				log.Fatal("Wrong configuration ", err)
+			}
+
+			for _, mm := range m {
+				if mm.Type == "pydio" {
+					// Registering the first connector
+					auth.RegisterConnector(mm.ID, mm.Name, mm.Type, nil)
 				}
-
-				if err := scanner.Scan(&m); err != nil {
-					log.Fatal("Wrong configuration ", err)
-				}
-
-				for _, mm := range m {
-					if mm.Type == "pydio" {
-						// Registering the first connector
-						auth.RegisterConnector(mm.ID, mm.Name, mm.Type, nil)
-					}
-				}
-			})
-
-			// load configuration
-			auth.InitConfiguration(config.Get("services", common.ServiceWebNamespace_+common.ServiceOAuth))
-
-			// Register the services as GRPC Auth Providers
-			auth.RegisterGRPCProvider(auth.ProviderTypeGrpc, common.ServiceGrpcNamespace_+common.ServiceOAuth)
-			auth.RegisterGRPCProvider(auth.ProviderTypePAT, common.ServiceGrpcNamespace_+common.ServiceToken)
+			}
 		})
 
-	*/
+		// load configuration
+		// TODO V4
+		// auth.InitConfiguration(config.Get("services", common.ServiceWebNamespace_+common.ServiceOAuth))
+
+		// Register the services as GRPC Auth Providers
+		auth.RegisterGRPCProvider(auth.ProviderTypeGrpc, common.ServiceGrpcNamespace_+common.ServiceOAuth)
+		auth.RegisterGRPCProvider(auth.ProviderTypePAT, common.ServiceGrpcNamespace_+common.ServiceToken)
+	})
+
 }
 
 func initialize(s service.Service) error {

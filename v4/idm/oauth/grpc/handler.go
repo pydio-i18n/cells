@@ -56,6 +56,9 @@ type Handler struct {
 	pauth.UnimplementedAuthTokenRevokerServer
 	pauth.UnimplementedAuthTokenVerifierServer
 	pauth.UnimplementedAuthTokenRefresherServer
+	pauth.UnimplementedAuthTokenPrunerServer
+	pauth.UnimplementedPasswordCredentialsTokenServer
+	pauth.UnimplementedLogoutProviderServer
 }
 
 var (
