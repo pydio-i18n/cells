@@ -41,9 +41,10 @@ var (
 )
 
 // TriggerResync on index performs a Lost+Found request to auto-heal indexation errors, whenever possible
-func (s *TreeServer) TriggerResync(ctx context.Context, request *sync.ResyncRequest, resp *sync.ResyncResponse) error {
+func (s *TreeServer) TriggerResync(ctx context.Context, request *sync.ResyncRequest) (*sync.ResyncResponse, error) {
 	dao := getDAO(ctx, "")
 
+	resp := &sync.ResyncResponse{}
 	if request.GetPath() == "flatten" {
 		msg, err := dao.Flatten()
 		if err != nil {
@@ -52,12 +53,12 @@ func (s *TreeServer) TriggerResync(ctx context.Context, request *sync.ResyncRequ
 			resp.Success = true
 			resp.JsonDiff = msg
 		}
-		return err
+		return resp, err
 	}
 
 	duplicates, err := dao.LostAndFounds()
 	if err != nil {
-		return err
+		return resp, err
 	}
 	var excludeFromRehash []index.LostAndFound
 	if len(duplicates) > 0 {
@@ -66,7 +67,7 @@ func (s *TreeServer) TriggerResync(ctx context.Context, request *sync.ResyncRequ
 
 		marked, conflicts, err := s.checkACLs(ctx, duplicates)
 		if err != nil {
-			return err
+			return resp, err
 		}
 		for _, d := range marked {
 			e := dao.FixLostAndFound(d)
@@ -93,7 +94,7 @@ func (s *TreeServer) TriggerResync(ctx context.Context, request *sync.ResyncRequ
 		log.TasksLogger(ctx).Info(msg)
 	}
 
-	return e
+	return resp, e
 }
 
 // checkACLs checks all nodes UUIDs against ACLs to make sure that we do not delete a node that has an ACL on it

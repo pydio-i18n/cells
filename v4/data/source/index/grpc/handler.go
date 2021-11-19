@@ -23,6 +23,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/proto/sync"
 	"net/http"
 	"runtime/debug"
 	"strings"
@@ -60,6 +61,8 @@ type TreeServer struct {
 	tree.UnimplementedNodeReceiverStreamServer
 	tree.UnimplementedNodeProviderStreamerServer
 	tree.UnimplementedSessionIndexerServer
+	object.UnimplementedResourceCleanerEndpointServer
+	sync.UnimplementedSyncEndpointServer
 }
 
 /* =============================================================================

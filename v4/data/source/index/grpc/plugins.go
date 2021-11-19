@@ -26,13 +26,16 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/log"
-	"google.golang.org/grpc"
 	"strings"
+
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
+	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/proto/object"
+	"github.com/pydio/cells/v4/common/proto/sync"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
@@ -52,13 +55,13 @@ func init() {
 			service.NewService(
 				service.Name(common.ServiceGrpcNamespace_+name),
 				service.Context(ctx),
+				service.WithLogger(log.Logger(ctx)),
 				service.Tag(common.ServiceTagDatasource),
 				service.Description("Datasource indexation service"),
 				service.Source(source),
 				service.Fork(true),
 				service.AutoStart(false),
 				service.Unique(true),
-				service.WithLogger(log.Logger(ctx)),
 				service.WithStorage(index.NewDAO, func(o *service.ServiceOptions) string {
 					// Returning a prefix for the dao
 					return strings.Replace(o.Name, ".", "_", -1)
@@ -77,8 +80,8 @@ func init() {
 					tree.RegisterNodeReceiverStreamServer(srv, engine)
 					tree.RegisterNodeProviderStreamerServer(srv, engine)
 					tree.RegisterSessionIndexerServer(srv, engine)
-					//object.RegisterResourceCleanerEndpointHandler(m.Options().Server, engine)
-					//sync.RegisterSyncEndpointHandler(m.Options().Server, engine)
+					object.RegisterResourceCleanerEndpointServer(srv, engine)
+					sync.RegisterSyncEndpointServer(srv, engine)
 
 					return nil
 				}),
