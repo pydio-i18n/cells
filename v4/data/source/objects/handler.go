@@ -109,10 +109,9 @@ func (t *TreeHandler) ReadNode(ctx context.Context, request *tree.ReadNodeReques
 	return nil
 }
 
-func (t *TreeHandler) ListNodes(ctx context.Context, request *tree.ListNodesRequest, stream tree.NodeProvider_ListNodesStream) error {
+func (t *TreeHandler) ListNodes(request *tree.ListNodesRequest, stream tree.NodeProvider_ListNodesServer) error {
 
-	defer stream.Close()
-
+	ctx := stream.Context()
 	if !t.hasRootRef && runtime.GOOS == "windows" && (request.Node.Path == "" || request.Node.Path == "/") {
 		request.Node.Path = "/"
 		volumes := filesystem.BrowseVolumes(ctx)

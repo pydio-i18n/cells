@@ -16,15 +16,18 @@ package cmd
 
 import (
 	"fmt"
+	"net"
+
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"go.uber.org/zap"
+
+	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/server/generic"
 	"github.com/pydio/cells/v4/common/server/grpc"
 	"github.com/pydio/cells/v4/common/server/http"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"go.uber.org/zap"
-	"net"
 )
 
 var (
@@ -57,6 +60,9 @@ to quickly create a Cobra application.`,
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
+
+		broker.Connect()
+
 		lisGRPC, err := net.Listen("tcp", viper.GetString("grpc.address"))
 		if err != nil {
 			log.Fatal("error listening", zap.Error(err))

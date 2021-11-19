@@ -76,8 +76,9 @@ func (s *Handler) ReadNode(ctx context.Context, req *tree.ReadNodeRequest, resp 
 }
 
 // ListNodes Forward to index
-func (s *Handler) ListNodes(ctx context.Context, req *tree.ListNodesRequest, resp tree.NodeProvider_ListNodesStream) error {
+func (s *Handler) ListNodes(req *tree.ListNodesRequest, resp tree.NodeProvider_ListNodesServer) error {
 
+	ctx := resp.Context()
 	client, e := s.indexClientRead.ListNodes(ctx, req)
 	if e != nil {
 		return e

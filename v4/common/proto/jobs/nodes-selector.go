@@ -90,7 +90,7 @@ func (n *NodesSelector) Select(ctx context.Context, input ActionMessage, objects
 		}
 		// If paths are preset, just load nodes and do not go further
 		if len(q.Paths) > 0 {
-			sCli := tree.NewNodeProviderService(common.ServiceTree, defaults.NewClient())
+			sCli := tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceTree))
 			for _, p := range q.Paths {
 				if r, e := sCli.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Path: p}}); e == nil {
 					objects <- r.GetNode()
@@ -100,7 +100,7 @@ func (n *NodesSelector) Select(ctx context.Context, input ActionMessage, objects
 		}
 		// If UUIDs are preset, just load nodes and do not go further
 		if len(q.UUIDs) > 0 {
-			sCli := tree.NewNodeProviderService(common.ServiceTree, defaults.NewClient())
+			sCli := tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceTree))
 			for _, uuid := range q.UUIDs {
 				if r, e := sCli.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Uuid: uuid}}); e == nil {
 					objects <- r.GetNode()

@@ -2,8 +2,6 @@ version: v1
 plugins:
   - name: go
     out: .
-  - name: micro
-    out: .
   - name: govalidators
     out: .
   - name: go-grpc

@@ -1,15 +1,13 @@
 package configx
 
 import (
-	"bytes"
 	"time"
 
 	json "github.com/pydio/cells/v4/x/jsonx"
 
-	// Todo: replace with protojson library
-	"github.com/golang/protobuf/jsonpb"
-	"github.com/golang/protobuf/proto"
 	"github.com/spf13/cast"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 type def struct {
@@ -68,7 +66,7 @@ func (d *def) Scan(val interface{}) error {
 
 	switch v := val.(type) {
 	case proto.Message:
-		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(bytes.NewReader(jsonStr), v)
+		err = protojson.Unmarshal(jsonStr, val.(proto.Message))
 	default:
 		err = json.Unmarshal(jsonStr, v)
 	}

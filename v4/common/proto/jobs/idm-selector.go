@@ -349,13 +349,13 @@ func (m *IdmSelector) WorkspaceFromEventContext(ctx context.Context) (*idm.Works
 	if !o {
 		return nil, false
 	}
-	wsClient := idm.NewWorkspaceService(common.ServiceWorkspace, defaults.NewClient())
+	wsClient := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
 	q, _ := anypb.New(&idm.WorkspaceSingleQuery{Uuid: wsUuid})
 	r, e := wsClient.SearchWorkspace(ctx, &idm.SearchWorkspaceRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}})
 	if e != nil {
 		return nil, false
 	}
-	defer r.Close()
+	defer r.CloseSend()
 	for {
 		resp, er := r.Recv()
 		if er != nil {

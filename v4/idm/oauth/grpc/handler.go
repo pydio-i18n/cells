@@ -51,13 +51,13 @@ import (
 type Handler struct{}
 
 var (
-	_ pauth.LoginProviderHandler      = (*Handler)(nil)
-	_ pauth.ConsentProviderHandler    = (*Handler)(nil)
-	_ pauth.AuthCodeProviderHandler   = (*Handler)(nil)
-	_ pauth.AuthCodeExchangerHandler  = (*Handler)(nil)
-	_ pauth.AuthTokenVerifierHandler  = (*Handler)(nil)
-	_ pauth.AuthTokenRefresherHandler = (*Handler)(nil)
-	_ pauth.AuthTokenRevokerHandler   = (*Handler)(nil)
+	_ pauth.LoginProviderServer      = (*Handler)(nil)
+	_ pauth.ConsentProviderServer    = (*Handler)(nil)
+	_ pauth.AuthCodeProviderServer   = (*Handler)(nil)
+	_ pauth.AuthCodeExchangerServer  = (*Handler)(nil)
+	_ pauth.AuthTokenVerifierServer  = (*Handler)(nil)
+	_ pauth.AuthTokenRefresherServer = (*Handler)(nil)
+	_ pauth.AuthTokenRevokerServer   = (*Handler)(nil)
 )
 
 func (h *Handler) GetLogin(ctx context.Context, in *pauth.GetLoginRequest, out *pauth.GetLoginResponse) error {

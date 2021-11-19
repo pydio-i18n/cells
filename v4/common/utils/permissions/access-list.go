@@ -289,12 +289,12 @@ func (a *AccessList) BelongsToWorkspaces(ctx context.Context, nodes ...*tree.Nod
 // LoadNodePathsAcls retrieve each nodes by UUID, to which an ACL is attached
 func (a *AccessList) LoadNodePathsAcls(ctx context.Context, resolver VirtualPathResolver) error {
 	a.nodesPathsAcls = make(map[string]Bitmask, len(a.NodesAcls))
-	cli := tree.NewNodeProviderStreamerService(common.ServiceGrpcNamespace_+common.ServiceTree, defaults.NewClient())
+	cli := tree.NewNodeProviderStreamerClient(defaults.NewClientConn(common.ServiceTree))
 	st, e := cli.ReadNodeStream(ctx)
 	if e != nil {
 		return e
 	}
-	defer st.Close()
+	defer st.CloseSend()
 	// Retrieving path foreach ids
 	for nodeID, b := range a.NodesAcls {
 		if n, ok := resolver(ctx, &tree.Node{Uuid: nodeID}); ok {

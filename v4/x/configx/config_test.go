@@ -2,6 +2,7 @@ package configx
 
 import (
 	"fmt"
+	"github.com/pydio/cells/v4/common/proto/docstore"
 	"strings"
 	"testing"
 
@@ -43,7 +44,12 @@ var (
 				"$ref": "#/defaults/val2"
 			}],
 			"toDelete1": true,
-			"toDelete2": true
+			"toDelete2": true,
+			"protoMessage":{
+				"ID":"DocId",
+				"Type":"JSON",
+				"Owner":"DocOwner"
+			}
 		}
 	}`)
 
@@ -295,5 +301,19 @@ func TestDefault(t *testing.T) {
 	Convey("Testing reference", t, func() {
 		So(strings.Join(StringToKeys("1/2/#/3"), "/"), ShouldEqual, "#/3")
 		So(strings.Join(StringToKeys("1/2/#/3/#/4"), "/"), ShouldEqual, "#/4")
+	})
+}
+
+func TestProtoScan(t *testing.T) {
+	Convey("Test Proto Scan", t, func() {
+		m := New(WithJSON())
+		err := m.Set(data)
+		So(err, ShouldBeNil)
+		p := &docstore.Document{}
+		e := m.Val("service/protoMessage").Scan(p)
+		So(e, ShouldBeNil)
+		So(p.ID, ShouldEqual, "DocId")
+		So(p.Owner, ShouldEqual, "DocOwner")
+		So(p.Type, ShouldEqual, docstore.DocumentType_JSON)
 	})
 }

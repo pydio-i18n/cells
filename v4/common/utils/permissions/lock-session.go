@@ -67,7 +67,7 @@ func (l *LockSession) AddChildTarget(parentUUID, targetChildName string) {
 // Lock sets an expirable lock ACL on the NodeUUID with SessionUUID as value
 func (l *LockSession) Lock(ctx context.Context) error {
 
-	aclClient := idm.NewACLService(common.ServiceAcl, defaults.NewClient())
+	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
 
 	if l.nodeUUID != "" {
 		lock := &idm.ACLAction{Name: AclLock.Name, Value: l.sessionUUID}
@@ -96,7 +96,7 @@ func (l *LockSession) Lock(ctx context.Context) error {
 // UpdateExpiration set a new expiration date on the current lock
 func (l *LockSession) UpdateExpiration(ctx context.Context, expireAfter time.Duration) error {
 
-	aclClient := idm.NewACLService(common.ServiceAcl, defaults.NewClient())
+	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
 	if l.nodeUUID != "" {
 		searchLock := &idm.ACLAction{Name: AclLock.Name, Value: l.sessionUUID}
 		if err := l.updateExpiration(ctx, aclClient, l.nodeUUID, searchLock, expireAfter); err != nil {
@@ -116,7 +116,7 @@ func (l *LockSession) UpdateExpiration(ctx context.Context, expireAfter time.Dur
 // Unlock manually removes the ACL
 func (l *LockSession) Unlock(ctx context.Context) error {
 
-	aclClient := idm.NewACLService(common.ServiceAcl, defaults.NewClient())
+	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
 	err1 := l.remove(ctx, aclClient, &idm.ACLAction{Name: AclLock.Name, Value: l.sessionUUID})
 	err2 := l.remove(ctx, aclClient, &idm.ACLAction{Name: AclChildLock.Name + ":*", Value: l.sessionUUID})
 	if err1 != nil {
@@ -128,7 +128,7 @@ func (l *LockSession) Unlock(ctx context.Context) error {
 	}
 }
 
-func (l *LockSession) create(ctx context.Context, cli idm.ACLService, nodeUUID string, action *idm.ACLAction) error {
+func (l *LockSession) create(ctx context.Context, cli idm.ACLServiceClient, nodeUUID string, action *idm.ACLAction) error {
 
 	_, err := cli.CreateACL(ctx, &idm.CreateACLRequest{
 		ACL: &idm.ACL{
@@ -140,7 +140,7 @@ func (l *LockSession) create(ctx context.Context, cli idm.ACLService, nodeUUID s
 
 }
 
-func (l *LockSession) remove(ctx context.Context, cli idm.ACLService, action *idm.ACLAction) error {
+func (l *LockSession) remove(ctx context.Context, cli idm.ACLServiceClient, action *idm.ACLAction) error {
 
 	q, _ := anypb.New(&idm.ACLSingleQuery{
 		Actions: []*idm.ACLAction{action},
@@ -155,7 +155,7 @@ func (l *LockSession) remove(ctx context.Context, cli idm.ACLService, action *id
 
 }
 
-func (l *LockSession) updateExpiration(ctx context.Context, cli idm.ACLService, nodeUUID string, action *idm.ACLAction, expireAfter time.Duration) error {
+func (l *LockSession) updateExpiration(ctx context.Context, cli idm.ACLServiceClient, nodeUUID string, action *idm.ACLAction, expireAfter time.Duration) error {
 
 	q, _ := anypb.New(&idm.ACLSingleQuery{
 		Actions: []*idm.ACLAction{action},
@@ -172,13 +172,13 @@ func (l *LockSession) updateExpiration(ctx context.Context, cli idm.ACLService, 
 }
 
 func HasChildLocks(ctx context.Context, node *tree.Node) bool {
-	aclClient := idm.NewACLService(common.ServiceAcl, defaults.NewClient())
+	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
 	q, _ := anypb.New(&idm.ACLSingleQuery{
 		Actions: []*idm.ACLAction{{Name: AclChildLock.Name + ":*"}},
 		NodeIDs: []string{node.GetUuid()},
 	})
 	if st, e := aclClient.SearchACL(ctx, &idm.SearchACLRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}}); e == nil {
-		defer st.Close()
+		defer st.CloseSend()
 		for {
 			_, er := st.Recv()
 			if er != nil {

@@ -66,7 +66,7 @@ func GetRolesForUser(ctx context.Context, user *idm.User, createMissing bool) []
 		return roles
 	}
 
-	roleClient := idm.NewRoleService(common.ServiceGrpcNamespace_+common.ServiceRole, defaults.NewClient())
+	roleClient := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
 
 	query, _ := anypb.New(&idm.RoleSingleQuery{
 		Uuid: roleIds,
@@ -81,7 +81,7 @@ func GetRolesForUser(ctx context.Context, user *idm.User, createMissing bool) []
 		return nil
 	} else {
 
-		defer stream.Close()
+		defer stream.CloseSend()
 
 		for {
 			response, err := stream.Recv()
@@ -140,7 +140,7 @@ func GetRoles(ctx context.Context, names []string) []*idm.Role {
 	}
 
 	query, _ := anypb.New(&idm.RoleSingleQuery{Uuid: names})
-	roleClient := idm.NewRoleService(common.ServiceGrpcNamespace_+common.ServiceRole, defaults.NewClient())
+	roleClient := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
 	stream, err := roleClient.SearchRole(ctx, &idm.SearchRoleRequest{Query: &service.Query{SubQueries: []*anypb.Any{query}}})
 
 	if err != nil {
@@ -150,7 +150,7 @@ func GetRoles(ctx context.Context, names []string) []*idm.Role {
 		return nil
 	}
 
-	defer stream.Close()
+	defer stream.CloseSend()
 
 	for {
 		response, err := stream.Recv()
@@ -203,7 +203,7 @@ func GetACLsForRoles(ctx context.Context, roles []*idm.Role, actions ...*idm.ACL
 		return acls
 	}
 	//s := time.Now()
-	aclClient := idm.NewACLService(common.ServiceGrpcNamespace_+common.ServiceAcl, defaults.NewClient())
+	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
 	stream, err := aclClient.SearchACL(ctx, &idm.SearchACLRequest{
 		Query: &service.Query{
 			SubQueries: []*anypb.Any{q1Any, q2Any},
@@ -216,7 +216,7 @@ func GetACLsForRoles(ctx context.Context, roles []*idm.Role, actions ...*idm.ACL
 		return nil
 	}
 
-	defer stream.Close()
+	defer stream.CloseSend()
 
 	for {
 		response, err := stream.Recv()
@@ -241,7 +241,7 @@ func GetACLsForWorkspace(ctx context.Context, workspaceIds []string, actions ...
 	q2, _ := anypb.New(&idm.ACLSingleQuery{Actions: actions})
 	subQueries = append(subQueries, q1, q2)
 
-	aclClient := idm.NewACLService(common.ServiceGrpcNamespace_+common.ServiceAcl, defaults.NewClient())
+	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
 	stream, err := aclClient.SearchACL(ctx, &idm.SearchACLRequest{
 		Query: &service.Query{
 			SubQueries: subQueries,
@@ -254,7 +254,7 @@ func GetACLsForWorkspace(ctx context.Context, workspaceIds []string, actions ...
 		return nil, err
 	}
 
-	defer stream.Close()
+	defer stream.CloseSend()
 	for {
 		response, err := stream.Recv()
 		if err != nil {
@@ -279,7 +279,7 @@ func GetWorkspacesForACLs(ctx context.Context, list *AccessList) []*idm.Workspac
 		return workspaces
 	}
 
-	workspaceClient := idm.NewWorkspaceService(common.ServiceGrpcNamespace_+common.ServiceWorkspace, defaults.NewClient())
+	workspaceClient := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
 
 	var queries []*anypb.Any
 	for workspaceID := range workspaceNodes {
@@ -298,7 +298,7 @@ func GetWorkspacesForACLs(ctx context.Context, list *AccessList) []*idm.Workspac
 		return nil
 	}
 
-	defer stream.Close()
+	defer stream.CloseSend()
 
 	for {
 		response, err := stream.Recv()
@@ -322,7 +322,7 @@ func GetACLsForActions(ctx context.Context, actions ...*idm.ACLAction) (acls []*
 	q1, _ := anypb.New(&idm.ACLSingleQuery{Actions: actions})
 	subQueries = append(subQueries, q1)
 
-	aclClient := idm.NewACLService(common.ServiceGrpcNamespace_+common.ServiceAcl, defaults.NewClient())
+	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
 	stream, err := aclClient.SearchACL(ctx, &idm.SearchACLRequest{
 		Query: &service.Query{
 			SubQueries: subQueries,
@@ -334,7 +334,7 @@ func GetACLsForActions(ctx context.Context, actions ...*idm.ACLAction) (acls []*
 		return nil, err
 	}
 
-	defer stream.Close()
+	defer stream.CloseSend()
 	for {
 		response, err := stream.Recv()
 		if err != nil {
@@ -454,7 +454,7 @@ func SearchUniqueUser(ctx context.Context, login string, uuid string, queries ..
 		}
 	}
 
-	userCli := idm.NewUserService(common.ServiceGrpcNamespace_+common.ServiceUser, defaults.NewClient())
+	userCli := idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
 	var searchRequests []*anypb.Any
 	if uuid != "" {
 		searchRequest, _ := anypb.New(&idm.UserSingleQuery{Uuid: uuid})
@@ -476,7 +476,7 @@ func SearchUniqueUser(ctx context.Context, login string, uuid string, queries ..
 	if err != nil {
 		return
 	}
-	defer streamer.Close()
+	defer streamer.CloseSend()
 	for {
 		resp, e := streamer.Recv()
 		if e != nil {
@@ -605,7 +605,7 @@ func CheckContentLock(ctx context.Context, node *tree.Node) error {
 		userName = claims.Name
 	}
 
-	aclClient := idm.NewACLService(common.ServiceGrpcNamespace_+common.ServiceAcl, defaults.NewClient())
+	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
 	// Look for "quota" ACLs on this node
 	singleQ := &idm.ACLSingleQuery{NodeIDs: []string{node.Uuid}, Actions: []*idm.ACLAction{{Name: AclContentLock.Name}}}
 	//log.Logger(ctx).Debug("SEARCHING FOR LOCKS IN ACLS", zap.Any("q", singleQ))
@@ -614,7 +614,7 @@ func CheckContentLock(ctx context.Context, node *tree.Node) error {
 	if err != nil {
 		return err
 	}
-	defer stream.Close()
+	defer stream.CloseSend()
 	for {
 		rsp, e := stream.Recv()
 		if e != nil {

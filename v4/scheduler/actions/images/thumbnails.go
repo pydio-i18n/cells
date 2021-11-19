@@ -34,10 +34,10 @@ import (
 	"strings"
 
 	"github.com/disintegration/imaging"
-	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"golang.org/x/image/colornames"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/forms"
