@@ -58,8 +58,7 @@ import (
 	_ "github.com/pydio/cells/v4/idm/key/grpc"
 	_ "github.com/pydio/cells/v4/idm/meta/grpc"
 	_ "github.com/pydio/cells/v4/idm/meta/rest"
-	// TODO V4 RE-ADAPT GRPC SERVER HANDLERS
-	// _ "github.com/pydio/cells/v4/idm/oauth/grpc"
+	_ "github.com/pydio/cells/v4/idm/oauth/grpc"
 	_ "github.com/pydio/cells/v4/idm/oauth/rest"
 	_ "github.com/pydio/cells/v4/idm/policy/grpc"
 	_ "github.com/pydio/cells/v4/idm/policy/rest"

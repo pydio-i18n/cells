@@ -48,7 +48,15 @@ import (
 )
 
 // Handler for the plugin
-type Handler struct{}
+type Handler struct {
+	pauth.UnimplementedLoginProviderServer
+	pauth.UnimplementedConsentProviderServer
+	pauth.UnimplementedAuthCodeProviderServer
+	pauth.UnimplementedAuthCodeExchangerServer
+	pauth.UnimplementedAuthTokenRevokerServer
+	pauth.UnimplementedAuthTokenVerifierServer
+	pauth.UnimplementedAuthTokenRefresherServer
+}
 
 var (
 	_ pauth.LoginProviderServer      = (*Handler)(nil)
@@ -60,12 +68,12 @@ var (
 	_ pauth.AuthTokenRevokerServer   = (*Handler)(nil)
 )
 
-func (h *Handler) GetLogin(ctx context.Context, in *pauth.GetLoginRequest, out *pauth.GetLoginResponse) error {
+func (h *Handler) GetLogin(ctx context.Context, in *pauth.GetLoginRequest) (*pauth.GetLoginResponse, error) {
 	req, err := auth.GetRegistry().ConsentManager().GetLoginRequest(ctx, in.Challenge)
 	if err != nil {
-		return err
+		return nil, err
 	}
-
+	out := &pauth.GetLoginResponse{}
 	out.Challenge = req.ID
 	out.SessionID = req.SessionID.String()
 	out.RequestURL = req.RequestURL
@@ -74,10 +82,10 @@ func (h *Handler) GetLogin(ctx context.Context, in *pauth.GetLoginRequest, out *
 	out.RequestedAudience = req.RequestedAudience
 	out.ClientID = req.Client.GetID()
 
-	return nil
+	return out, nil
 }
 
-func (h *Handler) CreateLogin(ctx context.Context, in *pauth.CreateLoginRequest, out *pauth.CreateLoginResponse) error {
+func (h *Handler) CreateLogin(ctx context.Context, in *pauth.CreateLoginRequest) (*pauth.CreateLoginResponse, error) {
 
 	// Set up csrf/challenge/verifier values
 	verifier := strings.Replace(uuid.New(), "-", "", -1)
@@ -96,12 +104,12 @@ func (h *Handler) CreateLogin(ctx context.Context, in *pauth.CreateLoginRequest,
 		AuthenticatedAt: sqlxx.NullTime(time.Now().UTC()),
 		Remember:        false,
 	}); err != nil {
-		return err
+		return nil, err
 	}
 
 	client, err := auth.GetRegistry().ClientManager().GetConcreteClient(ctx, in.GetClientID())
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// Set the session
@@ -122,19 +130,20 @@ func (h *Handler) CreateLogin(ctx context.Context, in *pauth.CreateLoginRequest,
 			SessionID:         sqlxx.NullString(sessionID),
 		},
 	); err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 
+	out := &pauth.CreateLoginResponse{}
 	out.Login = &pauth.ID{
 		Challenge: challenge,
 		Verifier:  verifier,
 		CSRF:      csrf,
 	}
 
-	return nil
+	return out, nil
 }
 
-func (h *Handler) AcceptLogin(ctx context.Context, in *pauth.AcceptLoginRequest, out *pauth.AcceptLoginResponse) error {
+func (h *Handler) AcceptLogin(ctx context.Context, in *pauth.AcceptLoginRequest) (*pauth.AcceptLoginResponse, error) {
 
 	var p consent.HandledLoginRequest
 	p.Subject = in.Subject
@@ -144,17 +153,18 @@ func (h *Handler) AcceptLogin(ctx context.Context, in *pauth.AcceptLoginRequest,
 
 	_, err := auth.GetRegistry().ConsentManager().HandleLoginRequest(ctx, in.Challenge, &p)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &pauth.AcceptLoginResponse{}, nil
 }
 
-func (h *Handler) GetConsent(ctx context.Context, in *pauth.GetConsentRequest, out *pauth.GetConsentResponse) error {
+func (h *Handler) GetConsent(ctx context.Context, in *pauth.GetConsentRequest) (*pauth.GetConsentResponse, error) {
 	req, err := auth.GetRegistry().ConsentManager().GetConsentRequest(ctx, in.Challenge)
 	if err != nil {
-		return err
+		return nil, err
 	}
+	out := &pauth.GetConsentResponse{}
 
 	out.Challenge = req.ID
 	out.LoginSessionID = req.LoginSessionID.String()
@@ -162,10 +172,10 @@ func (h *Handler) GetConsent(ctx context.Context, in *pauth.GetConsentRequest, o
 	out.SubjectIdentifier = req.Subject
 	out.ClientID = req.ClientID
 
-	return nil
+	return out, nil
 }
 
-func (h *Handler) CreateConsent(ctx context.Context, in *pauth.CreateConsentRequest, out *pauth.CreateConsentResponse) error {
+func (h *Handler) CreateConsent(ctx context.Context, in *pauth.CreateConsentRequest) (*pauth.CreateConsentResponse, error) {
 
 	// Set up csrf/challenge/verifier values
 	verifier := strings.Replace(uuid.New(), "-", "", -1)
@@ -174,30 +184,30 @@ func (h *Handler) CreateConsent(ctx context.Context, in *pauth.CreateConsentRequ
 
 	login, err := auth.GetRegistry().ConsentManager().GetLoginRequest(ctx, in.LoginChallenge)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	client, err := auth.GetRegistry().ClientManager().GetConcreteClient(ctx, login.ClientID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	session, err := auth.GetRegistry().ConsentManager().VerifyAndInvalidateLoginRequest(ctx, login.Verifier)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if session.Error != nil {
-		return fmt.Errorf(session.Error.Name)
+		return nil, fmt.Errorf(session.Error.Name)
 	}
 
 	host, _ := servicecontext.HttpMetaFromGrpcContext(ctx, servicecontext.HttpMetaHost)
 	if session.RequestedAt.Add(auth.GetConfigurationProvider(host).ConsentRequestMaxAge()).Before(time.Now()) {
-		return errors.WithStack(fosite.ErrRequestUnauthorized.WithDebug("The login request has expired, please try again."))
+		return nil, errors.WithStack(fosite.ErrRequestUnauthorized.WithDebug("The login request has expired, please try again."))
 	}
 
 	// TODO V4 : verify session.RequestedAt or session.AuthenticatedAt ?
 	if err := auth.GetRegistry().ConsentManager().ConfirmLoginSession(ctx, session.LoginRequest.SessionID.String(), session.RequestedAt, session.Subject, session.Remember); err != nil {
-		return err
+		return nil, err
 	}
 
 	// Set the session
@@ -219,19 +229,20 @@ func (h *Handler) CreateConsent(ctx context.Context, in *pauth.CreateConsentRequ
 			RequestedAt:       time.Now().UTC(),
 		},
 	); err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 
+	out := &pauth.CreateConsentResponse{}
 	out.Consent = &pauth.ID{
 		Challenge: challenge,
 		Verifier:  verifier,
 		CSRF:      csrf,
 	}
 
-	return nil
+	return out, nil
 }
 
-func (h *Handler) AcceptConsent(ctx context.Context, in *pauth.AcceptConsentRequest, out *pauth.AcceptConsentResponse) error {
+func (h *Handler) AcceptConsent(ctx context.Context, in *pauth.AcceptConsentRequest) (*pauth.AcceptConsentResponse, error) {
 
 	var p consent.HandledConsentRequest
 
@@ -257,13 +268,13 @@ func (h *Handler) AcceptConsent(ctx context.Context, in *pauth.AcceptConsentRequ
 
 	_, err := auth.GetRegistry().ConsentManager().HandleConsentRequest(ctx, in.Challenge, &p)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &pauth.AcceptConsentResponse{}, nil
 }
 
-func (h *Handler) CreateAuthCode(ctx context.Context, in *pauth.CreateAuthCodeRequest, out *pauth.CreateAuthCodeResponse) error {
+func (h *Handler) CreateAuthCode(ctx context.Context, in *pauth.CreateAuthCodeRequest) (*pauth.CreateAuthCodeResponse, error) {
 
 	values := url.Values{}
 	values.Set("client_id", in.GetClientID())
@@ -274,12 +285,12 @@ func (h *Handler) CreateAuthCode(ctx context.Context, in *pauth.CreateAuthCodeRe
 
 	req, err := http.NewRequest("POST", "", strings.NewReader(values.Encode()))
 	if err != nil {
-		return err
+		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	cookieSession, err := auth.GetRegistry().CookieStore().Get(req, "oauth2_consent_csrf")
 	if err != nil {
-		return err
+		return nil, err
 	}
 	cookieSession.Values["csrf"] = in.GetConsent().GetCSRF()
 
@@ -287,17 +298,17 @@ func (h *Handler) CreateAuthCode(ctx context.Context, in *pauth.CreateAuthCodeRe
 	if err != nil {
 		e := fosite.ErrorToRFC6749Error(err)
 		log.Logger(ctx).Error("Could not create authorize request", zap.Error(e))
-		return err
+		return nil, err
 	}
 
 	session, err := auth.GetRegistry().ConsentStrategy().HandleOAuth2AuthorizationRequest(http.ResponseWriter(nil), req, ar)
 	if errors.Cause(err) == consent.ErrAbortOAuth2Request {
 		// do nothing
-		return nil
+		return &pauth.CreateAuthCodeResponse{}, nil
 	} else if err != nil {
 		e := fosite.ErrorToRFC6749Error(err)
 		log.Logger(ctx).Error("Could not handle authorize request", zap.Error(e))
-		return err
+		return nil, err
 	}
 
 	for _, scope := range session.GrantedScope {
@@ -310,7 +321,7 @@ func (h *Handler) CreateAuthCode(ctx context.Context, in *pauth.CreateAuthCodeRe
 
 	openIDKeyID, err := auth.GetRegistry().OpenIDJWTStrategy().GetPublicKeyID(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	var accessTokenKeyID string
@@ -319,7 +330,7 @@ func (h *Handler) CreateAuthCode(ctx context.Context, in *pauth.CreateAuthCodeRe
 	if configProvider.AccessTokenStrategy() == "jwt" {
 		accessTokenKeyID, err = auth.GetRegistry().AccessTokenJWTStrategy().GetPublicKeyID(ctx)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
@@ -354,15 +365,13 @@ func (h *Handler) CreateAuthCode(ctx context.Context, in *pauth.CreateAuthCodeRe
 	if err != nil {
 		e := fosite.ErrorToRFC6749Error(err)
 		log.Logger(ctx).Error("Could not create authorize response", zap.Error(e), zap.String("debug", e.Debug()))
-		return err
+		return nil, err
 	}
 
-	out.Code = response.GetCode()
-
-	return nil
+	return &pauth.CreateAuthCodeResponse{Code: response.GetCode()}, nil
 }
 
-func (h *Handler) CreateLogout(ctx context.Context, in *pauth.CreateLogoutRequest, out *pauth.CreateLogoutResponse) error {
+func (h *Handler) CreateLogout(ctx context.Context, in *pauth.CreateLogoutRequest) (*pauth.CreateLogoutResponse, error) {
 
 	challenge := strings.Replace(uuid.New(), "-", "", -1)
 	host, _ := servicecontext.HttpMetaFromGrpcContext(ctx, servicecontext.HttpMetaHost)
@@ -381,94 +390,92 @@ func (h *Handler) CreateLogout(ctx context.Context, in *pauth.CreateLogoutReques
 			PostLogoutRedirectURI: auth.GetConfigurationProvider(host).LogoutRedirectURL().String(),
 		},
 	); err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 
-	out.Logout = &pauth.ID{
-		Challenge: challenge,
-	}
-
-	return nil
+	return &pauth.CreateLogoutResponse{Logout: &pauth.ID{Challenge: challenge}}, nil
 }
 
-func (h *Handler) AcceptLogout(ctx context.Context, in *pauth.AcceptLogoutRequest, out *pauth.AcceptLogoutResponse) error {
+func (h *Handler) AcceptLogout(ctx context.Context, in *pauth.AcceptLogoutRequest) (*pauth.AcceptLogoutResponse, error) {
 
 	// Accept the logout
 	logout, err := auth.GetRegistry().ConsentManager().AcceptLogoutRequest(ctx, in.GetChallenge())
 	if err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 
 	// Validating directly the logout
 	if _, err := auth.GetRegistry().ConsentManager().VerifyAndInvalidateLogoutRequest(ctx, logout.Verifier); err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 
 	if err := auth.GetRegistry().ConsentManager().DeleteLoginSession(ctx, logout.SessionID); err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 
 	accessSignature := auth.GetRegistrySQL().OAuth2HMACStrategy().AccessTokenSignature(in.GetAccessToken())
 	refreshSignature := auth.GetRegistrySQL().OAuth2HMACStrategy().RefreshTokenSignature(in.GetRefreshToken())
 
 	if err := auth.GetRegistry().OAuth2Storage().DeleteAccessTokenSession(ctx, accessSignature); err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 
 	if err := auth.GetRegistry().OAuth2Storage().DeleteRefreshTokenSession(ctx, refreshSignature); err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 
 	if err := auth.GetRegistry().OAuth2Storage().DeleteOpenIDConnectSession(ctx, refreshSignature); err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 
-	return nil
+	return &pauth.AcceptLogoutResponse{}, nil
 }
 
 // Verify checks if the token is valid for hydra
-func (h *Handler) Verify(ctx context.Context, in *pauth.VerifyTokenRequest, out *pauth.VerifyTokenResponse) error {
+func (h *Handler) Verify(ctx context.Context, in *pauth.VerifyTokenRequest) (*pauth.VerifyTokenResponse, error) {
 	session := oauth2.NewSession("")
 
 	tokenType, ar, err := auth.GetRegistry().OAuth2Provider().IntrospectToken(ctx, in.GetToken(), fosite.AccessToken, session)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if tokenType != fosite.AccessToken {
-		return errors.New("Only access tokens are allowed in the authorization header")
+		return nil, errors.New("Only access tokens are allowed in the authorization header")
 	}
 
 	claims := ar.GetSession().(*oauth2.Session).IDTokenClaims()
 	b, err := json.Marshal(claims)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	out := &pauth.VerifyTokenResponse{}
 	out.Success = true
 	out.Data = b
 
-	return nil
+	return out, nil
 }
 
 // PasswordCredentialsToken validates the login information and generates a token
-func (h *Handler) PasswordCredentialsToken(ctx context.Context, in *pauth.PasswordCredentialsTokenRequest, out *pauth.PasswordCredentialsTokenResponse) error {
+func (h *Handler) PasswordCredentialsToken(ctx context.Context, in *pauth.PasswordCredentialsTokenRequest) (*pauth.PasswordCredentialsTokenResponse, error) {
 	token, err := auth.LocalJWTVerifier().PasswordCredentialsToken(ctx, in.Username, in.Password)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	out := &pauth.PasswordCredentialsTokenResponse{}
 	out.AccessToken = token.AccessToken
 	out.IDToken = token.Extra("id_token").(string)
 	out.RefreshToken = token.RefreshToken
 	out.Expiry = token.Expiry.Unix()
 
-	return nil
+	return out, nil
 }
 
 // Exchange code for a proper token
-func (h *Handler) Exchange(ctx context.Context, in *pauth.ExchangeRequest, out *pauth.ExchangeResponse) error {
+func (h *Handler) Exchange(ctx context.Context, in *pauth.ExchangeRequest) (*pauth.ExchangeResponse, error) {
 	session := oauth2.NewSession("")
 
 	values := url.Values{}
@@ -479,30 +486,31 @@ func (h *Handler) Exchange(ctx context.Context, in *pauth.ExchangeRequest, out *
 
 	req, err := http.NewRequest("POST", "", strings.NewReader(values.Encode()))
 	if err != nil {
-		return err
+		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	ar, err := auth.GetRegistry().OAuth2Provider().NewAccessRequest(ctx, req, session)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	resp, err := auth.GetRegistry().OAuth2Provider().NewAccessResponse(ctx, ar)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	out := &pauth.ExchangeResponse{}
 	out.AccessToken = resp.GetAccessToken()
 	out.IDToken = resp.GetExtra("id_token").(string)
 	out.RefreshToken = resp.GetExtra("refresh_token").(string)
 	out.Expiry = resp.GetExtra("expires_in").(int64)
 
-	return nil
+	return out, nil
 }
 
 // Refresh token
-func (h *Handler) Refresh(ctx context.Context, in *pauth.RefreshTokenRequest, out *pauth.RefreshTokenResponse) error {
+func (h *Handler) Refresh(ctx context.Context, in *pauth.RefreshTokenRequest) (*pauth.RefreshTokenResponse, error) {
 	session := oauth2.NewSession("")
 
 	values := url.Values{}
@@ -514,63 +522,64 @@ func (h *Handler) Refresh(ctx context.Context, in *pauth.RefreshTokenRequest, ou
 
 	req, err := http.NewRequest("POST", "", strings.NewReader(values.Encode()))
 	if err != nil {
-		return err
+		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	ar, err := auth.GetRegistry().OAuth2Provider().NewAccessRequest(ctx, req, session)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	resp, err := auth.GetRegistry().OAuth2Provider().NewAccessResponse(ctx, ar)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	out := &pauth.RefreshTokenResponse{}
 	out.AccessToken = resp.GetAccessToken()
 	out.IDToken = resp.GetExtra("id_token").(string)
 	out.RefreshToken = resp.GetExtra("refresh_token").(string)
 	out.Expiry = resp.GetExtra("expires_in").(int64)
 
-	return nil
+	return out, nil
 }
 
 // Revoke adds token to revocation list and eventually clear RefreshToken as well (directly inside Dex)
-func (h *Handler) Revoke(ctx context.Context, in *pauth.RevokeTokenRequest, out *pauth.RevokeTokenResponse) error {
+func (h *Handler) Revoke(ctx context.Context, in *pauth.RevokeTokenRequest) (*pauth.RevokeTokenResponse, error) {
 
 	accessSignature := auth.GetRegistrySQL().OAuth2HMACStrategy().AccessTokenSignature(in.GetToken().GetAccessToken())
 	refreshSignature := auth.GetRegistrySQL().OAuth2HMACStrategy().RefreshTokenSignature(in.GetToken().GetRefreshToken())
 
 	accessTokenSession, err := auth.GetRegistry().OAuth2Storage().GetAccessTokenSession(ctx, accessSignature, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	refreshTokenSession, err := auth.GetRegistry().OAuth2Storage().GetRefreshTokenSession(ctx, refreshSignature, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := auth.GetRegistry().OAuth2Storage().RevokeAccessToken(ctx, accessTokenSession.GetID()); err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := auth.GetRegistry().OAuth2Storage().RevokeRefreshToken(ctx, refreshTokenSession.GetID()); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &pauth.RevokeTokenResponse{}, nil
 
 }
 
 // PruneTokens garbage collect expired IdTokens and Tokens
-func (h *Handler) PruneTokens(ctx context.Context, in *pauth.PruneTokensRequest, out *pauth.PruneTokensResponse) error {
+func (h *Handler) PruneTokens(ctx context.Context, in *pauth.PruneTokensRequest) (*pauth.PruneTokensResponse, error) {
 
 	storage := auth.GetRegistry().OAuth2Storage()
 	err := storage.FlushInactiveAccessTokens(ctx, time.Now(), 1000, 100)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	type client struct {
@@ -580,7 +589,7 @@ func (h *Handler) PruneTokens(ctx context.Context, in *pauth.PruneTokensRequest,
 
 	var clients []client
 	if err := auth.GetConfigurationProvider().Clients().Scan(&clients); err != nil {
-		return err
+		return nil, err
 	}
 
 	for _, c := range clients {
@@ -627,5 +636,5 @@ func (h *Handler) PruneTokens(ctx context.Context, in *pauth.PruneTokensRequest,
 		*/
 	}
 
-	return nil
+	return &pauth.PruneTokensResponse{}, nil
 }
