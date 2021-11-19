@@ -73,6 +73,15 @@ func TestGenerateProtoToForm(t *testing.T) {
 		So(f.Groups[0].Fields, ShouldNotBeEmpty)
 		f = GenerateProtoToForm("treeQuery", &tree.Query{}, false)
 		So(f.Groups[0].Fields, ShouldNotBeEmpty)
+
+		for _, fac := range ladon.ConditionFactories {
+			condition := fac()
+			if condition.GetName() == "conditionCIDRCondition" {
+				tF := GenerateProtoToForm("condition"+condition.GetName(), condition, false)
+				So(tF.Groups[0].Fields, ShouldNotBeEmpty)
+			}
+		}
+
 	})
 }
 
