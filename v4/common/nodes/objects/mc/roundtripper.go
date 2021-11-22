@@ -21,32 +21,30 @@
 package mc
 
 import (
-	"fmt"
 	"net/http"
 
 	minio "github.com/minio/minio-go/v7"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/utils/permissions"
 )
 
-func newRoundTripper(secure bool) (http.RoundTripper, error) {
+func newUsernameHeader(secure bool) (http.RoundTripper, error) {
 	if def, e := minio.DefaultTransport(secure); e != nil {
 		return nil, e
 	} else {
-		return &roundTripper{w: def}, nil
+		return &usernameHeader{w: def}, nil
 	}
 }
 
-type roundTripper struct {
+type usernameHeader struct {
 	w http.RoundTripper
 }
 
-func (r *roundTripper) RoundTrip(request *http.Request) (*http.Response, error) {
+func (r *usernameHeader) RoundTrip(request *http.Request) (*http.Response, error) {
 	ctx := request.Context()
-	if v := ctx.Value(common.PydioContextUserKey); v != nil {
-		fmt.Println("Round Trip Found Context User Key", v.(string))
-	} else {
-		fmt.Println("Key Not found in context")
+	if u, _ := permissions.FindUserNameInContext(ctx); u != "" {
+		request.Header.Set(common.PydioContextUserKey, u)
 	}
 	return r.w.RoundTrip(request)
 }

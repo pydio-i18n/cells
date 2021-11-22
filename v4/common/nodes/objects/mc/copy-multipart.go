@@ -110,7 +110,10 @@ func (c *Client) CopyObjectMultipart(ctx context.Context, srcObject models.Objec
 	}
 	wg.Wait()
 	if copyErr != nil {
-		c.mc.AbortMultipartUpload(ctx, destBucket, destPath, uploadID)
+		ae := c.mc.AbortMultipartUpload(ctx, destBucket, destPath, uploadID)
+		if ae != nil {
+			log.Logger(ctx).Error("Error while aborting Multipart Upload", zap.Error(ae))
+		}
 		return copyErr
 	}
 	// Resort parts in correct order

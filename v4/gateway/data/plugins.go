@@ -36,6 +36,7 @@ import (
 	"github.com/pydio/cells/v4/common/server/generic"
 	"github.com/pydio/cells/v4/common/service"
 	_ "github.com/pydio/cells/v4/gateway/data/gw"
+	"github.com/pydio/cells/v4/gateway/data/hooks"
 )
 
 type logger struct {
@@ -101,6 +102,7 @@ func (g *gatewayDataServer) Start(ctx context.Context) error {
 	os.Setenv("MINIO_ROOT_USER", "gateway")
 	os.Setenv("MINIO_ROOT_PASSWORD", "gatewaysecret")
 
+	minio.HookRegisterGlobalHandler(hooks.GetPydioAuthHandlerFunc("gateway"))
 	minio.HookRegisterGlobalHandler(func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if h := r.Header.Get("X-Pydio-Special-Header"); h != "" {

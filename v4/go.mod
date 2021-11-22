@@ -50,7 +50,7 @@ require (
 	github.com/micro/micro/v3 v3.6.0
 	github.com/minio/cli v1.22.0
 	github.com/minio/madmin-go v1.1.12
-	github.com/minio/minio v0.0.0-20211111063317-68c5ad83fb73
+	github.com/minio/minio v0.0.0-20211121184130-c791de0e1eae
 	github.com/minio/minio-go/v7 v7.0.15
 	github.com/mitchellh/mapstructure v1.4.2
 	github.com/mssola/user_agent v0.5.3
@@ -108,4 +108,4 @@ require (
 )
 
 // replace github.com/minio/minio => /Users/charles/Sources/go/src/github.com/pydio/minio
-replace github.com/minio/minio => github.com/pydio/minio v0.0.0-20211111130016-491de31a4ca6
+replace github.com/minio/minio => github.com/pydio/minio v0.0.0-20211122154507-cf0bc00fb0b8

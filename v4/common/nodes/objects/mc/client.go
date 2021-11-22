@@ -52,7 +52,7 @@ func init() {
 
 // New creates a new minio.Core with the most standard options
 func New(endpoint, accessKey, secretKey string, secure bool, customRegion ...string) (*Client, error) {
-	rt, e := newRoundTripper(secure)
+	rt, e := newUsernameHeader(secure)
 	if e != nil {
 		return nil, e
 	}
@@ -157,26 +157,6 @@ func (c *Client) ListObjects(ctx context.Context, bucket, prefix, marker, delimi
 		}
 	}
 
-	/*
-		r := models.ListBucketResult{
-			CommonPrefixes: make([]models.CommonPrefix, len(res.CommonPrefixes)),
-			Contents:       make([]models.ObjectInfo, len(res.Contents)),
-			Delimiter:      res.Delimiter,
-			EncodingType:   res.EncodingType,
-			IsTruncated:    res.IsTruncated,
-			Marker:         res.Marker,
-			MaxKeys:        res.MaxKeys,
-			Name:           res.Name,
-			NextMarker:     res.NextMarker,
-			Prefix:         res.Prefix,
-		}
-		for i, c := range res.Contents {
-			r.Contents[i] = minioInfoToModelsInfo(c)
-		}
-		for i, cp := range res.CommonPrefixes {
-			r.CommonPrefixes[i] = models.CommonPrefix{Prefix: cp.Prefix}
-		}
-	*/
 	return r, nil
 }
 
@@ -297,35 +277,11 @@ func (c *Client) CopyObject(ctx context.Context, sourceBucket, sourceObject, des
 		}
 	*/
 
-	if oi, e := c.mc.CopyObject(context.Background(), sourceBucket, sourceObject, destBucket, destObject, srcMeta, srcOptions, destOptions); e != nil {
+	if oi, e := c.mc.CopyObject(ctx, sourceBucket, sourceObject, destBucket, destObject, srcMeta, srcOptions, destOptions); e != nil {
 		return models.ObjectInfo{}, e
 	} else {
 		return minioInfoToModelsInfo(oi), nil
 	}
-}
-
-// CopyObjectPartWithContext not part of the interface
-func (c *Client) CopyObjectPartWithContext(ctx context.Context, srcBucket, srcObject, destBucket, destObject string, uploadID string, partID int, startOffset, length int64, metadata map[string]string) (p models.MultipartObjectPart, err error) {
-	oi, e := c.mc.CopyObjectPart(ctx, srcBucket, srcObject, destBucket, destObject, uploadID, partID, startOffset, length, metadata)
-	if e != nil {
-		return models.MultipartObjectPart{}, e
-	}
-	return models.MultipartObjectPart{
-		PartNumber: oi.PartNumber,
-		ETag:       oi.ETag,
-	}, e
-}
-
-// CopyObjectPart not part of the interface
-func (c *Client) CopyObjectPart(srcBucket, srcObject, destBucket, destObject string, uploadID string, partID int, startOffset, length int64, metadata map[string]string) (p models.MultipartObjectPart, err error) {
-	oi, e := c.mc.CopyObjectPart(context.Background(), srcBucket, srcObject, destBucket, destObject, uploadID, partID, startOffset, length, metadata)
-	if e != nil {
-		return models.MultipartObjectPart{}, e
-	}
-	return models.MultipartObjectPart{
-		PartNumber: oi.PartNumber,
-		ETag:       oi.ETag,
-	}, e
 }
 
 // ListenBucketNotification hooks to events - Not part of the interface
@@ -374,14 +330,5 @@ func minioInfoToModelsInfo(oi minio.ObjectInfo) models.ObjectInfo {
 		Owner:        &models.ObjectInfoOwner{DisplayName: oi.Owner.DisplayName, ID: oi.Owner.ID},
 		StorageClass: oi.StorageClass,
 		Err:          oi.Err,
-	}
-}
-
-func minioUploadInfoToModelsInfo(oi minio.UploadInfo) models.ObjectInfo {
-	return models.ObjectInfo{
-		ETag:         oi.ETag,
-		Key:          oi.Key,
-		LastModified: oi.LastModified,
-		Size:         oi.Size,
 	}
 }

@@ -78,9 +78,9 @@ func (h *Handler) Run(ctx context.Context, req *test.RunTestsRequest) (*test.Run
 	}
 
 	resp := &test.RunTestsResponse{}
-	h.doRun(ctx, req, resp, oc, dsConf, h.TestAuthorization)
+	h.doRun(ctx, req, resp, oc, dsConf, h.TestEvents)
+	//h.doRun(ctx, req, resp, oc, dsConf, h.TestAuthorization)
 	//h.doRun(ctx, req, resp, oc, dsConf, h.TestEtags)
-	//h.doRun(ctx, req, resp, oc, dsConf, h.TestEvents)
 
 	return resp, nil
 
@@ -252,6 +252,7 @@ func (h *Handler) TestEvents(ctx context.Context, oc nodes.StorageClient, req *t
 
 	opts := minio.StatObjectOptions{}
 	opts.Set(common.PydioContextUserKey, common.PydioSystemUsername)
+	//authCtx := context.WithValue(context.Background(), common.PydioContextUserKey, common.PydioSystemUsername)
 	authCtx := metadata.NewContext(context.Background(), map[string]string{common.PydioContextUserKey: common.PydioSystemUsername})
 	listenCtx, cancel := context.WithCancel(authCtx)
 	defer cancel()

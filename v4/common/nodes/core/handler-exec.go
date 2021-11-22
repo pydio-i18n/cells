@@ -159,26 +159,18 @@ func (e *Executor) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, o
 		return nil, nodes.ErrBranchInfoMissing("in")
 	}
 	writer := info.Client
-	//	Copy
-	m := map[string]string{}
-	if meta, ok := metadata.MinioMetaFromContext(ctx); ok {
-		for k, v := range meta {
-			m[k] = v
-			//			statOpts.Set(k, v)
-		}
-	}
-	if session := in.IndexationSession; session != "" {
-		m[common.XPydioSessionUuid] = session
-	}
-	// Replicate Meta in new context for DeleteNode
-	ctx = metadata.NewContext(ctx, m)
+
 	log.Logger(ctx).Debug("Exec.DeleteNode", in.Node.Zap())
 
 	s3Path := e.buildS3Path(info, in.Node)
 	success := true
 	var err error
-	if _, sE := writer.StatObject(ctx, info.ObjectsBucket, s3Path, m); sE != nil && sE.Error() == noSuchKeyString && in.Node.IsLeaf() {
+	if _, sE := writer.StatObject(ctx, info.ObjectsBucket, s3Path, nil); sE != nil && sE.Error() == noSuchKeyString && in.Node.IsLeaf() {
 		log.Logger(ctx).Info("Exec.DeleteNode : cannot find object in s3! Should it be removed from index?", in.Node.ZapPath())
+	}
+
+	if session := in.IndexationSession; session != "" {
+		ctx = metadata.WithAdditionalMetadata(ctx, map[string]string{common.XPydioSessionUuid: session})
 	}
 	err = writer.RemoveObject(ctx, info.ObjectsBucket, s3Path)
 	if err != nil {

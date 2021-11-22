@@ -24,8 +24,11 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/pydio/cells/v4/common"
 
 	minio "github.com/minio/minio/cmd"
 	_ "github.com/minio/minio/cmd/gateway"
@@ -131,6 +134,23 @@ func (o *ObjectHandler) StartMinioServer(ctx context.Context, minioServiceName s
 
 	os.Setenv("MINIO_ROOT_USER", accessKey)
 	os.Setenv("MINIO_ROOT_PASSWORD", secretKey)
+	minio.HookRegisterGlobalHandler(func(handler http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			handler.ServeHTTP(w, r)
+		})
+	})
+	minio.HookExtractReqParams(func(req *http.Request, m map[string]string) {
+		if v := req.Header.Get(common.PydioContextUserKey); v != "" {
+			m[common.PydioContextUserKey] = v
+		}
+		for _, key := range common.XSpecialPydioHeaders {
+			if v := req.Header.Get("X-Amz-Meta-" + key); v != "" {
+				m[key] = v
+			} else if v := req.Header.Get(key); v != "" {
+				m[key] = v
+			}
+		}
+	})
 	minio.Main(params)
 
 	return nil
@@ -153,18 +173,14 @@ func (o *ObjectHandler) StorageStats(_ context.Context, _ *object.StorageStatsRe
 	resp.Stats["StorageType"] = o.Config.StorageType.String()
 	switch o.Config.StorageType {
 	case object.StorageType_LOCAL:
-		/*
-			// TODO V4 => now points to minio/minio/internal/disk
-			folder := o.Config.LocalFolder
-			if stats, e := disk.GetInfo(folder); e != nil {
-				return e
-			} else {
-				resp.Stats["Total"] = fmt.Sprintf("%d", stats.Total)
-				resp.Stats["Free"] = fmt.Sprintf("%d", stats.Free)
-				resp.Stats["FSType"] = stats.FSType
-			}
-
-		*/
+		folder := o.Config.LocalFolder
+		if stats, e := minio.ExposedDiskStats(context.Background(), folder, false); e != nil {
+			return nil, e
+		} else {
+			resp.Stats["Total"] = fmt.Sprintf("%d", stats["Total"])
+			resp.Stats["Free"] = fmt.Sprintf("%d", stats["Free"])
+			resp.Stats["FSType"] = fmt.Sprintf("%s", stats["FSType"])
+		}
 	}
 
 	return resp, nil
