@@ -22,15 +22,16 @@ package mc
 
 import (
 	"context"
-	"github.com/minio/minio-go/v7/pkg/notification"
 	"io"
 	"strings"
 
 	minio "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+	"github.com/minio/minio-go/v7/pkg/notification"
 
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/models"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/x/configx"
 )
 
@@ -51,9 +52,14 @@ func init() {
 
 // New creates a new minio.Core with the most standard options
 func New(endpoint, accessKey, secretKey string, secure bool, customRegion ...string) (*Client, error) {
+	rt, e := newRoundTripper(secure)
+	if e != nil {
+		return nil, e
+	}
 	options := &minio.Options{
-		Creds:  credentials.NewStaticV2(accessKey, secretKey, ""),
-		Secure: secure,
+		Creds:     credentials.NewStaticV2(accessKey, secretKey, ""),
+		Secure:    secure,
+		Transport: rt,
 	}
 	if len(customRegion) > 0 {
 		options.Region = customRegion[0]
@@ -67,7 +73,7 @@ func New(endpoint, accessKey, secretKey string, secure bool, customRegion ...str
 	}, nil
 }
 
-func (c *Client) ListBucketsWithContext(ctx context.Context) ([]models.BucketInfo, error) {
+func (c *Client) ListBuckets(ctx context.Context) ([]models.BucketInfo, error) {
 	bb, e := c.mc.ListBuckets(ctx)
 	if e != nil {
 		return nil, e
@@ -82,40 +88,29 @@ func (c *Client) ListBucketsWithContext(ctx context.Context) ([]models.BucketInf
 	return buckets, nil
 }
 
-func (c *Client) MakeBucketWithContext(ctx context.Context, bucketName string, location string) (err error) {
+func (c *Client) MakeBucket(ctx context.Context, bucketName string, location string) (err error) {
 	return c.mc.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{Region: location})
 }
 
-func (c *Client) RemoveBucketWithContext(ctx context.Context, bucketName string) error {
+func (c *Client) RemoveBucket(ctx context.Context, bucketName string) error {
 	return c.mc.RemoveBucket(ctx, bucketName)
 }
 
-func (c *Client) GetObject(bucketName, objectName string, opts models.ReadMeta) (io.ReadCloser, models.ObjectInfo, error) {
-	getOpts := readMetaToMinioOpts(opts)
-	rc, oi, _, e := c.mc.GetObject(context.Background(), bucketName, objectName, getOpts)
+func (c *Client) GetObject(ctx context.Context, bucketName, objectName string, opts models.ReadMeta) (io.ReadCloser, models.ObjectInfo, error) {
+	rc, oi, _, e := c.mc.GetObject(ctx, bucketName, objectName, readMetaToMinioOpts(ctx, opts))
 	if e != nil {
 		return nil, models.ObjectInfo{}, e
 	}
 	return rc, minioInfoToModelsInfo(oi), nil
 }
 
-func (c *Client) GetObjectWithContext(ctx context.Context, bucketName, objectName string, opts models.ReadMeta) (io.ReadCloser, error) {
-	rc, _, _, e := c.mc.GetObject(ctx, bucketName, objectName, readMetaToMinioOpts(opts))
-	return rc, e
-}
+func (c *Client) StatObject(ctx context.Context, bucketName, objectName string, opts models.ReadMeta) (models.ObjectInfo, error) {
 
-func (c *Client) StatObject(bucketName, objectName string, opts models.ReadMeta) (models.ObjectInfo, error) {
-	getOpts := readMetaToMinioOpts(opts)
-	oi, e := c.mc.StatObject(context.Background(), bucketName, objectName, getOpts)
+	oi, e := c.mc.StatObject(ctx, bucketName, objectName, readMetaToMinioOpts(ctx, opts))
 	return minioInfoToModelsInfo(oi), e
 }
 
-func (c *Client) PutObject(bucket, object string, data io.Reader, size int64, md5Base64, sha256Hex string, metadata models.ReadMeta) (models.ObjectInfo, error) {
-	oi, e := c.mc.PutObject(context.Background(), bucket, object, data, size, md5Base64, sha256Hex, putMetaToMinioOpts(models.PutMeta{UserMetadata: metadata}))
-	return minioUploadInfoToModelsInfo(oi), e
-}
-
-func (c *Client) PutObjectWithContext(ctx context.Context, bucketName, objectName string, reader io.Reader, objectSize int64,
+func (c *Client) PutObject(ctx context.Context, bucketName, objectName string, reader io.Reader, objectSize int64,
 	opts models.PutMeta) (n int64, err error) {
 	ui, e := c.mc.PutObject(ctx, bucketName, objectName, reader, objectSize, "", "", putMetaToMinioOpts(opts))
 	if e != nil {
@@ -125,11 +120,11 @@ func (c *Client) PutObjectWithContext(ctx context.Context, bucketName, objectNam
 	}
 }
 
-func (c *Client) RemoveObjectWithContext(ctx context.Context, bucketName, objectName string) error {
+func (c *Client) RemoveObject(ctx context.Context, bucketName, objectName string) error {
 	return c.mc.RemoveObject(ctx, bucketName, objectName, minio.RemoveObjectOptions{})
 }
 
-func (c *Client) ListObjectsWithContext(ctx context.Context, bucket, prefix, marker, delimiter string, maxKeys int) (result models.ListBucketResult, err error) {
+func (c *Client) ListObjects(ctx context.Context, bucket, prefix, marker, delimiter string, maxKeys int) (result models.ListBucketResult, err error) {
 	recursive := true
 	if delimiter == "/" {
 		recursive = false
@@ -185,11 +180,11 @@ func (c *Client) ListObjectsWithContext(ctx context.Context, bucket, prefix, mar
 	return r, nil
 }
 
-func (c *Client) NewMultipartUploadWithContext(ctx context.Context, bucket, object string, opts models.PutMeta) (uploadID string, err error) {
+func (c *Client) NewMultipartUpload(ctx context.Context, bucket, object string, opts models.PutMeta) (uploadID string, err error) {
 	return c.mc.NewMultipartUpload(ctx, bucket, object, putMetaToMinioOpts(opts))
 }
 
-func (c *Client) ListMultipartUploadsWithContext(ctx context.Context, bucket, prefix, keyMarker, uploadIDMarker, delimiter string, maxUploads int) (result models.ListMultipartUploadsResult, err error) {
+func (c *Client) ListMultipartUploads(ctx context.Context, bucket, prefix, keyMarker, uploadIDMarker, delimiter string, maxUploads int) (result models.ListMultipartUploadsResult, err error) {
 	ml, e := c.mc.ListMultipartUploads(ctx, bucket, prefix, keyMarker, uploadIDMarker, delimiter, maxUploads)
 	if e != nil {
 		return result, e
@@ -227,7 +222,7 @@ func (c *Client) ListMultipartUploadsWithContext(ctx context.Context, bucket, pr
 	return output, nil
 }
 
-func (c *Client) ListObjectPartsWithContext(ctx context.Context, bucketName, objectName, uploadID string, partNumberMarker, maxParts int) (models.ListObjectPartsResult, error) {
+func (c *Client) ListObjectParts(ctx context.Context, bucketName, objectName, uploadID string, partNumberMarker, maxParts int) (models.ListObjectPartsResult, error) {
 	opp, er := c.mc.ListObjectParts(ctx, bucketName, objectName, uploadID, partNumberMarker, maxParts)
 	if er != nil {
 		return models.ListObjectPartsResult{}, er
@@ -256,7 +251,7 @@ func (c *Client) ListObjectPartsWithContext(ctx context.Context, bucketName, obj
 	return lpi, nil
 }
 
-func (c *Client) CompleteMultipartUploadWithContext(ctx context.Context, bucket, object, uploadID string, parts []models.MultipartObjectPart) (string, error) {
+func (c *Client) CompleteMultipartUpload(ctx context.Context, bucket, object, uploadID string, parts []models.MultipartObjectPart) (string, error) {
 	cparts := make([]minio.CompletePart, len(parts))
 	for i, p := range parts {
 		cparts[i] = minio.CompletePart{
@@ -267,7 +262,7 @@ func (c *Client) CompleteMultipartUploadWithContext(ctx context.Context, bucket,
 	return c.mc.CompleteMultipartUpload(ctx, bucket, object, uploadID, cparts, minio.PutObjectOptions{})
 }
 
-func (c *Client) PutObjectPartWithContext(ctx context.Context, bucket, object, uploadID string, partID int, data io.Reader, size int64, md5Base64, sha256Hex string) (models.MultipartObjectPart, error) {
+func (c *Client) PutObjectPart(ctx context.Context, bucket, object, uploadID string, partID int, data io.Reader, size int64, md5Base64, sha256Hex string) (models.MultipartObjectPart, error) {
 	pp, e := c.mc.PutObjectPart(ctx, bucket, object, uploadID, partID, data, size, md5Base64, sha256Hex, nil)
 	if e != nil {
 		return models.MultipartObjectPart{}, e
@@ -280,19 +275,11 @@ func (c *Client) PutObjectPartWithContext(ctx context.Context, bucket, object, u
 	}, nil
 }
 
-func (c *Client) AbortMultipartUploadWithContext(ctx context.Context, bucket, object, uploadID string) error {
+func (c *Client) AbortMultipartUpload(ctx context.Context, bucket, object, uploadID string) error {
 	return c.mc.AbortMultipartUpload(ctx, bucket, object, uploadID)
 }
 
-func (c *Client) CopyObject(sourceBucket, sourceObject, destBucket, destObject string, metadata map[string]string) (models.ObjectInfo, error) {
-	oi, e := c.mc.CopyObject(context.Background(), sourceBucket, sourceObject, destBucket, destObject, metadata, minio.CopySrcOptions{}, minio.PutObjectOptions{})
-	if e != nil {
-		return models.ObjectInfo{}, e
-	}
-	return minioInfoToModelsInfo(oi), e
-}
-
-func (c *Client) CopyObjectWithProgress(sourceBucket, sourceObject, destBucket, destObject string, srcMeta map[string]string, metadata map[string]string, progress io.Reader) error {
+func (c *Client) CopyObject(ctx context.Context, sourceBucket, sourceObject, destBucket, destObject string, srcMeta, metadata map[string]string, progress io.Reader) (models.ObjectInfo, error) {
 	srcOptions := minio.CopySrcOptions{
 		Bucket: sourceBucket,
 		Object: sourceObject,
@@ -310,10 +297,14 @@ func (c *Client) CopyObjectWithProgress(sourceBucket, sourceObject, destBucket, 
 		}
 	*/
 
-	_, e := c.mc.CopyObject(context.Background(), sourceBucket, sourceObject, destBucket, destObject, srcMeta, srcOptions, destOptions)
-	return e
+	if oi, e := c.mc.CopyObject(context.Background(), sourceBucket, sourceObject, destBucket, destObject, srcMeta, srcOptions, destOptions); e != nil {
+		return models.ObjectInfo{}, e
+	} else {
+		return minioInfoToModelsInfo(oi), nil
+	}
 }
 
+// CopyObjectPartWithContext not part of the interface
 func (c *Client) CopyObjectPartWithContext(ctx context.Context, srcBucket, srcObject, destBucket, destObject string, uploadID string, partID int, startOffset, length int64, metadata map[string]string) (p models.MultipartObjectPart, err error) {
 	oi, e := c.mc.CopyObjectPart(ctx, srcBucket, srcObject, destBucket, destObject, uploadID, partID, startOffset, length, metadata)
 	if e != nil {
@@ -325,6 +316,7 @@ func (c *Client) CopyObjectPartWithContext(ctx context.Context, srcBucket, srcOb
 	}, e
 }
 
+// CopyObjectPart not part of the interface
 func (c *Client) CopyObjectPart(srcBucket, srcObject, destBucket, destObject string, uploadID string, partID int, startOffset, length int64, metadata map[string]string) (p models.MultipartObjectPart, err error) {
 	oi, e := c.mc.CopyObjectPart(context.Background(), srcBucket, srcObject, destBucket, destObject, uploadID, partID, startOffset, length, metadata)
 	if e != nil {
@@ -341,8 +333,13 @@ func (c *Client) ListenBucketNotification(ctx context.Context, bucketName, prefi
 	return c.mc.ListenBucketNotification(ctx, bucketName, prefix, suffix, events)
 }
 
-func readMetaToMinioOpts(meta models.ReadMeta) minio.GetObjectOptions {
+func readMetaToMinioOpts(ctx context.Context, meta models.ReadMeta) minio.GetObjectOptions {
 	opt := minio.GetObjectOptions{}
+	if mm, ok := metadata.MinioMetaFromContext(ctx); ok {
+		for k, v := range mm {
+			opt.Set(k, v)
+		}
+	}
 	for k, v := range meta {
 		opt.Set(k, v)
 	}

@@ -34,34 +34,28 @@ import (
 type StorageClientProvider func(cfg configx.Values) (StorageClient, error)
 
 type StorageClient interface {
-	ListBucketsWithContext(ctx context.Context) ([]models.BucketInfo, error)
-	MakeBucketWithContext(ctx context.Context, bucketName string, location string) (err error)
-	RemoveBucketWithContext(ctx context.Context, bucketName string) error
+	ListBuckets(ctx context.Context) ([]models.BucketInfo, error)
+	MakeBucket(ctx context.Context, bucketName string, location string) (err error)
+	RemoveBucket(ctx context.Context, bucketName string) error
 
-	GetObject(bucketName, objectName string, opts models.ReadMeta) (io.ReadCloser, models.ObjectInfo, error)
-	GetObjectWithContext(ctx context.Context, bucketName, objectName string, opts models.ReadMeta) (io.ReadCloser, error)
+	ListObjects(ctx context.Context, bucket, prefix, marker, delimiter string, maxKeys int) (result models.ListBucketResult, err error)
+	GetObject(ctx context.Context, bucketName, objectName string, opts models.ReadMeta) (io.ReadCloser, models.ObjectInfo, error)
+	StatObject(ctx context.Context, bucketName, objectName string, opts models.ReadMeta) (models.ObjectInfo, error)
+	PutObject(ctx context.Context, bucketName, objectName string, reader io.Reader, objectSize int64, opts models.PutMeta) (n int64, err error)
+	RemoveObject(ctx context.Context, bucketName, objectName string) error
+	CopyObject(ctx context.Context, sourceBucket, sourceObject, destBucket, destObject string, srcMeta, metadata map[string]string, progress io.Reader) (models.ObjectInfo, error)
+	CopyObjectMultipart(ctx context.Context, srcObject models.ObjectInfo, srcBucket, srcPath, destBucket, destPath string, meta map[string]string, progress io.Reader) error
+	CopyObjectMultipartThreshold() int64
 
-	StatObject(bucketName, objectName string, opts models.ReadMeta) (models.ObjectInfo, error)
-	PutObject(bucket, object string, data io.Reader, size int64, md5Base64, sha256Hex string, metadata models.ReadMeta) (models.ObjectInfo, error)
-	PutObjectWithContext(ctx context.Context, bucketName, objectName string, reader io.Reader, objectSize int64,
-		opts models.PutMeta) (n int64, err error)
-	RemoveObjectWithContext(ctx context.Context, bucketName, objectName string) error
-	ListObjectsWithContext(ctx context.Context, bucket, prefix, marker, delimiter string, maxKeys int) (result models.ListBucketResult, err error)
+	NewMultipartUpload(ctx context.Context, bucket, object string, opts models.PutMeta) (uploadID string, err error)
+	ListMultipartUploads(ctx context.Context, bucket, prefix, keyMarker, uploadIDMarker, delimiter string, maxUploads int) (result models.ListMultipartUploadsResult, err error)
+	ListObjectParts(ctx context.Context, bucketName, objectName, uploadID string, partNumberMarker, maxParts int) (models.ListObjectPartsResult, error)
+	CompleteMultipartUpload(ctx context.Context, bucket, object, uploadID string, parts []models.MultipartObjectPart) (string, error)
+	PutObjectPart(ctx context.Context, bucket, object, uploadID string, partID int, data io.Reader, size int64, md5Base64, sha256Hex string) (models.MultipartObjectPart, error)
+	AbortMultipartUpload(ctx context.Context, bucket, object, uploadID string) error
 
-	NewMultipartUploadWithContext(ctx context.Context, bucket, object string, opts models.PutMeta) (uploadID string, err error)
-	ListMultipartUploadsWithContext(ctx context.Context, bucket, prefix, keyMarker, uploadIDMarker, delimiter string, maxUploads int) (result models.ListMultipartUploadsResult, err error)
-	ListObjectPartsWithContext(ctx context.Context, bucketName, objectName, uploadID string, partNumberMarker, maxParts int) (models.ListObjectPartsResult, error)
-	CompleteMultipartUploadWithContext(ctx context.Context, bucket, object, uploadID string, parts []models.MultipartObjectPart) (string, error)
-	PutObjectPartWithContext(ctx context.Context, bucket, object, uploadID string, partID int, data io.Reader, size int64, md5Base64, sha256Hex string) (models.MultipartObjectPart, error)
-	AbortMultipartUploadWithContext(ctx context.Context, bucket, object, uploadID string) error
-
-	CopyObject(sourceBucket, sourceObject, destBucket, destObject string, metadata map[string]string) (models.ObjectInfo, error)
-	CopyObjectWithProgress(sourceBucket, sourceObject, destBucket, destObject string, srcMeta map[string]string, metadata map[string]string, progress io.Reader) error
-	CopyObjectPartWithContext(ctx context.Context, srcBucket, srcObject, destBucket, destObject string, uploadID string,
-		partID int, startOffset, length int64, metadata map[string]string) (p models.MultipartObjectPart, err error)
-	CopyObjectPart(srcBucket, srcObject, destBucket, destObject string, uploadID string,
-		partID int, startOffset, length int64, metadata map[string]string) (p models.MultipartObjectPart, err error)
-
+	//CopyObjectPartWithContext(ctx context.Context, srcBucket, srcObject, destBucket, destObject string, uploadID string, partID int, startOffset, length int64, metadata map[string]string) (p models.MultipartObjectPart, err error)
+	//CopyObjectPart(srcBucket, srcObject, destBucket, destObject string, uploadID string, partID int, startOffset, length int64, metadata map[string]string) (p models.MultipartObjectPart, err error)
 	//ListObjects(bucket, prefix, marker, delimiter string, maxKeys int) (result minio.ListBucketResult, err error)
 	//ListObjectsV2(bucketName, objectPrefix, continuationToken string, fetchOwner bool, delimiter string, maxkeys int, startAfter string) (minio.ListBucketV2Result, error)
 	//NewMultipartUpload(bucket, object string, opts minio.PutObjectOptions) (uploadID string, err error)

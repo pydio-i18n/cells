@@ -151,7 +151,7 @@ func PerformCheck(ctx context.Context, name string, c *install.InstallConfig) *i
 		// Check if buckets can be created
 		data := make(map[string]interface{})
 		var buckets []string
-		if bb, er := mc.ListBucketsWithContext(ctx); er != nil {
+		if bb, er := mc.ListBuckets(ctx); er != nil {
 			wrapError(er)
 			break
 		} else {
@@ -161,8 +161,8 @@ func PerformCheck(ctx context.Context, name string, c *install.InstallConfig) *i
 		}
 		data["buckets"] = buckets
 		testBC := uuid.New()
-		if er := mc.MakeBucketWithContext(ctx, testBC, c.GetDsS3CustomRegion()); er == nil {
-			mc.RemoveBucketWithContext(ctx, testBC)
+		if er := mc.MakeBucket(ctx, testBC, c.GetDsS3CustomRegion()); er == nil {
+			mc.RemoveBucket(ctx, testBC)
 			data["canCreate"] = true
 		} else {
 			data["canCreate"] = false
@@ -200,7 +200,7 @@ func PerformCheck(ctx context.Context, name string, c *install.InstallConfig) *i
 		// Check if buckets can be created
 		data := make(map[string]interface{})
 		buckets := make(map[string]struct{})
-		if bb, er := mc.ListBucketsWithContext(ctx); er != nil {
+		if bb, er := mc.ListBuckets(ctx); er != nil {
 			wrapError(er)
 			break
 		} else {
@@ -221,7 +221,7 @@ func PerformCheck(ctx context.Context, name string, c *install.InstallConfig) *i
 			if _, ok := buckets[check]; ok { // already exists
 				continue
 			}
-			if e := mc.MakeBucketWithContext(ctx, check, c.GetDsS3CustomRegion()); e != nil {
+			if e := mc.MakeBucket(ctx, check, c.GetDsS3CustomRegion()); e != nil {
 				wrapError(e)
 				break
 			} else {

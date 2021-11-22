@@ -47,7 +47,6 @@ import (
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/scheduler/actions"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
@@ -298,18 +297,8 @@ func (t *ThumbnailExtractor) writeSizeFromSrc(ctx context.Context, img image.Ima
 			logger.Error("Cannot find client for thumbstore", zap.Error(e))
 			return false, e
 		}
-
-		/*
-			opts := minio.StatObjectOptions{}
-			if meta, mOk := context2.MinioMetaFromContext(ctx); mOk {
-				for k, v := range meta {
-					opts.Set(k, v)
-				}
-			}
-		*/
 		// First Check if thumb already exists with same original etag
-		meta, _ := metadata.MinioMetaFromContext(ctx)
-		oi, check := thumbsClient.StatObject(thumbsBucket, objectName, meta)
+		oi, check := thumbsClient.StatObject(ctx, thumbsBucket, objectName, nil)
 		logger.Debug("Object Info", zap.Any("object", oi), zap.Error(check))
 		if check == nil {
 			foundOriginal := oi.Metadata.Get("X-Amz-Meta-Original-Etag")

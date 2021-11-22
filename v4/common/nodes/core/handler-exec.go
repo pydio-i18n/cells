@@ -23,7 +23,6 @@ package core
 import (
 	"context"
 	"encoding/hex"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"path"
@@ -39,6 +38,7 @@ import (
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/abstract"
 	"github.com/pydio/cells/v4/common/nodes/models"
+	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/service/errors"
@@ -68,16 +68,8 @@ func (e *Executor) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts 
 			return nil, nodes.ErrBranchInfoMissing("in")
 		}
 		writer := info.Client
-		//		statOpts := minio.StatObjectOptions{}
-		m := map[string]string{}
-		if meta, ok := metadata.MinioMetaFromContext(ctx); ok {
-			for k, v := range meta {
-				m[k] = v
-				//				statOpts.Set(k, v)
-			}
-		}
 		s3Path := e.buildS3Path(info, in.Node)
-		if oi, e := writer.StatObject(info.ObjectsBucket, s3Path, m); e != nil {
+		if oi, e := writer.StatObject(ctx, info.ObjectsBucket, s3Path, nil); e != nil {
 			if e.Error() == noSuchKeyString {
 				e = errors.NotFound("not.found", "object not found in datasource: %s", s3Path)
 			}
@@ -167,7 +159,7 @@ func (e *Executor) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, o
 		return nil, nodes.ErrBranchInfoMissing("in")
 	}
 	writer := info.Client
-	//	statOpts := minio.StatObjectOptions{}
+	//	Copy
 	m := map[string]string{}
 	if meta, ok := metadata.MinioMetaFromContext(ctx); ok {
 		for k, v := range meta {
@@ -178,16 +170,17 @@ func (e *Executor) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, o
 	if session := in.IndexationSession; session != "" {
 		m[common.XPydioSessionUuid] = session
 	}
+	// Replicate Meta in new context for DeleteNode
 	ctx = metadata.NewContext(ctx, m)
 	log.Logger(ctx).Debug("Exec.DeleteNode", in.Node.Zap())
 
 	s3Path := e.buildS3Path(info, in.Node)
 	success := true
 	var err error
-	if _, sE := writer.StatObject(info.ObjectsBucket, s3Path, m); sE != nil && sE.Error() == noSuchKeyString && in.Node.IsLeaf() {
+	if _, sE := writer.StatObject(ctx, info.ObjectsBucket, s3Path, m); sE != nil && sE.Error() == noSuchKeyString && in.Node.IsLeaf() {
 		log.Logger(ctx).Info("Exec.DeleteNode : cannot find object in s3! Should it be removed from index?", in.Node.ZapPath())
 	}
-	err = writer.RemoveObjectWithContext(ctx, info.ObjectsBucket, s3Path)
+	err = writer.RemoveObject(ctx, info.ObjectsBucket, s3Path)
 	if err != nil {
 		log.Logger(ctx).Error("Error while deleting in s3 "+s3Path, zap.Error(err))
 		success = false
@@ -220,8 +213,7 @@ func (e *Executor) GetObject(ctx context.Context, node *tree.Node, requestData *
 		// Store a copy of the meta
 		newCtx = metadata.NewContext(ctx, meta)
 	}
-	mm, _ := metadata.MinioMetaFromContext(ctx)
-	sObject, sErr := writer.StatObject(info.ObjectsBucket, s3Path, mm)
+	sObject, sErr := writer.StatObject(ctx, info.ObjectsBucket, s3Path, nil)
 	if sErr != nil {
 		return nil, sErr
 	}
@@ -235,7 +227,7 @@ func (e *Executor) GetObject(ctx context.Context, node *tree.Node, requestData *
 			return nil, err
 		}
 	}
-	reader, err = writer.GetObjectWithContext(newCtx, info.ObjectsBucket, s3Path, headers)
+	reader, _, err = writer.GetObject(newCtx, info.ObjectsBucket, s3Path, headers)
 	logger.Debug("[handler exec] Get Object", zap.String("bucket", info.ObjectsBucket), zap.String("s3path", s3Path), zap.Any("request", requestData), zap.Any("resultObject", reader))
 	if err != nil {
 		logger.Error("Get Object", zap.Error(err))
@@ -256,14 +248,14 @@ func (e *Executor) PutObject(ctx context.Context, node *tree.Node, reader io.Rea
 
 	log.Logger(ctx).Debug("[handler exec]: put object", zap.String("s3Path", s3Path), zap.Any("requestData", requestData))
 	if requestData.Size <= 0 {
-		written, err := writer.PutObjectWithContext(ctx, info.ObjectsBucket, s3Path, reader, -1, opts)
+		written, err := writer.PutObject(ctx, info.ObjectsBucket, s3Path, reader, -1, opts)
 		if err != nil {
 			return 0, err
 		} else {
 			return written, nil
 		}
 	} else {
-		oi, err := writer.PutObjectWithContext(ctx, info.ObjectsBucket, s3Path, reader, requestData.Size, opts)
+		oi, err := writer.PutObject(ctx, info.ObjectsBucket, s3Path, reader, requestData.Size, opts)
 		if err != nil {
 			return 0, err
 		} else {
@@ -302,7 +294,7 @@ func (e *Executor) CopyObject(ctx context.Context, from *tree.Node, to *tree.Nod
 
 	if destClient == srcClient && requestData.SrcVersionId == "" {
 		// Check object exists and check its size
-		src, e := destClient.StatObject(srcBucket, fromPath, statMeta)
+		src, e := destClient.StatObject(ctx, srcBucket, fromPath, nil)
 		if e != nil {
 			log.Logger(ctx).Error("HandlerExec: Error on CopyObject while first stating source", zap.Error(e))
 			if e.Error() == noSuchKeyString {
@@ -327,12 +319,11 @@ func (e *Executor) CopyObject(ctx context.Context, from *tree.Node, to *tree.Nod
 		}
 		var err error
 		// TODO V4
-		if false /* destInfo.StorageType == object.StorageType_S3 && src.Size > s3.MaxCopyObjectSize */ {
+		if destInfo.StorageType == object.StorageType_S3 && destClient.CopyObjectMultipartThreshold() > 0 && src.Size > destClient.CopyObjectMultipartThreshold() {
 			if dirOk {
 				ctx = metadata.WithAdditionalMetadata(ctx, map[string]string{common.XAmzMetaDirective: directive})
 			}
-			err = fmt.Errorf("not implemented")
-			//err = s3.CopyObjectMultipart(ctx, destClient, src, srcBucket, fromPath, destBucket, toPath, requestData.Metadata, requestData.Progress)
+			err = destClient.CopyObjectMultipart(ctx, src, srcBucket, fromPath, destBucket, toPath, requestData.Metadata, requestData.Progress)
 		} else {
 			/*
 				destinationInfo, _ := minio.NewDestinationInfo(destBucket, toPath, nil, requestData.Metadata)
@@ -350,26 +341,20 @@ func (e *Executor) CopyObject(ctx context.Context, from *tree.Node, to *tree.Nod
 				srcMeta[common.XAmzMetaDirective] = directive
 				//sourceInfo.Headers.Set(common.XAmzMetaDirective, directive)
 			}
-			err = destClient.CopyObjectWithProgress(srcBucket, fromPath, destBucket, toPath, statMeta, requestData.Metadata, requestData.Progress)
+			_, err = destClient.CopyObject(ctx, srcBucket, fromPath, destBucket, toPath, statMeta, requestData.Metadata, requestData.Progress)
 		}
 		if err != nil {
 			log.Logger(ctx).Error("HandlerExec: Error on CopyObject", zap.Error(err))
 			return 0, err
 		}
 
-		stat, _ := destClient.StatObject(destBucket, toPath, statMeta)
+		stat, _ := destClient.StatObject(ctx, destBucket, toPath, nil)
 		log.Logger(ctx).Debug("HandlerExec: CopyObject / Same Clients", zap.Int64("written", stat.Size))
 		return stat.Size, nil
 
 	} else {
 
-		var reader io.ReadCloser
-		var err error
-		srcStat, srcErr := srcClient.StatObject(srcBucket, fromPath, statMeta)
-		if srcErr != nil {
-			return 0, srcErr
-		}
-		reader, err = srcClient.GetObjectWithContext(ctx, srcBucket, fromPath, models.ReadMeta{})
+		reader, srcStat, err := srcClient.GetObject(ctx, srcBucket, fromPath, models.ReadMeta{})
 		if err != nil {
 			log.Logger(ctx).Error("HandlerExec: CopyObject / Different Clients - Read Source Error", zap.Error(err))
 			return 0, err
@@ -395,7 +380,7 @@ func (e *Executor) CopyObject(ctx context.Context, from *tree.Node, to *tree.Nod
 		log.Logger(ctx).Debug("HandlerExec: copy one DS to another", zap.Any("meta", srcStat), zap.Any("requestMeta", requestData.Metadata))
 		opts := e.putOptionsFromRequestMeta(requestData.Metadata)
 		opts.Progress = requestData.Progress
-		oi, err := destClient.PutObjectWithContext(ctx, destBucket, toPath, reader, srcStat.Size, opts)
+		oi, err := destClient.PutObject(ctx, destBucket, toPath, reader, srcStat.Size, opts)
 		if err != nil {
 			log.Logger(ctx).Error("HandlerExec: CopyObject / Different Clients",
 				zap.Error(err),
@@ -420,7 +405,7 @@ func (e *Executor) MultipartCreate(ctx context.Context, target *tree.Node, reque
 	s3Path := e.buildS3Path(info, target)
 
 	putOptions := e.putOptionsFromRequestMeta(requestData.Metadata)
-	id, err := info.Client.NewMultipartUploadWithContext(ctx, info.ObjectsBucket, s3Path, putOptions)
+	id, err := info.Client.NewMultipartUpload(ctx, info.ObjectsBucket, s3Path, putOptions)
 	return id, err
 }
 
@@ -443,7 +428,7 @@ func (e *Executor) MultipartPutObjectPart(ctx context.Context, target *tree.Node
 			cl.Type = tree.NodeType_LEAF // Force leaf!
 			reader = nodes.WrapReaderForMime(ctx, cl, reader)
 		}
-		cp, err := writer.PutObjectPartWithContext(ctx, info.ObjectsBucket, s3Path, uploadID, partNumberMarker, reader, requestData.Size, hex.EncodeToString(requestData.Md5Sum), hex.EncodeToString(requestData.Sha256Sum))
+		cp, err := writer.PutObjectPart(ctx, info.ObjectsBucket, s3Path, uploadID, partNumberMarker, reader, requestData.Size, hex.EncodeToString(requestData.Md5Sum), hex.EncodeToString(requestData.Sha256Sum))
 		if err != nil {
 			log.Logger(ctx).Error("PutObjectPart has failed", zap.Error(err))
 			return models.MultipartObjectPart{PartNumber: partNumberMarker}, err
@@ -458,7 +443,7 @@ func (e *Executor) MultipartList(ctx context.Context, prefix string, requestData
 	if !ok {
 		return res, nodes.ErrBranchInfoMissing("in")
 	}
-	ml, er := info.Client.ListMultipartUploadsWithContext(ctx, info.ObjectsBucket, prefix, requestData.ListKeyMarker, requestData.ListUploadIDMarker, requestData.ListDelimiter, requestData.ListMaxUploads)
+	ml, er := info.Client.ListMultipartUploads(ctx, info.ObjectsBucket, prefix, requestData.ListKeyMarker, requestData.ListUploadIDMarker, requestData.ListDelimiter, requestData.ListMaxUploads)
 	if er != nil {
 		return models.ListMultipartUploadsResult{}, er
 	}
@@ -501,7 +486,7 @@ func (e *Executor) MultipartAbort(ctx context.Context, target *tree.Node, upload
 		return nodes.ErrBranchInfoMissing("in")
 	}
 	s3Path := e.buildS3Path(info, target)
-	return info.Client.AbortMultipartUploadWithContext(ctx, info.ObjectsBucket, s3Path, uploadID)
+	return info.Client.AbortMultipartUpload(ctx, info.ObjectsBucket, s3Path, uploadID)
 }
 
 func (e *Executor) MultipartComplete(ctx context.Context, target *tree.Node, uploadID string, uploadedParts []models.MultipartObjectPart) (models.ObjectInfo, error) {
@@ -517,7 +502,7 @@ func (e *Executor) MultipartComplete(ctx context.Context, target *tree.Node, upl
 	for _, up := range uploadedParts {
 		mParts = append(mParts, models.MultipartObjectPart{ETag: up.ETag, PartNumber: up.PartNumber})
 	}
-	_, err := info.Client.CompleteMultipartUploadWithContext(ctx, info.ObjectsBucket, s3Path, uploadID, mParts)
+	_, err := info.Client.CompleteMultipartUpload(ctx, info.ObjectsBucket, s3Path, uploadID, mParts)
 	if err != nil {
 		log.Logger(ctx).Error("fail to complete upload", zap.Error(err))
 		return models.ObjectInfo{}, err
@@ -530,8 +515,7 @@ func (e *Executor) MultipartComplete(ctx context.Context, target *tree.Node, upl
 			}
 		}
 	*/
-	mm, _ := metadata.MinioMetaFromContext(ctx)
-	oi, er := info.Client.StatObject(info.ObjectsBucket, s3Path, mm)
+	oi, er := info.Client.StatObject(ctx, info.ObjectsBucket, s3Path, nil)
 	if er != nil {
 		return models.ObjectInfo{}, er
 	}
@@ -554,7 +538,7 @@ func (e *Executor) MultipartListObjectParts(ctx context.Context, target *tree.No
 		return models.ListObjectPartsResult{}, nodes.ErrBranchInfoMissing("in")
 	}
 	s3Path := e.buildS3Path(info, target)
-	return info.Client.ListObjectPartsWithContext(ctx, info.ObjectsBucket, s3Path, uploadID, partNumberMarker, maxParts)
+	return info.Client.ListObjectParts(ctx, info.ObjectsBucket, s3Path, uploadID, partNumberMarker, maxParts)
 }
 
 func (e *Executor) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...grpc.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {

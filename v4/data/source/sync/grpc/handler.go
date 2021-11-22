@@ -193,7 +193,7 @@ func (s *Handler) initSync(syncConfig *object.DataSource) error {
 			}
 			testCtx := metadata.NewContext(ctx, map[string]string{common.PydioContextUserKey: common.PydioSystemUsername})
 			if syncConfig.ObjectsBucket == "" {
-				_, err = oc.ListBucketsWithContext(testCtx)
+				_, err = oc.ListBuckets(testCtx)
 				if err != nil {
 					if retryCount > 1 {
 						log.Logger(ctx).Warn("Cannot contact s3 service (list buckets), will retry in 4s", zap.Error(err))
@@ -204,7 +204,7 @@ func (s *Handler) initSync(syncConfig *object.DataSource) error {
 					return nil
 				}
 			} else {
-				_, err = oc.ListObjectsWithContext(testCtx, syncConfig.ObjectsBucket, "", "/", "/", 1)
+				_, err = oc.ListObjects(testCtx, syncConfig.ObjectsBucket, "", "/", "/", 1)
 				if err != nil {
 					if retryCount > 1 {
 						log.Logger(ctx).Warn("Cannot contact s3 service (bucket "+syncConfig.ObjectsBucket+"), will retry in 4s", zap.Error(err))

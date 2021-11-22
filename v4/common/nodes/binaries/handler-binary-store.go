@@ -36,7 +36,6 @@ import (
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	"github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 func WithStore(name string, transparentGet, allowPut, allowAnonRead bool) nodes.Option {
@@ -106,8 +105,7 @@ func (a *Handler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts .
 				}
 			}
 		*/
-		mm, _ := metadata.MinioMetaFromContext(ctx)
-		objectInfo, err := s3client.StatObject(source.ObjectsBucket, path.Base(in.Node.Path), mm)
+		objectInfo, err := s3client.StatObject(ctx, source.ObjectsBucket, path.Base(in.Node.Path), nil)
 		if err != nil {
 			return nil, err
 		}
@@ -200,9 +198,9 @@ func (a *Handler) DeleteNode(ctx context.Context, in *tree.DeleteNodeRequest, op
 		// delete alternate versions if they exists
 		s3client := source.Client
 		log.Logger(ctx).Info("Deleting binary alternate version ", zap.String("v", dsKey))
-		if res, e := s3client.ListObjectsWithContext(ctx, source.ObjectsBucket, dsKey, "", "/", -1); e == nil {
+		if res, e := s3client.ListObjects(ctx, source.ObjectsBucket, dsKey, "", "/", -1); e == nil {
 			for _, info := range res.Contents {
-				s3client.RemoveObjectWithContext(ctx, dsKey, info.Key)
+				s3client.RemoveObject(ctx, dsKey, info.Key)
 			}
 		}
 	}

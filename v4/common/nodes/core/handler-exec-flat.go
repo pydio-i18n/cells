@@ -303,8 +303,7 @@ func (f *FlatStorageHandler) recomputeETag(ctx context.Context, identifier strin
 	}
 
 	// Load current metadata
-	mm, _ := metadata.MinioMetaFromContext(ctx)
-	objectInfo, e := src.Client.StatObject(src.ObjectsBucket, node.GetUuid(), mm)
+	objectInfo, e := src.Client.StatObject(ctx, src.ObjectsBucket, node.GetUuid(), nil)
 	if e != nil {
 		return "", e
 	}
@@ -312,13 +311,12 @@ func (f *FlatStorageHandler) recomputeETag(ctx context.Context, identifier strin
 		copyMeta[k] = strings.Join(v, "")
 	}
 
-	// TODO V4
-	if false /* objectInfo.Size > s3.MaxCopyObjectSize && src.StorageType != object.StorageType_LOCAL */ {
+	if src.Client.CopyObjectMultipartThreshold() > 0 && objectInfo.Size > src.Client.CopyObjectMultipartThreshold() && src.StorageType != object.StorageType_LOCAL {
 
 		// Cannot CopyObject on itself for files bigger than 5GB - compute Md5 and store it as metadata instead
 		// Not necessary for real minio on fs (but required for Minio as S3 gateway or real S3)
 		mm2, _ := metadata.MinioMetaFromContext(ctx)
-		readCloser, _, e := src.Client.GetObject(src.ObjectsBucket, node.GetUuid(), mm2)
+		readCloser, _, e := src.Client.GetObject(ctx, src.ObjectsBucket, node.GetUuid(), mm2)
 		if e != nil {
 			return "", e
 		}
@@ -329,14 +327,13 @@ func (f *FlatStorageHandler) recomputeETag(ctx context.Context, identifier strin
 		}
 		checksum := fmt.Sprintf("%x", h.Sum(nil))
 		copyMeta[common.XAmzMetaContentMd5] = checksum
-		//err := s3.CopyObjectMultipart(context.Background(), src.Client, objectInfo, src.ObjectsBucket, objectInfo.Key, src.ObjectsBucket, objectInfo.Key, copyMeta, nil)
-		err := fmt.Errorf("notimplemented-v4")
+		err := src.Client.CopyObjectMultipart(ctx, objectInfo, src.ObjectsBucket, objectInfo.Key, src.ObjectsBucket, objectInfo.Key, copyMeta, nil)
 		return checksum, err
 
 	} else {
 
 		// Perform in-place copy to trigger ETag recomputation inside storage
-		newInfo, copyErr := src.Client.CopyObject(src.ObjectsBucket, objectInfo.Key, src.ObjectsBucket, objectInfo.Key, copyMeta)
+		newInfo, copyErr := src.Client.CopyObject(ctx, src.ObjectsBucket, objectInfo.Key, src.ObjectsBucket, objectInfo.Key, copyMeta, nil, nil)
 		if copyErr != nil {
 			return "", copyErr
 		}

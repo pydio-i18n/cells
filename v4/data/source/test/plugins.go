@@ -22,9 +22,11 @@ package test
 
 import (
 	"context"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/proto/test"
 	"github.com/pydio/cells/v4/common/service"
 )
 
@@ -40,13 +42,10 @@ func init() {
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceDataObjects, []string{}),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceDataSync, []string{}),
 			service.Description("Test Objects Service conformance"),
-			/*
-				service.WithMicro(func(m micro.Service) error {
-					test.RegisterTesterHandler(m.Server(), NewHandler())
-
-					return nil
-				}),
-			*/
+			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
+				test.RegisterTesterServer(server, NewHandler())
+				return nil
+			}),
 		)
 	})
 }
