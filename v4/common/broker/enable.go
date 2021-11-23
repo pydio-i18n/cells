@@ -21,17 +21,11 @@
 package broker
 
 import (
-	"fmt"
-
 	service2 "github.com/pydio/cells/v4/common/broker/service"
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/micro/micro/v3/service/broker/memory"
-	"github.com/micro/micro/v3/service/client"
-	"github.com/micro/micro/v3/service/server"
-
 	"github.com/pydio/cells/v4/common"
-	defaults "github.com/pydio/cells/v4/common/micro"
-	"github.com/pydio/cells/v4/common/registry"
 )
 
 /* TODO v4 still needed ?
@@ -130,7 +124,7 @@ func EnableHTTP() {
 func EnableMemory() {
 	b := NewBroker(
 		memory.NewBroker(),
-		BeforeDisconnect(func() error {
+		/*BeforeDisconnect(func() error {
 			s, err := registry.ListServices()
 			if err != nil {
 				return err
@@ -140,16 +134,8 @@ func EnableMemory() {
 			}
 
 			return nil
-		}),
+		}),*/
 	)
-
-	defaults.InitServer(func() server.Option {
-		return server.Broker(b)
-	})
-
-	defaults.InitClient(func() client.Option {
-		return client.Broker(b)
-	})
 
 	b.Connect()
 }
@@ -157,17 +143,9 @@ func EnableMemory() {
 func EnableService(hostname, port string) {
 	b := service2.NewBroker(
 		service2.WithClientConn(
-			defaults.NewClientConn(common.ServiceBroker),
+			grpc.NewClientConn(common.ServiceBroker),
 		),
 	)
-
-	defaults.InitServer(func() server.Option {
-		return server.Broker(b)
-	})
-
-	defaults.InitClient(func() client.Option {
-		return client.Broker(b)
-	})
 
 	// Establishing connectin
 	b.Connect()

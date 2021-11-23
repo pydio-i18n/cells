@@ -23,6 +23,7 @@ package websocket
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"os"
 	"strings"
 	"time"
@@ -36,7 +37,6 @@ import (
 	"github.com/pydio/cells/v4/common/auth"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/proto/chat"
@@ -108,7 +108,7 @@ func (c *ChatHandler) BroadcastChatMessage(ctx context.Context, msg *chat.ChatEv
 }
 
 func (c *ChatHandler) getChatClient() chat.ChatServiceClient {
-	return chat.NewChatServiceClient(defaults.NewClientConn(common.ServiceChat))
+	return chat.NewChatServiceClient(grpc.NewClientConn(common.ServiceChat))
 }
 
 func (c *ChatHandler) initHandlers(serviceCtx context.Context) {

@@ -3,6 +3,7 @@ package share
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
 
 	"go.uber.org/zap"
@@ -11,7 +12,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth/claim"
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/abstract"
 	"github.com/pydio/cells/v4/common/nodes/compose"
@@ -32,7 +32,7 @@ func LoadDetectedRootNodes(ctx context.Context, detectedRoots []string) (rootNod
 
 	rootNodes = make(map[string]*tree.Node)
 	router := compose.NewClient(compose.UuidComposer()...)
-	metaClient := tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceMeta))
+	metaClient := tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceMeta))
 	eventFilter := compose.ReverseClient(nodes.AsAdmin())
 	accessList, _ := permissions.AccessListFromContextClaims(ctx)
 	for _, rootId := range detectedRoots {
@@ -112,7 +112,7 @@ func ParseRootNodes(ctx context.Context, shareRequest *rest.PutCellRequest) (*tr
 			}
 			// Update node meta
 			createResp.Node.MustSetMeta(common.MetaFlagCellNode, true)
-			metaClient := tree.NewNodeReceiverClient(defaults.NewClientConn(common.ServiceMeta))
+			metaClient := tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceMeta))
 			metaClient.CreateNode(ctx, &tree.CreateNodeRequest{Node: createResp.Node})
 			shareRequest.Room.RootNodes = append(shareRequest.Room.RootNodes, createResp.Node)
 			createdNode = createResp.Node
@@ -226,7 +226,7 @@ func DeleteRootNodeRecursively(ctx context.Context, ownerName string, roomNode *
 		}
 		realNode := &tree.Node{Path: parentNode.Path + "/" + strings.TrimRight(roomNode.Path, "/")}
 		// Now send deletion to scheduler
-		cli := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+		cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
 		jobUuid := "cells-delete-" + uuid.New()
 		q, _ := anypb.New(&tree.Query{
 			Paths: []string{realNode.Path},

@@ -23,6 +23,7 @@ package scheduler
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -31,7 +32,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/forms"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/service"
@@ -144,8 +144,8 @@ func (f *FakeUsersAction) Run(ctx context.Context, channels *actions.RunnableCha
 	outputMessage := input
 	outputMessage.AppendOutput(&jobs.ActionOutput{StringBody: "Creating random users"})
 
-	userServiceClient := idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
-	rolesServiceClient := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
+	userServiceClient := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
+	rolesServiceClient := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
 	builder := service.NewResourcePoliciesBuilder()
 
 	groupPaths := []string{"/"}

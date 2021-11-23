@@ -24,6 +24,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 
@@ -31,7 +32,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/chat"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/context"
@@ -44,7 +44,7 @@ var (
 
 func getMetaClient() tree.NodeReceiverClient {
 	if metaClient == nil {
-		metaClient = tree.NewNodeReceiverClient(defaults.NewClientConn(common.ServiceMeta))
+		metaClient = tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceMeta))
 	}
 	return metaClient
 }

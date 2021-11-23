@@ -23,6 +23,7 @@ package permissions
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"path"
 	"strings"
 	"time"
@@ -32,7 +33,6 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth/claim"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/context"
@@ -126,7 +126,7 @@ var checkersCache = cache.NewShort(cache.WithEviction(1*time.Minute), cache.With
 
 func loadPoliciesByResourcesType(ctx context.Context, resType string) ([]*idm.Policy, error) {
 
-	cli := idm.NewPolicyEngineServiceClient(defaults.NewClientConn(common.ServicePolicy))
+	cli := idm.NewPolicyEngineServiceClient(grpc.NewClientConn(common.ServicePolicy))
 	r, e := cli.ListPolicyGroups(ctx, &idm.ListPolicyGroupsRequest{})
 	if e != nil {
 		return nil, e

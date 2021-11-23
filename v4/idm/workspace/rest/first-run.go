@@ -23,6 +23,7 @@ package rest
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"time"
 
 	"github.com/pydio/cells/v4/common/utils/uuid"
@@ -31,7 +32,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/utils/permissions"
@@ -68,7 +68,7 @@ func FirstRun(ctx context.Context) error {
 		return nil
 	}
 
-	wsClient := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
+	wsClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
 
 	if hasPersonal {
 		log.Logger(ctx).Info("Creating a Personal workspace")
@@ -135,7 +135,7 @@ func createWs(ctx context.Context, wsClient idm.WorkspaceServiceClient, ws *idm.
 	}
 	std.Retry(ctx, func() error {
 		log.Logger(ctx).Info("Settings ACLS for workspace")
-		aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+		aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 		for _, acl := range acls {
 			_, e := aclClient.CreateACL(ctx, &idm.CreateACLRequest{ACL: acl})
 			if e != nil {

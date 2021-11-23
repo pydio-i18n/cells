@@ -23,13 +23,13 @@ package index
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"sync"
 	"time"
 
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/tree"
 )
 
@@ -91,7 +91,7 @@ func (i *Streamer) Stop() {
 func (i *Streamer) StartReader(ctx context.Context) error {
 
 	//fmt.Println("Starting Reader for service " + i.serviceName)
-	reader := tree.NewNodeProviderStreamerClient(defaults.NewClientConn(i.serviceName))
+	reader := tree.NewNodeProviderStreamerClient(grpc.NewClientConn(i.serviceName))
 	streamer, err := reader.ReadNodeStream(ctx)
 	if err != nil {
 		fmt.Println("Error starting for service "+i.serviceName, err)
@@ -140,7 +140,7 @@ func (i *Streamer) StartReader(ctx context.Context) error {
 func (i *Streamer) StartDeleter(ctx context.Context) error {
 
 	//fmt.Println("Starting Deleter for service " + i.serviceName)
-	delClient := tree.NewNodeReceiverStreamClient(defaults.NewClientConn(i.serviceName))
+	delClient := tree.NewNodeReceiverStreamClient(grpc.NewClientConn(i.serviceName))
 	streamer, err := delClient.DeleteNodeStream(ctx)
 	if err != nil {
 		fmt.Println("Error starting Deleter for service "+i.serviceName, err)
@@ -183,7 +183,7 @@ func (i *Streamer) StartDeleter(ctx context.Context) error {
 func (i *Streamer) StartCreator(ctx context.Context) error {
 
 	//fmt.Println("Starting Creator for service " + i.serviceName)
-	createClient := tree.NewNodeReceiverStreamClient(defaults.NewClientConn(i.serviceName))
+	createClient := tree.NewNodeReceiverStreamClient(grpc.NewClientConn(i.serviceName))
 	streamer, err := createClient.CreateNodeStream(ctx)
 	if err != nil {
 		//fmt.Println("Error starting for service " + i.serviceName, err)
@@ -227,7 +227,7 @@ func (i *Streamer) StartCreator(ctx context.Context) error {
 func (i *Streamer) StartUpdater(ctx context.Context) error {
 
 	//fmt.Println("Starting Updater for service " + i.serviceName)
-	updateClient := tree.NewNodeReceiverStreamClient(defaults.NewClientConn(i.serviceName))
+	updateClient := tree.NewNodeReceiverStreamClient(grpc.NewClientConn(i.serviceName))
 	streamer, err := updateClient.UpdateNodeStream(ctx)
 	if err != nil {
 		//fmt.Println("Error starting for service " + i.serviceName, err)

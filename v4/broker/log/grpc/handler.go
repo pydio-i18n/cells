@@ -23,6 +23,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"strconv"
 	"strings"
@@ -33,7 +34,6 @@ import (
 	"github.com/pydio/cells/v4/broker/log"
 	"github.com/pydio/cells/v4/common"
 	log2 "github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	proto "github.com/pydio/cells/v4/common/proto/log"
 	"github.com/pydio/cells/v4/common/proto/sync"
@@ -118,7 +118,7 @@ func (h *Handler) TriggerResync(ctx context.Context, request *sync.ResyncRequest
 		theTask.StartTime = int32(time.Now().Unix())
 		closeTask = func(e error) {
 			// TODO V4 : We passed a Retry Option Here
-			taskClient := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+			taskClient := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
 			theTask.EndTime = int32(time.Now().Unix())
 			if e != nil {
 				theTask.StatusMessage = "Error " + e.Error()

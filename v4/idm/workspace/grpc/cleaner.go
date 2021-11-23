@@ -22,6 +22,7 @@ package grpc
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"sync"
 	"time"
 
@@ -30,7 +31,6 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/service"
 )
@@ -139,7 +139,7 @@ func (c *WsCleaner) deleteEmptyWs(workspaceId string) error {
 	ctx := context.Background()
 
 	// Check if there are still some ACLs for this workspace
-	cl := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+	cl := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 	q, _ := anypb.New(&idm.ACLSingleQuery{
 		WorkspaceIDs: []string{workspaceId},
 	})

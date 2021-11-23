@@ -22,9 +22,8 @@ package rest
 
 import (
 	"github.com/emicklei/go-restful"
-	defaults "github.com/pydio/cells/v4/common/micro"
-
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/proto/log"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	"github.com/pydio/cells/v4/common/service"
@@ -52,7 +51,7 @@ func (h *Handler) Syslog(req *restful.Request, rsp *restful.Response) {
 	}
 	ctx := req.Request.Context()
 
-	c := log.NewLogRecorderClient(defaults.NewClientConn(common.ServiceLog))
+	c := log.NewLogRecorderClient(grpc.NewClientConn(common.ServiceLog))
 
 	res, err := c.ListLogs(ctx, &input)
 	if err != nil {

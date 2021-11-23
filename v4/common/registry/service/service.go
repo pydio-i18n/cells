@@ -22,20 +22,45 @@ package service
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/registry"
+	"net/url"
 	"time"
 
 	"google.golang.org/grpc"
-	"github.com/micro/micro/v3/service/registry"
-	pb "github.com/micro/micro/v3/proto/registry"
+	mregistry "github.com/micro/micro/v3/service/registry"
+	pb "github.com/pydio/cells/v4/common/proto/registry"
 )
 
+var scheme = "grpc"
+
+type URLOpener struct {
+	*grpc.ClientConn
+}
+
+func init() {
+	o := &URLOpener{}
+	registry.DefaultURLMux().Register(scheme, o)
+}
+
+func (o *URLOpener) OpenURL(ctx context.Context, u *url.URL) (registry.Registry, error) {
+	conn, err := grpc.Dial(u.Hostname() + ":" + u.Port(), grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		return nil, err
+	}
+
+	return registry.New(
+		NewRegistry(
+			WithConn(conn),
+		),
+	), nil
+}
 var (
 	// The default service name
 	DefaultService = "go.micro.registry"
 )
 
 type serviceRegistry struct {
-	opts registry.Options
+	opts mregistry.Options
 	// name of the registry
 	name string
 	// address
@@ -64,7 +89,7 @@ func (s *serviceRegistry) callOpts() []grpc.CallOption {
 	return opts
 }
 
-func (s *serviceRegistry) Init(opts ...registry.Option) error {
+func (s *serviceRegistry) Init(opts ...mregistry.Option) error {
 	for _, o := range opts {
 		o(&s.opts)
 	}
@@ -86,12 +111,12 @@ func (s *serviceRegistry) Init(opts ...registry.Option) error {
 	return nil
 }
 
-func (s *serviceRegistry) Options() registry.Options {
+func (s *serviceRegistry) Options() mregistry.Options {
 	return s.opts
 }
 
-func (s *serviceRegistry) Register(srv *registry.Service, opts ...registry.RegisterOption) error {
-	var options registry.RegisterOptions
+func (s *serviceRegistry) Register(srv *mregistry.Service, opts ...mregistry.RegisterOption) error {
+	var options mregistry.RegisterOptions
 	for _, o := range opts {
 		o(&options)
 	}
@@ -112,7 +137,7 @@ func (s *serviceRegistry) Register(srv *registry.Service, opts ...registry.Regis
 	return nil
 }
 
-func (s *serviceRegistry) Deregister(srv *registry.Service, opts ...registry.DeregisterOption) error {
+func (s *serviceRegistry) Deregister(srv *mregistry.Service, opts ...mregistry.DeregisterOption) error {
 	// deregister the service
 	_, err := s.client.Deregister(context.TODO(), ToProto(srv), s.callOpts()...)
 	if err != nil {
@@ -121,7 +146,7 @@ func (s *serviceRegistry) Deregister(srv *registry.Service, opts ...registry.Der
 	return nil
 }
 
-func (s *serviceRegistry) GetService(name string, opts ...registry.GetOption) ([]*registry.Service, error) {
+func (s *serviceRegistry) GetService(name string, opts ...mregistry.GetOption) ([]*mregistry.Service, error) {
 
 	rsp, err := s.client.GetService(context.TODO(), &pb.GetRequest{
 		Service: name,
@@ -130,14 +155,14 @@ func (s *serviceRegistry) GetService(name string, opts ...registry.GetOption) ([
 		return nil, err
 	}
 
-	services := make([]*registry.Service, 0, len(rsp.Services))
+	services := make([]*mregistry.Service, 0, len(rsp.Services))
 	for _, service := range rsp.Services {
 		services = append(services, ToService(service))
 	}
 	return services, nil
 }
 
-func (s *serviceRegistry) ListServices(opts ...registry.ListOption) ([]*registry.Service, error) {
+func (s *serviceRegistry) ListServices(opts ...mregistry.ListOption) ([]*mregistry.Service, error) {
 	//var options registry.ListOptions
 	//for _, o := range opts {
 	//	o(&options)
@@ -151,7 +176,7 @@ func (s *serviceRegistry) ListServices(opts ...registry.ListOption) ([]*registry
 		return nil, err
 	}
 
-	services := make([]*registry.Service, 0, len(rsp.Services))
+	services := make([]*mregistry.Service, 0, len(rsp.Services))
 	for _, service := range rsp.Services {
 		services = append(services, ToService(service))
 	}
@@ -159,8 +184,8 @@ func (s *serviceRegistry) ListServices(opts ...registry.ListOption) ([]*registry
 	return services, nil
 }
 
-func (s *serviceRegistry) Watch(opts ...registry.WatchOption) (registry.Watcher, error) {
-	var options registry.WatchOptions
+func (s *serviceRegistry) Watch(opts ...mregistry.WatchOption) (mregistry.Watcher, error) {
+	var options mregistry.WatchOptions
 	for _, o := range opts {
 		o(&options)
 	}
@@ -184,8 +209,8 @@ func (s *serviceRegistry) String() string {
 }
 
 // NewRegistry returns a new registry service client
-func NewRegistry(opts ...registry.Option) registry.Registry {
-	var options registry.Options
+func NewRegistry(opts ...mregistry.Option) mregistry.Registry {
+	var options mregistry.Options
 	for _, o := range opts {
 		o(&options)
 	}
@@ -204,9 +229,8 @@ func NewRegistry(opts ...registry.Option) registry.Registry {
 
 	// extract the client from the context, fallback to grpc
 	var conn *grpc.ClientConn
-	if c, ok := options.Context.Value(connKey{}).(*grpc.ClientConn); ok {
-		conn = c
-	} else {
+	conn, ok := options.Context.Value(connKey{}).(*grpc.ClientConn)
+	if !ok {
 		conn, _ = grpc.Dial(":8000")
 	}
 

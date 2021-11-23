@@ -22,8 +22,7 @@ package index
 
 import (
 	"context"
-	defaults "github.com/pydio/cells/v4/common/micro"
-
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -43,14 +42,14 @@ func NewClientWithMeta(dsName string, reader tree.NodeProviderClient, writer tre
 	m := &ClientWithMeta{}
 	c := NewClient(dsName, reader, writer, sessionClient)
 	m.Client = *c
-	m.metaClient = tree.NewNodeReceiverClient(defaults.NewClientConn(common.ServiceMeta))
+	m.metaClient = tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceMeta))
 	return m
 }
 
 // Walk wraps the initial Walk function to load metadata on the fly
 func (m *ClientWithMeta) Walk(walknFc model.WalkNodesFunc, root string, recursive bool) (err error) {
 
-	metaClient := tree.NewNodeProviderStreamerClient(defaults.NewClientConn(common.ServiceMeta))
+	metaClient := tree.NewNodeProviderStreamerClient(grpc.NewClientConn(common.ServiceMeta))
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	metaStreamer, e := metaClient.ReadNodeStream(ctx)

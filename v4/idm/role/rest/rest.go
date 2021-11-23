@@ -23,6 +23,7 @@ package rest
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/emicklei/go-restful"
 	"go.uber.org/zap"
@@ -30,7 +31,6 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	serviceproto "github.com/pydio/cells/v4/common/proto/service"
@@ -71,7 +71,7 @@ func (s *RoleHandler) GetRole(req *restful.Request, rsp *restful.Response) {
 	query, _ := anypb.New(&idm.RoleSingleQuery{
 		Uuid: []string{uuid},
 	})
-	cl := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
+	cl := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
 	streamer, err := cl.SearchRole(ctx, &idm.SearchRoleRequest{
 		Query: &serviceproto.Query{
 			SubQueries: []*anypb.Any{query},
@@ -131,7 +131,7 @@ func (s *RoleHandler) SearchRoles(req *restful.Request, rsp *restful.Response) {
 		service.RestError403(req, rsp, er)
 		return
 	}
-	cl := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
+	cl := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
 	request := &idm.SearchRoleRequest{Query: query}
 	cr, e := cl.CountRole(ctx, request)
 	if e != nil {
@@ -169,7 +169,7 @@ func (s *RoleHandler) DeleteRole(req *restful.Request, rsp *restful.Response) {
 	uuid := req.PathParameter("Uuid")
 	log.Logger(ctx).Debug("Received Role.Delete API request", zap.String("name", uuid))
 
-	cl := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
+	cl := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
 	if checkError := s.IsAllowed(ctx, uuid, serviceproto.ResourcePolicyAction_WRITE, cl); checkError != nil {
 		service.RestError403(req, rsp, checkError)
 		return
@@ -205,7 +205,7 @@ func (s *RoleHandler) SetRole(req *restful.Request, rsp *restful.Response) {
 		return
 	}
 	ctx := req.Request.Context()
-	cl := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
+	cl := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
 	log.Logger(ctx).Debug("Received Role.Set", zap.Any("r", inputRole))
 
 	if checkError := s.IsAllowed(ctx, inputRole.Uuid, serviceproto.ResourcePolicyAction_WRITE, cl); checkError != nil && errors.Parse(checkError.Error()).Code != 404 {

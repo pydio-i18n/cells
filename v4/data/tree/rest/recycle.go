@@ -22,13 +22,13 @@ package rest
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
 
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -75,7 +75,7 @@ func findRecycleForSource(ctx context.Context, source *tree.Node, ancestors []*t
 		Actions: []*idm.ACLAction{permissions.AclRecycleRoot},
 	})
 	recycleAcls := map[string]bool{}
-	cl := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+	cl := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 	s, e := cl.SearchACL(ctx, &idm.SearchACLRequest{
 		Query: &service.Query{SubQueries: []*anypb.Any{q}},
 	})

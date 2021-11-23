@@ -1,8 +1,11 @@
 package grpc
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"github.com/pydio/cells/v4/common/registry"
+	"google.golang.org/grpc/attributes"
 	"google.golang.org/grpc/resolver"
 	"regexp"
 )
@@ -16,7 +19,7 @@ var (
 
 	errAddrMisMatch = errors.New("cells resolver: invalid uri")
 
-	regex, _ = regexp.Compile("^([A-z0-9.]+)(:[0-9]{1,5})?/([A-z_]+)$")
+	regex, _ = regexp.Compile("^([A-z0-9.]*?)(:[0-9]{1,5})?\\/([A-z_]*)$")
 )
 
 func init(){
@@ -27,6 +30,7 @@ type cellsBuilder struct {
 }
 
 type cellsResolver struct {
+	reg registry.Registry
 	address string
 	cc resolver.ClientConn
 	name string
@@ -38,26 +42,47 @@ func NewBuilder() resolver.Builder {
 }
 
 func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opts resolver.BuildOptions) (resolver.Resolver, error) {
-	fmt.Println("calling build")
-
 	host, port, name, err := parseTarget(fmt.Sprintf("%s/%s", target.Authority, target.Endpoint))
 	if err != nil {
 		return nil, err
 	}
 
+	reg, err  := registry.OpenRegistry(context.Background(), fmt.Sprintf("grpc://%s%s", host, port))
+	if err != nil {
+		return nil, err
+	}
+
+	services, err := reg.ListServices()
+	if err != nil {
+		return nil, err
+	}
+
+	var m = map[string][]string{}
+	for _, s := range services {
+		for _, n := range s.Nodes() {
+			m[n.Address()] = append(m[n.Address()], s.Name())
+		}
+	}
 
 	cr := &cellsResolver{
-		address: fmt.Sprintf("%s%s", host, port),
+		reg: reg,
 		name: name,
 		cc: cc,
 		disableServiceConfig: opts.DisableServiceConfig,
 	}
 
-	if err := cc.UpdateState(resolver.State{
-		Addresses: []resolver.Address{{
-			Addr: ":8001",
+	var addresses []resolver.Address
+	for k, v := range m {
+		addresses = append(addresses, resolver.Address{
+			Addr: k,
 			ServerName: "main",
-		}},
+			Attributes: attributes.New("services", v),
+		})
+	}
+
+	if err := cc.UpdateState(resolver.State{
+		Addresses: addresses,
+		ServiceConfig: cc.ParseServiceConfig(`{"loadBalancingPolicy": "lb"}`),
 	}); err != nil {
 		return nil, err
 	}
@@ -70,15 +95,12 @@ func (b *cellsBuilder) Scheme() string {
 }
 
 func (cr *cellsResolver) ResolveNow(opt resolver.ResolveNowOptions) {
-	fmt.Println("Resolving now ?")
 }
 
 func (cr *cellsResolver) Close() {
 }
 
 func parseTarget(target string) (host, port, name string, err error) {
-
-	fmt.Printf("target uri: %v\n", target)
 	if target == "" {
 		return "", "", "", errMissingAddr
 	}

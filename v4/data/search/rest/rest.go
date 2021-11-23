@@ -22,6 +22,7 @@
 package rest
 
 import (
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
 
 	"github.com/emicklei/go-restful"
@@ -29,7 +30,6 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/acl"
 	"github.com/pydio/cells/v4/common/nodes/compose"
@@ -63,7 +63,7 @@ func (s *Handler) getRouter() nodes.Client {
 
 func (s *Handler) getClient() tree.SearcherClient {
 	if s.client == nil {
-		s.client = tree.NewSearcherClient(defaults.NewClientConn(common.ServiceSearch))
+		s.client = tree.NewSearcherClient(grpc.NewClientConn(common.ServiceSearch))
 	}
 	return s.client
 }
@@ -99,7 +99,7 @@ func (s *Handler) Nodes(req *restful.Request, rsp *restful.Response) {
 		}
 	}
 
-	cl := tree.NewNodeProviderStreamerClient(defaults.NewClientConn(common.ServiceTree))
+	cl := tree.NewNodeProviderStreamerClient(grpc.NewClientConn(common.ServiceTree))
 	nodeStreamer, e := cl.ReadNodeStream(ctx)
 	if e == nil {
 		defer nodeStreamer.CloseSend()

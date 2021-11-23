@@ -22,13 +22,13 @@ package rest
 
 import (
 	"github.com/emicklei/go-restful"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth"
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	service2 "github.com/pydio/cells/v4/common/proto/service"
@@ -66,7 +66,7 @@ func (h *GraphHandler) UserState(req *restful.Request, rsp *restful.Response) {
 	accessListWsNodes := accessList.GetWorkspacesNodes()
 	state.WorkspacesAccesses = accessList.GetAccessibleWorkspaces(ctx)
 
-	wsCli := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
+	wsCli := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
 	query := &service2.Query{
 		SubQueries: []*anypb.Any{},
 		Operation:  service2.OperationType_OR,
@@ -136,7 +136,7 @@ func (h *GraphHandler) Relation(req *restful.Request, rsp *restful.Response) {
 	}
 	log.Logger(ctx).Debug("Common Workspaces", zap.Any("common", commonWorkspaces), zap.Any("context", contextWorkspaces), zap.Any("target", targetWorkspaces))
 
-	wsCli := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
+	wsCli := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
 	query := &service2.Query{
 		SubQueries: []*anypb.Any{},
 		Operation:  service2.OperationType_OR,
@@ -179,7 +179,7 @@ func (h *GraphHandler) Relation(req *restful.Request, rsp *restful.Response) {
 	}
 
 	// Load the current user teams, to check if the current user is part of one of them
-	roleCli := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
+	roleCli := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
 	var uuids []string
 	for _, role := range targetUserAccessList.OrderedRoles {
 		uuids = append(uuids, role.Uuid)

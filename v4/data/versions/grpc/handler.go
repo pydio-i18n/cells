@@ -22,6 +22,7 @@ package grpc
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"net/url"
 	"sync"
 	"time"
@@ -33,7 +34,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	activity2 "github.com/pydio/cells/v4/common/proto/activity"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/errors"
@@ -175,7 +175,7 @@ func (h *Handler) StoreVersion(ctx context.Context, request *tree.StoreVersionRe
 
 func (h *Handler) PruneVersions(ctx context.Context, request *tree.PruneVersionsRequest) (*tree.PruneVersionsResponse, error) {
 
-	cl := tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceTree))
+	cl := tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceTree))
 
 	var idsToDelete []string
 

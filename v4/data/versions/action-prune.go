@@ -22,6 +22,7 @@ package versions
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 
@@ -29,7 +30,6 @@ import (
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/forms"
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/object"
@@ -98,7 +98,7 @@ func (c *PruneVersionsAction) Run(ctx context.Context, channels *actions.Runnabl
 	} else {
 		log.TasksLogger(ctx).Info("Starting action: one or more datasources found with versioning enabled.")
 	}
-	versionClient := tree.NewNodeVersionerClient(defaults.NewClientConn(common.ServiceVersions))
+	versionClient := tree.NewNodeVersionerClient(grpc.NewClientConn(common.ServiceVersions))
 	if response, err := versionClient.PruneVersions(ctx, &tree.PruneVersionsRequest{AllDeletedNodes: true}); err == nil {
 		for _, version := range response.DeletedVersions {
 			deleteNode := version.GetLocation()

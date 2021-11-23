@@ -47,20 +47,39 @@ func (s *Server) Serve(l net.Listener) error {
 		return err
 	}
 
-	for _, handler := range s.handlers {
-		go handler()
-	}
+	errCh := make(chan error, 1)
 
-	// Block until the context is over
-	select {
-	case <-s.ctx.Done():
-	}
+	go func() {
+		defer close(errCh)
+
+		for _, handler := range s.handlers {
+			go handler()
+		}
+
+
+		/* TODO improve that */
+		if err := s.BeforeStop(); err != nil {
+			errCh <- err
+		}
+
+
+
+		if err := s.AfterStop(); err != nil {
+			errCh <- err
+		}
+	}()
 
 	if err := s.AfterServe(); err != nil {
 		return err
 	}
 
-	return nil
+	err := <-errCh
+
+	return err
+}
+
+func (s *Server) Address() []string {
+	return []string{}
 }
 
 func (s *Server) As(i interface{}) bool {

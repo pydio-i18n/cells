@@ -6,6 +6,7 @@ import (
 
 type Server interface {
 	Serve(net.Listener) error
+	Address() []string
 }
 
 type WrappedServer interface {
@@ -13,6 +14,10 @@ type WrappedServer interface {
 	BeforeServe() error
 	RegisterAfterServe(func () error)
 	AfterServe() error
+	RegisterBeforeStop(func() error)
+	BeforeStop() error
+	RegisterAfterStop(func() error)
+	AfterStop() error
 }
 
 type Converter interface {
@@ -43,6 +48,34 @@ func (s *ServerImpl) RegisterAfterServe(f func() error) {
 
 func (s *ServerImpl) AfterServe() error {
 	for _, h := range s.opts.AfterServe {
+		if err := h(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *ServerImpl) RegisterBeforeStop(f func() error) {
+	s.opts.BeforeStop = append(s.opts.BeforeStop, f)
+}
+
+func (s *ServerImpl) BeforeStop() error {
+	for _, h := range s.opts.BeforeStop {
+		if err := h(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *ServerImpl) RegisterAfterStop(f func() error) {
+	s.opts.AfterStop = append(s.opts.AfterStop, f)
+}
+
+func (s *ServerImpl) AfterStop() error {
+	for _, h := range s.opts.AfterStop {
 		if err := h(); err != nil {
 			return err
 		}

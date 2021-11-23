@@ -23,6 +23,7 @@ package rest
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/emicklei/go-restful"
 	"go.uber.org/zap"
@@ -32,7 +33,6 @@ import (
 	"github.com/pydio/cells/v4/common/auth"
 	"github.com/pydio/cells/v4/common/auth/claim"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/proto/idm"
@@ -89,7 +89,7 @@ func (h *SharesHandler) ListSharedResources(req *restful.Request, rsp *restful.R
 		qs = append(qs, q)
 	}
 
-	cl := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
+	cl := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
 	streamer, err := cl.SearchWorkspace(ctx, &idm.SearchWorkspaceRequest{
 		Query: &service2.Query{
 			SubQueries: qs,
@@ -189,7 +189,7 @@ func (h *SharesHandler) LoadAdminRootNodes(ctx context.Context, detectedRoots []
 
 	rootNodes = make(map[string]*tree.Node)
 	router := compose.NewClient(compose.UuidComposer(nodes.AsAdmin())...)
-	metaClient := tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceMeta))
+	metaClient := tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceMeta))
 	for _, rootId := range detectedRoots {
 		request := &tree.ReadNodeRequest{Node: &tree.Node{Uuid: rootId}}
 		if resp, err := router.ReadNode(ctx, request); err == nil {

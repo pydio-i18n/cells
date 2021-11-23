@@ -23,6 +23,7 @@ package versions
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"path"
 
 	"github.com/pydio/cells/v4/common/nodes/compose"
@@ -35,7 +36,6 @@ import (
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/forms"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/jobs"
@@ -110,7 +110,7 @@ func (c *VersionAction) Run(ctx context.Context, channels *actions.RunnableChann
 		return input.WithError(e), e
 	}
 
-	versionClient := tree.NewNodeVersionerClient(defaults.NewClientConn(common.ServiceVersions))
+	versionClient := tree.NewNodeVersionerClient(grpc.NewClientConn(common.ServiceVersions))
 	request := &tree.CreateVersionRequest{Node: node}
 	var ce tree.NodeChangeEvent
 	if input.Event != nil {

@@ -23,6 +23,7 @@ package rest
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"net/url"
 	"path"
 	"strings"
@@ -36,7 +37,6 @@ import (
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -148,7 +148,7 @@ func compress(ctx context.Context, selectedPaths []string, targetNodePath string
 			},
 		}
 
-		cli := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+		cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
 		_, er := cli.PutJob(ctx, &jobs.PutJobRequest{Job: job})
 		return er
 
@@ -230,7 +230,7 @@ func extract(ctx context.Context, selectedNode string, targetPath string, format
 			},
 		}
 
-		cli := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+		cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
 		_, err := cli.PutJob(ctx, &jobs.PutJobRequest{Job: job})
 		return err
 
@@ -349,7 +349,7 @@ func dirCopy(ctx context.Context, selectedPathes []string, targetNodePath string
 		log.Logger(ctx).Info("Creating copy/move job", pZap, zap.String("target", targetNodePath))
 		if move && strings.Contains(targetNodePath, common.RecycleBinName) {
 			// Update node meta before moving
-			metaClient := tree.NewNodeReceiverClient(defaults.NewClientConn(common.ServiceMeta))
+			metaClient := tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceMeta))
 			for _, n := range loadedNodes {
 				metaNode := &tree.Node{Uuid: n.GetUuid()}
 				metaNode.MustSetMeta(common.MetaNamespaceRecycleRestore, n.Path)
@@ -396,7 +396,7 @@ func dirCopy(ctx context.Context, selectedPathes []string, targetNodePath string
 			},
 		}
 
-		cli := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+		cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
 		_, er := cli.PutJob(ctx, &jobs.PutJobRequest{Job: job})
 		return er
 
@@ -410,7 +410,7 @@ func syncDatasource(ctx context.Context, dsName string, languages ...string) (st
 	T := lang.Bundle().GetTranslationFunc(languages...)
 
 	jobUuid := "resync-ds-" + dsName
-	cli := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+	cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
 	if resp, er := cli.GetJob(ctx, &jobs.GetJobRequest{JobID: jobUuid}); er == nil && resp.Job != nil {
 		broker.MustPublish(ctx, common.TopicTimerEvent, &jobs.JobTriggerEvent{
 			JobID:  jobUuid,
@@ -481,7 +481,7 @@ func wgetTasks(ctx context.Context, parentPath string, urls []string, languages 
 	if bl != "" {
 		blackList = strings.Split(bl, ",")
 	}
-	cli := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+	cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
 	for _, u := range urls {
 		parsed, e := url.Parse(u)
 		if e != nil {
@@ -579,7 +579,7 @@ func p8migration(ctx context.Context, jsonParams string) (string, error) {
 
 	log.Logger(ctx).Info("Posting Job", zap.Any("job", job))
 
-	cli := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+	cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
 	if _, er := cli.PutJob(ctx, &jobs.PutJobRequest{Job: job}); er == nil {
 		<-time.After(2 * time.Second)
 		broker.MustPublish(ctx, common.TopicTimerEvent, &jobs.JobTriggerEvent{

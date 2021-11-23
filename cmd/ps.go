@@ -22,6 +22,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/pydio/cells/vendor/github.com/micro/go-micro"
 	"os"
 	"regexp"
 	"strings"
@@ -119,7 +120,7 @@ EXAMPLE
 `,
 	PreRun: func(cmd *cobra.Command, args []string) {
 
-		viper.SetDefault("registry", "grpc://:8000")
+		viper.SetDefault("registry", "grpc://:8001")
 
 		bindViperFlags(cmd.Flags(), map[string]string{})
 

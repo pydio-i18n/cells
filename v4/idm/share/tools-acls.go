@@ -3,6 +3,7 @@ package share
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
 
 	"go.uber.org/zap"
@@ -10,7 +11,6 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	service "github.com/pydio/cells/v4/common/proto/service"
@@ -123,7 +123,7 @@ func AclsToCellAcls(ctx context.Context, acls []*idm.ACL) map[string]*rest.CellA
 func LoadCellAclsObjects(ctx context.Context, roomAcls map[string]*rest.CellAcl, checker ContextEditableChecker) error {
 
 	log.Logger(ctx).Debug("LoadCellAclsObjects", zap.Any("acls", roomAcls))
-	roleClient := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
+	roleClient := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
 	var roleIds []string
 	for _, acl := range roomAcls {
 		roleIds = append(roleIds, acl.RoleId)
@@ -157,7 +157,7 @@ func LoadCellAclsObjects(ctx context.Context, roomAcls map[string]*rest.CellAcl,
 			userQ, _ := anypb.New(&idm.UserSingleQuery{Uuid: roleId})
 			subQueries = append(subQueries, userQ)
 		}
-		userClient := idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
+		userClient := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
 		stream, err := userClient.SearchUser(ctx, &idm.SearchUserRequest{Query: &service.Query{SubQueries: subQueries}})
 		if err != nil {
 			return err
@@ -408,7 +408,7 @@ func GetOrCreateWorkspace(ctx context.Context, ownerUser *idm.User, wsUuid strin
 
 	log.Logger(ctx).Debug("GetOrCreateWorkspace", zap.String("wsUuid", wsUuid), zap.Any("scope", scope.String()), zap.Bool("updateIfNeeded", updateIfNeeded))
 
-	wsClient := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
+	wsClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
 	var create bool
 	if wsUuid == "" {
 		if label == "" {
@@ -498,7 +498,7 @@ func DeleteWorkspace(ctx context.Context, ownerUser *idm.User, scope idm.Workspa
 		}
 	}
 	// Deleting workspace will delete associated policies and associated ACLs
-	wsClient := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
+	wsClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
 	q, _ := anypb.New(&idm.WorkspaceSingleQuery{
 		Uuid: workspaceId,
 	})

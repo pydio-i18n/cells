@@ -8,7 +8,6 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common/plugins"
-	"github.com/pydio/cells/v4/common/registry"
 )
 
 func init() {
@@ -19,7 +18,6 @@ func init() {
 			return
 		}
 
-		registry.Register("health", "discovery")
 		grpc_health_v1.RegisterHealthServer(srv, &Handler{})
 	})
 }

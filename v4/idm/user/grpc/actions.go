@@ -3,12 +3,12 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/forms"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/service"
@@ -85,7 +85,7 @@ func (a *DeleteUsersAction) Run(ctx context.Context, channels *actions.RunnableC
 		return input.WithError(e), e
 	}
 	q, _ := anypb.New(singleQ)
-	uCl := idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
+	uCl := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
 	_, e := uCl.DeleteUser(ctx, &idm.DeleteUserRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}} /* TODO V4, client.WithRequestTimeout(30*time.Minute)*/)
 	if e != nil {
 		input = input.WithError(e)

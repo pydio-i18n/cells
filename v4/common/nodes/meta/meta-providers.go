@@ -23,6 +23,7 @@ package meta
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"strings"
 	"time"
@@ -31,7 +32,6 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 )
@@ -145,7 +145,7 @@ func getMetaProviderStreamers(ctx context.Context) ([]tree.NodeProviderStreamerC
 	var names []string
 
 	// Load core Meta
-	result = append(result, tree.NewNodeProviderStreamerClient(defaults.NewClientConn(common.ServiceMeta)))
+	result = append(result, tree.NewNodeProviderStreamerClient(grpc.NewClientConn(common.ServiceMeta)))
 	names = append(names, common.ServiceGrpcNamespace_+common.ServiceMeta)
 
 	// Load User meta (if claims are not empty!)
@@ -160,7 +160,7 @@ func getMetaProviderStreamers(ctx context.Context) ([]tree.NodeProviderStreamerC
 	}
 
 	for _, srv := range ss {
-		result = append(result, tree.NewNodeProviderStreamerClient(defaults.NewClientConn(strings.TrimPrefix(srv.Name(), common.ServiceGrpcNamespace_))))
+		result = append(result, tree.NewNodeProviderStreamerClient(grpc.NewClientConn(strings.TrimPrefix(srv.Name(), common.ServiceGrpcNamespace_))))
 		names = append(names, srv.Name())
 	}
 

@@ -21,11 +21,11 @@
 package grpc
 
 import (
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth"
-	"github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	service "github.com/pydio/cells/v4/common/proto/service"
@@ -40,7 +40,7 @@ func (h *Handler) ReadNodeStream(stream tree.NodeProviderStreamer_ReadNodeStream
 
 	ctx := stream.Context()
 	dao := servicecontext.GetDAO(ctx).(acl.DAO)
-	workspaceClient := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
+	workspaceClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
 
 	for {
 		req, er := stream.Recv()

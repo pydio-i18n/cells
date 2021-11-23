@@ -7,8 +7,8 @@ import (
 	"net"
 )
 
-
 type Server struct {
+	net.Listener
 	*grpc.Server
 	*server.ServerImpl
 }
@@ -26,11 +26,11 @@ func New() server.Server {
 		Server: grpc.NewServer(
 			grpc.ChainUnaryInterceptor(
 				servicecontext.SpanUnaryServerInterceptor(),
-				// servicecontext.MetricsUnaryServerInterceptor(),
+				servicecontext.MetricsUnaryServerInterceptor(),
 			),
 			grpc.ChainStreamInterceptor(
 				servicecontext.SpanStreamServerInterceptor(),
-				// servicecontext.MetricsStreamServerInterceptor(),
+				servicecontext.MetricsStreamServerInterceptor(),
 			),
 		),
 		ServerImpl: &server.ServerImpl{},
@@ -38,19 +38,43 @@ func New() server.Server {
 }
 
 func (s *Server) Serve(l net.Listener) error {
+	s.Listener = l
+
 	if err := s.BeforeServe(); err != nil {
 		return err
 	}
 
-	if err := s.Server.Serve(l); err != nil {
-		return err
-	}
+	errCh := make(chan error, 1)
+
+	go func() {
+		defer close(errCh)
+
+		if err := s.Server.Serve(l); err != nil {
+			errCh <- err
+		}
+	}()
 
 	if err := s.AfterServe(); err != nil {
 		return err
 	}
 
-	return nil
+	err := <-errCh
+
+	if err := s.BeforeStop(); err != nil {
+		errCh <- err
+	}
+
+	s.Server.GracefulStop()
+
+	if err := s.AfterStop(); err != nil {
+		errCh <- err
+	}
+
+	return err
+}
+
+func (s *Server) Address() []string{
+	return []string{s.Listener.Addr().String()}
 }
 
 func (s *Server) As(i interface{}) bool {

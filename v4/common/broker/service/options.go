@@ -30,7 +30,7 @@ import (
 type clientKey struct{}
 
 // WithClient sets the RPC client
-func WithClientConn(conn *grpc.ClientConn) broker.Option {
+func WithClientConn(conn grpc.ClientConnInterface) broker.Option {
 	return func(o *broker.Options) {
 		if o.Context == nil {
 			o.Context = context.Background()

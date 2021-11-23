@@ -22,13 +22,13 @@ package timer
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/utils/schedule"
 )
@@ -82,7 +82,7 @@ func NewEventProducer(rootCtx context.Context) *EventProducer {
 func (e *EventProducer) Start() error {
 
 	// Load all schedules
-	cli := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+	cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
 	streamer, err := cli.ListJobs(e.Context, &jobs.ListJobsRequest{TimersOnly: true})
 	if err != nil {
 		return err

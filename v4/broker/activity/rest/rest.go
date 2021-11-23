@@ -22,9 +22,8 @@ package rest
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"net/url"
-
-	defaults "github.com/pydio/cells/v4/common/micro"
 
 	"github.com/pydio/cells/v4/common/nodes/compose"
 
@@ -69,7 +68,7 @@ func (a *ActivityHandler) Filter() func(string) string {
 
 // Internal function to retrieve activity GRPC client
 func (a *ActivityHandler) getClient() activity.ActivityServiceClient {
-	return activity.NewActivityServiceClient(defaults.NewClientConn(common.ServiceActivity))
+	return activity.NewActivityServiceClient(grpc.NewClientConn(common.ServiceActivity))
 }
 
 // Stream returns a collection of activities

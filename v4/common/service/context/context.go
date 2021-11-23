@@ -23,11 +23,12 @@ package servicecontext
 
 import (
 	"context"
-	"go.uber.org/zap"
 
+	"go.uber.org/zap"
 	"github.com/pkg/errors"
 
 	"github.com/pydio/cells/v4/common/dao"
+	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/x/configx"
 )
 
@@ -40,6 +41,7 @@ const (
 	daoKey
 	configKey
 	loggerKey
+	registryKey
 
 	ContextMetaJobUuid        = "X-Pydio-Job-Uuid"
 	ContextMetaTaskUuid       = "X-Pydio-Task-Uuid"
@@ -73,6 +75,11 @@ func WithLogger(ctx context.Context, logger *zap.Logger) context.Context {
 // WithConfig links a config to the context
 func WithConfig(ctx context.Context, config configx.Values) context.Context {
 	return context.WithValue(ctx, configKey, config)
+}
+
+// WithRegistry links a registry to the context
+func WithRegistry(ctx context.Context, reg registry.Registry) context.Context {
+	return context.WithValue(ctx, registryKey, reg)
 }
 
 // GetServiceName returns the service name associated to this context
@@ -116,6 +123,14 @@ func GetLogger(ctx context.Context) *zap.Logger {
 // GetConfig returns the config from the context in argument
 func GetConfig(ctx context.Context) configx.Values {
 	if conf, ok := ctx.Value(configKey).(configx.Values); ok {
+		return conf
+	}
+	return nil
+}
+
+// GetRegistry returns the registry from the context in argument
+func GetRegistry(ctx context.Context) registry.Registry {
+	if conf, ok := ctx.Value(registryKey).(registry.Registry); ok {
 		return conf
 	}
 	return nil

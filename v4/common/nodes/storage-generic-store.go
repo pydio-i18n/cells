@@ -22,10 +22,10 @@ package nodes
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/x/configx"
 )
@@ -39,7 +39,7 @@ func GetGenericStoreClient(ctx context.Context, storeNamespace string) (client S
 		return nil, "", err
 	}
 
-	s3endpointClient := object.NewDataSourceEndpointClient(defaults.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceDataSync_ + dataSource))
+	s3endpointClient := object.NewDataSourceEndpointClient(grpc.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceDataSync_ + dataSource))
 	response, err := s3endpointClient.GetDataSourceConfig(ctx, &object.GetDataSourceConfigRequest{})
 	if err != nil {
 		return nil, "", err

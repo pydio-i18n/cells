@@ -23,6 +23,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"time"
 
 	"github.com/pydio/cells/v4/common/utils/std"
@@ -30,7 +31,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service "github.com/pydio/cells/v4/common/proto/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
@@ -164,7 +164,7 @@ func InitRoles(ctx context.Context) error {
 			break
 		}
 		e = std.Retry(ctx, func() error {
-			aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+			aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 			for _, acl := range insert.Acls {
 				_, e := aclClient.CreateACL(ctx, &idm.CreateACLRequest{ACL: acl})
 				if e != nil {
@@ -227,7 +227,7 @@ func UpgradeTo12(ctx context.Context) error {
 			break
 		}
 		e = std.Retry(ctx, func() error {
-			aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+			aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 			for _, acl := range insert.Acls {
 				_, e := aclClient.CreateACL(ctx, &idm.CreateACLRequest{ACL: acl})
 				if e != nil {

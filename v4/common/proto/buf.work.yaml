@@ -4,6 +4,7 @@ directories:
   - auth
   - broker
   - ctl
+  - config
   - docstore
   - encryption
   - idm

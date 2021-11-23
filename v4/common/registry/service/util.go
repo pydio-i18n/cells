@@ -21,11 +21,7 @@
 package service
 
 import (
-	"fmt"
-	"net"
-	"strconv"
-
-	pb "github.com/micro/micro/v3/proto/registry"
+	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/micro/micro/v3/service/registry"
 )
 
@@ -93,12 +89,11 @@ func ToProto(s *registry.Service) *pb.Service {
 	nodes := make([]*pb.Node, 0, len(s.Nodes))
 
 	for _, node := range s.Nodes {
-		address, portStr, _ := net.SplitHostPort(node.Address)
-		port, _ := strconv.Atoi(portStr)
+		// address, portStr, _ := net.SplitHostPort(node.Address)
+		// port, _ := strconv.Atoi(portStr)
 		nodes = append(nodes, &pb.Node{
 			Id:       node.Id,
-			Address:  address,
-			Port:     int64(port),
+			Address:  node.Address,
 			Metadata: node.Metadata,
 		})
 	}
@@ -146,7 +141,7 @@ func ToService(s *pb.Service) *registry.Service {
 	for _, node := range s.Nodes {
 		nodes = append(nodes, &registry.Node{
 			Id:       node.Id,
-			Address:  fmt.Sprintf("%s:%d", node.Address, node.Port),
+			Address:  node.Address,
 			Metadata: node.Metadata,
 		})
 	}

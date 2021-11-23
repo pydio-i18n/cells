@@ -22,12 +22,12 @@ package rest
 
 import (
 	"github.com/emicklei/go-restful"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	service "github.com/pydio/cells/v4/common/proto/service"
@@ -67,7 +67,7 @@ func (a *Handler) PutAcl(req *restful.Request, rsp *restful.Response) {
 		return
 	}
 
-	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 	response, er := aclClient.CreateACL(req.Request.Context(), &idm.CreateACLRequest{
 		ACL: &inputACL,
 	})
@@ -115,7 +115,7 @@ func (a *Handler) DeleteAcl(req *restful.Request, rsp *restful.Response) {
 		SubQueries: []*anypb.Any{acQ},
 	}
 
-	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 	response, err := aclClient.DeleteACL(ctx, &idm.DeleteACLRequest{
 		Query: query,
 	})
@@ -159,7 +159,7 @@ func (a *Handler) SearchAcls(req *restful.Request, rsp *restful.Response) {
 		query.SubQueries = append(query.SubQueries, anyfied)
 	}
 
-	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 	streamer, err := aclClient.SearchACL(ctx, &idm.SearchACLRequest{
 		Query: query,
 	})

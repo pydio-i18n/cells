@@ -2,10 +2,10 @@ package modifiers
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/service/frontend"
@@ -15,7 +15,7 @@ import (
 // MetaUserRegModifier adds/updates some registry contributions for rendering metadata.
 func MetaUserRegModifier(ctx context.Context, status frontend.RequestStatus, registry *frontend.Cpydio_registry) error {
 
-	client := idm.NewUserMetaServiceClient(defaults.NewClientConn(common.ServiceUserMeta))
+	client := idm.NewUserMetaServiceClient(grpc.NewClientConn(common.ServiceUserMeta))
 	respStream, e := client.ListUserMetaNamespace(ctx, &idm.ListUserMetaNamespaceRequest{})
 	if e != nil {
 		return e

@@ -22,16 +22,17 @@ package service
 
 import (
 	"context"
+
 	"time"
 
 	"github.com/micro/micro/v3/service/broker"
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	pb "github.com/pydio/cells/v4/common/proto/broker"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/utils/uuid"
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 )
 
 var (
@@ -152,11 +153,11 @@ func NewBroker(opts ...broker.Option) broker.Broker {
 	}
 
 	// extract the client from the context, fallback to grpc
-	var cli *grpc.ClientConn
-	if c, ok := options.Context.Value(clientKey{}).(*grpc.ClientConn); ok {
+	var cli grpc.ClientConnInterface
+	if c, ok := options.Context.Value(clientKey{}).(grpc.ClientConnInterface); ok {
 		cli = c
 	} else {
-		cli = defaults.NewClientConn(common.ServiceBroker)
+		cli = grpc2.NewClientConn(common.ServiceBroker)
 	}
 
 	return &serviceBroker{

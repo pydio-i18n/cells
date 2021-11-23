@@ -22,6 +22,7 @@ package cmd
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
 	"time"
 
@@ -31,7 +32,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/forms"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/sync"
 	"github.com/pydio/cells/v4/scheduler/actions"
@@ -133,7 +133,7 @@ func (c *ResyncAction) Run(ctx context.Context, channels *actions.RunnableChanne
 	srvName := jobs.EvaluateFieldStr(ctx, input, c.ServiceName)
 	// V4: strip grpc prefix
 	srvName = strings.TrimPrefix(srvName, common.ServiceGrpcNamespace_)
-	syncClient := sync.NewSyncEndpointClient(defaults.NewClientConn(srvName))
+	syncClient := sync.NewSyncEndpointClient(grpc.NewClientConn(srvName))
 	log.TasksLogger(ctx).Info("Sending Resync command to " + srvName)
 	_, e := syncClient.TriggerResync(ctx, &sync.ResyncRequest{
 		Path:   jobs.EvaluateFieldStr(ctx, input, c.Path),

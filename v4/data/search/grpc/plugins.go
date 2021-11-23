@@ -25,6 +25,7 @@ package grpc
 
 import (
 	"context"
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"path/filepath"
 
 	"github.com/pydio/cells/v4/common/nodes/meta"
@@ -35,7 +36,6 @@ import (
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/sync"
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -90,7 +90,7 @@ func init() {
 				searcher := &SearchServer{
 					Engine:           bleveEngine,
 					NsProvider:       nsProvider,
-					TreeClient:       tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceTree)),
+					TreeClient:       tree.NewNodeProviderClient(grpc2.NewClientConn(common.ServiceTree)),
 					ReIndexThrottler: make(chan struct{}, 5),
 				}
 

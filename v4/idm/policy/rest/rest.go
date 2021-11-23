@@ -22,11 +22,11 @@ package rest
 
 import (
 	"github.com/emicklei/go-restful"
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/service"
 	"github.com/pydio/cells/v4/common/utils/i18n"
@@ -46,7 +46,7 @@ func (h *PolicyHandler) Filter() func(string) string {
 }
 
 func (h *PolicyHandler) getClient() idm.PolicyEngineServiceClient {
-	return idm.NewPolicyEngineServiceClient(defaults.NewClientConn(common.ServicePolicy))
+	return idm.NewPolicyEngineServiceClient(grpc.NewClientConn(common.ServicePolicy))
 }
 
 // ListPolicies lists Policy Groups

@@ -23,12 +23,12 @@ package jobs
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
@@ -57,7 +57,7 @@ func (m *IdmSelector) Select(ctx context.Context, input ActionMessage, objects c
 	}
 	switch m.Type {
 	case IdmSelectorType_User:
-		userClient := idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
+		userClient := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
 		s, e := userClient.SearchUser(ctx, &idm.SearchUserRequest{Query: query})
 		if e != nil {
 			return e
@@ -74,7 +74,7 @@ func (m *IdmSelector) Select(ctx context.Context, input ActionMessage, objects c
 			objects <- resp.User
 		}
 	case IdmSelectorType_Role:
-		roleClient := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
+		roleClient := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
 		if s, e := roleClient.SearchRole(ctx, &idm.SearchRoleRequest{Query: query}); e != nil {
 			return e
 		} else {
@@ -91,7 +91,7 @@ func (m *IdmSelector) Select(ctx context.Context, input ActionMessage, objects c
 			}
 		}
 	case IdmSelectorType_Workspace:
-		wsClient := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
+		wsClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
 		if s, e := wsClient.SearchWorkspace(ctx, &idm.SearchWorkspaceRequest{Query: query}); e != nil {
 			return e
 		} else {
@@ -108,7 +108,7 @@ func (m *IdmSelector) Select(ctx context.Context, input ActionMessage, objects c
 			}
 		}
 	case IdmSelectorType_Acl:
-		aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+		aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 		if s, e := aclClient.SearchACL(ctx, &idm.SearchACLRequest{Query: query}); e != nil {
 			return e
 		} else {
@@ -349,7 +349,7 @@ func (m *IdmSelector) WorkspaceFromEventContext(ctx context.Context) (*idm.Works
 	if !o {
 		return nil, false
 	}
-	wsClient := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
+	wsClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
 	q, _ := anypb.New(&idm.WorkspaceSingleQuery{Uuid: wsUuid})
 	r, e := wsClient.SearchWorkspace(ctx, &idm.SearchWorkspaceRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}})
 	if e != nil {

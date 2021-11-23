@@ -26,6 +26,25 @@ import (
 	//_ "github.com/pydio/cells/v4/data/source/index"
 	//_ "github.com/pydio/cells/v4/data/source/index/grpc"
 	//_ "github.com/pydio/cells/v4/data/source/objects"
+
+	// Gateways
+	_ "github.com/pydio/cells/v4/gateway/proxy"
+
+	// Datasource
+	_ "github.com/pydio/cells/v4/data/source/index/grpc"
+
+	// Registry
+	_ "github.com/pydio/cells/v4/common/registry/memory"
+	_ "github.com/pydio/cells/v4/common/registry/service"
+
+	//
+	// Gateway Micro (Rest API)
+	// Not running yet, defaults.Registry() nil
+	//_ "github.com/pydio/cells/v4/gateway/micro"
+	//
+	//
+	// Minio Starts compiling, running!
+	// As OBJECT
 	//_ "github.com/pydio/cells/v4/data/source/objects/grpc"
 	//_ "github.com/pydio/cells/v4/data/source/sync"
 	//_ "github.com/pydio/cells/v4/data/source/sync/grpc"

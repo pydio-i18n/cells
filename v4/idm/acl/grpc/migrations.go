@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
 	"time"
 
@@ -13,7 +14,6 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -40,7 +40,7 @@ func UpgradeTo120(ctx context.Context) error {
 
 	// ADD recycle_root on workspaces
 	log.Logger(ctx).Info("Upgrading ACLs for recycle_root flags")
-	metaClient := tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceMeta))
+	metaClient := tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceMeta))
 	q, _ := anypb.New(&idm.ACLSingleQuery{
 		Actions: []*idm.ACLAction{
 			{Name: permissions.AclWsrootActionName},
@@ -84,7 +84,7 @@ func UpgradeTo120(ctx context.Context) error {
 		}
 	}
 
-	treeClient := tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceTree))
+	treeClient := tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceTree))
 	// Special case for personal files: browse existing folders, assume they are users personal workspaces and add recycle root
 	std.Retry(ctx, func() error {
 		stream, e := treeClient.ListNodes(ctx, &tree.ListNodesRequest{Node: &tree.Node{Path: "personal"}})
