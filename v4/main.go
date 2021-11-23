@@ -81,6 +81,8 @@ import (
 	//_ "github.com/pydio/cells/v4/scheduler/actions/scheduler"
 	//_ "github.com/pydio/cells/v4/scheduler/actions/tools"
 	//_ "github.com/pydio/cells/v4/scheduler/actions/tree"
+	_ "github.com/pydio/cells/v4/data/source/objects/grpc"
+	_ "github.com/pydio/cells/v4/data/source/test"
 )
 
 func main() {
