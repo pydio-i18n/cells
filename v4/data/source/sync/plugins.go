@@ -44,7 +44,7 @@ func init() {
 			service.Context(ctx),
 			service.Tag(common.ServiceTagDatasource),
 			service.Description("Starter for data sources synchronizations"),
-			// service.WithMicroChildrenRunner(Name, ChildPrefix, true, onDataSourceDelete), // TODO V4
+			service.WithChildrenRunner(Name, ChildPrefix, true, onDataSourceDelete),
 		)
 	})
 }

@@ -42,6 +42,7 @@ func init() {
 			service.Context(ctx),
 			service.Tag(common.ServiceTagDatasource),
 			service.Description("Starter for different sources objects"),
+			service.WithChildrenRunner(Name, ChildPrefix, true, onDeleteObjectsConfig),
 			/*
 				service.WithMicro(func(m micro.Service) error {
 					runner := service.NewChildrenRunner(Name, ChildPrefix)

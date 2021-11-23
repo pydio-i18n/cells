@@ -23,6 +23,10 @@ package grpc
 
 import (
 	"context"
+	"fmt"
+	"time"
+
+	"github.com/pydio/cells/v4/common/config"
 
 	"google.golang.org/grpc"
 
@@ -36,9 +40,8 @@ func init() {
 
 	plugins.Register("main", func(ctx context.Context) {
 
-		//todo v4
-		//sources := config.SourceNamesForDataServices(common.ServiceDataObjects)
-		sources := []string{"local1"}
+		sources := config.SourceNamesForDataServices(common.ServiceDataObjects)
+		mm := config.ListMinioConfigsFromConfig()
 
 		for _, datasource := range sources {
 
@@ -52,19 +55,32 @@ func init() {
 				service.Unique(true),
 				service.AutoStart(false),
 				service.WithGRPC(func(c context.Context, server *grpc.Server) error {
+					mc, ok := mm[datasource]
+					if !ok {
+						return fmt.Errorf("cannot find minio config")
+					}
+					mc.RunningSecure = false
+					fmt.Println("Starting minio with config", mc)
 					engine := &ObjectHandler{
-						Config: &object.MinioConfig{
-							Name:        datasource,
-							ApiKey:      "mycustomapikey",
-							ApiSecret:   "mycustomapisecret",
-							StorageType: object.StorageType_LOCAL,
-							LocalFolder: "/Users/charles/Library/Application Support/Pydio/cells/data",
-						},
+						Config: mc,
+						/*
+							Config: &object.MinioConfig{
+								Name:        datasource,
+								ApiKey:      "mycustomapikey",
+								ApiSecret:   "mycustomapisecret",
+								StorageType: object.StorageType_LOCAL,
+								LocalFolder: "/Users/charles/Library/Application Support/Pydio/cells/data",
+							},
+						*/
 						MinioConsolePort: 8383,
 					}
 					object.RegisterObjectsEndpointServer(server, engine)
-					go engine.StartMinioServer(ctx, datasource)
-					return nil
+					var startErr error
+					go func() {
+						startErr = engine.StartMinioServer(ctx, datasource)
+					}()
+					<-time.After(1 * time.Second)
+					return startErr
 				}),
 				/*
 					service.WithMicro(func(m micro.Service) error {

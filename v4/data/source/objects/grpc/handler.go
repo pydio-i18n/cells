@@ -106,7 +106,7 @@ func (o *ObjectHandler) StartMinioServer(ctx context.Context, minioServiceName s
 		return errors.New("missing accessKey to start minio service")
 	}
 
-	params = append(params, "--quiet")
+	//params = append(params, "--quiet")
 	if o.MinioConsolePort > 0 {
 		params = append(params, "--console-address", fmt.Sprintf(":%d", o.MinioConsolePort))
 	} else {

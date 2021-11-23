@@ -22,8 +22,9 @@ package object
 
 import (
 	"fmt"
-	"github.com/pydio/cells/v4/x/configx"
 	"strings"
+
+	"github.com/pydio/cells/v4/x/configx"
 
 	"go.uber.org/zap/zapcore"
 
@@ -66,7 +67,11 @@ func (d *DataSource) BuildUrl() string {
 
 // BuildUrl builds the url used for clients
 func (d *MinioConfig) BuildUrl() string {
-	return fmt.Sprintf("%s:%d", d.RunningHost, d.RunningPort)
+	host := d.RunningHost
+	if d.RunningHost == "" {
+		host = "localhost"
+	}
+	return fmt.Sprintf("%s:%d", host, d.RunningPort)
 }
 
 // IsInternal is a short hand to check StorageConfiguration["cellsInternal"] key

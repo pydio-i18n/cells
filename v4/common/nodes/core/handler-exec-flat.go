@@ -24,7 +24,6 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
-	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"strconv"
 	"strings"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/abstract"

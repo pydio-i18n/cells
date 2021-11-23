@@ -32,11 +32,13 @@ import (
 
 	// Datasource
 	_ "github.com/pydio/cells/v4/data/source/index/grpc"
+	_ "github.com/pydio/cells/v4/data/source/objects/grpc"
+	_ "github.com/pydio/cells/v4/data/source/sync/grpc"
+	_ "github.com/pydio/cells/v4/data/source/test"
 
 	// Registry
 	_ "github.com/pydio/cells/v4/common/registry/memory"
 	_ "github.com/pydio/cells/v4/common/registry/service"
-
 	//
 	// Gateway Micro (Rest API)
 	// Not running yet, defaults.Registry() nil
@@ -100,8 +102,6 @@ import (
 	//_ "github.com/pydio/cells/v4/scheduler/actions/scheduler"
 	//_ "github.com/pydio/cells/v4/scheduler/actions/tools"
 	//_ "github.com/pydio/cells/v4/scheduler/actions/tree"
-	_ "github.com/pydio/cells/v4/data/source/objects/grpc"
-	_ "github.com/pydio/cells/v4/data/source/test"
 )
 
 func main() {

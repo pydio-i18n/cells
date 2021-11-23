@@ -23,16 +23,13 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"math"
 	"strconv"
 	"strings"
 	sync2 "sync"
 	"time"
 
-	"go.uber.org/zap"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
@@ -42,7 +39,6 @@ import (
 	"github.com/pydio/cells/v4/common/proto/encryption"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/object"
-	protoservice "github.com/pydio/cells/v4/common/proto/service"
 	protosync "github.com/pydio/cells/v4/common/proto/sync"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
@@ -57,6 +53,8 @@ import (
 	"github.com/pydio/cells/v4/scheduler/tasks"
 	"github.com/pydio/cells/v4/x/configx"
 	json "github.com/pydio/cells/v4/x/jsonx"
+	"go.uber.org/zap"
+	"google.golang.org/protobuf/proto"
 )
 
 // Handler structure
@@ -77,6 +75,12 @@ type Handler struct {
 
 	watcher configx.Receiver
 	stop    chan bool
+
+	tree.UnimplementedNodeProviderServer
+	tree.UnimplementedNodeReceiverServer
+	protosync.UnimplementedSyncEndpointServer
+	object.UnimplementedDataSourceEndpointServer
+	object.UnimplementedResourceCleanerEndpointServer
 }
 
 func NewHandler(ctx context.Context, datasource string) (*Handler, error) {
@@ -87,7 +91,7 @@ func NewHandler(ctx context.Context, datasource string) (*Handler, error) {
 		stop:           make(chan bool),
 	}
 	var syncConfig *object.DataSource
-	if err := servicecontext.ScanConfig(ctx, &syncConfig); err != nil {
+	if err := config.Get("services", common.ServiceGrpcNamespace_+common.ServiceDataSync_+datasource).Scan(&syncConfig); err != nil {
 		return nil, err
 	}
 	if sec := config.GetSecret(syncConfig.ApiSecret).String(); sec != "" {
@@ -103,6 +107,10 @@ func (s *Handler) Start() {
 	go s.watchConfigs()
 	go s.watchErrors()
 	go s.watchDisconnection()
+	go func() {
+		<-s.globalCtx.Done()
+		s.Stop()
+	}()
 }
 
 func (s *Handler) Stop() {
@@ -115,6 +123,10 @@ func (s *Handler) Stop() {
 
 func (s *Handler) StartConfigsOnly() {
 	go s.watchConfigs()
+	go func() {
+		<-s.globalCtx.Done()
+		s.StopConfigsOnly()
+	}()
 }
 
 func (s *Handler) StopConfigsOnly() {
@@ -151,16 +163,28 @@ func (s *Handler) initSync(syncConfig *object.DataSource) error {
 		defer wg.Done()
 		std.Retry(ctx, func() error {
 			log.Logger(ctx).Debug("Sync " + dataSource + " - Try to contact Index")
-			c := protoservice.NewServiceClient(grpc.NewClientConn(common.ServiceDataIndex_ + dataSource))
-			r, err := c.Status(context.Background(), &emptypb.Empty{})
-			if err != nil {
-				return err
+			cli := tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceDataIndex_ + dataSource))
+			if s, e := cli.ListNodes(context.Background(), &tree.ListNodesRequest{Node: &tree.Node{Path: "/"}}); e != nil {
+				return e
+			} else {
+				s.CloseSend()
 			}
+			log.Logger(ctx).Info("Index connected")
 
-			if !r.GetOK() {
-				log.Logger(ctx).Info(common.ServiceDataIndex_ + dataSource + " not yet available")
-				return fmt.Errorf("index not reachable")
-			}
+			/*
+				// TODO V4
+				c := protoservice.NewServiceClient(grpc.NewClientConn(common.ServiceDataIndex_ + dataSource))
+				r, err := c.Status(context.Background(), &emptypb.Empty{})
+				if err != nil {
+					log.Logger(ctx).Debug("Contact index error", zap.Error(err))
+					return err
+				}
+
+				if !r.GetOK() {
+					log.Logger(ctx).Info(common.ServiceDataIndex_ + dataSource + " not yet available")
+					return fmt.Errorf("index not reachable")
+				}
+			*/
 			indexOK = true
 			return nil
 		}, 5*time.Second, 180*time.Second)
@@ -169,13 +193,14 @@ func (s *Handler) initSync(syncConfig *object.DataSource) error {
 	go func() {
 		defer wg.Done()
 		var retryCount int
+		<-time.After(5 * time.Second)
 		std.Retry(ctx, func() error {
 			retryCount++
 			log.Logger(ctx).Info(fmt.Sprintf("Trying to contact object service %s (retry %d)", common.ServiceDataObjects_+syncConfig.ObjectsServiceName, retryCount))
 			cli := object.NewObjectsEndpointClient(grpc.NewClientConn(common.ServiceDataObjects_ + syncConfig.ObjectsServiceName))
 			resp, err := cli.GetMinioConfig(ctx, &object.GetMinioConfigRequest{})
 			if err != nil {
-				log.Logger(ctx).Debug(common.ServiceDataObjects_ + syncConfig.ObjectsServiceName + " not yet available")
+				log.Logger(ctx).Warn(common.ServiceDataObjects_+syncConfig.ObjectsServiceName+" not yet available", zap.Error(err))
 				return err
 			} else if resp.MinioConfig == nil {
 				log.Logger(ctx).Debug(common.ServiceDataObjects_ + syncConfig.ObjectsServiceName + " not yet available")
@@ -193,6 +218,7 @@ func (s *Handler) initSync(syncConfig *object.DataSource) error {
 			}
 			testCtx := metadata.NewContext(ctx, map[string]string{common.PydioContextUserKey: common.PydioSystemUsername})
 			if syncConfig.ObjectsBucket == "" {
+				log.Logger(ctx).Info("Sending ListBuckets", zap.Any("config", syncConfig))
 				_, err = oc.ListBuckets(testCtx)
 				if err != nil {
 					if retryCount > 1 {
@@ -204,7 +230,9 @@ func (s *Handler) initSync(syncConfig *object.DataSource) error {
 					return nil
 				}
 			} else {
+				log.Logger(ctx).Info("Sending ListObjects")
 				_, err = oc.ListObjects(testCtx, syncConfig.ObjectsBucket, "", "/", "/", 1)
+				log.Logger(ctx).Info("Sent ListObjects")
 				if err != nil {
 					if retryCount > 1 {
 						log.Logger(ctx).Warn("Cannot contact s3 service (bucket "+syncConfig.ObjectsBucket+"), will retry in 4s", zap.Error(err))
@@ -464,8 +492,9 @@ func (s *Handler) watchConfigs() {
 }
 
 // TriggerResync sets 2 servers in sync
-func (s *Handler) TriggerResync(c context.Context, req *protosync.ResyncRequest, resp *protosync.ResyncResponse) error {
+func (s *Handler) TriggerResync(c context.Context, req *protosync.ResyncRequest) (*protosync.ResyncResponse, error) {
 
+	resp := &protosync.ResyncResponse{}
 	var statusChan chan model.Status
 	var doneChan chan interface{}
 	fullLog := &jobs.ActionLog{
@@ -572,7 +601,7 @@ func (s *Handler) TriggerResync(c context.Context, req *protosync.ResyncRequest,
 			}
 
 			resp.Success = true
-			return nil
+			return resp, nil
 		}
 	} else {
 		s.syncTask.SetupEventsChan(statusChan, doneChan, nil)
@@ -593,17 +622,17 @@ func (s *Handler) TriggerResync(c context.Context, req *protosync.ResyncRequest,
 			theTask.ActionsLogs = append(theTask.ActionsLogs, fullLog)
 			taskClient.PutTask(c, &jobs.PutTaskRequest{Task: theTask})
 		}
-		return e
+		return nil, e
 	} else {
 		data, _ := json.Marshal(result.Stats())
 		resp.JsonDiff = string(data)
 		resp.Success = true
-		return nil
+		return resp, nil
 	}
 }
 
 // GetDataSourceConfig implements the S3Endpoint Interface by using the real object configs + the local datasource configs for bucket and base folder.
-func (s *Handler) GetDataSourceConfig(ctx context.Context, request *object.GetDataSourceConfigRequest, response *object.GetDataSourceConfigResponse) error {
+func (s *Handler) GetDataSourceConfig(ctx context.Context, request *object.GetDataSourceConfigRequest) (*object.GetDataSourceConfigResponse, error) {
 
 	s.SyncConfig.ObjectsHost = s.ObjectConfig.RunningHost
 	s.SyncConfig.ObjectsPort = s.ObjectConfig.RunningPort
@@ -611,14 +640,15 @@ func (s *Handler) GetDataSourceConfig(ctx context.Context, request *object.GetDa
 	s.SyncConfig.ApiKey = s.ObjectConfig.ApiKey
 	s.SyncConfig.ApiSecret = s.ObjectConfig.ApiSecret
 
-	response.DataSource = s.SyncConfig
-
-	return nil
+	return &object.GetDataSourceConfigResponse{
+		DataSource: s.SyncConfig,
+	}, nil
 }
 
 // CleanResourcesBeforeDelete gracefully stops the sync task and remove the associated resync job
-func (s *Handler) CleanResourcesBeforeDelete(ctx context.Context, request *object.CleanResourcesRequest, response *object.CleanResourcesResponse) error {
+func (s *Handler) CleanResourcesBeforeDelete(ctx context.Context, request *object.CleanResourcesRequest) (*object.CleanResourcesResponse, error) {
 
+	response := &object.CleanResourcesResponse{}
 	s.syncTask.Shutdown()
 
 	var mm []string
@@ -648,12 +678,12 @@ func (s *Handler) CleanResourcesBeforeDelete(ctx context.Context, request *objec
 	}
 	if len(ee) > 0 {
 		response.Success = false
-		return fmt.Errorf(strings.Join(ee, ", "))
+		return nil, fmt.Errorf(strings.Join(ee, ", "))
 	} else if len(mm) > 0 {
 		response.Success = true
 		response.Message = strings.Join(mm, ", ")
-		return nil
+		return response, nil
 	}
 
-	return nil
+	return response, nil
 }
