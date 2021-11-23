@@ -1,10 +1,16 @@
 package server
 
+import "net"
+
 // ServiceOptions stores all options for a pydio service
 type ServerOptions struct {
+	Listener *net.Listener
+
 	// Before and After funcs
-	BeforeServe  []func() error
+	BeforeServe []func() error
 	AfterServe  []func() error
+	BeforeStop  []func() error
+	AfterStop   []func() error
 }
 
 // ServerOption is a function to set ServerOptions
@@ -24,3 +30,14 @@ func AfterServe(f func() error) ServerOption {
 	}
 }
 
+func BeforeStop(f func () error) ServerOption {
+	return func(o *ServerOptions) {
+		o.BeforeStop = append(o.BeforeStop, f)
+	}
+}
+
+func AfterStop(f func () error) ServerOption {
+	return func(o *ServerOptions) {
+		o.AfterStop = append(o.AfterStop, f)
+	}
+}

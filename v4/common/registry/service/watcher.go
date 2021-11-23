@@ -24,7 +24,7 @@ import (
 	"errors"
 
 	"github.com/micro/micro/v3/service/registry"
-	pb "github.com/micro/micro/v3/proto/registry"
+	pb "github.com/pydio/cells/v4/common/proto/registry"
 )
 
 type serviceWatcher struct {

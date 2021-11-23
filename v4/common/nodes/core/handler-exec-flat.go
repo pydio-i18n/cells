@@ -24,6 +24,7 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"strconv"
 	"strings"
@@ -33,7 +34,6 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/abstract"
 	"github.com/pydio/cells/v4/common/nodes/models"
@@ -348,7 +348,7 @@ func (f *FlatStorageHandler) recomputeETag(ctx context.Context, identifier strin
 
 func (f *FlatStorageHandler) encPlainSizeRecompute(ctx context.Context, nodeUUID, dsName string) (int64, error) {
 	if keyClient == nil {
-		keyClient = encryption.NewNodeKeyManagerClient(defaults.NewClientConn(common.ServiceEncKey))
+		keyClient = encryption.NewNodeKeyManagerClient(grpc2.NewClientConn(common.ServiceEncKey))
 	}
 	if resp, e := keyClient.GetNodePlainSize(ctx, &encryption.GetNodePlainSizeRequest{
 		NodeId: nodeUUID,

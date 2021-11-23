@@ -23,6 +23,7 @@ package permissions
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"strings"
 	"time"
@@ -33,7 +34,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth/claim"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -66,7 +66,7 @@ func GetRolesForUser(ctx context.Context, user *idm.User, createMissing bool) []
 		return roles
 	}
 
-	roleClient := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
+	roleClient := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
 
 	query, _ := anypb.New(&idm.RoleSingleQuery{
 		Uuid: roleIds,
@@ -140,7 +140,7 @@ func GetRoles(ctx context.Context, names []string) []*idm.Role {
 	}
 
 	query, _ := anypb.New(&idm.RoleSingleQuery{Uuid: names})
-	roleClient := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
+	roleClient := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
 	stream, err := roleClient.SearchRole(ctx, &idm.SearchRoleRequest{Query: &service.Query{SubQueries: []*anypb.Any{query}}})
 
 	if err != nil {
@@ -203,7 +203,7 @@ func GetACLsForRoles(ctx context.Context, roles []*idm.Role, actions ...*idm.ACL
 		return acls
 	}
 	//s := time.Now()
-	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 	stream, err := aclClient.SearchACL(ctx, &idm.SearchACLRequest{
 		Query: &service.Query{
 			SubQueries: []*anypb.Any{q1Any, q2Any},
@@ -241,7 +241,7 @@ func GetACLsForWorkspace(ctx context.Context, workspaceIds []string, actions ...
 	q2, _ := anypb.New(&idm.ACLSingleQuery{Actions: actions})
 	subQueries = append(subQueries, q1, q2)
 
-	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 	stream, err := aclClient.SearchACL(ctx, &idm.SearchACLRequest{
 		Query: &service.Query{
 			SubQueries: subQueries,
@@ -279,7 +279,7 @@ func GetWorkspacesForACLs(ctx context.Context, list *AccessList) []*idm.Workspac
 		return workspaces
 	}
 
-	workspaceClient := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
+	workspaceClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
 
 	var queries []*anypb.Any
 	for workspaceID := range workspaceNodes {
@@ -322,7 +322,7 @@ func GetACLsForActions(ctx context.Context, actions ...*idm.ACLAction) (acls []*
 	q1, _ := anypb.New(&idm.ACLSingleQuery{Actions: actions})
 	subQueries = append(subQueries, q1)
 
-	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 	stream, err := aclClient.SearchACL(ctx, &idm.SearchACLRequest{
 		Query: &service.Query{
 			SubQueries: subQueries,
@@ -454,7 +454,7 @@ func SearchUniqueUser(ctx context.Context, login string, uuid string, queries ..
 		}
 	}
 
-	userCli := idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
+	userCli := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
 	var searchRequests []*anypb.Any
 	if uuid != "" {
 		searchRequest, _ := anypb.New(&idm.UserSingleQuery{Uuid: uuid})
@@ -605,7 +605,7 @@ func CheckContentLock(ctx context.Context, node *tree.Node) error {
 		userName = claims.Name
 	}
 
-	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 	// Look for "quota" ACLs on this node
 	singleQ := &idm.ACLSingleQuery{NodeIDs: []string{node.Uuid}, Actions: []*idm.ACLAction{{Name: AclContentLock.Name}}}
 	//log.Logger(ctx).Debug("SEARCHING FOR LOCKS IN ACLS", zap.Any("q", singleQ))

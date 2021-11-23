@@ -27,6 +27,7 @@ package grpc
 
 import (
 	"context"
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"time"
 
 	"go.uber.org/zap"
@@ -37,7 +38,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes/meta"
 	"github.com/pydio/cells/v4/common/plugins"
 	proto "github.com/pydio/cells/v4/common/proto/activity"
@@ -166,7 +166,7 @@ func RegisterDigestJob(ctx context.Context) error {
 	}
 
 	return std.Retry(ctx, func() error {
-		cliJob := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+		cliJob := jobs.NewJobServiceClient(grpc2.NewClientConn(common.ServiceJobs))
 		_, e := cliJob.PutJob(ctx, &jobs.PutJobRequest{Job: job} /*, registry.ShortRequestTimeout() - TODO V4*/)
 		return e
 	}, 5*time.Second, 20*time.Second)

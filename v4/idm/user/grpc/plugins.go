@@ -24,6 +24,7 @@ package grpc
 import (
 	"context"
 	"encoding/base64"
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"os"
 	"strings"
 	"time"
@@ -34,7 +35,6 @@ import (
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service2 "github.com/pydio/cells/v4/common/proto/service"
@@ -134,7 +134,7 @@ func InitDefaults(ctx context.Context) error {
 			}
 			// Create user role
 			std.Retry(ctx, func() error {
-				roleClient := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
+				roleClient := idm.NewRoleServiceClient(grpc2.NewClientConn(common.ServiceRole))
 				_, e := roleClient.CreateRole(ctx, &idm.CreateRoleRequest{Role: &idm.Role{
 					Uuid:     newUser.Uuid,
 					Label:    newUser.Login + " role",
@@ -167,7 +167,7 @@ func InitDefaults(ctx context.Context) error {
 		}
 		// Create user role
 		std.Retry(ctx, func() error {
-			roleClient := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
+			roleClient := idm.NewRoleServiceClient(grpc2.NewClientConn(common.ServiceRole))
 			_, e := roleClient.CreateRole(ctx, &idm.CreateRoleRequest{Role: &idm.Role{
 				Uuid:     newAnon.Uuid,
 				Label:    newAnon.Login + " role",

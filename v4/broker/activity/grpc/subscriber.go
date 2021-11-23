@@ -22,6 +22,7 @@ package grpc
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"path"
 	"strings"
 	"sync"
@@ -34,7 +35,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/abstract"
 	activity2 "github.com/pydio/cells/v4/common/proto/activity"
@@ -73,28 +73,28 @@ func NewEventsSubscriber(dao activity.DAO) *MicroEventsSubscriber {
 
 func (e *MicroEventsSubscriber) getTreeClient() tree.NodeProviderClient {
 	if e.treeClient == nil {
-		e.treeClient = tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceTree))
+		e.treeClient = tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceTree))
 	}
 	return e.treeClient
 }
 
 func (e *MicroEventsSubscriber) getUserClient() idm.UserServiceClient {
 	if e.usrClient == nil {
-		e.usrClient = idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
+		e.usrClient = idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
 	}
 	return e.usrClient
 }
 
 func (e *MicroEventsSubscriber) getRoleClient() idm.RoleServiceClient {
 	if e.roleClient == nil {
-		e.roleClient = idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
+		e.roleClient = idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
 	}
 	return e.roleClient
 }
 
 func (e *MicroEventsSubscriber) getWorkspaceClient() idm.WorkspaceServiceClient {
 	if e.wsClient == nil {
-		e.wsClient = idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
+		e.wsClient = idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
 	}
 	return e.wsClient
 }

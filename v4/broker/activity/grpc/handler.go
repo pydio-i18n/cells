@@ -22,6 +22,7 @@ package grpc
 
 import (
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"strings"
 	"sync"
@@ -33,7 +34,6 @@ import (
 	"github.com/pydio/cells/v4/broker/activity"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	proto "github.com/pydio/cells/v4/common/proto/activity"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/errors"
@@ -73,7 +73,7 @@ func (h *Handler) StreamActivities(request *proto.StreamActivitiesRequest, strea
 
 	ctx := stream.Context()
 	log.Logger(ctx).Debug("Should get activities", zap.Any("r", request))
-	treeStreamer := tree.NewNodeProviderStreamerClient(defaults.NewClientConn(common.ServiceTree))
+	treeStreamer := tree.NewNodeProviderStreamerClient(grpc.NewClientConn(common.ServiceTree))
 	sClient, e := treeStreamer.ReadNodeStream(ctx)
 	if e != nil {
 		return e

@@ -22,6 +22,7 @@ package actions
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
 
 	activity2 "github.com/pydio/cells/v4/broker/activity"
@@ -31,7 +32,6 @@ import (
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/forms"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/activity"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/jobs"
@@ -86,9 +86,9 @@ func (m *MailDigestAction) Init(job *jobs.Job, action *jobs.Action) error {
 	if email, ok := action.Parameters["dryMail"]; ok && email != "" {
 		m.dryMail = email
 	}
-	m.mailerClient = mailer.NewMailerServiceClient(defaults.NewClientConn(common.ServiceMailer))
-	m.activityClient = activity.NewActivityServiceClient(defaults.NewClientConn(common.ServiceActivity))
-	m.userClient = idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
+	m.mailerClient = mailer.NewMailerServiceClient(grpc.NewClientConn(common.ServiceMailer))
+	m.activityClient = activity.NewActivityServiceClient(grpc.NewClientConn(common.ServiceActivity))
+	m.userClient = idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
 	return nil
 }
 

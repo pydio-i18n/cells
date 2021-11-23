@@ -22,12 +22,12 @@ package grpc
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
 	"time"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/registry"
 )
@@ -63,8 +63,8 @@ func updateServicesList(ctx context.Context, treeServer *TreeServer, retry int) 
 
 		ds := DataSource{
 			Name:   dataSourceName,
-			writer: tree.NewNodeReceiverClient(defaults.NewClientConn(indexService)),
-			reader: tree.NewNodeProviderClient(defaults.NewClientConn(indexService)),
+			writer: tree.NewNodeReceiverClient(grpc.NewClientConn(indexService)),
+			reader: tree.NewNodeProviderClient(grpc.NewClientConn(indexService)),
 		}
 
 		dataSources[dataSourceName] = ds

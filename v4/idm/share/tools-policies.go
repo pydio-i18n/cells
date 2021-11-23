@@ -3,16 +3,16 @@ package share
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/pydio/cells/v4/common"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 func InheritPolicies(ctx context.Context, policyName string, read, write bool) (string, error) {
-	polClient := idm.NewPolicyEngineServiceClient(defaults.NewClientConn(common.ServicePolicy))
+	polClient := idm.NewPolicyEngineServiceClient(grpc.NewClientConn(common.ServicePolicy))
 	response, e := polClient.ListPolicyGroups(ctx, &idm.ListPolicyGroupsRequest{})
 	if e != nil {
 		return "", e
@@ -123,7 +123,7 @@ func policyByName(groups []*idm.PolicyGroup, name string) (*idm.PolicyGroup, boo
 }
 
 func InterpretInheritedPolicy(ctx context.Context, name string) (read, write bool, e error) {
-	polClient := idm.NewPolicyEngineServiceClient(defaults.NewClientConn(common.ServicePolicy))
+	polClient := idm.NewPolicyEngineServiceClient(grpc.NewClientConn(common.ServicePolicy))
 	response, e := polClient.ListPolicyGroups(ctx, &idm.ListPolicyGroupsRequest{})
 	if e != nil {
 		return false, false, e

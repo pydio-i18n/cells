@@ -24,6 +24,7 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"io/ioutil"
 	"path"
@@ -35,7 +36,6 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/abstract"
 	"github.com/pydio/cells/v4/common/nodes/models"
@@ -559,7 +559,7 @@ func (e *Executor) MultipartListObjectParts(ctx context.Context, target *tree.No
 
 func (e *Executor) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...grpc.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {
 
-	cli := tree.NewNodeChangesStreamerClient(defaults.NewClientConn(common.ServiceTree))
+	cli := tree.NewNodeChangesStreamerClient(grpc2.NewClientConn(common.ServiceTree))
 	return cli.StreamChanges(ctx, in, opts...)
 
 }

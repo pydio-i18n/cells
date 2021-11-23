@@ -2,14 +2,19 @@ package service
 
 import (
 	"fmt"
+	"github.com/pydio/cells/v4/common/registry"
+	"strings"
+
+	"github.com/spf13/viper"
+	"go.uber.org/zap"
+	mregistry "github.com/micro/micro/v3/service/registry"
+
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/server"
-	"github.com/spf13/viper"
-	"go.uber.org/zap"
-	"strings"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+
 )
 
 // Service for the pydio app
@@ -48,20 +53,60 @@ func NewService(opts ...ServiceOption) Service {
 		return nil
 	}
 
+	reg := servicecontext.GetRegistry(s.opts.Context)
+
 	bs, ok := s.opts.Server.(server.WrappedServer)
 	if ok {
 		bs.RegisterBeforeServe(s.Init)
-		bs.RegisterBeforeServe(func() error {
+		bs.RegisterAfterServe(func() error {
 			log.Info("started", zap.String("name", name))
 			return nil
 		})
 		bs.RegisterAfterServe(func() error {
-			log.Info("stopped", zap.String("name", name))
+			for _, addr := range s.opts.Server.Address() {
+				reg.Register(registry.NewService(&mregistry.Service{
+					Name: name,
+					Version: "0.0.0",
+					Metadata: map[string]string{
+						"tags": strings.Join(tags, ","),
+					},
+					Nodes: []*mregistry.Node{{
+						Id: name + "-0",
+						Address: addr,
+					}},
+				}))
+			}
+
+			return nil
+		})
+		bs.RegisterAfterStop(func() error {
+			for _, addr := range s.opts.Server.Address() {
+				reg.Deregister(registry.NewService(&mregistry.Service{
+					Name: name,
+					Version: "0.0.0",
+					Metadata: map[string]string{
+						"tags": strings.Join(tags, ","),
+					},
+					Nodes: []*mregistry.Node{{
+						Id: name + "-0",
+						Address: addr,
+					}},
+				}))
+			}
+
+
 			return nil
 		})
 	}
 
-	registry.Register(name, strings.Join(tags, " "))
+
+	reg.Register(registry.NewService(&mregistry.Service{
+		Name: name,
+		Version: "0.0.0",
+		Metadata: map[string]string{
+			"tags": strings.Join(tags, ","),
+		},
+	}))
 
 	return s
 }
@@ -90,12 +135,12 @@ func buildForkStartParams(serviceName string) []string {
 
 	//r := viper.GetString("registry")
 	//if r == "memory" {
-	r := fmt.Sprintf("grpc://:%d", viper.GetInt("port_registry"))
+	r := fmt.Sprintf("grpc://%s", viper.GetString("grpc.address"))
 	//}
 
 	//b := viper.GetString("broker")
 	//if b == "memory" {
-	b := fmt.Sprintf("grpc://:%d", viper.GetInt("port_broker"))
+	b := fmt.Sprintf("grpc://%s", viper.GetString("grpc.address"))
 	//}
 
 	params := []string{

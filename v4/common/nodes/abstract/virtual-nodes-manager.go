@@ -23,6 +23,7 @@ package abstract
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"path"
 	"strings"
 	"time"
@@ -35,7 +36,6 @@ import (
 	"github.com/pydio/cells/v4/common/auth/claim"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/docstore"
@@ -85,7 +85,7 @@ func (m *VirtualNodesManager) Load(forceReload ...bool) {
 	}
 	log.Logger(context.Background()).Debug("Reloading virtual nodes to cache")
 	m.nodes = []*tree.Node{}
-	cli := docstore.NewDocStoreClient(defaults.NewClientConn(common.ServiceDocStore))
+	cli := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
 	stream, e := cli.ListDocuments(context.Background(), &docstore.ListDocumentsRequest{
 		StoreID: common.DocStoreIdVirtualNodes,
 		Query:   &docstore.DocumentQuery{},
@@ -301,7 +301,7 @@ func (m *VirtualNodesManager) resolvePathWithClaims(ctx context.Context, vNode *
 
 // copyRecycleRootAcl creates recycle_root ACL on newly created node
 func (m *VirtualNodesManager) copyRecycleRootAcl(ctx context.Context, vNode *tree.Node, resolved *tree.Node) error {
-	cl := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+	cl := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 	// Check if vNode has this flag set
 	q, _ := anypb.New(&idm.ACLSingleQuery{
 		NodeIDs: []string{vNode.Uuid},

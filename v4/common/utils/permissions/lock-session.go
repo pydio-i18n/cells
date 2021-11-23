@@ -22,13 +22,13 @@ package permissions
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"time"
 
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -67,7 +67,7 @@ func (l *LockSession) AddChildTarget(parentUUID, targetChildName string) {
 // Lock sets an expirable lock ACL on the NodeUUID with SessionUUID as value
 func (l *LockSession) Lock(ctx context.Context) error {
 
-	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 
 	if l.nodeUUID != "" {
 		lock := &idm.ACLAction{Name: AclLock.Name, Value: l.sessionUUID}
@@ -96,7 +96,7 @@ func (l *LockSession) Lock(ctx context.Context) error {
 // UpdateExpiration set a new expiration date on the current lock
 func (l *LockSession) UpdateExpiration(ctx context.Context, expireAfter time.Duration) error {
 
-	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 	if l.nodeUUID != "" {
 		searchLock := &idm.ACLAction{Name: AclLock.Name, Value: l.sessionUUID}
 		if err := l.updateExpiration(ctx, aclClient, l.nodeUUID, searchLock, expireAfter); err != nil {
@@ -116,7 +116,7 @@ func (l *LockSession) UpdateExpiration(ctx context.Context, expireAfter time.Dur
 // Unlock manually removes the ACL
 func (l *LockSession) Unlock(ctx context.Context) error {
 
-	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 	err1 := l.remove(ctx, aclClient, &idm.ACLAction{Name: AclLock.Name, Value: l.sessionUUID})
 	err2 := l.remove(ctx, aclClient, &idm.ACLAction{Name: AclChildLock.Name + ":*", Value: l.sessionUUID})
 	if err1 != nil {
@@ -172,7 +172,7 @@ func (l *LockSession) updateExpiration(ctx context.Context, cli idm.ACLServiceCl
 }
 
 func HasChildLocks(ctx context.Context, node *tree.Node) bool {
-	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 	q, _ := anypb.New(&idm.ACLSingleQuery{
 		Actions: []*idm.ACLAction{{Name: AclChildLock.Name + ":*"}},
 		NodeIDs: []string{node.GetUuid()},

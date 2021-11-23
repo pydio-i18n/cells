@@ -24,9 +24,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"regexp"
-
-	defaults "github.com/pydio/cells/v4/common/micro"
 
 	"github.com/emicklei/go-restful"
 	"go.uber.org/zap"
@@ -81,7 +80,7 @@ func (mh *MailerHandler) Send(req *restful.Request, rsp *restful.Response) {
 	log.Logger(ctx).Debug("Sending Email", log.DangerouslyZapSmallSlice("to", message.To), zap.String("subject", message.Subject), zap.Any("templateData", message.TemplateData))
 
 	langs := i18n.UserLanguagesFromRestRequest(req, config.Get())
-	cli := mailer.NewMailerServiceClient(defaults.NewClientConn(common.ServiceMailer))
+	cli := mailer.NewMailerServiceClient(grpc.NewClientConn(common.ServiceMailer))
 
 	claims, ok := ctx.Value(claim.ContextKey).(claim.Claims)
 	if !ok {

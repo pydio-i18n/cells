@@ -23,10 +23,10 @@ package encryption
 import (
 	"context"
 	"encoding/base64"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"sync"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/encryption"
 
 	"github.com/pydio/cells/v4/common/crypto"
@@ -60,7 +60,7 @@ func (kt *userKeyTool) keyByID(ctx context.Context, id string) ([]byte, error) {
 		return k, nil
 	}
 
-	client := encryption.NewUserKeyStoreClient(defaults.NewClientConn(common.ServiceUserKey))
+	client := encryption.NewUserKeyStoreClient(grpc.NewClientConn(common.ServiceUserKey))
 	rsp, err := client.GetKey(ctx, &encryption.GetKeyRequest{KeyID: id})
 	if err != nil {
 		return nil, err

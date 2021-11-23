@@ -2,13 +2,13 @@ package tasks
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"time"
 
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 )
 
@@ -37,7 +37,7 @@ func (s *ReconnectingClient) Stop() {
 func (s *ReconnectingClient) chanToStream(ch chan interface{}, requeue ...*jobs.Task) {
 
 	go func() {
-		taskClient := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+		taskClient := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
 		ctx, cancel := context.WithTimeout(s.parentCtx, 5*time.Minute)
 		defer cancel()
 		// TODO v4 : how do we replace client.WithTimeout (=> something with DialContext)

@@ -14,10 +14,18 @@ type Service interface{
 	IsGeneric() bool
 	IsGRPC() bool
 	IsREST() bool
+
+	As(interface{}) bool
 }
 
 type service struct {
 	s *registry.Service
+}
+
+func NewService(s *registry.Service) Service {
+	return &service{
+		s: s,
+	}
 }
 
 func (s *service) Name() string {
@@ -40,4 +48,14 @@ func (s *service) IsGRPC() bool {
 }
 func (s *service) IsREST() bool {
 	return false
+}
+func (s *service) As(i interface{}) bool {
+	p, ok := i.(**registry.Service)
+	if !ok {
+		return false
+	}
+
+	*p = s.s
+
+	return true
 }

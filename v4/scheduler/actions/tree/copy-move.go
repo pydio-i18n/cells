@@ -23,6 +23,7 @@ package tree
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"path"
 	"regexp"
 	"strconv"
@@ -35,7 +36,6 @@ import (
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/forms"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/jobs"
@@ -219,7 +219,7 @@ func (c *CopyMoveAction) suffixPathIfNecessary(ctx context.Context, cli nodes.Ha
 
 	if r, e := cli.ReadNode(ctx, &tree.ReadNodeRequest{Node: pNode}); e == nil && !nodes.IsUnitTestEnv {
 		pNode = r.GetNode()
-		aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+		aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 		q, _ := anypb.New(&idm.ACLSingleQuery{
 			Actions: []*idm.ACLAction{{Name: permissions.AclChildLock.Name + ":*"}},
 			NodeIDs: []string{pNode.GetUuid()},

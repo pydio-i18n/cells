@@ -23,6 +23,7 @@ package images
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"io/ioutil"
 	"os"
@@ -35,7 +36,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/forms"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/jobs"
@@ -86,7 +86,7 @@ func (e *ExifProcessor) GetName() string {
 func (e *ExifProcessor) Init(job *jobs.Job, action *jobs.Action) error {
 	//e.Router = views.NewStandardRouter(views.RouterOptions{AdminView: true, WatchRegistry: false})
 	if !nodes.IsUnitTestEnv {
-		e.metaClient = tree.NewNodeReceiverClient(defaults.NewClientConn(common.ServiceMeta))
+		e.metaClient = tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceMeta))
 	}
 	return nil
 }

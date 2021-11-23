@@ -2,6 +2,7 @@ package modifiers
 
 import (
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"net/http"
 	"strconv"
 
@@ -13,7 +14,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	"github.com/pydio/cells/v4/common/proto/service"
@@ -83,14 +83,14 @@ func LoginSuccessWrapper(middleware frontend.AuthMiddleware) frontend.AuthMiddle
 		if user.Attributes != nil {
 			if _, ok := user.Attributes["failedConnections"]; ok {
 				log.Logger(ctx).Info("[WrapWithUserLocks] Resetting user failedConnections", user.ZapLogin())
-				userClient := idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
+				userClient := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
 				delete(user.Attributes, "failedConnections")
 				userClient.CreateUser(ctx, &idm.CreateUserRequest{User: user})
 			}
 		}
 
 		// Checking policies
-		cli := idm.NewPolicyEngineServiceClient(defaults.NewClientConn(common.ServicePolicy))
+		cli := idm.NewPolicyEngineServiceClient(grpc.NewClientConn(common.ServicePolicy))
 		policyContext := make(map[string]string)
 		permissions.PolicyContextFromMetadata(policyContext, ctx)
 		subjects := permissions.PolicyRequestSubjectsFromUser(user)
@@ -117,7 +117,7 @@ func LoginSuccessWrapper(middleware frontend.AuthMiddleware) frontend.AuthMiddle
 
 		if lang, ok := in.AuthInfo["lang"]; ok {
 			if _, o := i18n.AvailableLanguages[lang]; o {
-				aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+				aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 				// Remove previous value if any
 				delQ, _ := anypb.New(&idm.ACLSingleQuery{RoleIDs: []string{user.GetUuid()}, Actions: []*idm.ACLAction{{Name: "parameter:core.conf:lang"}}, WorkspaceIDs: []string{"PYDIO_REPO_SCOPE_ALL"}})
 				aclClient.DeleteACL(ctx, &idm.DeleteACLRequest{Query: &service.Query{SubQueries: []*anypb.Any{delQ}}} /* TODO V4, client.WithRequestTimeout(500*time.Millisecond)*/)
@@ -218,7 +218,7 @@ func LoginFailedWrapper(middleware frontend.AuthMiddleware) frontend.AuthMiddlew
 		}
 
 		log.Logger(ctx).Debug(fmt.Sprintf("[WrapWithUserLocks] Updating failed connection number for user [%s]", user.GetLogin()), user.ZapLogin())
-		userClient := idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
+		userClient := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
 		if _, e := userClient.CreateUser(ctx, &idm.CreateUserRequest{User: user}); e != nil {
 			log.Logger(ctx).Error("could not store failedConnection for user", zap.Error(e))
 		}

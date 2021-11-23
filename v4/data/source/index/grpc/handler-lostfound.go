@@ -23,13 +23,13 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/sync"
@@ -101,7 +101,7 @@ func (s *TreeServer) TriggerResync(ctx context.Context, request *sync.ResyncRequ
 func (s *TreeServer) checkACLs(ctx context.Context, ll []index.LostAndFound) (marked []index.LostAndFound, conflicts []index.LostAndFound, e error) {
 
 	if aclClient == nil {
-		aclClient = idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+		aclClient = idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 	}
 	var uuids []string
 	for _, l := range ll {

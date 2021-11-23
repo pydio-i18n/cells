@@ -23,6 +23,7 @@ package nodes
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"sync"
 	"time"
 
@@ -34,7 +35,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/x/configx"
@@ -115,7 +115,7 @@ func (p *ClientsPool) GetTreeClient() tree.NodeProviderClient {
 	if p.treeClient != nil {
 		return p.treeClient
 	}
-	return tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceTree))
+	return tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceTree))
 }
 
 // GetTreeClientWrite returns the internal NodeReceiverClient pointing to the TreeService.
@@ -123,7 +123,7 @@ func (p *ClientsPool) GetTreeClientWrite() tree.NodeReceiverClient {
 	if p.treeClientWrite != nil {
 		return p.treeClientWrite
 	}
-	return tree.NewNodeReceiverClient(defaults.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceTree))
+	return tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceTree))
 }
 
 // GetDataSourceInfo tries to find information about a DataSource, eventually retrying as DataSource
@@ -199,7 +199,7 @@ func (p *ClientsPool) LoadDataSources() {
 
 	ctx := context.Background()
 	for _, source := range sources {
-		endpointClient := object.NewDataSourceEndpointClient(defaults.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceDataSync_ + source))
+		endpointClient := object.NewDataSourceEndpointClient(grpc.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceDataSync_ + source))
 		response, err := endpointClient.GetDataSourceConfig(ctx, &object.GetDataSourceConfigRequest{})
 		if err == nil && response.DataSource != nil {
 			log.Logger(ctx).Debug("Creating client for datasource " + source)

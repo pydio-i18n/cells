@@ -4,6 +4,7 @@ import (
 	"compress/gzip"
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"html/template"
 	"net/http"
 	"strings"
@@ -16,7 +17,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/docstore"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/service"
@@ -81,7 +81,7 @@ func (h *PublicHandler) computeTplConf(req *http.Request, linkId string) (status
 		return 404, tplConf
 	}
 
-	cl := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
+	cl := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
 	q, _ := anypb.New(&idm.WorkspaceSingleQuery{
 		Uuid: linkData.RepositoryId,
 	})
@@ -187,7 +187,7 @@ func (h *PublicHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // Load link from Docstore
 func (h *PublicHandler) loadLink(ctx context.Context, linkUuid string) (*docstore.ShareDocument, error) {
 
-	store := docstore.NewDocStoreClient(defaults.NewClientConn(common.ServiceDocStore))
+	store := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
 	resp, e := store.GetDocument(ctx, &docstore.GetDocumentRequest{DocumentID: linkUuid, StoreID: common.DocStoreIdShares})
 	if e != nil {
 		return nil, fmt.Errorf("cannot find document")

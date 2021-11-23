@@ -23,6 +23,7 @@ package acl
 import (
 	"context"
 	"fmt"
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"strconv"
 	"strings"
@@ -35,7 +36,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth/claim"
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/abstract"
 	"github.com/pydio/cells/v4/common/nodes/models"
@@ -279,7 +279,7 @@ func (a *QuotaFilter) FindParentWorkspaces(ctx context.Context, workspace *idm.W
 		}
 	}
 
-	treeClient := tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceTree))
+	treeClient := tree.NewNodeProviderClient(grpc2.NewClientConn(common.ServiceTree))
 	for _, root := range workspace.RootUUIDs {
 		if n, o := vResolver(ctx, &tree.Node{Uuid: root}); o {
 			root = n.Uuid
@@ -307,7 +307,7 @@ func (a *QuotaFilter) FindParentWorkspaces(ctx context.Context, workspace *idm.W
 // given by the orderedRoles list.
 func (a *QuotaFilter) QuotaForWorkspace(ctx context.Context, workspace *idm.Workspace, orderedRoles []string) (maxQuota int64, currentUsage int64, err error) {
 
-	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc2.NewClientConn(common.ServiceAcl))
 	q2, _ := anypb.New(&idm.ACLSingleQuery{WorkspaceIDs: []string{workspace.UUID}})
 	stream, er := aclClient.SearchACL(ctx, &idm.SearchACLRequest{Query: &service.Query{SubQueries: []*anypb.Any{q2}}})
 	if er != nil {
@@ -350,7 +350,7 @@ func (a *QuotaFilter) QuotaForWorkspace(ctx context.Context, workspace *idm.Work
 
 	if maxQuota > 0 {
 		log.Logger(ctx).Debug("Found Quota", zap.Any("q", maxQuota), zap.Any("roots", detectedRoots))
-		treeClient := tree.NewNodeProviderClient(defaults.NewClientConn(common.ServiceTree))
+		treeClient := tree.NewNodeProviderClient(grpc2.NewClientConn(common.ServiceTree))
 		resolver := abstract.GetVirtualNodesManager().GetResolver(a.ClientsPool, false)
 		for nodeId := range detectedRoots {
 			var rootNode *tree.Node

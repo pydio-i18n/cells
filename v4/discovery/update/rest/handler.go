@@ -22,11 +22,11 @@ package rest
 
 import (
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/emicklei/go-restful"
 
 	"github.com/pydio/cells/v4/common"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/update"
 	"github.com/pydio/cells/v4/common/service"
 )
@@ -51,7 +51,7 @@ func (h *Handler) UpdateRequired(req *restful.Request, rsp *restful.Response) {
 		service.RestError500(req, rsp, e)
 		return
 	}
-	cli := update.NewUpdateServiceClient(defaults.NewClientConn(common.ServiceUpdate))
+	cli := update.NewUpdateServiceClient(grpc.NewClientConn(common.ServiceUpdate))
 	response, err := cli.UpdateRequired(req.Request.Context(), &updateRequest)
 	if err != nil {
 		service.RestError500(req, rsp, err)
@@ -73,7 +73,7 @@ func (h *Handler) ApplyUpdate(req *restful.Request, rsp *restful.Response) {
 		return
 	}
 
-	cli := update.NewUpdateServiceClient(defaults.NewClientConn(common.ServiceUpdate))
+	cli := update.NewUpdateServiceClient(grpc.NewClientConn(common.ServiceUpdate))
 	response, err := cli.ApplyUpdate(req.Request.Context(), &applyRequest)
 	if err != nil {
 		service.RestError500(req, rsp, err)

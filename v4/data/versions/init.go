@@ -22,6 +22,7 @@ package versions
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"path"
 	"time"
 
@@ -30,7 +31,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/proto/docstore"
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -77,7 +77,7 @@ func PolicyForNode(ctx context.Context, node *tree.Node) *tree.VersioningPolicy 
 		return v.(*tree.VersioningPolicy)
 	}
 
-	dc := docstore.NewDocStoreClient(defaults.NewClientConn(common.ServiceDocStore))
+	dc := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
 	r, e := dc.GetDocument(ctx, &docstore.GetDocumentRequest{
 		StoreID:    common.DocStoreIdVersioningPolicies,
 		DocumentID: policyName,

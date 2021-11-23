@@ -16,18 +16,15 @@ package cmd
 
 import (
 	"fmt"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
-	"log"
 	"os"
 	"strings"
 	"text/tabwriter"
 	"text/template"
 
-	"github.com/spf13/cobra"
-	"google.golang.org/grpc"
-
-	"github.com/pydio/cells/v4/common/micro/registry/service"
 	"github.com/pydio/cells/v4/common/registry"
+
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -92,42 +89,36 @@ EXAMPLE
 	- pydio.rest.mailer     [X]
 
 `,
-	PreRun: func(cmd *cobra.Command, args []string) {
-		conn, err := grpc.Dial(
-			":8001",
-			grpc.WithInsecure(),
-			grpc.WithChainUnaryInterceptor(
-				servicecontext.SpanUnaryClientInterceptor(),
-			),
-			grpc.WithChainStreamInterceptor(
-				servicecontext.SpanStreamClientInterceptor(),
-			),
-		)
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		bindViperFlags(cmd.Flags(), map[string]string{})
+
+		return nil
+	},
+	RunE: func(cmd *cobra.Command, args []string) error {
+		reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
 		if err != nil {
-			log.Panic("error dialling ", err)
+			return err
 		}
 
-		registry.SetRegistry(
-			service.NewRegistry(
-				service.WithConn(conn),
-			),
-		)
-	},
-	Run: func(cmd *cobra.Command, args []string) {
 		t, _ := template.New("t1").Parse(tmpl)
 
 		tags := []*Tags{
-			{"GENERIC SERVICES", nil, getTagsPerType(func(s registry.Service) bool { return s.IsGeneric() })},
-			{"GRPC SERVICES", nil, getTagsPerType(func(s registry.Service) bool { return s.IsGRPC() })},
-			{"REST SERVICES", nil, getTagsPerType(func(s registry.Service) bool { return s.IsREST() })},
+			{"GENERIC SERVICES", nil, getTagsPerType(reg, func(s registry.Service) bool { return s.IsGeneric() })},
+			{"GRPC SERVICES", nil, getTagsPerType(reg, func(s registry.Service) bool { return s.IsGRPC() })},
+			{"REST SERVICES", nil, getTagsPerType(reg, func(s registry.Service) bool { return s.IsREST() })},
 		}
 
 		w := tabwriter.NewWriter(cmd.OutOrStdout(), 8, 8, 8, ' ', 0)
 		t.Execute(w, tags)
+
+		return nil
 	},
 }
 
 func init() {
+
+	addRegistryFlags(psCmd.Flags())
+
 	RootCmd.AddCommand(psCmd)
 
 	// Here you will define your flags and configuration settings.
@@ -141,10 +132,10 @@ func init() {
 	// psCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func getTagsPerType(f func(s registry.Service) bool) map[string]*Tags {
+func getTagsPerType(reg registry.Registry, f func(s registry.Service) bool) map[string]*Tags {
 	tags := make(map[string]*Tags)
 
-	allServices, err := registry.ListServices()
+	allServices, err := reg.ListServices()
 	if err != nil {
 		return tags
 	}

@@ -23,6 +23,7 @@ package rest
 
 import (
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"strings"
 	"time"
@@ -35,7 +36,6 @@ import (
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/acl"
 	"github.com/pydio/cells/v4/common/nodes/compose"
@@ -265,7 +265,7 @@ func (h *Handler) DeleteNodes(req *restful.Request, resp *restful.Response) {
 	router := h.GetRouter()
 
 	deleteJobs := newDeleteJobs()
-	metaClient := tree.NewNodeReceiverClient(defaults.NewClientConn(common.ServiceMeta))
+	metaClient := tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceMeta))
 
 	for _, node := range input.Nodes {
 		if read, er := router.ReadNode(ctx, &tree.ReadNodeRequest{Node: node}); er != nil {
@@ -349,7 +349,7 @@ func (h *Handler) DeleteNodes(req *restful.Request, resp *restful.Response) {
 		}
 	}
 
-	cli := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+	cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
 	moveLabel := T("Jobs.User.MoveRecycle")
 	fullPathRouter := compose.PathClientAdmin()
 	for recyclePath, selectedPaths := range deleteJobs.RecycleMoves {
@@ -464,7 +464,7 @@ func (h *Handler) CreateSelection(req *restful.Request, resp *restful.Response) 
 	ctx := req.Request.Context()
 	username, _ := permissions.FindUserNameInContext(ctx)
 	selectionUuid := uuid.New()
-	dcClient := docstore.NewDocStoreClient(defaults.NewClientConn(common.ServiceDocStore))
+	dcClient := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
 	data, _ := json.Marshal(input.Nodes)
 	if _, e := dcClient.PutDocument(ctx, &docstore.PutDocumentRequest{
 		StoreID:    common.DocStoreIdSelections,
@@ -508,7 +508,7 @@ func (h *Handler) RestoreNodes(req *restful.Request, resp *restful.Response) {
 	moveLabel := T("Jobs.User.DirMove")
 
 	router := h.GetRouter()
-	cli := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+	cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
 	restoreTargets := make(map[string]struct{}, len(input.Nodes))
 
 	e := router.WrapCallback(func(inputFilter nodes.FilterFunc, outputFilter nodes.FilterFunc) error {

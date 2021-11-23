@@ -23,6 +23,7 @@ package grpc
 
 import (
 	"context"
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"path"
 	"time"
 
@@ -31,7 +32,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/docstore"
 	"github.com/pydio/cells/v4/common/proto/jobs"
@@ -83,7 +83,7 @@ func init() {
 
 				tree.RegisterNodeVersionerServer(server, engine)
 
-				jobsClient := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+				jobsClient := jobs.NewJobServiceClient(grpc2.NewClientConn(common.ServiceJobs))
 				// TODO V4
 				// to := registry.ShortRequestTimeout()
 				// Migration from old prune-versions-job : delete if exists, replaced by composed job
@@ -150,7 +150,7 @@ func InitDefaults(ctx context.Context) error {
 
 	return std.Retry(ctx, func() error {
 
-		dc := docstore.NewDocStoreClient(defaults.NewClientConn(common.ServiceDocStore))
+		dc := docstore.NewDocStoreClient(grpc2.NewClientConn(common.ServiceDocStore))
 		_, e := dc.PutDocument(ctx, &docstore.PutDocumentRequest{
 			StoreID:    common.DocStoreIdVersioningPolicies,
 			DocumentID: "default-policy",

@@ -23,6 +23,7 @@ package tasks
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
 	"sync"
 	"time"
@@ -35,7 +36,6 @@ import (
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/object"
@@ -152,7 +152,7 @@ func (s *Subscriber) Init() {
 
 	go std.Retry(context.Background(), func() error {
 		// Load Jobs Definitions
-		jobClients := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+		jobClients := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
 		streamer, e := jobClients.ListJobs(s.rootCtx, &jobs.ListJobsRequest{})
 		if e != nil {
 			return e
@@ -291,7 +291,7 @@ func (s *Subscriber) timerEvent(ctx context.Context, event *jobs.JobTriggerEvent
 	j, ok := s.definitions[jobId]
 	if !ok {
 		// Try to load definition directly for JobsService
-		jobClients := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+		jobClients := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
 		resp, e := jobClients.GetJob(ctx, &jobs.GetJobRequest{JobID: jobId})
 		if e != nil || resp.Job == nil {
 			return nil

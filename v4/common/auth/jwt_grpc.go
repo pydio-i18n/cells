@@ -22,6 +22,7 @@ package auth
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
 
 	"github.com/pydio/cells/v4/common"
@@ -32,7 +33,6 @@ import (
 
 	"github.com/pydio/cells/v4/common/auth/claim"
 	"github.com/pydio/cells/v4/common/auth/hydra"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/auth"
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
@@ -47,7 +47,7 @@ func (p *grpcVerifier) GetType() ProviderType {
 
 func (p *grpcVerifier) Verify(ctx context.Context, rawIDToken string) (IDToken, error) {
 
-	cli := auth.NewAuthTokenVerifierClient(defaults.NewClientConn(strings.TrimPrefix(p.service, common.ServiceGrpcNamespace_)))
+	cli := auth.NewAuthTokenVerifierClient(grpc.NewClientConn(strings.TrimPrefix(p.service, common.ServiceGrpcNamespace_)))
 
 	resp, err := cli.Verify(ctx, &auth.VerifyTokenRequest{
 		Token: rawIDToken,

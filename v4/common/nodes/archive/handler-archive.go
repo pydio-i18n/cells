@@ -22,6 +22,7 @@ package archive
 
 import (
 	"context"
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"path"
 	"strings"
@@ -32,7 +33,6 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/abstract"
 	"github.com/pydio/cells/v4/common/nodes/models"
@@ -346,7 +346,7 @@ func (a *Handler) generateArchiveFromSelection(ctx context.Context, writer io.Wr
 func (a *Handler) getSelectionByUuid(ctx context.Context, selectionUuid string) (bool, []*tree.Node, error) {
 
 	var data []*tree.Node
-	dcClient := docstore.NewDocStoreClient(defaults.NewClientConn(common.ServiceDocStore))
+	dcClient := docstore.NewDocStoreClient(grpc2.NewClientConn(common.ServiceDocStore))
 	if resp, e := dcClient.GetDocument(ctx, &docstore.GetDocumentRequest{
 		StoreID:    common.DocStoreIdSelections,
 		DocumentID: selectionUuid,
@@ -369,7 +369,7 @@ func (a *Handler) getSelectionByUuid(ctx context.Context, selectionUuid string) 
 
 // deleteSelectionByUuid Delete selection
 func (a *Handler) deleteSelectionByUuid(ctx context.Context, selectionUuid string) {
-	dcClient := docstore.NewDocStoreClient(defaults.NewClientConn(common.ServiceDocStore))
+	dcClient := docstore.NewDocStoreClient(grpc2.NewClientConn(common.ServiceDocStore))
 	_, e := dcClient.DeleteDocuments(ctx, &docstore.DeleteDocumentsRequest{
 		StoreID:    common.DocStoreIdSelections,
 		DocumentID: selectionUuid,

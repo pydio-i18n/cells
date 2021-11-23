@@ -23,6 +23,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"path"
 	"sort"
 	"strings"
@@ -35,7 +36,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	service "github.com/pydio/cells/v4/common/proto/service"
@@ -469,7 +469,7 @@ func (h *Handler) loadAutoAppliesRoles(ctx context.Context) (autoApplies map[str
 	}
 
 	autoApplies = make(map[string][]*idm.Role)
-	roleCli := idm.NewRoleServiceClient(defaults.NewClientConn(common.ServiceRole))
+	roleCli := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
 	q, _ := anypb.New(&idm.RoleSingleQuery{HasAutoApply: true})
 	stream, e := roleCli.SearchRole(ctx, &idm.SearchRoleRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}})
 	if e != nil {

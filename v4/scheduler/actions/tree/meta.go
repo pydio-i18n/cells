@@ -23,11 +23,10 @@ package tree
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"path"
 
 	"github.com/pydio/cells/v4/common/nodes"
-
-	defaults "github.com/pydio/cells/v4/common/micro"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/forms"
@@ -88,7 +87,7 @@ func (c *MetaAction) GetName() string {
 func (c *MetaAction) Init(job *jobs.Job, action *jobs.Action) error {
 
 	if !nodes.IsUnitTestEnv {
-		c.Client = tree.NewNodeReceiverClient(defaults.NewClientConn(common.ServiceMeta))
+		c.Client = tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceMeta))
 	}
 	c.MetaJSON = action.Parameters["metaJSON"]
 

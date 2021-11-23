@@ -26,6 +26,7 @@ package rest
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
 	"time"
 
@@ -37,7 +38,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth/claim"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	service2 "github.com/pydio/cells/v4/common/proto/service"
@@ -133,7 +133,7 @@ func (h *SharesHandler) PutCell(req *restful.Request, rsp *restful.Response) {
 	}
 
 	// Now set ACLs on Workspace
-	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 	var currentAcls []*idm.ACL
 	var currentRoots []string
 	if !wsCreated {
@@ -199,7 +199,7 @@ func (h *SharesHandler) PutCell(req *restful.Request, rsp *restful.Response) {
 
 	// Now update workspace
 	log.Logger(ctx).Debug("Updating workspace", zap.Any("workspace", workspace))
-	wsClient := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
+	wsClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
 	if _, err := wsClient.CreateWorkspace(ctx, &idm.CreateWorkspaceRequest{Workspace: workspace}); err != nil {
 		service.RestError500(req, rsp, err)
 		return
@@ -336,7 +336,7 @@ func (h *SharesHandler) PutShareLink(req *restful.Request, rsp *restful.Response
 	var user *idm.User
 	var err error
 	var create bool
-	aclClient := idm.NewACLServiceClient(defaults.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 	if link.Uuid == "" {
 		create = true
 		workspace, _, err = share.GetOrCreateWorkspace(ctx, ownerUser, "", idm.WorkspaceScope_LINK, link.Label, link.Description, false)
@@ -398,7 +398,7 @@ func (h *SharesHandler) PutShareLink(req *restful.Request, rsp *restful.Response
 			Action:   service2.ResourcePolicyAction_READ,
 			Effect:   service2.ResourcePolicy_allow,
 		})
-		wsClient := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
+		wsClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
 		wsClient.CreateWorkspace(ctx, &idm.CreateWorkspaceRequest{Workspace: workspace})
 		track("CreateWorkspace")
 	} else {
@@ -569,7 +569,7 @@ func (h *SharesHandler) UpdateSharePolicies(req *restful.Request, rsp *restful.R
 		return
 	}
 	ctx := req.Request.Context()
-	cli := idm.NewWorkspaceServiceClient(defaults.NewClientConn(common.ServiceWorkspace))
+	cli := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
 	q, _ := anypb.New(&idm.WorkspaceSingleQuery{
 		Uuid: input.Uuid,
 	})
@@ -622,7 +622,7 @@ func (h *SharesHandler) UpdateSharePolicies(req *restful.Request, rsp *restful.R
 }
 
 func (h *SharesHandler) docStoreStatus() error {
-	s := service2.NewServiceClient(defaults.NewClientConn(common.ServiceDocStore))
+	s := service2.NewServiceClient(grpc.NewClientConn(common.ServiceDocStore))
 	_, err := s.Status(context.Background(), &emptypb.Empty{})
 	return err
 }

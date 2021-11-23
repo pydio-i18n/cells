@@ -23,6 +23,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"math"
 	"strconv"
 	"strings"
@@ -37,7 +38,6 @@ import (
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes/objects/mc"
 	"github.com/pydio/cells/v4/common/proto/encryption"
 	"github.com/pydio/cells/v4/common/proto/jobs"
@@ -151,7 +151,7 @@ func (s *Handler) initSync(syncConfig *object.DataSource) error {
 		defer wg.Done()
 		std.Retry(ctx, func() error {
 			log.Logger(ctx).Debug("Sync " + dataSource + " - Try to contact Index")
-			c := protoservice.NewServiceClient(defaults.NewClientConn(common.ServiceDataIndex_ + dataSource))
+			c := protoservice.NewServiceClient(grpc.NewClientConn(common.ServiceDataIndex_ + dataSource))
 			r, err := c.Status(context.Background(), &emptypb.Empty{})
 			if err != nil {
 				return err
@@ -172,7 +172,7 @@ func (s *Handler) initSync(syncConfig *object.DataSource) error {
 		std.Retry(ctx, func() error {
 			retryCount++
 			log.Logger(ctx).Info(fmt.Sprintf("Trying to contact object service %s (retry %d)", common.ServiceDataObjects_+syncConfig.ObjectsServiceName, retryCount))
-			cli := object.NewObjectsEndpointClient(defaults.NewClientConn(common.ServiceDataObjects_ + syncConfig.ObjectsServiceName))
+			cli := object.NewObjectsEndpointClient(grpc.NewClientConn(common.ServiceDataObjects_ + syncConfig.ObjectsServiceName))
 			resp, err := cli.GetMinioConfig(ctx, &object.GetMinioConfigRequest{})
 			if err != nil {
 				log.Logger(ctx).Debug(common.ServiceDataObjects_ + syncConfig.ObjectsServiceName + " not yet available")
@@ -233,7 +233,7 @@ func (s *Handler) initSync(syncConfig *object.DataSource) error {
 	normalizeS3, _ := strconv.ParseBool(syncConfig.StorageConfiguration[object.StorageKeyNormalize])
 	var computer func(string) (int64, error)
 	if syncConfig.EncryptionMode != object.EncryptionMode_CLEAR {
-		keyClient := encryption.NewNodeKeyManagerClient(defaults.NewClientConn(common.ServiceEncKey))
+		keyClient := encryption.NewNodeKeyManagerClient(grpc.NewClientConn(common.ServiceEncKey))
 		computer = func(nodeUUID string) (i int64, e error) {
 			if resp, e := keyClient.GetNodePlainSize(ctx, &encryption.GetNodePlainSizeRequest{
 				NodeId: nodeUUID,
@@ -333,7 +333,7 @@ func (s *Handler) initSync(syncConfig *object.DataSource) error {
 		source = s3client
 	}
 
-	conn := defaults.NewClientConn(common.ServiceDataIndex_ + dataSource)
+	conn := grpc.NewClientConn(common.ServiceDataIndex_ + dataSource)
 	s.indexClientWrite = tree.NewNodeReceiverClient(conn)
 	s.indexClientRead = tree.NewNodeProviderClient(conn)
 	s.indexClientClean = protosync.NewSyncEndpointClient(conn)
@@ -583,7 +583,7 @@ func (s *Handler) TriggerResync(c context.Context, req *protosync.ResyncRequest,
 		if req.Task != nil {
 			theTask := req.Task
 			// Todo v4 : add client.Retries(3)
-			taskClient := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+			taskClient := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
 			theTask.StatusMessage = "Error"
 			theTask.HasProgress = true
 			theTask.Progress = 1
@@ -637,7 +637,7 @@ func (s *Handler) CleanResourcesBeforeDelete(ctx context.Context, request *objec
 
 	serviceName := servicecontext.GetServiceName(ctx)
 	dsName := strings.TrimPrefix(serviceName, common.ServiceGrpcNamespace_+common.ServiceDataSync_)
-	taskClient := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+	taskClient := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
 	log.Logger(ctx).Info("Removing job for datasource " + dsName)
 	if _, e := taskClient.DeleteJob(ctx, &jobs.DeleteJobRequest{
 		JobID: "resync-ds-" + dsName,

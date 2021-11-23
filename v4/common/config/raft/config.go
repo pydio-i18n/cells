@@ -25,9 +25,9 @@ package raft
 import (
 	"context"
 	"encoding/json"
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/pydio/cells/v4/common"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/storage"
 	"github.com/pydio/cells/v4/x/configx"
 )
@@ -77,7 +77,7 @@ func (c *conf) Val(path ...string) configx.Values {
 }
 
 func NewConfig() configx.Entrypoint {
-	cli := storage.NewStorageEndpointClient(defaults.NewClientConn(common.ServiceConfig))
+	cli := storage.NewStorageEndpointClient(grpc.NewClientConn(common.ServiceConfig))
 	return &conf{
 		cli: cli,
 	}

@@ -3,24 +3,22 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/micro/micro/v3/proto/config"
-	"github.com/micro/micro/v3/proto/registry"
-	"github.com/pydio/cells/v4/common/proto/tree"
-	"google.golang.org/grpc"
 	"io"
 	"log"
 	"sync"
 
+	"github.com/pydio/cells/v4/common/client/grpc"
+	"github.com/pydio/cells/v4/common/proto/config"
+	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/proto/registry"
+
 	_ "github.com/pydio/cells/v4/common/server/grpc"
+	_"github.com/pydio/cells/v4/common/registry/service"
 )
 
 func main() {
-	c, err := grpc.Dial("cells://127.0.0.1:8001/main", grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		log.Panic("error dialing", err)
-	}
+	c := grpc.NewClientConn("pydio.grpc.config")
 
-	/*
 	confCli := config.NewConfigClient(c)
 	if err := setConfig(confCli); err!= nil {
 		log.Panic(err)
@@ -30,13 +28,15 @@ func main() {
 		log.Panic(err)
 	}
 
+	c = grpc.NewClientConn("pydio.grpc.registry")
+
 	regCli := registry.NewRegistryClient(c)
-	go func() {
+	/*go func() {
 		err := watchRegistry(regCli)
 		if err != nil {
 			log.Panic("Error in watch reg ", err)
 		}
-	}()
+	}()*/
 	if err := setRegistry(regCli); err!= nil {
 		log.Panic(err)
 	}
@@ -44,7 +44,8 @@ func main() {
 	if err := getRegistry(regCli); err!= nil {
 		log.Panic(err)
 	}
-	 */
+
+	c = grpc.NewClientConn("pydio.grpc.data.index.pydiods1")
 
 	nodeReceiverCli := tree.NewNodeReceiverClient(c)
 	if err := createNode(nodeReceiverCli); err != nil {
@@ -95,7 +96,7 @@ func setConfig(cli config.ConfigClient) error {
 		return err
 	}
 
-	fmt.Println(resp)
+	fmt.Println("[setConfig]", resp)
 
 	return nil
 }
@@ -108,7 +109,7 @@ func getConfig(cli config.ConfigClient) error {
 		return err
 	}
 
-	fmt.Println(resp)
+	fmt.Println("[getConfig]", resp)
 
 	return nil
 }
@@ -123,7 +124,7 @@ func setRegistry(cli registry.RegistryClient) error {
 		return err
 	}
 
-	fmt.Println(resp)
+	fmt.Println("[setRegistry]", resp)
 
 	return nil
 }
@@ -136,7 +137,7 @@ func getRegistry(cli registry.RegistryClient) error {
 		return err
 	}
 
-	fmt.Println(resp)
+	fmt.Println("[getRegistry]", resp)
 
 	return nil
 }
@@ -151,11 +152,11 @@ func watchRegistry(cli registry.RegistryClient) error {
 
 	for {
 		res, err := resp.Recv()
-		if err != nil {
+		if err != nil && err != io.EOF {
 			return err
 		}
 
-		fmt.Println(res)
+		fmt.Println("[watchRegistry]",  res)
 	}
 }
 
@@ -171,7 +172,7 @@ func createNode(cli tree.NodeReceiverClient) error {
 		return err
 	}
 
-	fmt.Println(resp)
+	fmt.Println("[createNode]", resp)
 
 	return nil
 }
@@ -191,7 +192,7 @@ func updateNode(cli tree.NodeReceiverClient) error {
 		return err
 	}
 
-	fmt.Println(resp)
+	fmt.Println("[updateNode]", resp)
 
 	return nil
 }
@@ -208,7 +209,7 @@ func deleteNode(cli tree.NodeReceiverClient) error {
 		return err
 	}
 
-	fmt.Println(resp)
+	fmt.Println("[deleteNode]", resp)
 
 	return nil
 }
@@ -225,7 +226,7 @@ func readNode(cli tree.NodeProviderClient) error {
 		return err
 	}
 
-	fmt.Println(resp)
+	fmt.Println("[readNode]", resp)
 
 	return nil
 }
@@ -255,7 +256,7 @@ func listNodes(cli tree.NodeProviderClient) error {
 			return err
 		}
 
-		fmt.Println("List nodes ", resp)
+		fmt.Println("[listNodes]",  resp)
 	}
 
 	return nil
@@ -283,7 +284,7 @@ func createNodeStream(cli tree.NodeReceiverStreamClient) error {
 				return
 			}
 
-			fmt.Println(resp)
+			fmt.Println("[createNodeStream]", resp)
 		}
 	}()
 
@@ -325,7 +326,7 @@ func updateNodeStream(cli tree.NodeReceiverStreamClient) error {
 				return
 			}
 
-			fmt.Println(resp)
+			fmt.Println("[updateNodeStream]", resp)
 		}
 	}()
 
@@ -365,7 +366,7 @@ func deleteNodeStream(cli tree.NodeReceiverStreamClient) error {
 				return
 			}
 
-			fmt.Println(resp)
+			fmt.Println("[deleteNodeStream]", resp)
 		}
 	}()
 
@@ -404,7 +405,7 @@ func readNodeStream(cli tree.NodeProviderStreamerClient) error {
 				return
 			}
 
-			fmt.Println(resp)
+			fmt.Println("[readNodeStream]", resp)
 		}
 	}()
 

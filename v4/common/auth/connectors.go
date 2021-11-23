@@ -22,12 +22,12 @@ package auth
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"net/http"
 
 	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/service/errors"
 )
@@ -56,7 +56,7 @@ func (p *pydioconnector) Prompt() string {
 
 func (p *pydioconnector) Login(ctx context.Context, s Scopes, username, password string) (Identity, bool, error) {
 	// Check the user has successfully logged in
-	c := idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
+	c := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
 	resp, err := c.BindUser(ctx, &idm.BindUserRequest{UserName: username, Password: password})
 	if err != nil {
 		errr := errors.Parse(err.Error())

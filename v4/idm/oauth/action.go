@@ -23,13 +23,13 @@ package oauth
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"time"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/forms"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/proto/auth"
 	"github.com/pydio/cells/v4/common/proto/docstore"
 	"github.com/pydio/cells/v4/common/proto/jobs"
@@ -53,7 +53,7 @@ func InsertPruningJob(ctx context.Context) error {
 
 	return std.Retry(ctx, func() error {
 
-		cli := jobs.NewJobServiceClient(defaults.NewClientConn(common.ServiceJobs))
+		cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
 		// TODO V4 - Used twice below
 		// timeout := registry.ShortRequestTimeout()
 		if resp, e := cli.GetJob(ctx, &jobs.GetJobRequest{JobID: pruneTokensActionName} /*, timeout*/); e == nil && resp.Job != nil {
@@ -121,7 +121,7 @@ func (c *PruneTokensAction) Run(ctx context.Context, channels *actions.RunnableC
 	output := input
 
 	// Prune revoked tokens on OAuth service
-	cli := auth.NewAuthTokenPrunerClient(defaults.NewClientConn(common.ServiceOAuth))
+	cli := auth.NewAuthTokenPrunerClient(grpc.NewClientConn(common.ServiceOAuth))
 	if pruneResp, e := cli.PruneTokens(ctx, &auth.PruneTokensRequest{}); e != nil {
 		return input.WithError(e), e
 	} else {
@@ -130,7 +130,7 @@ func (c *PruneTokensAction) Run(ctx context.Context, channels *actions.RunnableC
 	}
 
 	// Prune revoked tokens on OAuth service
-	cli2 := auth.NewAuthTokenPrunerClient(defaults.NewClientConn(common.ServiceToken))
+	cli2 := auth.NewAuthTokenPrunerClient(grpc.NewClientConn(common.ServiceToken))
 	if pruneResp, e := cli2.PruneTokens(ctx, &auth.PruneTokensRequest{}); e != nil {
 		return input.WithError(e), e
 	} else {
@@ -139,7 +139,7 @@ func (c *PruneTokensAction) Run(ctx context.Context, channels *actions.RunnableC
 	}
 
 	// Prune reset password tokens
-	docCli := docstore.NewDocStoreClient(defaults.NewClientConn(common.ServiceDocStore))
+	docCli := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
 	deleteResponse, er := docCli.DeleteDocuments(ctx, &docstore.DeleteDocumentsRequest{
 		StoreID: "resetPasswordKeys",
 		Query: &docstore.DocumentQuery{

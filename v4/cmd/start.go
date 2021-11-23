@@ -25,9 +25,11 @@ import (
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/server/generic"
 	"github.com/pydio/cells/v4/common/server/grpc"
 	"github.com/pydio/cells/v4/common/server/http"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 )
 
 var (
@@ -55,11 +57,13 @@ to quickly create a Cobra application.`,
 
 		initLogLevel()
 
+		// Making sure we capture the signals
 		handleSignals()
 
 		return nil
 	},
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
 
 		broker.Connect()
 
@@ -84,7 +88,14 @@ to quickly create a Cobra application.`,
 		srvGeneric := generic.New(cmd.Context())
 		generic.Register(srvGeneric)
 
-		plugins.Init(cmd.Context(), "main")
+		reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
+		if err != nil {
+			return err
+		}
+
+		ctx = servicecontext.WithRegistry(ctx, reg)
+
+		plugins.Init(ctx, "main")
 
 		go func() {
 			if err := srvHTTP.Serve(lisHTTP); err != nil {
@@ -107,6 +118,8 @@ to quickly create a Cobra application.`,
 		log.Info("started")
 
 		<-cmd.Context().Done()
+
+		return nil
 	},
 }
 

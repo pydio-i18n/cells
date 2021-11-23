@@ -25,6 +25,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"io/ioutil"
 	"os"
@@ -40,7 +41,6 @@ import (
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	pauth "github.com/pydio/cells/v4/common/proto/auth"
@@ -479,7 +479,7 @@ func (a *FrontendHandler) FrontPutBinary(req *restful.Request, rsp *restful.Resp
 			user.Attributes = map[string]string{}
 		}
 		user.Attributes["avatar"] = binaryId
-		cli := idm.NewUserServiceClient(defaults.NewClientConn(common.ServiceUser))
+		cli := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
 		_, e = cli.CreateUser(ctx, &idm.CreateUserRequest{User: user})
 		if e != nil {
 			service.RestError404(req, rsp, e)
