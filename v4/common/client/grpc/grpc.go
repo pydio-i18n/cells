@@ -3,9 +3,14 @@ package grpc
 import (
 	"context"
 	"fmt"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
-	"google.golang.org/grpc"
+	"strings"
 	"sync"
+
+	"google.golang.org/grpc"
+
+	"github.com/pydio/cells/v4/common"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+
 )
 
 var (
@@ -26,7 +31,7 @@ func NewClientConn(serviceName string) grpc.ClientConnInterface {
 
 	return &clientConn{
 		ClientConn: conn,
-		serviceName: serviceName,
+		serviceName: common.ServiceGrpcNamespace_ + strings.TrimPrefix(serviceName, common.ServiceGrpcNamespace_),
 	}
 }
 
