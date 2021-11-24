@@ -44,17 +44,18 @@ func init() {
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 
 				treeServer := &TreeServer{
+					name: common.ServiceGrpcNamespace_+common.ServiceTree,
 					DataSources: map[string]DataSource{},
 				}
 				eventSubscriber := NewEventSubscriber(treeServer)
 
 				updateServicesList(ctx, treeServer, 0)
 
-				tree.RegisterNodeProviderServer(server, treeServer)
-				tree.RegisterNodeReceiverServer(server, treeServer)
-				tree.RegisterSearcherServer(server, treeServer)
-				tree.RegisterNodeChangesStreamerServer(server, treeServer)
-				tree.RegisterNodeProviderStreamerServer(server, treeServer)
+				tree.RegisterMultiNodeProviderServer(server, treeServer)
+				tree.RegisterMultiNodeReceiverServer(server, treeServer)
+				tree.RegisterMultiSearcherServer(server, treeServer)
+				tree.RegisterMultiNodeChangesStreamerServer(server, treeServer)
+				tree.RegisterMultiNodeProviderStreamerServer(server, treeServer)
 
 				go watchRegistry(ctx, treeServer)
 

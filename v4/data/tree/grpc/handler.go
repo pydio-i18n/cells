@@ -89,8 +89,13 @@ type TreeServer struct {
 
 	sync.Mutex
 
+	name string
 	DataSources map[string]DataSource
 	listeners   []*changesListener
+}
+
+func (s *TreeServer) Name() string {
+	return s.name
 }
 
 // ReadNodeStream Implement stream for readNode method

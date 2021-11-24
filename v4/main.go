@@ -19,7 +19,7 @@ import (
 	// Data
 	//_ "github.com/pydio/cells/v4/data/docstore/grpc"
 	//_ "github.com/pydio/cells/v4/data/key/grpc"
-	//_ "github.com/pydio/cells/v4/data/meta/grpc"
+	_ "github.com/pydio/cells/v4/data/meta/grpc"
 	//_ "github.com/pydio/cells/v4/data/meta/rest"
 	//_ "github.com/pydio/cells/v4/data/search/grpc"
 	//_ "github.com/pydio/cells/v4/data/search/rest"
@@ -51,7 +51,7 @@ import (
 	//_ "github.com/pydio/cells/v4/data/source/sync"
 	//_ "github.com/pydio/cells/v4/data/source/sync/grpc"
 	//_ "github.com/pydio/cells/v4/data/templates/rest"
-	//_ "github.com/pydio/cells/v4/data/tree/grpc"
+	_ "github.com/pydio/cells/v4/data/tree/grpc"
 	//_ "github.com/pydio/cells/v4/data/tree/rest"
 	//_ "github.com/pydio/cells/v4/data/versions/grpc"
 	// Broker

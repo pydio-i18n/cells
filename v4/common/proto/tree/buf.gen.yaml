@@ -4,5 +4,7 @@ plugins:
     out: .
   - name: go-grpc
     out: .
+  - name: go-multi-grpc
+    out: .
   - name: govalidators
     out: .

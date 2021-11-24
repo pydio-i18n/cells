@@ -62,6 +62,10 @@ func NewMetaServer(c context.Context) *MetaServer {
 	return m
 }
 
+func (s *MetaServer) Name() string {
+	return common.ServiceGrpcNamespace_ + common.ServiceMeta
+}
+
 func (s *MetaServer) Stop() {
 	if s.cache != nil {
 		s.cache.Close()

@@ -47,10 +47,10 @@ func init() {
 
 				engine := NewMetaServer(c)
 
-				tree.RegisterNodeProviderServer(server, engine)
-				tree.RegisterNodeProviderStreamerServer(server, engine)
-				tree.RegisterNodeReceiverServer(server, engine)
-				tree.RegisterSearcherServer(server, engine)
+				tree.RegisterMultiNodeProviderServer(server, engine)
+				tree.RegisterMultiNodeProviderStreamerServer(server, engine)
+				tree.RegisterMultiNodeReceiverServer(server, engine)
+				tree.RegisterMultiSearcherServer(server, engine)
 
 				// Register Subscribers
 				sub := engine.Subscriber(c)
