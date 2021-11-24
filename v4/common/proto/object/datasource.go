@@ -62,7 +62,11 @@ func (d *DataSource) ClientConfig() configx.Values {
 
 // BuildUrl constructs the url used for clients.
 func (d *DataSource) BuildUrl() string {
-	return fmt.Sprintf("%s:%d", d.ObjectsHost, d.ObjectsPort)
+	host := d.ObjectsHost
+	if d.ObjectsHost == "" {
+		host = "localhost"
+	}
+	return fmt.Sprintf("%s:%d", host, d.ObjectsPort)
 }
 
 // BuildUrl builds the url used for clients
@@ -74,7 +78,7 @@ func (d *MinioConfig) BuildUrl() string {
 	return fmt.Sprintf("%s:%d", host, d.RunningPort)
 }
 
-// IsInternal is a short hand to check StorageConfiguration["cellsInternal"] key
+// IsInternal is a shorthand to check StorageConfiguration["cellsInternal"] key
 func (d *DataSource) IsInternal() bool {
 	if d.StorageConfiguration != nil {
 		_, i := d.StorageConfiguration[StorageKeyCellsInternal]

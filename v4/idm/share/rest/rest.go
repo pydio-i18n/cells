@@ -26,9 +26,10 @@ package rest
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
 	"time"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/emicklei/go-restful"
 	"go.uber.org/zap"
@@ -622,6 +623,8 @@ func (h *SharesHandler) UpdateSharePolicies(req *restful.Request, rsp *restful.R
 }
 
 func (h *SharesHandler) docStoreStatus() error {
+	return nil
+	// TODO V4
 	s := service2.NewServiceClient(grpc.NewClientConn(common.ServiceDocStore))
 	_, err := s.Status(context.Background(), &emptypb.Empty{})
 	return err

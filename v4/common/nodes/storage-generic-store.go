@@ -22,6 +22,8 @@ package nodes
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/pydio/cells/v4/common"
@@ -71,6 +73,10 @@ func GetGenericStoreClientConfig(storeNamespace string) (dataSource string, buck
 
 	dataSource = c.Val("datasource").Default(configx.Reference("#/defaults/datasource")).String()
 	bucket = c.Val("bucket").String()
-
-	return dataSource, bucket, nil
+	if dataSource == "" {
+		e = fmt.Errorf("cannot find datasource for generic store config " + configKey)
+	} else if bucket == "" {
+		e = fmt.Errorf("cannot find bucket for generic store config " + configKey)
+	}
+	return
 }

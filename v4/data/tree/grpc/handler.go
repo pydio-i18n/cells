@@ -80,6 +80,14 @@ type DataSource struct {
 	reader tree.NodeProviderClient
 }
 
+func NewDataSource(name string, reader tree.NodeProviderClient, writer tree.NodeReceiverClient) DataSource {
+	return DataSource{
+		Name:   name,
+		reader: reader,
+		writer: writer,
+	}
+}
+
 type TreeServer struct {
 	tree.UnimplementedSearcherServer
 	tree.UnimplementedNodeReceiverServer
@@ -89,7 +97,7 @@ type TreeServer struct {
 
 	sync.Mutex
 
-	name string
+	name        string
 	DataSources map[string]DataSource
 	listeners   []*changesListener
 }

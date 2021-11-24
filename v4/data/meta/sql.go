@@ -37,11 +37,12 @@ var (
 	migrationsFS embed.FS
 
 	queries = map[string]string{
-		"upsert":     `INSERT INTO data_meta (node_id,namespace,data,author,timestamp,format) VALUES (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE data=?,author=?,timestamp=?,format=?`,
-		"deleteNS":   `DELETE FROM data_meta WHERE namespace=?`,
-		"deleteUuid": `DELETE FROM data_meta WHERE node_id=?`,
-		"select":     `SELECT * FROM data_meta WHERE node_id=?`,
-		"selectAll":  `SELECT * FROM data_meta LIMIT 0, 500`,
+		"upsert":        `INSERT INTO data_meta (node_id,namespace,data,author,timestamp,format) VALUES (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE data=?,author=?,timestamp=?,format=?`,
+		"upsert-sqlite": `INSERT INTO data_meta (node_id,namespace,data,author,timestamp,format) VALUES (?,?,?,?,?,?) ON CONFLICT(node_id,namespace) DO UPDATE SET data=?,author=?,timestamp=?,format=?`,
+		"deleteNS":      `DELETE FROM data_meta WHERE namespace=?`,
+		"deleteUuid":    `DELETE FROM data_meta WHERE node_id=?`,
+		"select":        `SELECT * FROM data_meta WHERE node_id=?`,
+		"selectAll":     `SELECT * FROM data_meta LIMIT 0, 500`,
 	}
 )
 
@@ -113,7 +114,13 @@ func (h *sqlImpl) SetMetadata(nodeId string, author string, metadata map[string]
 				// Insert or update namespace
 				tStamp := time.Now().Unix()
 
-				stmt, er := h.GetStmt("upsert")
+				var stmt sql.Stmt
+				var er error
+				if h.Driver() == "sqlite3" {
+					stmt, er = h.GetStmt("upsert-sqlite")
+				} else {
+					stmt, er = h.GetStmt("upsert")
+				}
 				if er != nil {
 					return er
 				}

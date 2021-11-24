@@ -31,7 +31,7 @@ import (
 )
 
 var (
-	ctx context.Context
+	ctx    context.Context
 	cancel context.CancelFunc
 
 	cfgFile string
@@ -265,6 +265,10 @@ func initLogLevel() {
 
 	// Init log level
 	logLevel := viper.GetString("log")
+	// TODO V4
+	//logLevel = "debug"
+	log.SetSkipServerSync()
+
 	logJson := viper.GetBool("log_json")
 	common.LogToFile = viper.GetBool("log_to_file")
 

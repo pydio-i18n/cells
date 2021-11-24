@@ -22,6 +22,9 @@ package test
 
 import (
 	"context"
+	"fmt"
+	"time"
+
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
@@ -43,7 +46,13 @@ func init() {
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceDataSync, []string{}),
 			service.Description("Test Objects Service conformance"),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
-				test.RegisterTesterServer(server, NewHandler())
+				h := NewHandler()
+				test.RegisterTesterServer(server, h)
+				go func() {
+					<-time.After(10 * time.Second)
+					resp, e := h.TestNodesClient(ctx)
+					fmt.Println("Test Result", resp, e)
+				}()
 				return nil
 			}),
 		)

@@ -10,15 +10,21 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
-
 )
 
 var (
 	conn *grpc.ClientConn
 	once = &sync.Once{}
+	mox  = map[string]grpc.ClientConnInterface{}
 )
-// NewClient returns a client attached to the defaults
+
+// NewClientConn returns a client attached to the defaults.
 func NewClientConn(serviceName string) grpc.ClientConnInterface {
+
+	if c, o := mox[strings.TrimPrefix(serviceName, common.ServiceGrpcNamespace_)]; o {
+		return c
+	}
+
 	var err error
 	once.Do(func() {
 		conn, err = grpc.Dial("cells://:8001/", grpc.WithInsecure())
@@ -30,12 +36,12 @@ func NewClientConn(serviceName string) grpc.ClientConnInterface {
 	}
 
 	return &clientConn{
-		ClientConn: conn,
+		ClientConn:  conn,
 		serviceName: common.ServiceGrpcNamespace_ + strings.TrimPrefix(serviceName, common.ServiceGrpcNamespace_),
 	}
 }
 
-type clientConn struct{
+type clientConn struct {
 	*grpc.ClientConn
 	serviceName string
 }
@@ -51,4 +57,9 @@ func (cc *clientConn) Invoke(ctx context.Context, method string, args interface{
 func (cc *clientConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 	ctx = servicecontext.WithServiceName(ctx, cc.serviceName)
 	return cc.ClientConn.NewStream(ctx, desc, method, opts...)
+}
+
+// RegisterMock registers a stubbed ClientConnInterface for a given service
+func RegisterMock(serviceName string, mock grpc.ClientConnInterface) {
+	mox[serviceName] = mock
 }

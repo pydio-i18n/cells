@@ -235,10 +235,9 @@ func (s *MetaServer) ReadNodeStream(streamer tree.NodeProviderStreamer_ReadNodeS
 		if err != nil {
 			return err
 		}
-		response := &tree.ReadNodeResponse{}
 
 		log.Logger(ctx).Debug("ReadNodeStream", zap.String("path", request.Node.Path))
-		_, e := s.ReadNode(ctx, &tree.ReadNodeRequest{Node: request.Node})
+		response, e := s.ReadNode(ctx, &tree.ReadNodeRequest{Node: request.Node})
 		if e != nil {
 			if errors.Parse(e.Error()).Code == 404 {
 				// There is no metadata, simply return the original node
@@ -282,6 +281,7 @@ func (s *MetaServer) CreateNode(ctx context.Context, req *tree.CreateNodeRequest
 
 	if err := dao.SetMetadata(req.Node.Uuid, author, s.filterMetaToStore(ctx, req.Node.MetaStore)); err != nil {
 		resp.Success = false
+		return resp, err
 	}
 
 	resp.Success = true

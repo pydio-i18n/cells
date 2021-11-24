@@ -21,8 +21,9 @@
 package runtime
 
 import (
-	"github.com/spf13/viper"
 	"regexp"
+
+	"github.com/spf13/viper"
 )
 
 // IsFork checks if the runtime is originally a fork of a different process
@@ -42,11 +43,18 @@ func IsRemote() bool {
 
 func IsRequired(serviceName string) bool {
 	args := viper.GetStringSlice("args")
+	xx := viper.GetStringSlice("exclude")
+	for _, x := range xx {
+		if x == serviceName {
+			return false
+		}
+	}
+
 	if len(args) == 0 {
 		return true
 	}
 
-	for _, arg := range viper.GetStringSlice("args"){
+	for _, arg := range viper.GetStringSlice("args") {
 		re := regexp.MustCompile(arg)
 		if re.MatchString(serviceName) {
 			return true

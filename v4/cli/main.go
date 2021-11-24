@@ -9,22 +9,22 @@ import (
 
 	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/proto/config"
-	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/proto/registry"
+	"github.com/pydio/cells/v4/common/proto/tree"
 
+	_ "github.com/pydio/cells/v4/common/registry/service"
 	_ "github.com/pydio/cells/v4/common/server/grpc"
-	_"github.com/pydio/cells/v4/common/registry/service"
 )
 
 func main() {
 	c := grpc.NewClientConn("pydio.grpc.config")
 
 	confCli := config.NewConfigClient(c)
-	if err := setConfig(confCli); err!= nil {
+	if err := setConfig(confCli); err != nil {
 		log.Panic(err)
 	}
 
-	if err := getConfig(confCli); err!= nil {
+	if err := getConfig(confCli); err != nil {
 		log.Panic(err)
 	}
 
@@ -37,11 +37,11 @@ func main() {
 			log.Panic("Error in watch reg ", err)
 		}
 	}()*/
-	if err := setRegistry(regCli); err!= nil {
+	if err := setRegistry(regCli); err != nil {
 		log.Panic(err)
 	}
 
-	if err := getRegistry(regCli); err!= nil {
+	if err := getRegistry(regCli); err != nil {
 		log.Panic(err)
 	}
 
@@ -87,8 +87,8 @@ func main() {
 func setConfig(cli config.ConfigClient) error {
 	req := &config.SetRequest{
 		Namespace: "config",
-		Path: "this/is/a/test",
-		Value: &config.Value{Data: "my value"},
+		Path:      "this/is/a/test",
+		Value:     &config.Value{Data: "my value"},
 	}
 
 	resp, err := cli.Set(context.Background(), req)
@@ -156,7 +156,7 @@ func watchRegistry(cli registry.RegistryClient) error {
 			return err
 		}
 
-		fmt.Println("[watchRegistry]",  res)
+		fmt.Println("[watchRegistry]", res)
 	}
 }
 
@@ -235,7 +235,6 @@ func listNodes(cli tree.NodeProviderClient) error {
 	req := &tree.ListNodesRequest{
 		Node: &tree.Node{
 			Path: "",
-
 		},
 		Recursive: true,
 	}
@@ -256,7 +255,7 @@ func listNodes(cli tree.NodeProviderClient) error {
 			return err
 		}
 
-		fmt.Println("[listNodes]",  resp)
+		fmt.Println("[listNodes]", resp)
 	}
 
 	return nil

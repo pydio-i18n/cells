@@ -32,6 +32,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/pydio/cells/v4/common/nodes/compose"
+	"github.com/pydio/cells/v4/common/proto/tree"
+
 	minio "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/notification"
 
@@ -314,4 +317,16 @@ func (h *Handler) TestEvents(ctx context.Context, oc nodes.StorageClient, req *t
 
 	return result, nil
 
+}
+
+func (h *Handler) TestNodesClient(ctx context.Context) (*test.TestResult, error) {
+	res := &test.TestResult{}
+
+	cl := compose.PathClient(nodes.AsAdmin())
+	err := cl.ListNodesWithCallback(ctx, &tree.ListNodesRequest{Node: &tree.Node{Path: "pydiods1"}}, func(ctx context.Context, node *tree.Node, err error) error {
+		res.Log("Got node", node.Zap())
+		return nil
+	}, false)
+
+	return res, err
 }

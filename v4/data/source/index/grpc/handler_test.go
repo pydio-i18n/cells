@@ -23,13 +23,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/pydio/cells/v4/common/log"
-	"google.golang.org/grpc/metadata"
 	"io"
 	"sync"
 	"testing"
 
-	defaults "github.com/pydio/cells/v4/common/micro"
+	"github.com/pydio/cells/v4/common/log"
+	"google.golang.org/grpc/metadata"
+
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
@@ -112,10 +112,10 @@ func (l *List) Close() error {
 func TestMain(m *testing.M) {
 
 	// Registry mock
-	defaults.InitServer(
+	//defaults.InitServer(
 	//func() server.Option { return server.Registry(memory.NewRegistry()) },
 	//func() server.Option { return server.Broker(nats.NewBroker()) },
-	)
+	//)
 
 	options := configx.New()
 

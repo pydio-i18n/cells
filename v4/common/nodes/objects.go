@@ -68,7 +68,8 @@ type StorageClient interface {
 }
 
 var (
-	storageClientsRegistry map[string]StorageClientProvider
+	storageClientsRegistry   map[string]StorageClientProvider
+	useMockStorageClientType bool
 )
 
 func init() {
@@ -85,6 +86,9 @@ func RegisterStorageClient(name string, provider StorageClientProvider) {
 
 func NewStorageClient(cfg configx.Values) (StorageClient, error) {
 	name := cfg.Val("type").Default("mock").String()
+	if useMockStorageClientType {
+		name = "mock"
+	}
 	if provider, ok := storageClientsRegistry[name]; ok {
 		return provider(cfg)
 	} else {
@@ -99,4 +103,8 @@ func NewStorageClient(cfg configx.Values) (StorageClient, error) {
 		return mc.New(ep, key, secret, secure)
 	*/
 
+}
+
+func UseMockStorageClientType() {
+	useMockStorageClientType = true
 }

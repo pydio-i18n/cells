@@ -23,7 +23,6 @@ package nodes
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"sync"
 	"time"
 
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/object"
@@ -200,15 +200,17 @@ func (p *ClientsPool) LoadDataSources() {
 	ctx := context.Background()
 	for _, source := range sources {
 		endpointClient := object.NewDataSourceEndpointClient(grpc.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceDataSync_ + source))
-		response, err := endpointClient.GetDataSourceConfig(ctx, &object.GetDataSourceConfigRequest{})
+		connC, can := context.WithTimeout(ctx, 1*time.Second)
+		response, err := endpointClient.GetDataSourceConfig(connC, &object.GetDataSourceConfigRequest{})
 		if err == nil && response.DataSource != nil {
 			log.Logger(ctx).Debug("Creating client for datasource " + source)
 			if e := p.CreateClientsForDataSource(source, response.DataSource); e != nil {
 				log.Logger(context.Background()).Warn("Cannot create clients for datasource "+source, zap.Error(e))
 			}
 		} else {
-			log.Logger(context.Background()).Debug("no answer from endpoint, maybe not ready yet? "+common.ServiceGrpcNamespace_+common.ServiceDataSync_+source, zap.Any("r", response), zap.Error(err))
+			log.Logger(context.Background()).Warn("no answer from endpoint, maybe not ready yet? "+common.ServiceGrpcNamespace_+common.ServiceDataSync_+source, zap.Any("r", response), zap.Error(err))
 		}
+		can()
 	}
 
 	if e := p.registerAlternativeClient(common.PydioThumbstoreNamespace); e != nil {

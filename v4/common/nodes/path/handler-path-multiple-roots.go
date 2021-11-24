@@ -111,7 +111,7 @@ func (m *MultipleRootsHandler) updateInputBranch(ctx context.Context, node *tree
 		}
 	}
 	if branch.Root == nil {
-		return ctx, node, nodes.ErrBranchInfoMissing(identifier)
+		return ctx, node, nodes.ErrBranchInfoRootMissing(identifier)
 	}
 	return ctx, m.setWorkspaceRootFlag(branch.Workspace, out), nil
 }

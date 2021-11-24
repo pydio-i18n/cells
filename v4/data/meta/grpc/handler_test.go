@@ -1,5 +1,3 @@
-// +build ignore
-
 /*
  * Copyright (c) 2019-2021. Abstrium SAS <team (at) pydio.com>
  * This file is part of Pydio Cells.
@@ -83,7 +81,7 @@ func TestMeta(t *testing.T) {
 
 	Convey("Simple GET from stubbed implementation", t, func() {
 
-		respObject := &common.ReadNodeResponse{}
+		//respObject := &common.ReadNodeResponse{}
 
 		_, e = s.ReadNode(ctx, &common.ReadNodeRequest{
 			Node: &common.Node{
@@ -97,8 +95,7 @@ func TestMeta(t *testing.T) {
 
 	Convey("Simple SET to stub implementation", t, func() {
 
-		respObject := &common.UpdateNodeResponse{}
-		_, e = s.UpdateNode(ctx, &common.UpdateNodeRequest{
+		respObject, e := s.UpdateNode(ctx, &common.UpdateNodeRequest{
 			From: &common.Node{
 				Uuid: "test",
 			},
@@ -113,8 +110,7 @@ func TestMeta(t *testing.T) {
 		So(e, ShouldBeNil)
 		So(respObject.Success, ShouldBeTrue)
 
-		resp := &common.ReadNodeResponse{}
-		_, e1 := s.ReadNode(ctx, &common.ReadNodeRequest{
+		resp, e1 := s.ReadNode(ctx, &common.ReadNodeRequest{
 			Node: &common.Node{
 				Uuid: "test",
 			},
@@ -130,8 +126,7 @@ func TestMeta(t *testing.T) {
 
 	Convey("Delete metadata by setting to empty map", t, func() {
 
-		respObject := &common.UpdateNodeResponse{}
-		_, e = s.UpdateNode(ctx, &common.UpdateNodeRequest{
+		respObject, e := s.UpdateNode(ctx, &common.UpdateNodeRequest{
 			From: &common.Node{
 				Uuid: "test",
 			},
@@ -153,7 +148,6 @@ func TestMeta(t *testing.T) {
 			},
 		})
 
-		resp := &common.ReadNodeResponse{}
 		_, e1 := s.ReadNode(ctx, &common.ReadNodeRequest{
 			Node: &common.Node{
 				Uuid: "test",
@@ -199,8 +193,7 @@ func TestSubscriber(t *testing.T) {
 		}
 
 		time.Sleep(100 * time.Millisecond)
-		respObject := &common.ReadNodeResponse{}
-		_, readErr := server.ReadNode(ctx, &common.ReadNodeRequest{
+		respObject, readErr := server.ReadNode(ctx, &common.ReadNodeRequest{
 			Node: &common.Node{
 				Uuid: "event-node-uid",
 			},
@@ -241,8 +234,7 @@ func TestSubscriber(t *testing.T) {
 
 		time.Sleep(100 * time.Millisecond)
 
-		respObject := &common.ReadNodeResponse{}
-		_, readErr := server.ReadNode(ctx, &common.ReadNodeRequest{
+		respObject, readErr := server.ReadNode(ctx, &common.ReadNodeRequest{
 			Node: &common.Node{
 				Uuid: "event-node-uid",
 			},
@@ -279,7 +271,6 @@ func TestSubscriber(t *testing.T) {
 
 		time.Sleep(100 * time.Millisecond)
 
-		respObject := &common.ReadNodeResponse{}
 		_, readErr := server.ReadNode(ctx, &common.ReadNodeRequest{
 			Node: &common.Node{
 				Uuid: "event-node-uid",
