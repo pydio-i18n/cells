@@ -34,6 +34,7 @@ type cellsResolver struct {
 	address string
 	cc resolver.ClientConn
 	name string
+	m map[string][]string
 	disableServiceConfig bool
 }
 
@@ -68,11 +69,42 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 		reg: reg,
 		name: name,
 		cc: cc,
+		m: m,
 		disableServiceConfig: opts.DisableServiceConfig,
 	}
 
+	cr.updateState()
+	go cr.watch()
+
+	return cr, nil
+}
+
+func (cr *cellsResolver) watch() {
+	w, err := cr.reg.Watch()
+	if err != nil {
+		return
+	}
+
+	for {
+		r, err := w.Next()
+		if err != nil {
+			return
+		}
+
+		s := r.Service()
+		if r.Action() == "create" {
+			for _, n := range r.Service().Nodes() {
+				cr.m[n.Address()] = append(cr.m[n.Address()], s.Name())
+			}
+
+			cr.updateState()
+		}
+	}
+}
+
+func (cr *cellsResolver) updateState() error {
 	var addresses []resolver.Address
-	for k, v := range m {
+	for k, v := range cr.m {
 		addresses = append(addresses, resolver.Address{
 			Addr: k,
 			ServerName: "main",
@@ -80,14 +112,14 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 		})
 	}
 
-	if err := cc.UpdateState(resolver.State{
+	if err := cr.cc.UpdateState(resolver.State{
 		Addresses: addresses,
-		ServiceConfig: cc.ParseServiceConfig(`{"loadBalancingPolicy": "lb"}`),
+		ServiceConfig: cr.cc.ParseServiceConfig(`{"loadBalancingPolicy": "lb"}`),
 	}); err != nil {
-		return nil, err
+		return err
 	}
 
-	return cr, nil
+	return nil
 }
 
 func (b *cellsBuilder) Scheme() string {

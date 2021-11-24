@@ -11,6 +11,25 @@ type Registry interface{
 	Deregister(Service) error
 	GetService(string) ([]Service, error)
 	ListServices() ([]Service, error)
+	Watch(...WatchOption) (Watcher, error)
+}
+
+type WatchOption func(WatchOptions) error
+
+type WatchOptions interface{}
+
+type Context interface {
+	Context(context.Context)
+}
+
+type Watcher interface {
+	Next() (Result, error)
+	Stop()
+}
+
+type Result interface {
+	Action() string
+	Service() Service
 }
 
 var defaultURLMux = &URLMux{}
@@ -86,4 +105,44 @@ func (r *reg) GetService(name string) ([]Service, error) {
 		})
 	}
 	return services, nil
+}
+
+func (r *reg) Watch(opts ...WatchOption) (Watcher, error) {
+	w, err := r.Registry.Watch()
+	if err != nil {
+		return nil, err
+	}
+
+	return &watcher{w}, nil
+}
+
+type watcher struct {
+	w registry.Watcher
+}
+
+func (w *watcher) Next() (Result, error) {
+	res, err := w.w.Next()
+	if err != nil {
+		return nil, err
+	}
+
+	return &result{r: res}, nil
+}
+
+func (w *watcher) Stop() {
+	w.w.Stop()
+}
+
+type result struct {
+	r *registry.Result
+}
+
+func (r *result) Action() string {
+	return r.r.Action
+}
+
+func (r *result) Service() Service {
+	return &service{
+		s: r.r.Service,
+	}
 }

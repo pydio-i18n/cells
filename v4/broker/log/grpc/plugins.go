@@ -29,7 +29,6 @@ import (
 	"github.com/pydio/cells/v4/common/config"
 	proto "github.com/pydio/cells/v4/common/proto/log"
 	"github.com/pydio/cells/v4/common/proto/sync"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
@@ -46,12 +45,16 @@ func init() {
 			service.Description("Syslog index store"),
 			service.Unique(true),
 			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
+				// TODO v4
+				//conf := servicecontext.GetConfig(c)
+				conf := config.Get("services", common.ServiceGrpcNamespace_ + common.ServiceLog)
+
 				serviceDir, e := config.ServiceDataDir(common.ServiceGrpcNamespace_ + common.ServiceLog)
 				if e != nil {
 					return e
 				}
 				rotationSize := log.DefaultRotationSize
-				if r := servicecontext.GetConfig(c).Val("bleveRotationSize").Int(); r > 0 {
+				if r := conf.Val("bleveRotationSize").Int(); r > 0 {
 					rotationSize = int64(r)
 				}
 				repo, err := log.NewSyslogServer(path.Join(serviceDir, "syslog.bleve"), "sysLog", rotationSize)

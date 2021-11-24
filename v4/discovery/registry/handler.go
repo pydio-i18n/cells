@@ -2,7 +2,6 @@ package registry
 
 import (
 	"context"
-
 	mregistry "github.com/micro/micro/v3/service/registry"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 
@@ -76,13 +75,13 @@ func (h *Handler) ListServices(ctx context.Context, req *pb.ListRequest) (*pb.Li
 }
 
 func (h *Handler) Watch(req *pb.WatchRequest, stream pb.Registry_WatchServer) error {
-	return nil
-	/*var opts []mregistry.WatchOption
+	var opts []mregistry.WatchOption
 	if s := req.GetService(); s != "" {
 		opts = append(opts, mregistry.WatchService(s))
 	}
 
-	w, err := h.reg.Watch(opts...)
+	//TODO v4 options
+	w, err := h.reg.Watch()
 	if err != nil {
 		return err
 	}
@@ -93,9 +92,14 @@ func (h *Handler) Watch(req *pb.WatchRequest, stream pb.Registry_WatchServer) er
 			return err
 		}
 
+		var p *mregistry.Service
+		if ok := res.Service().As(&p); !ok {
+			continue
+		}
+
 		stream.Send(&pb.Result{
-			Action:  res.Action,
-			Service: util.ToProto(res.Service),
+			Action:  res.Action(),
+			Service: registry.ToProto(p),
 		})
-	}*/
+	}
 }
