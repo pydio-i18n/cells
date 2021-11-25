@@ -24,9 +24,10 @@ import (
 	"context"
 	"fmt"
 
+	"google.golang.org/protobuf/proto"
+
 	"github.com/micro/micro/v3/service/broker"
 	"github.com/micro/micro/v3/service/broker/memory"
-	"github.com/micro/micro/v3/service/client"
 )
 
 type brokerwrap struct {
@@ -53,10 +54,8 @@ func Disconnect() error {
 
 // Publish sends a message to standard broker. For the moment, forward message to client.Publish
 func Publish(ctx context.Context, topic string, message interface{}, opts ...PublishOption) error {
-	if client.DefaultClient == nil {
-		return fmt.Errorf("client.DefaultClient is not defined")
-	}
-	return client.Publish(ctx, client.NewMessage(topic, message))
+	body, _ := proto.Marshal(message.(proto.Message))
+	return std.Publish(topic, &broker.Message{Body: body, Header: map[string]string{}}, broker.PublishContext(ctx))
 }
 
 // MustPublish publishes a message ignoring the error
