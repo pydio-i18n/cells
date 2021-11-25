@@ -22,9 +22,10 @@ package grpc
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"sync"
 	"time"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -70,14 +71,14 @@ func (a *AclBatcher) Start() {
 // WsCleaner subscribe to ACL:Delete events to clean workspaces
 // that do not have any ACLs anymore
 type WsCleaner struct {
-	Handler  *Handler
+	Handler  idm.WorkspaceServiceServer
 	batches  map[string]*AclBatcher
 	listener chan string
 	lock     *sync.Mutex
 	ctx      context.Context
 }
 
-func NewWsCleaner(h *Handler, ctx context.Context) *WsCleaner {
+func NewWsCleaner(ctx context.Context, h idm.WorkspaceServiceServer) *WsCleaner {
 	listener := make(chan string, 1)
 	lock := &sync.Mutex{}
 	w := &WsCleaner{

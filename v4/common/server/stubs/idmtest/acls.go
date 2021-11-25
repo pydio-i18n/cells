@@ -27,7 +27,6 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/server/stubs"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
@@ -70,8 +69,9 @@ func NewACLService(acls ...*idm.ACL) (*ACLService, error) {
 		return nil, fmt.Errorf("could not start test: unable to initialise DAO, error: ", err)
 	}
 
+	h := srv.NewHandler(nil, mockDAO.(acl.DAO))
 	serv := &ACLService{
-		DAO: mockDAO,
+		Handler: *h,
 	}
 	ctx := servicecontext.WithDAO(context.Background(), mockDAO)
 	for _, u := range acls {
@@ -85,7 +85,6 @@ func NewACLService(acls ...*idm.ACL) (*ACLService, error) {
 
 type ACLService struct {
 	srv.Handler
-	DAO dao.DAO
 }
 
 func (u *ACLService) GetStreamer(ctx context.Context) grpc.ClientStream {
@@ -100,7 +99,6 @@ func (u *ACLService) GetStreamer(ctx context.Context) grpc.ClientStream {
 
 func (u *ACLService) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
 	fmt.Println("Serving", method, args, reply, opts)
-	ctx = servicecontext.WithDAO(ctx, u.DAO)
 	var e error
 	switch method {
 	case "/idm.ACLService/CreateACL":
@@ -109,12 +107,13 @@ func (u *ACLService) Invoke(ctx context.Context, method string, args interface{}
 		} else {
 			reply.(*idm.CreateACLResponse).ACL = r.GetACL()
 		}
+	default:
+		return fmt.Errorf(method + " not implemented")
 	}
 	return e
 }
 
 func (u *ACLService) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	ctx = servicecontext.WithDAO(ctx, u.DAO)
 	switch method {
 	case "/idm.ACLService/SearchACL":
 		return u.GetStreamer(ctx), nil

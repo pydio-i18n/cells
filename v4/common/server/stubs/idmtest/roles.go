@@ -71,11 +71,11 @@ func NewRolesService(roles ...*idm.Role) (*RolesService, error) {
 	}
 
 	serv := &RolesService{
-		DAO: mockRDAO,
+		RoleServiceServer: srv.NewHandler(nil, mockRDAO.(role.DAO)),
 	}
 	ctx := servicecontext.WithDAO(context.Background(), mockRDAO)
 	for _, r := range roles {
-		_, er := serv.Handler.CreateRole(ctx, &idm.CreateRoleRequest{Role: r})
+		_, er := serv.RoleServiceServer.CreateRole(ctx, &idm.CreateRoleRequest{Role: r})
 		if er != nil {
 			return nil, er
 		}
@@ -84,7 +84,7 @@ func NewRolesService(roles ...*idm.Role) (*RolesService, error) {
 }
 
 type RolesService struct {
-	srv.Handler
+	idm.RoleServiceServer
 	DAO dao.DAO
 }
 
@@ -93,28 +93,28 @@ func (u *RolesService) GetStreamer(ctx context.Context) grpc.ClientStream {
 	st.Ctx = ctx
 	st.RespChan = make(chan interface{}, 1000)
 	st.SendHandler = func(i interface{}) error {
-		return u.Handler.SearchRole(i.(*idm.SearchRoleRequest), st)
+		return u.RoleServiceServer.SearchRole(i.(*idm.SearchRoleRequest), st)
 	}
 	return st
 }
 
 func (u *RolesService) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
 	fmt.Println("Serving", method, args, reply, opts)
-	ctx = servicecontext.WithDAO(ctx, u.DAO)
 	var e error
 	switch method {
 	case "/idm.RoleService/CreateRole":
-		if r, er := u.Handler.CreateRole(ctx, args.(*idm.CreateRoleRequest)); er != nil {
+		if r, er := u.RoleServiceServer.CreateRole(ctx, args.(*idm.CreateRoleRequest)); er != nil {
 			e = er
 		} else {
 			reply.(*idm.CreateRoleResponse).Role = r.GetRole()
 		}
+	default:
+		return fmt.Errorf(method + " not implemented")
 	}
 	return e
 }
 
 func (u *RolesService) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	ctx = servicecontext.WithDAO(ctx, u.DAO)
 	switch method {
 	case "/idm.RoleService/SearchRole":
 		return u.GetStreamer(ctx), nil

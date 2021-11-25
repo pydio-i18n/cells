@@ -28,6 +28,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/pydio/cells/v4/common/dao"
+
 	_ "github.com/mattn/go-sqlite3"
 	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/metadata"
@@ -36,7 +38,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/service"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/common/utils/cache"
 	"github.com/pydio/cells/v4/idm/user"
@@ -44,8 +45,9 @@ import (
 )
 
 var (
-	ctx context.Context
-	wg  sync.WaitGroup
+	ctx     context.Context
+	wg      sync.WaitGroup
+	mockDAO user.DAO
 )
 
 func TestMain(m *testing.M) {
@@ -62,22 +64,21 @@ func TestMain(m *testing.M) {
 		return
 	}
 
-	mockDAO := user.NewDAO(sqlDao)
+	mockDAO = user.NewDAO(sqlDao).(user.DAO)
 	var options = configx.New()
-	if err := mockDAO.Init(options); err != nil {
+	if err := (mockDAO.(dao.DAO)).Init(options); err != nil {
 		log.Fatal("could not start test: unable to initialise DAO, error: ", err)
 		return
 	}
 
-	ctx = servicecontext.WithDAO(context.Background(), mockDAO)
-
+	ctx = context.Background()
 	m.Run()
 	wg.Wait()
 }
 
 func TestUser(t *testing.T) {
 
-	h := new(Handler)
+	h := NewHandler(ctx, mockDAO)
 
 	Convey("Create one user", t, func() {
 		resp, err := h.CreateUser(ctx, &idm.CreateUserRequest{User: &idm.User{Login: "user1"}})

@@ -24,6 +24,8 @@ package grpc
 import (
 	"context"
 
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/idm/policy"
 	"google.golang.org/grpc"
@@ -84,7 +86,7 @@ func init() {
 				},
 			}),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
-				handler := new(Handler)
+				handler := NewHandler(ctx, servicecontext.GetDAO(ctx).(policy.DAO))
 				idm.RegisterPolicyEngineServiceServer(server, handler)
 				return nil
 			}),

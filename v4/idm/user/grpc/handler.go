@@ -69,17 +69,17 @@ func (a ByOverride) Less(i, j int) bool { return !a[i].ForceOverride && a[j].For
 // Handler definition
 type Handler struct {
 	idm.UnimplementedUserServiceServer
+	dao user.DAO
+}
+
+func NewHandler(ctx context.Context, dao user.DAO) idm.UserServiceServer {
+	return &Handler{dao: dao}
 }
 
 // BindUser binds a user with login/password
 func (h *Handler) BindUser(ctx context.Context, req *idm.BindUserRequest) (*idm.BindUserResponse, error) {
 
-	if servicecontext.GetDAO(ctx) == nil {
-		return nil, fmt.Errorf("no DAO found, wrong initialization")
-	}
-
-	dao := servicecontext.GetDAO(ctx).(user.DAO)
-	u, err := dao.Bind(req.UserName, req.Password)
+	u, err := h.dao.Bind(req.UserName, req.Password)
 	if err != nil {
 		return nil, err
 	}
@@ -94,14 +94,9 @@ func (h *Handler) BindUser(ctx context.Context, req *idm.BindUserRequest) (*idm.
 // CreateUser adds or creates a user or a group in the underlying database.
 func (h *Handler) CreateUser(ctx context.Context, req *idm.CreateUserRequest) (*idm.CreateUserResponse, error) {
 
-	if servicecontext.GetDAO(ctx) == nil {
-		return nil, fmt.Errorf("no DAO found, wrong initialization")
-	}
-	dao := servicecontext.GetDAO(ctx).(user.DAO)
-
 	passChange := req.User.Password
 	// Create or update user
-	newUser, createdNodes, err := dao.Add(req.User)
+	newUser, createdNodes, err := h.dao.Add(req.User)
 	if err != nil {
 		log.Logger(ctx).Error("cannot put user "+req.User.Login, req.User.ZapUuid(), zap.Error(err))
 		return nil, err
@@ -117,7 +112,7 @@ func (h *Handler) CreateUser(ctx context.Context, req *idm.CreateUserRequest) (*
 				return nil, fmt.Errorf("new password is the same as the old password, please use a different one")
 			}
 			var locks, newLocks []string
-			json.Unmarshal([]byte(l), &locks)
+			_ = json.Unmarshal([]byte(l), &locks)
 			for _, lock := range locks {
 				if lock != "pass_change" {
 					newLocks = append(newLocks, lock)
@@ -125,7 +120,7 @@ func (h *Handler) CreateUser(ctx context.Context, req *idm.CreateUserRequest) (*
 			}
 			marsh, _ := json.Marshal(newLocks)
 			out.Attributes["locks"] = string(marsh)
-			if _, _, e := dao.Add(out); e == nil {
+			if _, _, e := h.dao.Add(out); e == nil {
 				log.Logger(ctx).Info("user "+req.User.Login+" successfully updated his password", req.User.ZapUuid())
 			}
 		}
@@ -146,14 +141,14 @@ func (h *Handler) CreateUser(ctx context.Context, req *idm.CreateUserRequest) (*
 		req.User.Policies = userPolicies
 	}
 	log.Logger(ctx).Debug("ADDING POLICIES NOW", zap.Int("p length", len(req.User.Policies)), zap.Int("createdNodes length", len(createdNodes)))
-	if err := dao.AddPolicies(len(createdNodes) == 0, out.Uuid, req.User.Policies); err != nil {
+	if err := h.dao.AddPolicies(len(createdNodes) == 0, out.Uuid, req.User.Policies); err != nil {
 		return nil, err
 	}
 	for _, g := range createdNodes {
 		if g.Uuid != out.Uuid && g.Type == tree.NodeType_COLLECTION {
 			// Groups where created in the process, add default policies on them
 			log.Logger(ctx).Info("Setting Default Policies on groups that were created automatically", zap.Any("groupPath", g.Path))
-			if err := dao.AddPolicies(false, g.Uuid, defaultPolicies); err != nil {
+			if err := h.dao.AddPolicies(false, g.Uuid, defaultPolicies); err != nil {
 				return nil, err
 			}
 		}
@@ -208,9 +203,6 @@ func (h *Handler) CreateUser(ctx context.Context, req *idm.CreateUserRequest) (*
 
 // DeleteUser from database
 func (h *Handler) DeleteUser(ctx context.Context, req *idm.DeleteUserRequest) (*idm.DeleteUserResponse, error) {
-	if servicecontext.GetDAO(ctx) == nil {
-		return nil, fmt.Errorf("no DAO found, wrong initialization")
-	}
 	usersChan := make(chan *idm.User)
 	done := make(chan bool)
 
@@ -232,9 +224,8 @@ func (h *Handler) DeleteUser(ctx context.Context, req *idm.DeleteUserRequest) (*
 		autoClient.StartListening(taskChan)
 		defer autoClient.Stop()
 	}
-	dao := servicecontext.GetDAO(ctx).(user.DAO)
 
-	i, err := dao.Count(req.Query, true)
+	i, err := h.dao.Count(req.Query, true)
 	if err != nil {
 		return nil, err
 	}
@@ -249,11 +240,11 @@ func (h *Handler) DeleteUser(ctx context.Context, req *idm.DeleteUserRequest) (*
 			select {
 			case deleted := <-usersChan:
 				if deleted != nil {
-					dao.DeletePoliciesForResource(deleted.Uuid)
+					h.dao.DeletePoliciesForResource(deleted.Uuid)
 					if deleted.IsGroup {
-						dao.DeletePoliciesBySubject(fmt.Sprintf("role:%s", deleted.Uuid))
+						h.dao.DeletePoliciesBySubject(fmt.Sprintf("role:%s", deleted.Uuid))
 					} else {
-						dao.DeletePoliciesBySubject(fmt.Sprintf("user:%s", deleted.Uuid))
+						h.dao.DeletePoliciesBySubject(fmt.Sprintf("user:%s", deleted.Uuid))
 					}
 
 					// Propagate deletion event
@@ -292,7 +283,7 @@ func (h *Handler) DeleteUser(ctx context.Context, req *idm.DeleteUserRequest) (*
 		}
 	}()
 
-	numRows, err := dao.Del(req.Query, usersChan)
+	numRows, err := h.dao.Del(req.Query, usersChan)
 	close(done)
 	close(usersChan)
 	if err != nil {
@@ -316,17 +307,14 @@ func (h *Handler) DeleteUser(ctx context.Context, req *idm.DeleteUserRequest) (*
 func (h *Handler) SearchUser(request *idm.SearchUserRequest, response idm.UserService_SearchUserServer) error {
 
 	ctx := response.Context()
-	if servicecontext.GetDAO(ctx) == nil {
-		return fmt.Errorf("no DAO found, wrong initialization")
-	}
-	dao := servicecontext.GetDAO(ctx).(user.DAO)
+
 	autoApplies, er := h.loadAutoAppliesRoles(ctx)
 	if er != nil {
 		return er
 	}
 
 	usersGroups := new([]interface{})
-	if err := dao.Search(request.Query, usersGroups); err != nil {
+	if err := h.dao.Search(request.Query, usersGroups); err != nil {
 		return err
 	}
 
@@ -334,7 +322,7 @@ func (h *Handler) SearchUser(request *idm.SearchUserRequest, response idm.UserSe
 	for _, in := range *usersGroups {
 		if usr, ok := in.(*idm.User); ok {
 			usr.Password = ""
-			if usr.Policies, e = dao.GetPoliciesForResource(usr.Uuid); e != nil {
+			if usr.Policies, e = h.dao.GetPoliciesForResource(usr.Uuid); e != nil {
 				log.Logger(ctx).Error("cannot load policies for user "+usr.Uuid, zap.Error(e))
 				continue
 			}
@@ -351,12 +339,7 @@ func (h *Handler) SearchUser(request *idm.SearchUserRequest, response idm.UserSe
 // CountUser in database
 func (h *Handler) CountUser(ctx context.Context, request *idm.SearchUserRequest) (*idm.CountUserResponse, error) {
 
-	if servicecontext.GetDAO(ctx) == nil {
-		return nil, fmt.Errorf("no DAO found, wrong initialization")
-	}
-	dao := servicecontext.GetDAO(ctx).(user.DAO)
-
-	total, err := dao.Count(request.Query)
+	total, err := h.dao.Count(request.Query)
 	if err != nil {
 		return nil, err
 	}
@@ -368,10 +351,6 @@ func (h *Handler) CountUser(ctx context.Context, request *idm.SearchUserRequest)
 func (h *Handler) StreamUser(streamer idm.UserService_StreamUserServer) error {
 
 	ctx := streamer.Context()
-	if servicecontext.GetDAO(ctx) == nil {
-		return fmt.Errorf("no DAO found, wrong initialization")
-	}
-	dao := servicecontext.GetDAO(ctx).(user.DAO)
 
 	autoApplies, e := h.loadAutoAppliesRoles(ctx)
 	if e != nil {
@@ -385,7 +364,7 @@ func (h *Handler) StreamUser(streamer idm.UserService_StreamUserServer) error {
 		}
 
 		users := new([]interface{})
-		if err := dao.Search(incoming.Query, users); err != nil {
+		if err := h.dao.Search(incoming.Query, users); err != nil {
 			return err
 		}
 
@@ -476,7 +455,6 @@ func (h *Handler) loadAutoAppliesRoles(ctx context.Context) (autoApplies map[str
 	if e != nil {
 		return autoApplies, e
 	}
-	defer stream.CloseSend()
 	for {
 		resp, e := stream.Recv()
 		if e != nil {

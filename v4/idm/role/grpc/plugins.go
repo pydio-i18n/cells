@@ -23,6 +23,9 @@ package grpc
 
 import (
 	"context"
+	"fmt"
+
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 
 	"google.golang.org/grpc"
 
@@ -31,7 +34,6 @@ import (
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/service"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/idm/role"
 )
 
@@ -54,11 +56,20 @@ func init() {
 			}),
 			service.WithStorage(role.NewDAO, "idm_role"),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
-				handler := new(Handler)
+
+				dao := servicecontext.GetDAO(ctx)
+				if dao == nil {
+					return fmt.Errorf("cannot find DAO in init context")
+				}
+				rDao, ok := dao.(role.DAO)
+				if !ok {
+					return fmt.Errorf("cannot convert DAO to role.DAO")
+				}
+				handler := NewHandler(ctx, rDao)
 				idm.RegisterRoleServiceServer(server, handler)
 
 				// Clean role on user deletion
-				cleaner := NewCleaner(handler, servicecontext.GetDAO(ctx))
+				cleaner := NewCleaner(ctx, handler)
 				if e := broker.SubscribeCancellable(ctx, common.TopicIdmEvent, func(message broker.Message) error {
 					ic := &idm.ChangeEvent{}
 					if ct, e := message.Unmarshal(ic); e == nil {

@@ -23,10 +23,11 @@ package permissions
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"strings"
 	"time"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -476,30 +477,50 @@ func SearchUniqueUser(ctx context.Context, login string, uuid string, queries ..
 	if err != nil {
 		return
 	}
-	defer streamer.CloseSend()
-	for {
-		resp, e := streamer.Recv()
-		if e != nil {
-			if e != io.EOF && e != io.ErrUnexpectedEOF {
-				return nil, e
-			}
-			break
-		}
-		if resp == nil {
-			continue
-		}
-		user = resp.GetUser()
-		break
+	resp, e := streamer.Recv()
+	if e == io.EOF || e == io.ErrUnexpectedEOF {
+		return nil, errors.NotFound("user.not.found", "cannot find user with this login or uuid")
+	} else if e != nil {
+		return nil, e
 	}
-	if user == nil {
-		return nil, errors.NotFound(common.ServiceUser, "Cannot find user with this login or uuid")
-	}
+	user = resp.GetUser()
 	// Store to quick cache
 	if len(queries) == 0 {
 		usersCache.Set(login, user)
 		usersCache.Set(uuid, user)
 	}
 	return
+}
+
+// SearchUniqueWorkspace is a wrapper of SearchWorkspace to load a unique workspace
+func SearchUniqueWorkspace(ctx context.Context, wsUuid string, wsSlug string, queries ...*idm.WorkspaceSingleQuery) (*idm.Workspace, error) {
+
+	wsCli := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
+	if wsUuid != "" {
+		queries = append(queries, &idm.WorkspaceSingleQuery{Uuid: wsUuid})
+	} else if wsSlug != "" {
+		queries = append(queries, &idm.WorkspaceSingleQuery{Slug: wsSlug})
+	}
+	if len(queries) == 0 {
+		return nil, errors.BadRequest("bad.request", "please provide at least one of uuid, slug or custom query")
+	}
+	requests := make([]*anypb.Any, len(queries))
+	for _, q := range queries {
+		pq, _ := anypb.New(q)
+		requests = append(requests, pq)
+	}
+	st, e := wsCli.SearchWorkspace(ctx, &idm.SearchWorkspaceRequest{Query: &service.Query{SubQueries: requests}})
+	if e != nil {
+		return nil, e
+	}
+	resp, e := st.Recv()
+	if e == io.EOF || e == io.ErrUnexpectedEOF {
+		return nil, errors.NotFound("ws.not.found", "cannot find workspace with these queries")
+	} else if e != nil {
+		return nil, e
+	}
+	return resp.GetWorkspace(), nil
+
 }
 
 // IsUserLocked checks if the passed user has a logout attribute defined.

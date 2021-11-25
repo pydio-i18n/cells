@@ -30,18 +30,14 @@ import (
 	"path"
 	"testing"
 
+	"github.com/pydio/cells/v4/common/server/stubs/resttest"
+
 	"github.com/pydio/cells/v4/common/nodes"
 
-	"github.com/pydio/cells/v4/common/nodes/compose"
-	"github.com/pydio/cells/v4/common/proto/service"
-	"google.golang.org/protobuf/types/known/anypb"
-
 	"github.com/pydio/cells/v4/common/auth"
+	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 
-	"google.golang.org/protobuf/encoding/protojson"
-
-	"github.com/emicklei/go-restful"
 	"github.com/pydio/cells/v4/common/server/stubs/idmtest"
 	rest2 "github.com/pydio/cells/v4/idm/share/rest"
 
@@ -119,7 +115,8 @@ func TestShareLinks(t *testing.T) {
 		newNode = cR.GetNode()
 		So(newNode.Uuid, ShouldNotBeEmpty)
 
-		inputData, _ := protojson.Marshal(&rest.PutShareLinkRequest{
+		h := rest2.NewSharesHandler()
+		payload := &rest.PutShareLinkRequest{
 			ShareLink: &rest.ShareLink{
 				Label:     "Link to File.ex",
 				RootNodes: []*tree.Node{{Uuid: newNode.Uuid}},
@@ -127,43 +124,21 @@ func TestShareLinks(t *testing.T) {
 					rest.ShareLinkAccessType_Download, rest.ShareLinkAccessType_Preview,
 				},
 			},
-		})
-		input := bytes.NewBuffer(inputData)
-		body := &reqBody{Buffer: *input}
-		req := &restful.Request{
-			Request: (&http.Request{
-				Body: body,
-				Header: map[string][]string{
-					"Content-Type": {"application/json"},
-					"Accept":       {"application/json"},
-				},
-			}).WithContext(ctx),
 		}
-		restful.DefaultResponseContentType(restful.MIME_JSON)
-		output := bytes.NewBuffer([]byte{})
-		resp := restful.NewResponse(&respWriter{Buffer: *output, hh: map[string][]string{}})
-
-		h := rest2.NewSharesHandler()
-		h.PutShareLink(req, resp)
-		sCode := resp.ResponseWriter.(*respWriter).statusCode
-		sContent := resp.ResponseWriter.(*respWriter).String()
-		So(sCode, ShouldEqual, http.StatusOK)
-		So(sContent, ShouldNotBeEmpty)
 		outputLink := &rest.ShareLink{}
-		So(protojson.Unmarshal([]byte(sContent), outputLink), ShouldBeNil)
-		t.Log("Created a shared link", outputLink)
+		statusCode, er := resttest.RunRestfulHandler(ctx, h.PutShareLink, payload, outputLink, nil)
+		So(er, ShouldBeNil)
+		So(statusCode, ShouldEqual, http.StatusOK)
 
 		// Now try to access link as the new user
 		hiddenUser, e := permissions.SearchUniqueUser(context.Background(), outputLink.UserLogin, "")
 		So(e, ShouldBeNil)
 		So(hiddenUser.Attributes, ShouldContainKey, "hidden")
 		hiddenCtx := auth.WithImpersonate(context.Background(), hiddenUser)
-		wsClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
-		q, _ := anypb.New(&idm.WorkspaceSingleQuery{Uuid: outputLink.Uuid})
-		sr, e := wsClient.SearchWorkspace(hiddenCtx, &idm.SearchWorkspaceRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}})
+
+		ws, e := permissions.SearchUniqueWorkspace(hiddenCtx, outputLink.Uuid, "")
 		So(e, ShouldBeNil)
-		srw, _ := sr.Recv()
-		slugRoot := srw.GetWorkspace().GetSlug()
+		slugRoot := ws.GetSlug()
 
 		// Create slug/
 		hash := md5.New()
@@ -175,6 +150,19 @@ func TestShareLinks(t *testing.T) {
 		So(e, ShouldBeNil)
 		So(read, ShouldNotBeEmpty)
 		t.Log("Router Accessed File from Hidden User", read.Node)
+
+		payload2 := &rest.GetShareLinkRequest{Uuid: outputLink.Uuid}
+		expected2 := &rest.ShareLink{}
+		statusCode, er = resttest.RunRestfulHandler(ctx, h.GetShareLink, payload2, expected2, map[string]string{"Uuid": outputLink.Uuid})
+		So(er, ShouldBeNil)
+		So(statusCode, ShouldEqual, http.StatusOK)
+		So(expected2.Label, ShouldEqual, outputLink.Label)
+
+		payload3 := &rest.DeleteShareLinkRequest{Uuid: outputLink.Uuid}
+		expected3 := &rest.DeleteShareLinkResponse{}
+		statusCode, er = resttest.RunRestfulHandler(ctx, h.DeleteShareLink, payload3, expected3, map[string]string{"Uuid": outputLink.Uuid})
+		So(er, ShouldBeNil)
+		So(statusCode, ShouldEqual, http.StatusOK)
 
 	})
 }

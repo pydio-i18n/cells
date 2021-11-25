@@ -100,7 +100,7 @@ func (c *nodesCleaner) process(ctx context.Context, events ...*tree.NodeChangeEv
 	q, _ := anypb.New(&idm.ACLSingleQuery{
 		NodeIDs: uu,
 	})
-	c.handler.ExpireACL(ctx, &idm.ExpireACLRequest{
+	_, _ = c.handler.ExpireACL(ctx, &idm.ExpireACLRequest{
 		Query: &service.Query{
 			SubQueries: []*anypb.Any{q},
 		},

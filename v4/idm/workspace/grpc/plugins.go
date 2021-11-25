@@ -47,11 +47,11 @@ func init() {
 			service.WithStorage(workspace.NewDAO, "idm_workspace"),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 
-				h := new(Handler)
+				h := NewHandler(ctx, servicecontext.GetDAO(ctx).(workspace.DAO))
 				idm.RegisterWorkspaceServiceServer(server, h)
 
 				// Register a cleaner for removing a workspace when there are no more ACLs on it.
-				wsCleaner := NewWsCleaner(h, ctx)
+				wsCleaner := NewWsCleaner(ctx, h)
 				cleaner := &resources.PoliciesCleaner{
 					Dao: servicecontext.GetDAO(ctx),
 					Options: resources.PoliciesCleanerOptions{

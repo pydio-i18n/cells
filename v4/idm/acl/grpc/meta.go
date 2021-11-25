@@ -21,25 +21,22 @@
 package grpc
 
 import (
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	"github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
-	"github.com/pydio/cells/v4/idm/acl"
 )
 
 // ReadNodeStream implements method to be a MetaProvider
 func (h *Handler) ReadNodeStream(stream tree.NodeProviderStreamer_ReadNodeStreamServer) error {
 
 	ctx := stream.Context()
-	dao := servicecontext.GetDAO(ctx).(acl.DAO)
 	workspaceClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
 
 	for {
@@ -62,7 +59,9 @@ func (h *Handler) ReadNodeStream(stream tree.NodeProviderStreamer_ReadNodeStream
 				permissions.AclPolicy,
 			},
 		})
-		dao.Search(&service.Query{SubQueries: []*anypb.Any{q}}, acls)
+		if e := h.dao.Search(&service.Query{SubQueries: []*anypb.Any{q}}, acls); e != nil {
+			return e
+		}
 		var contentLock string
 		nodeAcls := map[string][]*idm.ACL{}
 		for _, in := range *acls {
@@ -100,7 +99,6 @@ func (h *Handler) ReadNodeStream(stream tree.NodeProviderStreamer_ReadNodeStream
 				},
 			})
 			if err == nil {
-				defer wsClient.CloseSend()
 				for {
 					wsResp, er := wsClient.Recv()
 					if er != nil {
@@ -118,7 +116,9 @@ func (h *Handler) ReadNodeStream(stream tree.NodeProviderStreamer_ReadNodeStream
 			node.MustSetMeta(common.MetaFlagWorkspacesShares, shares)
 		}
 
-		stream.Send(&tree.ReadNodeResponse{Node: node})
+		if e := stream.Send(&tree.ReadNodeResponse{Node: node}); e != nil {
+			return e
+		}
 	}
 
 	return nil

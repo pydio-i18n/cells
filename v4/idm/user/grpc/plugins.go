@@ -24,10 +24,11 @@ package grpc
 import (
 	"context"
 	"encoding/base64"
-	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"os"
 	"strings"
 	"time"
+
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 
 	"google.golang.org/grpc"
 
@@ -73,10 +74,10 @@ func init() {
 			service.WithStorage(user.NewDAO, "idm_user"),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 
-				idm.RegisterUserServiceServer(server, new(Handler))
+				dao := servicecontext.GetDAO(ctx).(user.DAO)
+				idm.RegisterUserServiceServer(server, NewHandler(ctx, dao))
 
 				// Register a cleaner for removing a workspace when there are no more ACLs on it.
-				dao := servicecontext.GetDAO(ctx).(user.DAO)
 				cleaner := &RolesCleaner{Dao: dao}
 				if e := broker.SubscribeCancellable(ctx, common.TopicIdmEvent, func(message broker.Message) error {
 					ev := &idm.ChangeEvent{}

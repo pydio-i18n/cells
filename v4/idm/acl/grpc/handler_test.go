@@ -26,18 +26,13 @@ import (
 	"sync"
 	"testing"
 
-	"google.golang.org/grpc/metadata"
-
-	"google.golang.org/protobuf/types/known/anypb"
-
-	. "github.com/smartystreets/goconvey/convey"
-
-	// SQLite Driver
 	_ "github.com/mattn/go-sqlite3"
+	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service "github.com/pydio/cells/v4/common/proto/service"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/idm/acl"
 	"github.com/pydio/cells/v4/x/configx"
@@ -65,7 +60,7 @@ func TestMain(m *testing.M) {
 		return
 	}
 
-	ctx = servicecontext.WithDAO(context.Background(), mockDAO)
+	ctx = context.Background()
 
 	m.Run()
 	wg.Wait()
@@ -73,7 +68,7 @@ func TestMain(m *testing.M) {
 
 func TestACL(t *testing.T) {
 
-	s := new(Handler)
+	s := NewHandler(ctx, mockDAO)
 
 	Convey("Create ACLs", t, func() {
 		resp, err := s.CreateACL(ctx, &idm.CreateACLRequest{ACL: &idm.ACL{

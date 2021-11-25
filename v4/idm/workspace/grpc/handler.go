@@ -30,7 +30,6 @@ import (
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/idm"
-	"github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/slug"
 	"github.com/pydio/cells/v4/idm/workspace"
@@ -39,20 +38,23 @@ import (
 // Handler definition
 type Handler struct {
 	idm.UnimplementedWorkspaceServiceServer
+	dao workspace.DAO
+}
+
+func NewHandler(ctx context.Context, dao workspace.DAO) idm.WorkspaceServiceServer {
+	return &Handler{dao: dao}
 }
 
 // CreateWorkspace in database
 func (h *Handler) CreateWorkspace(ctx context.Context, req *idm.CreateWorkspaceRequest) (*idm.CreateWorkspaceResponse, error) {
 
-	dao := servicecontext.GetDAO(ctx).(workspace.DAO)
-
 	if req.Workspace.Slug == "" {
 		req.Workspace.Slug = slug.Make(req.Workspace.Label)
 	}
-	update, err := dao.Add(req.Workspace)
+	update, err := h.dao.Add(req.Workspace)
 	// ADD POLICIES
 	if len(req.Workspace.Policies) > 0 {
-		if e := dao.AddPolicies(update, req.Workspace.UUID, req.Workspace.Policies); e != nil {
+		if e := h.dao.AddPolicies(update, req.Workspace.UUID, req.Workspace.Policies); e != nil {
 			return nil, e
 		}
 	}
@@ -93,14 +95,12 @@ func (h *Handler) CreateWorkspace(ctx context.Context, req *idm.CreateWorkspaceR
 // DeleteWorkspace from database
 func (h *Handler) DeleteWorkspace(ctx context.Context, req *idm.DeleteWorkspaceRequest) (*idm.DeleteWorkspaceResponse, error) {
 
-	dao := servicecontext.GetDAO(ctx).(workspace.DAO)
-
 	workspaces := new([]interface{})
-	if err := dao.Search(req.Query, workspaces); err != nil {
+	if err := h.dao.Search(req.Query, workspaces); err != nil {
 		return nil, err
 	}
 
-	numRows, err := dao.Del(req.Query)
+	numRows, err := h.dao.Del(req.Query)
 	response := &idm.DeleteWorkspaceResponse{
 		RowsDeleted: numRows,
 	}
@@ -111,7 +111,7 @@ func (h *Handler) DeleteWorkspace(ctx context.Context, req *idm.DeleteWorkspaceR
 	// Update relevant policies and propagate event
 	for _, w := range *workspaces {
 		currW := w.(*idm.Workspace)
-		err2 := dao.DeletePoliciesForResource(currW.UUID)
+		err2 := h.dao.DeletePoliciesForResource(currW.UUID)
 		if err2 != nil {
 			log.Logger(ctx).Error("could not delete policies for removed ws "+currW.Slug, zap.Error(err2))
 			continue
@@ -135,16 +135,15 @@ func (h *Handler) DeleteWorkspace(ctx context.Context, req *idm.DeleteWorkspaceR
 func (h *Handler) SearchWorkspace(request *idm.SearchWorkspaceRequest, response idm.WorkspaceService_SearchWorkspaceServer) error {
 
 	ctx := response.Context()
-	dao := servicecontext.GetDAO(ctx).(workspace.DAO)
 
 	workspaces := new([]interface{})
-	if err := dao.Search(request.Query, workspaces); err != nil {
+	if err := h.dao.Search(request.Query, workspaces); err != nil {
 		return err
 	}
 	var e error
 	for _, in := range *workspaces {
 		ws, ok := in.(*idm.Workspace)
-		if ws.Policies, e = dao.GetPoliciesForResource(ws.UUID); e != nil {
+		if ws.Policies, e = h.dao.GetPoliciesForResource(ws.UUID); e != nil {
 			log.Logger(ctx).Error("cannot load policies for workspace "+ws.UUID, zap.Error(e))
 			continue
 		}
@@ -166,7 +165,6 @@ func (h *Handler) SearchWorkspace(request *idm.SearchWorkspaceRequest, response 
 func (h *Handler) StreamWorkspace(streamer idm.WorkspaceService_StreamWorkspaceServer) error {
 
 	ctx := streamer.Context()
-	dao := servicecontext.GetDAO(ctx).(workspace.DAO)
 
 	for {
 		incoming, err := streamer.Recv()
@@ -178,14 +176,14 @@ func (h *Handler) StreamWorkspace(streamer idm.WorkspaceService_StreamWorkspaceS
 		}
 
 		workspaces := new([]interface{})
-		if err := dao.Search(incoming.Query, workspaces); err != nil {
+		if err := h.dao.Search(incoming.Query, workspaces); err != nil {
 			continue
 		}
 
 		var e error
 		for _, in := range *workspaces {
 			if ws, ok := in.(*idm.Workspace); ok {
-				if ws.Policies, e = dao.GetPoliciesForResource(ws.UUID); e != nil {
+				if ws.Policies, e = h.dao.GetPoliciesForResource(ws.UUID); e != nil {
 					log.Logger(ctx).Error("cannot load policies for workspace "+ws.UUID, zap.Error(e))
 					continue
 				}

@@ -63,8 +63,8 @@ func init() {
 				},
 			}),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
-				handler := NewHandler(ctx)
 
+				handler := NewHandler(ctx, servicecontext.GetDAO(ctx).(meta.DAO))
 				idm.RegisterUserMetaServiceServer(server, handler)
 				tree.RegisterNodeProviderStreamerServer(server, handler)
 

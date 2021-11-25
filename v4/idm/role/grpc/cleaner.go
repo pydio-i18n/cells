@@ -23,19 +23,19 @@ package grpc
 import (
 	"context"
 
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 
-	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/service/resources"
 )
 
-func NewCleaner(handler *Handler, dao dao.DAO) *Cleaner {
+func NewCleaner(ctx context.Context, handler idm.RoleServiceServer) *Cleaner {
 	c := &Cleaner{}
-	c.Dao = dao
+	c.Dao = servicecontext.GetDAO(ctx)
 	c.handler = handler
 	c.Options = resources.PoliciesCleanerOptions{SubscribeUsers: true}
 	return c
@@ -43,7 +43,7 @@ func NewCleaner(handler *Handler, dao dao.DAO) *Cleaner {
 
 type Cleaner struct {
 	resources.PoliciesCleaner
-	handler *Handler
+	handler idm.RoleServiceServer
 }
 
 func (c *Cleaner) Handle(ctx context.Context, msg *idm.ChangeEvent) error {

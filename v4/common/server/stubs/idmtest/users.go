@@ -25,17 +25,15 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/pydio/cells/v4/common/sql"
-	"github.com/pydio/cells/v4/idm/user"
-	"github.com/pydio/cells/v4/x/configx"
-
 	"google.golang.org/grpc"
 
-	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/server/stubs"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/sql"
+	"github.com/pydio/cells/v4/idm/user"
 	srv "github.com/pydio/cells/v4/idm/user/grpc"
+	"github.com/pydio/cells/v4/x/configx"
 )
 
 type UsersStreamer struct {
@@ -72,11 +70,11 @@ func NewUsersService(users ...*idm.User) (*UsersService, error) {
 	}
 
 	serv := &UsersService{
-		DAO: mockDAO,
+		UserServiceServer: srv.NewHandler(nil, mockDAO.(user.DAO)),
 	}
 	ctx := servicecontext.WithDAO(context.Background(), mockDAO)
 	for _, u := range users {
-		_, er := serv.Handler.CreateUser(ctx, &idm.CreateUserRequest{User: u})
+		_, er := serv.UserServiceServer.CreateUser(ctx, &idm.CreateUserRequest{User: u})
 		if er != nil {
 			return nil, er
 		}
@@ -85,8 +83,7 @@ func NewUsersService(users ...*idm.User) (*UsersService, error) {
 }
 
 type UsersService struct {
-	srv.Handler
-	DAO dao.DAO
+	idm.UserServiceServer
 }
 
 func (u *UsersService) GetStreamer(ctx context.Context) grpc.ClientStream {
@@ -94,28 +91,34 @@ func (u *UsersService) GetStreamer(ctx context.Context) grpc.ClientStream {
 	st.Ctx = ctx
 	st.RespChan = make(chan interface{}, 1000)
 	st.SendHandler = func(i interface{}) error {
-		return u.Handler.SearchUser(i.(*idm.SearchUserRequest), st)
+		return u.UserServiceServer.SearchUser(i.(*idm.SearchUserRequest), st)
 	}
 	return st
 }
 
 func (u *UsersService) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
 	fmt.Println("Serving", method, args, reply, opts)
-	ctx = servicecontext.WithDAO(ctx, u.DAO)
 	var e error
 	switch method {
 	case "/idm.UserService/CreateUser":
-		if r, er := u.Handler.CreateUser(ctx, args.(*idm.CreateUserRequest)); er != nil {
+		if r, er := u.UserServiceServer.CreateUser(ctx, args.(*idm.CreateUserRequest)); er != nil {
 			e = er
 		} else {
 			reply.(*idm.CreateUserResponse).User = r.GetUser()
 		}
+	case "/idm.UserService/DeleteUser":
+		if r, er := u.UserServiceServer.DeleteUser(ctx, args.(*idm.DeleteUserRequest)); er != nil {
+			e = er
+		} else {
+			reply.(*idm.DeleteUserResponse).RowsDeleted = r.GetRowsDeleted()
+		}
+	default:
+		return fmt.Errorf(method + " not implemented")
 	}
 	return e
 }
 
 func (u *UsersService) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	ctx = servicecontext.WithDAO(ctx, u.DAO)
 	switch method {
 	case "/idm.UserService/SearchUser":
 		return u.GetStreamer(ctx), nil

@@ -32,7 +32,6 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/utils/cache"
 	"github.com/pydio/cells/v4/idm/meta"
@@ -45,10 +44,11 @@ type Handler struct {
 	tree.UnimplementedNodeProviderStreamerServer
 
 	searchCache cache.Sharded
+	dao         meta.DAO
 }
 
-func NewHandler(ctx context.Context) *Handler {
-	h := &Handler{}
+func NewHandler(ctx context.Context, dao meta.DAO) *Handler {
+	h := &Handler{dao: dao}
 	h.searchCache = cache.NewSharded(common.ServiceGrpcNamespace_ + common.ServiceUserMeta)
 	go func() {
 		<-ctx.Done()
@@ -64,9 +64,8 @@ func (h *Handler) Stop() {
 // UpdateUserMeta adds, updates or deletes user meta.
 func (h *Handler) UpdateUserMeta(ctx context.Context, request *idm.UpdateUserMetaRequest) (*idm.UpdateUserMetaResponse, error) {
 
-	dao := servicecontext.GetDAO(ctx).(meta.DAO)
 	response := &idm.UpdateUserMetaResponse{}
-	namespaces, _ := dao.GetNamespaceDao().List()
+	namespaces, _ := h.dao.GetNamespaceDao().List()
 	nodes := make(map[string]*tree.Node)
 	sources := make(map[string]*tree.Node)
 	for _, metaData := range request.MetaDatas {
@@ -79,7 +78,7 @@ func (h *Handler) UpdateUserMeta(ctx context.Context, request *idm.UpdateUserMet
 				return nil, fmt.Errorf("make sure to use JSON format for metadata: %s", er.Error())
 			}
 			// ADD / UPDATE
-			if newMeta, prev, err := dao.Set(metaData); err == nil {
+			if newMeta, prev, err := h.dao.Set(metaData); err == nil {
 				response.MetaDatas = append(response.MetaDatas, newMeta)
 				prevValue = prev
 			} else {
@@ -87,7 +86,7 @@ func (h *Handler) UpdateUserMeta(ctx context.Context, request *idm.UpdateUserMet
 			}
 		} else {
 			// DELETE
-			if prev, err := dao.Del(metaData); err == nil {
+			if prev, err := h.dao.Del(metaData); err == nil {
 				prevValue = prev
 			} else {
 				return nil, err
@@ -122,7 +121,7 @@ func (h *Handler) UpdateUserMeta(ctx context.Context, request *idm.UpdateUserMet
 			if resolved, ok := nodes[nodeId]; ok {
 				target = resolved
 			}
-			metas, e := dao.Search([]string{}, []string{target.Uuid}, "", "", &service.ResourcePolicyQuery{
+			metas, e := h.dao.Search([]string{}, []string{target.Uuid}, "", "", &service.ResourcePolicyQuery{
 				Subjects: subjects,
 			})
 			if e != nil {
@@ -148,9 +147,7 @@ func (h *Handler) UpdateUserMeta(ctx context.Context, request *idm.UpdateUserMet
 // SearchUserMeta retrieves meta based on various criteria.
 func (h *Handler) SearchUserMeta(request *idm.SearchUserMetaRequest, stream idm.UserMetaService_SearchUserMetaServer) error {
 
-	ctx := stream.Context()
-	dao := servicecontext.GetDAO(ctx).(meta.DAO)
-	results, err := dao.Search(request.MetaUuids, request.NodeUuids, request.Namespace, request.ResourceSubjectOwner, request.ResourceQuery)
+	results, err := h.dao.Search(request.MetaUuids, request.NodeUuids, request.Namespace, request.ResourceSubjectOwner, request.ResourceQuery)
 	if err != nil {
 		return err
 	}
@@ -167,7 +164,7 @@ func (h *Handler) SearchUserMeta(request *idm.SearchUserMetaRequest, stream idm.
 func (h *Handler) ReadNodeStream(stream tree.NodeProviderStreamer_ReadNodeStreamServer) error {
 
 	ctx := stream.Context()
-	dao := servicecontext.GetDAO(ctx).(meta.DAO)
+
 	bgCtx := metadata.NewBackgroundWithMetaCopy(ctx)
 	subjects, e := auth.SubjectsForResourcePolicyQuery(bgCtx, nil)
 	if e != nil {
@@ -188,7 +185,7 @@ func (h *Handler) ReadNodeStream(stream tree.NodeProviderStreamer_ReadNodeStream
 		if r, ok := h.resultsFromCache(node.Uuid, subjects); ok {
 			results = r
 		} else {
-			results, err = dao.Search([]string{}, []string{node.Uuid}, "", "", &service.ResourcePolicyQuery{
+			results, err = h.dao.Search([]string{}, []string{node.Uuid}, "", "", &service.ResourcePolicyQuery{
 				Subjects: subjects,
 			})
 			log.Logger(ctx).Debug(fmt.Sprintf("Got %d results for node", len(results)), node.ZapUuid())
@@ -211,7 +208,7 @@ func (h *Handler) ReadNodeStream(stream tree.NodeProviderStreamer_ReadNodeStream
 func (h *Handler) UpdateUserMetaNamespace(ctx context.Context, request *idm.UpdateUserMetaNamespaceRequest) (*idm.UpdateUserMetaNamespaceResponse, error) {
 
 	response := &idm.UpdateUserMetaNamespaceResponse{}
-	dao := servicecontext.GetDAO(ctx).(meta.DAO).GetNamespaceDao()
+	dao := h.dao.GetNamespaceDao()
 	for _, metaNameSpace := range request.Namespaces {
 		if err := dao.Del(metaNameSpace); err != nil {
 			return nil, err
@@ -242,8 +239,7 @@ func (h *Handler) UpdateUserMetaNamespace(ctx context.Context, request *idm.Upda
 // ListUserMetaNamespace List all namespaces from underlying DAO.
 func (h *Handler) ListUserMetaNamespace(request *idm.ListUserMetaNamespaceRequest, stream idm.UserMetaService_ListUserMetaNamespaceServer) error {
 
-	ctx := stream.Context()
-	dao := servicecontext.GetDAO(ctx).(meta.DAO).GetNamespaceDao()
+	dao := h.dao.GetNamespaceDao()
 	if results, err := dao.List(); err == nil {
 		for _, result := range results {
 			stream.Send(&idm.ListUserMetaNamespaceResponse{UserMetaNamespace: result})

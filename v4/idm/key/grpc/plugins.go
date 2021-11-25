@@ -24,6 +24,8 @@ package grpc
 import (
 	"context"
 
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+
 	"github.com/pydio/cells/v4/common/proto/encryption"
 	"github.com/pydio/cells/v4/idm/key"
 	"google.golang.org/grpc"
@@ -43,11 +45,9 @@ func init() {
 			service.WithStorage(key.NewDAO, "idm_key"),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 
-				h, err := NewUserKeyStore()
-				if err != nil {
-					return err
-				}
+				h := NewUserKeyStore(ctx, servicecontext.GetDAO(ctx).(key.DAO))
 				encryption.RegisterUserKeyStoreServer(server, h)
+
 				return nil
 			}),
 		)

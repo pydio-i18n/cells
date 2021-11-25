@@ -131,6 +131,13 @@ func (u *DocStoreService) Invoke(ctx context.Context, method string, args interf
 		} else {
 			reply.(*docstore.PutDocumentResponse).Document = r.GetDocument()
 		}
+	case "/docstore.DocStore/DeleteDocuments":
+		if r, er := u.Handler.DeleteDocuments(ctx, args.(*docstore.DeleteDocumentsRequest)); er != nil {
+			e = er
+		} else {
+			reply.(*docstore.DeleteDocumentsResponse).DeletionCount = r.DeletionCount
+			reply.(*docstore.DeleteDocumentsResponse).Success = r.Success
+		}
 	default:
 		e = fmt.Errorf(method + " not implemented")
 	}

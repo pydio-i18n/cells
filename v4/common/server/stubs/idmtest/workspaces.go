@@ -27,7 +27,6 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/server/stubs"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
@@ -71,11 +70,11 @@ func NewWorkspacesService(ww ...*idm.Workspace) (*WorkspacesService, error) {
 	}
 
 	serv := &WorkspacesService{
-		DAO: mockDAO,
+		WorkspaceServiceServer: srv.NewHandler(nil, mockDAO.(workspace.DAO)),
 	}
 	ctx := servicecontext.WithDAO(context.Background(), mockDAO)
 	for _, u := range ww {
-		_, er := serv.Handler.CreateWorkspace(ctx, &idm.CreateWorkspaceRequest{Workspace: u})
+		_, er := serv.WorkspaceServiceServer.CreateWorkspace(ctx, &idm.CreateWorkspaceRequest{Workspace: u})
 		if er != nil {
 			return nil, er
 		}
@@ -84,8 +83,7 @@ func NewWorkspacesService(ww ...*idm.Workspace) (*WorkspacesService, error) {
 }
 
 type WorkspacesService struct {
-	srv.Handler
-	DAO dao.DAO
+	idm.WorkspaceServiceServer
 }
 
 func (u *WorkspacesService) GetStreamer(ctx context.Context) grpc.ClientStream {
@@ -93,29 +91,36 @@ func (u *WorkspacesService) GetStreamer(ctx context.Context) grpc.ClientStream {
 	st.Ctx = ctx
 	st.RespChan = make(chan interface{}, 1000)
 	st.SendHandler = func(i interface{}) error {
-		return u.Handler.SearchWorkspace(i.(*idm.SearchWorkspaceRequest), st)
+		return u.WorkspaceServiceServer.SearchWorkspace(i.(*idm.SearchWorkspaceRequest), st)
 	}
 	return st
 }
 
 func (u *WorkspacesService) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
 	fmt.Println("Serving", method, args, reply, opts)
-	ctx = servicecontext.WithDAO(ctx, u.DAO)
 	var e error
 	switch method {
 	case "/idm.WorkspaceService/CreateWorkspace":
-		cr, er := u.Handler.CreateWorkspace(ctx, args.(*idm.CreateWorkspaceRequest))
+		cr, er := u.WorkspaceServiceServer.CreateWorkspace(ctx, args.(*idm.CreateWorkspaceRequest))
 		if er != nil {
 			e = er
 		} else {
 			reply.(*idm.CreateWorkspaceResponse).Workspace = cr.GetWorkspace()
 		}
+	case "/idm.WorkspaceService/DeleteWorkspace":
+		cr, er := u.WorkspaceServiceServer.DeleteWorkspace(ctx, args.(*idm.DeleteWorkspaceRequest))
+		if er != nil {
+			e = er
+		} else {
+			reply.(*idm.DeleteWorkspaceResponse).RowsDeleted = cr.GetRowsDeleted()
+		}
+	default:
+		return fmt.Errorf(method + " not implemented")
 	}
 	return e
 }
 
 func (u *WorkspacesService) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	ctx = servicecontext.WithDAO(ctx, u.DAO)
 	switch method {
 	case "/idm.WorkspaceService/SearchWorkspace":
 		return u.GetStreamer(ctx), nil

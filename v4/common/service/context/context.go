@@ -24,8 +24,8 @@ package servicecontext
 import (
 	"context"
 
-	"go.uber.org/zap"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/registry"
@@ -110,7 +110,6 @@ func GetDAO(ctx context.Context) dao.DAO {
 
 	return nil
 }
-
 
 func GetLogger(ctx context.Context) *zap.Logger {
 	if logger, ok := ctx.Value(loggerKey).(*zap.Logger); ok {

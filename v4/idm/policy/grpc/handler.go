@@ -31,7 +31,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/idm"
-	"github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/idm/policy"
 )
 
@@ -42,12 +41,16 @@ var (
 
 type Handler struct {
 	idm.UnimplementedPolicyEngineServiceServer
+	dao policy.DAO
+}
+
+func NewHandler(ctx context.Context, dao policy.DAO) idm.PolicyEngineServiceServer {
+	return &Handler{dao: dao}
 }
 
 func (h *Handler) IsAllowed(ctx context.Context, request *idm.PolicyEngineRequest) (*idm.PolicyEngineResponse, error) {
 
 	response := &idm.PolicyEngineResponse{}
-	dao := servicecontext.GetDAO(ctx).(policy.DAO)
 
 	reqContext := make(map[string]interface{})
 	for k, v := range request.Context {
@@ -64,7 +67,7 @@ func (h *Handler) IsAllowed(ctx context.Context, request *idm.PolicyEngineReques
 			Context:  reqContext,
 		}
 
-		if err := dao.IsAllowed(ladonRequest); err == nil {
+		if err := h.dao.IsAllowed(ladonRequest); err == nil {
 			// Explicit allow
 			allowed = true
 		} else if strings.Contains(err.Error(), "Request was denied by default") {
@@ -103,8 +106,7 @@ func (h *Handler) ListPolicyGroups(ctx context.Context, request *idm.ListPolicyG
 		return response, nil
 	}
 
-	dao := servicecontext.GetDAO(ctx).(policy.DAO)
-	groups, err := dao.ListPolicyGroups(ctx)
+	groups, err := h.dao.ListPolicyGroups(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -122,9 +124,7 @@ func (h *Handler) StorePolicyGroup(ctx context.Context, request *idm.StorePolicy
 	groupsCacheValid = false
 	response := &idm.StorePolicyGroupResponse{}
 
-	dao := servicecontext.GetDAO(ctx).(policy.DAO)
-
-	stored, err := dao.StorePolicyGroup(ctx, request.PolicyGroup)
+	stored, err := h.dao.StorePolicyGroup(ctx, request.PolicyGroup)
 	if err != nil {
 		return nil, err
 	}
@@ -144,9 +144,7 @@ func (h *Handler) DeletePolicyGroup(ctx context.Context, request *idm.DeletePoli
 	groupsCacheValid = false
 	response := &idm.DeletePolicyGroupResponse{}
 
-	dao := servicecontext.GetDAO(ctx).(policy.DAO)
-
-	err := dao.DeletePolicyGroup(ctx, request.PolicyGroup)
+	err := h.dao.DeletePolicyGroup(ctx, request.PolicyGroup)
 	if err != nil {
 		return nil, err
 	}

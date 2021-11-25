@@ -27,7 +27,6 @@ import (
 	"testing"
 
 	"github.com/pydio/cells/v4/common/proto/idm"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/idm/meta"
@@ -39,8 +38,9 @@ import (
 )
 
 var (
-	wg  sync.WaitGroup
-	ctx context.Context
+	wg      sync.WaitGroup
+	ctx     context.Context
+	mockDAO meta.DAO
 )
 
 func TestMain(m *testing.M) {
@@ -52,14 +52,14 @@ func TestMain(m *testing.M) {
 		return
 	}
 
-	mockDAO := meta.NewDAO(sqlDAO)
-	if err := mockDAO.Init(options); err != nil {
+	inDao := meta.NewDAO(sqlDAO)
+	mockDAO = inDao.(meta.DAO)
+	if err := inDao.Init(options); err != nil {
 		fmt.Print("Could not start test ", err)
 		return
 	}
 
 	ctx = context.Background()
-	ctx = servicecontext.WithDAO(ctx, mockDAO)
 	ctx = metadata.NewContext(ctx, map[string]string{})
 
 	m.Run()
@@ -68,11 +68,10 @@ func TestMain(m *testing.M) {
 
 func TestRole(t *testing.T) {
 
-	h := &Handler{}
+	h := &Handler{dao: mockDAO}
 
 	Convey("Test DAO", t, func() {
-		dao := servicecontext.GetDAO(ctx).(meta.DAO)
-		nsDao := dao.GetNamespaceDao()
+		nsDao := mockDAO.GetNamespaceDao()
 		So(nsDao, ShouldNotBeNil)
 	})
 

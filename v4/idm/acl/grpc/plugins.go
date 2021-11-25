@@ -24,6 +24,8 @@ package grpc
 import (
 	"context"
 
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
@@ -53,7 +55,7 @@ func init() {
 			service.Metadata(meta.ServiceMetaProvider, "stream"),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 
-				handler := new(Handler)
+				handler := NewHandler(ctx, servicecontext.GetDAO(ctx).(acl.DAO))
 				idm.RegisterACLServiceServer(server, handler)
 				tree.RegisterNodeProviderStreamerServer(server, handler)
 

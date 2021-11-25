@@ -35,7 +35,6 @@ import (
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service "github.com/pydio/cells/v4/common/proto/service"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	commonsql "github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/idm/role"
 	"github.com/pydio/cells/v4/x/configx"
@@ -48,26 +47,6 @@ var (
 )
 
 func TestMain(m *testing.M) {
-
-	// var err error
-
-	// db, err := sql.Open("sqlite3", "file::memory:?mode=memory&cache=shared")
-	// if err != nil {
-	// 	log.Fatal("Could not start test ", err)
-	// 	return
-	// }
-	// mockDB := &commonsql.SQLConn{DB: db}
-
-	// options := config.NewMap()
-	// options.Set("database", mockDB)
-	// options.Set("exclusive", true)
-	// options.Set("prepare", true)
-
-	// roleDAO = role.NewSQLite()
-	// if err := roleDAO.Init(options); err != nil {
-	// 	log.Fatal("Could not start test ", err)
-	// 	return
-	// }
 
 	// Instantiate and initialise the role DAO Mock
 	sqlDao := commonsql.NewDAO("sqlite3", "file::memory:?mode=memory&cache=shared", "")
@@ -82,8 +61,7 @@ func TestMain(m *testing.M) {
 		return
 	}
 
-	ctx = servicecontext.WithDAO(context.Background(), roleDAO.(dao.DAO))
-
+	ctx = context.Background()
 	m.Run()
 	wg.Wait()
 }
@@ -91,6 +69,7 @@ func TestMain(m *testing.M) {
 func TestRole(t *testing.T) {
 
 	s := new(Handler)
+	s.dao = roleDAO
 
 	Convey("Create Roles", t, func() {
 		resp, err := s.CreateRole(ctx, &idm.CreateRoleRequest{Role: &idm.Role{Uuid: "role1", Label: "Role 1"}})
@@ -158,7 +137,7 @@ func TestRole(t *testing.T) {
 
 func TestRoleWithRules(t *testing.T) {
 
-	s := new(Handler)
+	s := &Handler{dao: roleDAO}
 	Convey("Create Roles with Resource Rule", t, func() {
 
 		resp, err := s.CreateRole(ctx, &idm.CreateRoleRequest{Role: &idm.Role{Uuid: "role-res", Label: "Role 1"}})
