@@ -23,9 +23,9 @@ package datatest
 import (
 	"context"
 	"fmt"
-	"io"
 
-	"github.com/pydio/cells/v4/common/dao"
+	"google.golang.org/grpc"
+
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/server/stubs"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
@@ -33,62 +33,9 @@ import (
 	"github.com/pydio/cells/v4/data/meta"
 	srv "github.com/pydio/cells/v4/data/meta/grpc"
 	"github.com/pydio/cells/v4/x/configx"
-	"google.golang.org/grpc"
 )
 
-type ListMetaStreamer struct {
-	stubs.ClientServerStreamerCore
-	service *MetaService
-}
-
-// Send implements SERVER method
-func (u *ListMetaStreamer) Send(response *tree.ListNodesResponse) error {
-	u.RespChan <- response
-	return nil
-}
-
-// RecvMsg implements CLIENT method
-func (u *ListMetaStreamer) RecvMsg(m interface{}) error {
-	if resp, o := <-u.RespChan; o {
-		m.(*tree.ListNodesResponse).Node = resp.(*tree.ListNodesResponse).Node
-		return nil
-	} else {
-		return io.EOF
-	}
-}
-
-type ReadStreamMetaStreamer struct {
-	stubs.ClientServerStreamerCore
-	service *MetaService
-	ReqChan chan interface{}
-}
-
-// Recv implements SERVER method
-func (u *ReadStreamMetaStreamer) Recv() (*tree.ReadNodeRequest, error) {
-	if req, o := <-u.ReqChan; o {
-		return req.(*tree.ReadNodeRequest), nil
-	} else {
-		return nil, io.EOF
-	}
-}
-
-// Send implements SERVER method
-func (u *ReadStreamMetaStreamer) Send(response *tree.ReadNodeResponse) error {
-	u.RespChan <- response
-	return nil
-}
-
-// RecvMsg implements CLIENT method
-func (u *ReadStreamMetaStreamer) RecvMsg(m interface{}) error {
-	if resp, o := <-u.RespChan; o {
-		m.(*tree.ReadNodeResponse).Node = resp.(*tree.ReadNodeResponse).Node
-		return nil
-	} else {
-		return io.EOF
-	}
-}
-
-func NewMetaService(nodes ...*tree.Node) (*MetaService, error) {
+func NewMetaService(nodes ...*tree.Node) (grpc.ClientConnInterface, error) {
 	sqlDao := sql.NewDAO("sqlite3", "file::memory:?mode=memory&cache=shared", "data_meta_")
 	if sqlDao == nil {
 		return nil, fmt.Errorf("unable to open sqlite3 DB file, could not start test")
@@ -100,78 +47,26 @@ func NewMetaService(nodes ...*tree.Node) (*MetaService, error) {
 		return nil, fmt.Errorf("could not start test: unable to initialise index DAO, error: ", err)
 	}
 
-	ts := srv.NewMetaServer(context.Background())
+	ts := srv.NewMetaServer(context.Background(), mockDAO.(meta.DAO))
 
-	serv := &MetaService{
-		MetaServer: *ts,
-		DAO:        mockDAO,
-	}
+	srv1 := &tree.NodeProviderStub{}
+	srv1.NodeProviderServer = ts
+	srv2 := &tree.NodeReceiverStub{}
+	srv2.NodeReceiverServer = ts
+	srv3 := &tree.NodeProviderStreamerStub{}
+	srv3.NodeProviderStreamerServer = ts
+
+	mux := &stubs.MuxService{}
+	mux.Register("tree.NodeProvider", srv1)
+	mux.Register("tree.NodeReceiver", srv2)
+	mux.Register("tree.NodeProviderStreamer", srv3)
+
 	ctx := servicecontext.WithDAO(context.Background(), mockDAO)
 	for _, u := range nodes {
-		_, er := serv.MetaServer.CreateNode(ctx, &tree.CreateNodeRequest{Node: u})
+		_, er := ts.CreateNode(ctx, &tree.CreateNodeRequest{Node: u})
 		if er != nil {
 			return nil, er
 		}
 	}
-	return serv, nil
-}
-
-type MetaService struct {
-	srv.MetaServer
-	DAO dao.DAO
-}
-
-func (u *MetaService) GetStreamer(ctx context.Context, streamType string) grpc.ClientStream {
-
-	if streamType == "list" {
-		st := &ListMetaStreamer{}
-		st.Ctx = ctx
-		st.RespChan = make(chan interface{}, 1000)
-		st.SendHandler = func(i interface{}) error {
-			return u.MetaServer.ListNodes(i.(*tree.ListNodesRequest), st)
-		}
-		return st
-	} else {
-		st := &ReadStreamMetaStreamer{}
-		st.Ctx = ctx
-		st.RespChan = make(chan interface{}, 1000)
-		st.ReqChan = make(chan interface{}, 1000)
-		st.SendHandler = func(i interface{}) error {
-			//return u.MetaServer.ReadNodeStream(st)
-			st.ReqChan <- i
-			return nil
-		}
-		go u.MetaServer.ReadNodeStream(st)
-		return st
-	}
-}
-
-func (u *MetaService) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	fmt.Println("Serving", method, args, reply, opts)
-	ctx = servicecontext.WithDAO(ctx, u.DAO)
-	var e error
-	switch method {
-	case "/tree.NodeReceiver/CreateNode":
-		resp, er := u.MetaServer.CreateNode(ctx, args.(*tree.CreateNodeRequest))
-		if er == nil {
-			reply.(*tree.CreateNodeResponse).Node = resp.GetNode()
-			reply.(*tree.CreateNodeResponse).Success = resp.GetSuccess()
-		} else {
-			e = er
-		}
-	default:
-		e = fmt.Errorf(method + " not implemented")
-	}
-	return e
-}
-
-func (u *MetaService) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	ctx = servicecontext.WithDAO(ctx, u.DAO)
-	switch method {
-	case "/tree.NodeProvider/ListNodes":
-		return u.GetStreamer(ctx, "list"), nil
-	case "/tree.NodeProviderStreamer/ReadNodeStream":
-		return u.GetStreamer(ctx, "stream"), nil
-	}
-	return nil, fmt.Errorf(method + "  not implemented")
+	return mux, nil
 }

@@ -23,12 +23,10 @@ package idmtest
 import (
 	"context"
 	"fmt"
-	"io"
 
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common/proto/idm"
-	"github.com/pydio/cells/v4/common/server/stubs"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/idm/acl"
@@ -36,28 +34,7 @@ import (
 	"github.com/pydio/cells/v4/x/configx"
 )
 
-type ACLStreamer struct {
-	stubs.ClientServerStreamerCore
-	service *ACLService
-}
-
-// Send implements SERVER method
-func (u *ACLStreamer) Send(response *idm.SearchACLResponse) error {
-	u.RespChan <- response
-	return nil
-}
-
-// RecvMsg implements CLIENT method
-func (u *ACLStreamer) RecvMsg(m interface{}) error {
-	if resp, o := <-u.RespChan; o {
-		m.(*idm.SearchACLResponse).ACL = resp.(*idm.SearchACLResponse).ACL
-		return nil
-	} else {
-		return io.EOF
-	}
-}
-
-func NewACLService(acls ...*idm.ACL) (*ACLService, error) {
+func NewACLService(acls ...*idm.ACL) (grpc.ClientConnInterface, error) {
 	sqlDao := sql.NewDAO("sqlite3", "file::memory:?mode=memory&cache=shared", "idm_acl")
 	if sqlDao == nil {
 		return nil, fmt.Errorf("unable to open sqlite3 DB file, could not start test")
@@ -70,53 +47,15 @@ func NewACLService(acls ...*idm.ACL) (*ACLService, error) {
 	}
 
 	h := srv.NewHandler(nil, mockDAO.(acl.DAO))
-	serv := &ACLService{
-		Handler: *h,
+	serv := &idm.ACLServiceStub{
+		ACLServiceServer: h,
 	}
 	ctx := servicecontext.WithDAO(context.Background(), mockDAO)
 	for _, u := range acls {
-		_, er := serv.Handler.CreateACL(ctx, &idm.CreateACLRequest{ACL: u})
+		_, er := serv.ACLServiceServer.CreateACL(ctx, &idm.CreateACLRequest{ACL: u})
 		if er != nil {
 			return nil, er
 		}
 	}
 	return serv, nil
-}
-
-type ACLService struct {
-	srv.Handler
-}
-
-func (u *ACLService) GetStreamer(ctx context.Context) grpc.ClientStream {
-	st := &ACLStreamer{}
-	st.Ctx = ctx
-	st.RespChan = make(chan interface{}, 1000)
-	st.SendHandler = func(i interface{}) error {
-		return u.Handler.SearchACL(i.(*idm.SearchACLRequest), st)
-	}
-	return st
-}
-
-func (u *ACLService) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	fmt.Println("Serving", method, args, reply, opts)
-	var e error
-	switch method {
-	case "/idm.ACLService/CreateACL":
-		if r, er := u.Handler.CreateACL(ctx, args.(*idm.CreateACLRequest)); er != nil {
-			e = er
-		} else {
-			reply.(*idm.CreateACLResponse).ACL = r.GetACL()
-		}
-	default:
-		return fmt.Errorf(method + " not implemented")
-	}
-	return e
-}
-
-func (u *ACLService) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	switch method {
-	case "/idm.ACLService/SearchACL":
-		return u.GetStreamer(ctx), nil
-	}
-	return nil, fmt.Errorf("not implemented")
 }

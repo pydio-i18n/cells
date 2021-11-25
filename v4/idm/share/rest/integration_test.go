@@ -21,7 +21,6 @@
 package rest_test
 
 import (
-	"bytes"
 	"context"
 	"crypto/md5"
 	"encoding/hex"
@@ -30,24 +29,20 @@ import (
 	"path"
 	"testing"
 
-	"github.com/pydio/cells/v4/common/server/stubs/resttest"
-
-	"github.com/pydio/cells/v4/common/nodes"
-
-	"github.com/pydio/cells/v4/common/auth"
-	"github.com/pydio/cells/v4/common/nodes/compose"
-	"github.com/pydio/cells/v4/common/utils/permissions"
-
-	"github.com/pydio/cells/v4/common/server/stubs/idmtest"
-	rest2 "github.com/pydio/cells/v4/idm/share/rest"
-
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/auth"
 	"github.com/pydio/cells/v4/common/client/grpc"
+	"github.com/pydio/cells/v4/common/nodes"
+	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/server/stubs/datatest"
+	"github.com/pydio/cells/v4/common/server/stubs/idmtest"
+	"github.com/pydio/cells/v4/common/server/stubs/resttest"
+	"github.com/pydio/cells/v4/common/utils/permissions"
 	"github.com/pydio/cells/v4/idm/share"
+	rest2 "github.com/pydio/cells/v4/idm/share/rest"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -75,28 +70,6 @@ func TestMain(m *testing.M) {
 	nodes.UseMockStorageClientType()
 
 	m.Run()
-}
-
-type reqBody struct {
-	bytes.Buffer
-}
-
-func (r *reqBody) Close() error {
-	return nil
-}
-
-type respWriter struct {
-	bytes.Buffer
-	statusCode int
-	hh         http.Header
-}
-
-func (r *respWriter) Header() http.Header {
-	return r.hh
-}
-
-func (r *respWriter) WriteHeader(statusCode int) {
-	r.statusCode = statusCode
 }
 
 func TestShareLinks(t *testing.T) {

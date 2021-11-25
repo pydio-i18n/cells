@@ -10,6 +10,7 @@ import (
 const (
 	fmtPackage     = protogen.GoImportPath("fmt")
 	contextPackage = protogen.GoImportPath("context")
+	ioPackage      = protogen.GoImportPath("io")
 	grpcPackage    = protogen.GoImportPath("google.golang.org/grpc")
 	statusPackage  = protogen.GoImportPath("google.golang.org/grpc/status")
 	codesPackage   = protogen.GoImportPath("google.golang.org/grpc/codes")
@@ -77,15 +78,89 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 	g.P(server)
 	g.P("}")
 
-	g.P("func (u *", stubServer, ") Invoke(ctx ", contextPackage.Ident("Context"), ", method string, args interface{}, reply interface{}, opts ...", grpcPackage.Ident("CallOption"), ") error {")
-	g.P(fmtPackage.Ident("Println"), `("Serving"`, "method, args, reply, opts)")
+	g.P("func (s *", stubServer, ") Invoke(ctx ", contextPackage.Ident("Context"), ", method string, args interface{}, reply interface{}, opts ...", grpcPackage.Ident("CallOption"), ") error {")
+	g.P(fmtPackage.Ident("Println"), `("Serving", `, "method, args, reply, opts)")
 	g.P("var e error")
 	g.P("switch method {")
+	for _, method := range service.Methods {
+		if method.Desc.IsStreamingServer() || method.Desc.IsStreamingClient() {
+			continue
+		}
+		g.P("case ", "\"/", service.Desc.FullName(), "/", method.GoName, "\":")
+		g.P("resp, er := s.", server, ".", method.GoName, "(ctx, args.(*", method.Desc.Input().Name(), "))")
+		g.P("if er == nil {")
+		g.P("e = ", stubsPackage.Ident("AssignToInterface"), "(resp, reply)")
+		g.P("} else {")
+		g.P("e = er")
+		g.P("}")
+
+	}
 	g.P("default:")
 	g.P("e = fmt.Errorf(method + \" not implemented\")")
 	g.P("}")
 	g.P("return e")
 	g.P("}")
+
+	g.P("func (s *", stubServer, ") NewStream(ctx ", contextPackage.Ident("Context"), ", desc *", grpcPackage.Ident("StreamDesc"), ", method string, opts ...", grpcPackage.Ident("CallOption"), ") (", grpcPackage.Ident("ClientStream"), ", error) {")
+	g.P(fmtPackage.Ident("Println"), "(\"Serving\", method)")
+	g.P("switch method {")
+	for _, method := range service.Methods {
+		if method.Desc.IsStreamingClient() {
+			g.P("case ", "\"/", service.Desc.FullName(), "/", method.GoName, "\":")
+			g.P("st := &", stubServer, "_", method.GoName, "Streamer{}")
+			g.P("st.Init(ctx)")
+			g.P("go s.", server, ".", method.GoName, "(st)")
+			g.P("return st, nil")
+		} else if method.Desc.IsStreamingServer() {
+			g.P("case ", "\"/", service.Desc.FullName(), "/", method.GoName, "\":")
+			g.P("st := &", stubServer, "_", method.GoName, "Streamer{}")
+			g.P("st.Init(ctx, func(i interface{}) error {")
+			g.P("return s.", server, ".", method.GoName, "(i.(*", method.Desc.Input().Name(), "), st)")
+			g.P("})")
+			g.P("return st, nil")
+		}
+	}
+	g.P("}")
+	g.P("return nil, fmt.Errorf(method + \"  not implemented\")")
+	g.P("}")
+
+	for _, method := range service.Methods {
+		if method.Desc.IsStreamingClient() {
+			g.P("type ", stubServer, "_", method.GoName, "Streamer struct {")
+			g.P(stubsPackage.Ident("BidirServerStreamerCore"))
+			g.P("}")
+
+			g.P("func (s *", stubServer, "_", method.GoName, "Streamer) Recv() (*", method.Input.Desc.Name(), ", error) {")
+			g.P("if req, o := <-s.ReqChan; o {")
+			g.P("return req.(*", method.Input.Desc.Name(), "), nil")
+			g.P("}else{")
+			g.P("return nil, ", ioPackage.Ident("EOF"))
+			g.P("}")
+			g.P("}")
+
+			g.P("func (s *", stubServer, "_", method.GoName, "Streamer) Send(response *", method.Output.Desc.Name(), ") error {")
+			g.P("s.RespChan <- response")
+			g.P("return nil")
+			g.P("}")
+
+			if !method.Desc.IsStreamingServer() {
+				// Add SendAndClose method
+				g.P("func (s *", stubServer, "_", method.GoName, "Streamer) SendAndClose(*", method.Output.Desc.Name(), ") error{")
+				g.P("return nil")
+				g.P("}")
+			}
+
+		} else if method.Desc.IsStreamingServer() {
+			g.P("type ", stubServer, "_", method.GoName, "Streamer struct {")
+			g.P(stubsPackage.Ident("ClientServerStreamerCore"))
+			g.P("}")
+
+			g.P("func (s *", stubServer, "_", method.GoName, "Streamer) Send(response *", method.Output.Desc.Name(), ") error {")
+			g.P("s.RespChan <- response")
+			g.P("return nil")
+			g.P("}")
+		}
+	}
 
 	/*
 		for _, method := range service.Methods {

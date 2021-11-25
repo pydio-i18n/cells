@@ -23,12 +23,10 @@ package idmtest
 import (
 	"context"
 	"fmt"
-	"io"
 
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common/proto/idm"
-	"github.com/pydio/cells/v4/common/server/stubs"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/idm/user"
@@ -36,28 +34,7 @@ import (
 	"github.com/pydio/cells/v4/x/configx"
 )
 
-type UsersStreamer struct {
-	stubs.ClientServerStreamerCore
-	service *UsersService
-}
-
-// Send implements SERVER method
-func (u *UsersStreamer) Send(response *idm.SearchUserResponse) error {
-	u.RespChan <- response
-	return nil
-}
-
-// RecvMsg implements CLIENT method
-func (u *UsersStreamer) RecvMsg(m interface{}) error {
-	if resp, o := <-u.RespChan; o {
-		m.(*idm.SearchUserResponse).User = resp.(*idm.SearchUserResponse).User
-		return nil
-	} else {
-		return io.EOF
-	}
-}
-
-func NewUsersService(users ...*idm.User) (*UsersService, error) {
+func NewUsersService(users ...*idm.User) (grpc.ClientConnInterface, error) {
 	sqlDao := sql.NewDAO("sqlite3", "file::memory:?mode=memory&cache=shared", "idm_user")
 	if sqlDao == nil {
 		return nil, fmt.Errorf("unable to open sqlite3 DB file, could not start test")
@@ -69,7 +46,7 @@ func NewUsersService(users ...*idm.User) (*UsersService, error) {
 		return nil, fmt.Errorf("could not start test: unable to initialise Users DAO, error: ", err)
 	}
 
-	serv := &UsersService{
+	serv := &idm.UserServiceStub{
 		UserServiceServer: srv.NewHandler(nil, mockDAO.(user.DAO)),
 	}
 	ctx := servicecontext.WithDAO(context.Background(), mockDAO)
@@ -80,48 +57,4 @@ func NewUsersService(users ...*idm.User) (*UsersService, error) {
 		}
 	}
 	return serv, nil
-}
-
-type UsersService struct {
-	idm.UserServiceServer
-}
-
-func (u *UsersService) GetStreamer(ctx context.Context) grpc.ClientStream {
-	st := &UsersStreamer{}
-	st.Ctx = ctx
-	st.RespChan = make(chan interface{}, 1000)
-	st.SendHandler = func(i interface{}) error {
-		return u.UserServiceServer.SearchUser(i.(*idm.SearchUserRequest), st)
-	}
-	return st
-}
-
-func (u *UsersService) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	fmt.Println("Serving", method, args, reply, opts)
-	var e error
-	switch method {
-	case "/idm.UserService/CreateUser":
-		if r, er := u.UserServiceServer.CreateUser(ctx, args.(*idm.CreateUserRequest)); er != nil {
-			e = er
-		} else {
-			reply.(*idm.CreateUserResponse).User = r.GetUser()
-		}
-	case "/idm.UserService/DeleteUser":
-		if r, er := u.UserServiceServer.DeleteUser(ctx, args.(*idm.DeleteUserRequest)); er != nil {
-			e = er
-		} else {
-			reply.(*idm.DeleteUserResponse).RowsDeleted = r.GetRowsDeleted()
-		}
-	default:
-		return fmt.Errorf(method + " not implemented")
-	}
-	return e
-}
-
-func (u *UsersService) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	switch method {
-	case "/idm.UserService/SearchUser":
-		return u.GetStreamer(ctx), nil
-	}
-	return nil, fmt.Errorf("not implemented")
 }

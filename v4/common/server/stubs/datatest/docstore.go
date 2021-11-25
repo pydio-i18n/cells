@@ -22,8 +22,6 @@ package datatest
 
 import (
 	"context"
-	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 
@@ -32,32 +30,10 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common/proto/docstore"
-	"github.com/pydio/cells/v4/common/server/stubs"
 	"github.com/pydio/cells/v4/common/utils/uuid"
 	docstore2 "github.com/pydio/cells/v4/data/docstore"
 	srv "github.com/pydio/cells/v4/data/docstore/grpc"
 )
-
-type DocStoreStreamer struct {
-	stubs.ClientServerStreamerCore
-	service *DocStoreService
-}
-
-// Send implements SERVER method
-func (u *DocStoreStreamer) Send(response *docstore.ListDocumentsResponse) error {
-	u.RespChan <- response
-	return nil
-}
-
-// RecvMsg implements CLIENT method
-func (u *DocStoreStreamer) RecvMsg(m interface{}) error {
-	if resp, o := <-u.RespChan; o {
-		m.(*docstore.ListDocumentsResponse).Document = resp.(*docstore.ListDocumentsResponse).Document
-		return nil
-	} else {
-		return io.EOF
-	}
-}
 
 func newPath(tmpName string) string {
 	return filepath.Join(os.TempDir(), tmpName)
@@ -72,7 +48,7 @@ func defaults() map[string]string {
 
 }
 
-func NewDocStoreService() (*DocStoreService, error) {
+func NewDocStoreService() (grpc.ClientConnInterface, error) {
 
 	suffix := uuid.New()
 	pBolt := newPath("docstore" + suffix + ".db")
@@ -85,12 +61,11 @@ func NewDocStoreService() (*DocStoreService, error) {
 		Db:      store,
 		Indexer: indexer,
 	}
+	serv := &docstore.DocStoreStub{}
+	serv.DocStoreServer = h
 
-	serv := &DocStoreService{
-		Handler: *h,
-	}
 	for id, json := range defaults() {
-		_, er := serv.Handler.PutDocument(context.Background(), &docstore.PutDocumentRequest{
+		_, er := serv.DocStoreServer.PutDocument(context.Background(), &docstore.PutDocumentRequest{
 			StoreID:    common.DocStoreIdVirtualNodes,
 			DocumentID: id,
 			Document: &docstore.Document{
@@ -105,49 +80,4 @@ func NewDocStoreService() (*DocStoreService, error) {
 		}
 	}
 	return serv, nil
-}
-
-type DocStoreService struct {
-	srv.Handler
-}
-
-func (u *DocStoreService) GetStreamer(ctx context.Context) grpc.ClientStream {
-	st := &DocStoreStreamer{}
-	st.Ctx = ctx
-	st.RespChan = make(chan interface{}, 1000)
-	st.SendHandler = func(i interface{}) error {
-		return u.Handler.ListDocuments(i.(*docstore.ListDocumentsRequest), st)
-	}
-	return st
-}
-
-func (u *DocStoreService) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	fmt.Println("Serving", method, args, reply, opts)
-	var e error
-	switch method {
-	case "/docstore.DocStore/PutDocument":
-		if r, er := u.Handler.PutDocument(ctx, args.(*docstore.PutDocumentRequest)); er != nil {
-			e = er
-		} else {
-			reply.(*docstore.PutDocumentResponse).Document = r.GetDocument()
-		}
-	case "/docstore.DocStore/DeleteDocuments":
-		if r, er := u.Handler.DeleteDocuments(ctx, args.(*docstore.DeleteDocumentsRequest)); er != nil {
-			e = er
-		} else {
-			reply.(*docstore.DeleteDocumentsResponse).DeletionCount = r.DeletionCount
-			reply.(*docstore.DeleteDocumentsResponse).Success = r.Success
-		}
-	default:
-		e = fmt.Errorf(method + " not implemented")
-	}
-	return e
-}
-
-func (u *DocStoreService) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	switch method {
-	case "/docstore.DocStore/ListDocuments":
-		return u.GetStreamer(ctx), nil
-	}
-	return nil, fmt.Errorf(method + " not implemented")
 }

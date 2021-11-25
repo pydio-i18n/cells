@@ -30,7 +30,6 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	common "github.com/pydio/cells/v4/common/proto/tree"
-	"github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/common/utils/cache"
@@ -60,24 +59,11 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
-func TestEmptyDao(t *testing.T) {
-
-	Convey("Test wrongly initialized server", t, func() {
-
-		s := &MetaServer{}
-		_, e := s.ReadNode(context.Background(), &common.ReadNodeRequest{})
-		So(e, ShouldNotBeNil)
-
-		_, e2 := s.UpdateNode(context.Background(), &common.UpdateNodeRequest{})
-		So(e2, ShouldNotBeNil)
-	})
-}
-
 func TestMeta(t *testing.T) {
 
-	s := &MetaServer{}
+	s := &MetaServer{dao: mockDAO}
 	var e error
-	var ctx = servicecontext.WithDAO(context.Background(), mockDAO)
+	ctx := context.Background()
 
 	Convey("Simple GET from stubbed implementation", t, func() {
 
@@ -163,9 +149,8 @@ func TestMeta(t *testing.T) {
 
 func TestSubscriber(t *testing.T) {
 
-	server := &MetaServer{}
-
-	var ctx = servicecontext.WithDAO(context.Background(), mockDAO)
+	server := &MetaServer{dao: mockDAO}
+	ctx := context.Background()
 
 	Convey("Test CreateSubscriber", t, func() {
 

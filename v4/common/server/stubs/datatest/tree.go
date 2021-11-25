@@ -22,8 +22,6 @@ package datatest
 
 import (
 	"context"
-	"fmt"
-	"io"
 
 	_ "github.com/mattn/go-sqlite3"
 	"google.golang.org/grpc"
@@ -31,100 +29,34 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
-	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/server/stubs"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	srv "github.com/pydio/cells/v4/data/tree/grpc"
 )
 
-type TreeStreamer struct {
-	stubs.ClientServerStreamerCore
-	service *TreeService
-}
+func NewTreeService(dss []string, nodes ...*tree.Node) (grpc.ClientConnInterface, error) {
 
-// Send implements SERVER method
-func (u *TreeStreamer) Send(response *tree.ListNodesResponse) error {
-	u.RespChan <- response
-	return nil
-}
-
-// RecvMsg implements CLIENT method
-func (u *TreeStreamer) RecvMsg(m interface{}) error {
-	if resp, o := <-u.RespChan; o {
-		m.(*tree.ListNodesResponse).Node = resp.(*tree.ListNodesResponse).Node
-		return nil
-	} else {
-		return io.EOF
-	}
-}
-
-func NewTreeService(dss []string, nodes ...*tree.Node) (*TreeService, error) {
-
-	serv := &TreeService{}
-	serv.DataSources = map[string]srv.DataSource{}
+	server := &srv.TreeServer{}
+	server.DataSources = map[string]srv.DataSource{}
 	for _, ds := range dss {
 		conn := grpc2.NewClientConn(common.ServiceDataIndex_ + ds)
-		serv.DataSources[ds] = srv.NewDataSource(ds, tree.NewNodeProviderClient(conn), tree.NewNodeReceiverClient(conn))
+		server.DataSources[ds] = srv.NewDataSource(ds, tree.NewNodeProviderClient(conn), tree.NewNodeReceiverClient(conn))
 	}
 
+	serv1 := &tree.NodeProviderStub{}
+	serv1.NodeProviderServer = server
+	serv2 := &tree.NodeReceiverStub{}
+	serv2.NodeReceiverServer = server
+
+	serv := &stubs.MuxService{}
+	serv.Register("tree.NodeProvider", serv1)
+	serv.Register("tree.NodeReceiver", serv2)
+
 	for _, u := range nodes {
-		_, er := serv.TreeServer.CreateNode(context.Background(), &tree.CreateNodeRequest{Node: u})
+		_, er := server.CreateNode(context.Background(), &tree.CreateNodeRequest{Node: u})
 		if er != nil {
 			return nil, er
 		}
 	}
 	return serv, nil
-}
-
-type TreeService struct {
-	srv.TreeServer
-	DAO dao.DAO
-}
-
-func (u *TreeService) GetStreamer(ctx context.Context) grpc.ClientStream {
-	st := &TreeStreamer{}
-
-	st.Ctx = ctx
-	st.RespChan = make(chan interface{}, 1000)
-	st.SendHandler = func(i interface{}) error {
-		return u.TreeServer.ListNodes(i.(*tree.ListNodesRequest), st)
-	}
-	return st
-}
-
-func (u *TreeService) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	fmt.Println("Serving", method, args, reply, opts)
-	ctx = servicecontext.WithDAO(ctx, u.DAO)
-	var e error
-	switch method {
-	case "/tree.NodeReceiver/CreateNode":
-		resp, er := u.TreeServer.CreateNode(ctx, args.(*tree.CreateNodeRequest))
-		if er == nil {
-			reply.(*tree.CreateNodeResponse).Node = resp.GetNode()
-			reply.(*tree.CreateNodeResponse).Success = resp.GetSuccess()
-		} else {
-			e = er
-		}
-	case "/tree.NodeProvider/ReadNode":
-		resp, er := u.TreeServer.ReadNode(ctx, args.(*tree.ReadNodeRequest))
-		if er == nil {
-			reply.(*tree.ReadNodeResponse).Node = resp.GetNode()
-			reply.(*tree.ReadNodeResponse).Success = resp.GetSuccess()
-		} else {
-			e = er
-		}
-	default:
-		e = fmt.Errorf(method + " not implemented")
-	}
-	return e
-}
-
-func (u *TreeService) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	ctx = servicecontext.WithDAO(ctx, u.DAO)
-	switch method {
-	case "/tree.NodeProvider/ListNodes":
-		return u.GetStreamer(ctx), nil
-	}
-	return nil, fmt.Errorf(method + "  not implemented")
 }

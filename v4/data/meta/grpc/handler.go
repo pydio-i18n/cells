@@ -45,14 +45,14 @@ type MetaServer struct {
 	tree.UnimplementedNodeReceiverServer
 	tree.UnimplementedSearcherServer
 
-	//	Dao           DAO
 	eventsChannel chan *cache.EventWithContext
 	cache         cache.Sharded
 	cacheMutex    *cache.KeyMutex
+	dao           meta.DAO
 }
 
-func NewMetaServer(c context.Context) *MetaServer {
-	m := &MetaServer{}
+func NewMetaServer(c context.Context, dao meta.DAO) *MetaServer {
+	m := &MetaServer{dao: dao}
 	m.cache = cache.NewSharded(common.ServiceGrpcNamespace_ + common.ServiceMeta)
 	m.cacheMutex = cache.NewKeyMutex()
 	go func() {
@@ -191,12 +191,7 @@ func (s *MetaServer) ReadNode(ctx context.Context, req *tree.ReadNodeRequest) (r
 		}
 	}
 
-	if servicecontext.GetDAO(ctx) == nil {
-		return resp, errors.InternalServerError(common.ServiceMeta, "No DAO found Wrong initialization")
-	}
-	dao := servicecontext.GetDAO(ctx).(meta.DAO)
-
-	metadata, err := dao.GetMetadata(req.Node.Uuid)
+	metadata, err := s.dao.GetMetadata(req.Node.Uuid)
 	if metadata == nil || err != nil {
 		return resp, errors.NotFound(common.ServiceMeta, "Node with Uuid "+req.Node.Uuid+" not found")
 	}
@@ -264,7 +259,7 @@ func (s *MetaServer) ListNodes(req *tree.ListNodesRequest, resp tree.NodeProvide
 
 // CreateNode metadata
 func (s *MetaServer) CreateNode(ctx context.Context, req *tree.CreateNodeRequest) (resp *tree.CreateNodeResponse, err error) {
-	dao := servicecontext.GetDAO(ctx).(meta.DAO)
+
 	resp = &tree.CreateNodeResponse{}
 	var author = ""
 	if value := ctx.Value(claim.ContextKey); value != nil {
@@ -279,7 +274,7 @@ func (s *MetaServer) CreateNode(ctx context.Context, req *tree.CreateNodeRequest
 		s.cache.Delete(req.Node.Uuid)
 	}
 
-	if err := dao.SetMetadata(req.Node.Uuid, author, s.filterMetaToStore(ctx, req.Node.MetaStore)); err != nil {
+	if err := s.dao.SetMetadata(req.Node.Uuid, author, s.filterMetaToStore(ctx, req.Node.MetaStore)); err != nil {
 		resp.Success = false
 		return resp, err
 	}
@@ -298,12 +293,8 @@ func (s *MetaServer) CreateNode(ctx context.Context, req *tree.CreateNodeRequest
 // UpdateNode metadata
 func (s *MetaServer) UpdateNode(ctx context.Context, req *tree.UpdateNodeRequest) (resp *tree.UpdateNodeResponse, err error) {
 
-	if servicecontext.GetDAO(ctx) == nil {
-		return resp, errors.InternalServerError(common.ServiceMeta, "No DAO found Wrong initialization")
-	}
 	resp = &tree.UpdateNodeResponse{}
 
-	dao := servicecontext.GetDAO(ctx).(meta.DAO)
 	var author = ""
 	if value := ctx.Value(claim.ContextKey); value != nil {
 		claims := value.(claim.Claims)
@@ -317,7 +308,7 @@ func (s *MetaServer) UpdateNode(ctx context.Context, req *tree.UpdateNodeRequest
 		s.cache.Delete(req.To.Uuid)
 	}
 
-	if err := dao.SetMetadata(req.To.Uuid, author, s.filterMetaToStore(ctx, req.To.MetaStore)); err != nil {
+	if err := s.dao.SetMetadata(req.To.Uuid, author, s.filterMetaToStore(ctx, req.To.MetaStore)); err != nil {
 		log.Logger(ctx).Error("failed to update meta node", zap.Any("error", err))
 		resp.Success = false
 		return resp, err
@@ -326,7 +317,7 @@ func (s *MetaServer) UpdateNode(ctx context.Context, req *tree.UpdateNodeRequest
 	resp.Success = true
 
 	// Reload all merged meta now
-	if metadata, err := dao.GetMetadata(req.To.Uuid); err == nil && metadata != nil && len(metadata) > 0 {
+	if metadata, err := s.dao.GetMetadata(req.To.Uuid); err == nil && metadata != nil && len(metadata) > 0 {
 		for k, v := range metadata {
 			req.To.MetaStore[k] = v
 		}
@@ -343,9 +334,6 @@ func (s *MetaServer) UpdateNode(ctx context.Context, req *tree.UpdateNodeRequest
 // DeleteNode metadata (Not implemented)
 func (s *MetaServer) DeleteNode(ctx context.Context, request *tree.DeleteNodeRequest) (result *tree.DeleteNodeResponse, err error) {
 
-	// Delete all meta for this node
-	dao := servicecontext.GetDAO(ctx).(meta.DAO)
-
 	if s.cache != nil {
 		//log.Logger(ctx).Info("META / Clearing cache for " + request.Node.Uuid)
 		//s.cacheMutex.Lock(request.Node.Uuid)
@@ -353,7 +341,7 @@ func (s *MetaServer) DeleteNode(ctx context.Context, request *tree.DeleteNodeReq
 		s.cache.Delete(request.Node.Uuid)
 	}
 
-	if err = dao.SetMetadata(request.Node.Uuid, "", map[string]string{}); err != nil {
+	if err = s.dao.SetMetadata(request.Node.Uuid, "", map[string]string{}); err != nil {
 		return result, err
 	}
 
@@ -373,10 +361,7 @@ func (s *MetaServer) DeleteNode(ctx context.Context, request *tree.DeleteNodeReq
 // Search a stream of nodes based on its metadata
 func (s *MetaServer) Search(request *tree.SearchRequest, result tree.Searcher_SearchServer) error {
 
-	ctx := result.Context()
-	dao := servicecontext.GetDAO(ctx).(meta.DAO)
-
-	metaByUUID, err := dao.ListMetadata(request.Query.FileName)
+	metaByUUID, err := s.dao.ListMetadata(request.Query.FileName)
 	if err != nil {
 		return err
 	}

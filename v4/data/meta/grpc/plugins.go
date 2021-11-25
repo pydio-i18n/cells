@@ -24,6 +24,8 @@ package grpc
 import (
 	"context"
 
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
@@ -45,7 +47,7 @@ func init() {
 			service.WithStorage(meta.NewDAO, "data_meta"),
 			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
 
-				engine := NewMetaServer(c)
+				engine := NewMetaServer(c, servicecontext.GetDAO(ctx).(meta.DAO))
 
 				tree.RegisterMultiNodeProviderServer(server, engine)
 				tree.RegisterMultiNodeProviderStreamerServer(server, engine)

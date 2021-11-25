@@ -23,13 +23,10 @@ package idmtest
 import (
 	"context"
 	"fmt"
-	"io"
 
 	"google.golang.org/grpc"
 
-	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/proto/idm"
-	"github.com/pydio/cells/v4/common/server/stubs"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/idm/role"
@@ -37,28 +34,7 @@ import (
 	"github.com/pydio/cells/v4/x/configx"
 )
 
-type RolesStreamer struct {
-	stubs.ClientServerStreamerCore
-	service *UsersService
-}
-
-// Send implements SERVER method
-func (u *RolesStreamer) Send(response *idm.SearchRoleResponse) error {
-	u.RespChan <- response
-	return nil
-}
-
-// RecvMsg implements CLIENT method
-func (u *RolesStreamer) RecvMsg(m interface{}) error {
-	if resp, o := <-u.RespChan; o {
-		m.(*idm.SearchRoleResponse).Role = resp.(*idm.SearchRoleResponse).Role
-		return nil
-	} else {
-		return io.EOF
-	}
-}
-
-func NewRolesService(roles ...*idm.Role) (*RolesService, error) {
+func NewRolesService(roles ...*idm.Role) (grpc.ClientConnInterface, error) {
 	sqlDao2 := sql.NewDAO("sqlite3", "file::memory:?mode=memory&cache=shared", "idm_roles")
 	if sqlDao2 == nil {
 		return nil, fmt.Errorf("unable to open sqlite3 DB file, could not start test")
@@ -70,7 +46,7 @@ func NewRolesService(roles ...*idm.Role) (*RolesService, error) {
 		return nil, fmt.Errorf("could not start test: unable to initialise roles DAO, error: ", err)
 	}
 
-	serv := &RolesService{
+	serv := &idm.RoleServiceStub{
 		RoleServiceServer: srv.NewHandler(nil, mockRDAO.(role.DAO)),
 	}
 	ctx := servicecontext.WithDAO(context.Background(), mockRDAO)
@@ -81,43 +57,4 @@ func NewRolesService(roles ...*idm.Role) (*RolesService, error) {
 		}
 	}
 	return serv, nil
-}
-
-type RolesService struct {
-	idm.RoleServiceServer
-	DAO dao.DAO
-}
-
-func (u *RolesService) GetStreamer(ctx context.Context) grpc.ClientStream {
-	st := &RolesStreamer{}
-	st.Ctx = ctx
-	st.RespChan = make(chan interface{}, 1000)
-	st.SendHandler = func(i interface{}) error {
-		return u.RoleServiceServer.SearchRole(i.(*idm.SearchRoleRequest), st)
-	}
-	return st
-}
-
-func (u *RolesService) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	fmt.Println("Serving", method, args, reply, opts)
-	var e error
-	switch method {
-	case "/idm.RoleService/CreateRole":
-		if r, er := u.RoleServiceServer.CreateRole(ctx, args.(*idm.CreateRoleRequest)); er != nil {
-			e = er
-		} else {
-			reply.(*idm.CreateRoleResponse).Role = r.GetRole()
-		}
-	default:
-		return fmt.Errorf(method + " not implemented")
-	}
-	return e
-}
-
-func (u *RolesService) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	switch method {
-	case "/idm.RoleService/SearchRole":
-		return u.GetStreamer(ctx), nil
-	}
-	return nil, fmt.Errorf("not implemented")
 }

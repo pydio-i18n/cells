@@ -23,47 +23,23 @@ package datatest
 import (
 	"context"
 	"fmt"
-	"io"
-
-	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/proto/object"
-	"github.com/pydio/cells/v4/data/source/index"
 
 	_ "github.com/mattn/go-sqlite3"
 	"google.golang.org/grpc"
 	_ "gopkg.in/doug-martin/goqu.v4/adapters/sqlite3"
 
-	"github.com/pydio/cells/v4/common/dao"
+	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/server/stubs"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/sql"
+	"github.com/pydio/cells/v4/data/source/index"
 	srv "github.com/pydio/cells/v4/data/source/index/grpc"
 	"github.com/pydio/cells/v4/x/configx"
 )
 
-type IndexStreamer struct {
-	stubs.ClientServerStreamerCore
-	service *IndexService
-}
-
-// Send implements SERVER method
-func (u *IndexStreamer) Send(response *tree.ListNodesResponse) error {
-	u.RespChan <- response
-	return nil
-}
-
-// RecvMsg implements CLIENT method
-func (u *IndexStreamer) RecvMsg(m interface{}) error {
-	if resp, o := <-u.RespChan; o {
-		m.(*tree.ListNodesResponse).Node = resp.(*tree.ListNodesResponse).Node
-		return nil
-	} else {
-		return io.EOF
-	}
-}
-
-func NewIndexService(dsName string, nodes ...*tree.Node) (*IndexService, error) {
+func NewIndexService(dsName string, nodes ...*tree.Node) (grpc.ClientConnInterface, error) {
 	sqlDao := sql.NewDAO("sqlite3", "file::memory:?mode=memory&cache=shared", "data_index_"+dsName)
 	if sqlDao == nil {
 		return nil, fmt.Errorf("unable to open sqlite3 DB file, could not start test")
@@ -77,68 +53,21 @@ func NewIndexService(dsName string, nodes ...*tree.Node) (*IndexService, error) 
 
 	ts := srv.NewTreeServer(&object.DataSource{Name: dsName}, mockDAO.(index.DAO), log.Logger(context.Background()))
 
-	serv := &IndexService{
-		TreeServer: *ts,
-		DAO:        mockDAO,
-	}
+	srv1 := &tree.NodeProviderStub{}
+	srv1.NodeProviderServer = ts
+	srv2 := &tree.NodeReceiverStub{}
+	srv2.NodeReceiverServer = ts
+
+	serv := &stubs.MuxService{}
+	serv.Register("tree.NodeProvider", srv1)
+	serv.Register("tree.NodeReceiver", srv2)
+
 	ctx := servicecontext.WithDAO(context.Background(), mockDAO)
 	for _, u := range nodes {
-		_, er := serv.TreeServer.CreateNode(ctx, &tree.CreateNodeRequest{Node: u})
+		_, er := ts.CreateNode(ctx, &tree.CreateNodeRequest{Node: u})
 		if er != nil {
 			return nil, er
 		}
 	}
 	return serv, nil
-}
-
-type IndexService struct {
-	srv.TreeServer
-	DAO dao.DAO
-}
-
-func (u *IndexService) GetStreamer(ctx context.Context) grpc.ClientStream {
-	st := &IndexStreamer{}
-
-	st.Ctx = ctx
-	st.RespChan = make(chan interface{}, 1000)
-	st.SendHandler = func(i interface{}) error {
-		return u.TreeServer.ListNodes(i.(*tree.ListNodesRequest), st)
-	}
-	return st
-}
-
-func (u *IndexService) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	fmt.Println("Serving", method, args, reply, opts)
-	ctx = servicecontext.WithDAO(ctx, u.DAO)
-	var e error
-	switch method {
-	case "/tree.NodeReceiver/CreateNode":
-		resp, er := u.TreeServer.CreateNode(ctx, args.(*tree.CreateNodeRequest))
-		if er == nil {
-			reply.(*tree.CreateNodeResponse).Node = resp.GetNode()
-			reply.(*tree.CreateNodeResponse).Success = resp.GetSuccess()
-		} else {
-			e = er
-		}
-	case "/tree.NodeProvider/ReadNode":
-		resp, er := u.TreeServer.ReadNode(ctx, args.(*tree.ReadNodeRequest))
-		if er == nil {
-			reply.(*tree.ReadNodeResponse).Node = resp.GetNode()
-			reply.(*tree.ReadNodeResponse).Success = resp.GetSuccess()
-		} else {
-			e = er
-		}
-	default:
-		e = fmt.Errorf(method + " not implemented")
-	}
-	return e
-}
-
-func (u *IndexService) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	ctx = servicecontext.WithDAO(ctx, u.DAO)
-	switch method {
-	case "/tree.NodeProvider/ListNodes":
-		return u.GetStreamer(ctx), nil
-	}
-	return nil, fmt.Errorf(method + "  not implemented")
 }

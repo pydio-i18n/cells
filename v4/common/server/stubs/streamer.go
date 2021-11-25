@@ -2,9 +2,16 @@ package stubs
 
 import (
 	"context"
+	"io"
 
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
+
+func AssignToInterface(m proto.Message, i interface{}) error {
+	bb, _ := proto.Marshal(m)
+	return proto.Unmarshal(bb, i.(proto.Message))
+}
 
 type StreamerStubCore struct {
 	Ctx context.Context
@@ -37,10 +44,17 @@ func (s *StreamerStubCore) RecvMsg(m interface{}) error {
 type ClientServerStreamerCore struct {
 	Ctx         context.Context
 	SendHandler func(interface{}) error
-	RespChan    chan interface{}
-	closed      bool
-	header      metadata.MD
-	trailer     metadata.MD
+
+	RespChan chan proto.Message
+	closed   bool
+	header   metadata.MD
+	trailer  metadata.MD
+}
+
+func (cs *ClientServerStreamerCore) Init(ctx context.Context, sendHandler func(interface{}) error) {
+	cs.Ctx = ctx
+	cs.RespChan = make(chan proto.Message, 1000)
+	cs.SendHandler = sendHandler
 }
 
 func (cs *ClientServerStreamerCore) SetHeader(md metadata.MD) error {
@@ -79,4 +93,25 @@ func (cs *ClientServerStreamerCore) Context() context.Context {
 
 func (cs *ClientServerStreamerCore) SendMsg(m interface{}) error {
 	return cs.SendHandler(m)
+}
+
+func (cs *ClientServerStreamerCore) RecvMsg(m interface{}) error {
+	if resp, o := <-cs.RespChan; o {
+		return AssignToInterface(resp, m)
+	} else {
+		return io.EOF
+	}
+}
+
+type BidirServerStreamerCore struct {
+	ClientServerStreamerCore
+	ReqChan chan proto.Message
+}
+
+func (bd *BidirServerStreamerCore) Init(ctx context.Context) {
+	bd.ReqChan = make(chan proto.Message, 1000)
+	bd.ClientServerStreamerCore.Init(ctx, func(i interface{}) error {
+		bd.ReqChan <- i.(proto.Message)
+		return nil
+	})
 }
