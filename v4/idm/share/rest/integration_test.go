@@ -24,6 +24,7 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"log"
 	"net/http"
 	"path"
@@ -71,6 +72,14 @@ func TestMain(m *testing.M) {
 	if er := idmtest.RegisterIdmMocksWithData(testData); er != nil {
 		log.Fatal(er)
 	}
+
+	_ = broker.SubscribeCancellable(context.Background(), common.TopicIdmEvent, func(message broker.Message) error {
+		msg := &idm.ChangeEvent{}
+		if _, e := message.Unmarshal(msg); e == nil {
+			fmt.Println(" - Received an idm.ChangeEvent!", msg)
+		}
+		return nil
+	})
 
 	m.Run()
 }

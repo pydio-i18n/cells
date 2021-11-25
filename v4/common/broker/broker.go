@@ -24,6 +24,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/pydio/cells/v4/common/service/context/metadata"
+
 	"google.golang.org/protobuf/proto"
 
 	"github.com/micro/micro/v3/service/broker"
@@ -55,7 +57,13 @@ func Disconnect() error {
 // Publish sends a message to standard broker. For the moment, forward message to client.Publish
 func Publish(ctx context.Context, topic string, message interface{}, opts ...PublishOption) error {
 	body, _ := proto.Marshal(message.(proto.Message))
-	return std.Publish(topic, &broker.Message{Body: body, Header: map[string]string{}}, broker.PublishContext(ctx))
+	header := make(map[string]string)
+	if hh, ok := metadata.FromContext(ctx); ok {
+		for k, v := range hh {
+			header[k] = v
+		}
+	}
+	return std.Publish(topic, &broker.Message{Body: body, Header: header}, broker.PublishContext(ctx))
 }
 
 // MustPublish publishes a message ignoring the error
