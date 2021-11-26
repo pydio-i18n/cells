@@ -2,7 +2,7 @@ package grpc
 
 import (
 	"context"
-	pbconfig "github.com/micro/micro/v3/proto/config"
+	pb "github.com/pydio/cells/v4/common/proto/config"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/service"
 	"google.golang.org/grpc"
@@ -20,7 +20,8 @@ func init() {
 			// service.WithStorage(config.NewDAO),
 			service.WithGRPC(func(c context.Context, srv *grpc.Server) error {
 				// Register handler
-				pbconfig.RegisterConfigServer(srv, &Handler{})
+				pb.RegisterConfigServer(srv, &Handler{})
+
 
 				return nil
 			}),

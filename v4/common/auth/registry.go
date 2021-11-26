@@ -22,6 +22,12 @@ package auth
 
 import (
 	"context"
+	"fmt"
+	"github.com/ory/x/configx"
+	"github.com/ory/x/errorsx"
+	"github.com/pydio/cells/v4/common/log"
+	"go.uber.org/zap"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -32,14 +38,11 @@ import (
 	"github.com/ory/hydra/driver"
 	"github.com/ory/x/sqlcon"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
-	"go.uber.org/zap"
-
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
-	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/install"
 	"github.com/pydio/cells/v4/common/sql"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -52,24 +55,70 @@ var (
 )
 
 func InitRegistry(dao sql.DAO) {
-	/*
-		// TODO V4
+
 			once.Do(func() {
 
-				db := sqlx.NewDb(dao.DB(), dao.Driver())
-				l := logrusx.New("oauth", "1", logrusx.ForceLevel(logrus.PanicLevel))
-				//l.SetLevel(logrus.PanicLevel)
+				// db := sqlx.NewDb(dao.DB(), dao.Driver())
+				// l := logrusx.New("oauth", "1", logrusx.ForceLevel(logrus.PanicLevel))
+				// l.SetLevel(logrus.PanicLevel)
 
+				reg = driver.New(
+					context.Background(),
+					driver.WithOptions(
+						configx.SkipValidation(),
+						configx.WithValue("dsn", "mysql://root:P@ssw0rd@tcp(localhost:3306)/cells?parseTime=true"),
+					),
+					driver.DisableValidation(),
+					driver.DisablePreloading())
+
+				p := reg.WithConfig(defaultConf.GetProvider()).Persister()
+				conn := p.Connection(context.Background())
+
+				if err := conn.Open(); err != nil {
+					fmt.Printf("Could not open the database connection:\n%+v\n", err)
+					os.Exit(1)
+					return
+				}
+
+				// convert migration tables
+				if err := p.PrepareMigration(context.Background()); err != nil {
+					fmt.Printf("Could not convert the migration table:\n%+v\n", err)
+					os.Exit(1)
+					return
+				}
+
+				// print migration status
+				fmt.Println("The following migration is planned:")
+				fmt.Println("")
+
+				status, err := p.MigrationStatus(context.Background())
+				if err != nil {
+					fmt.Printf("Could not get the migration status:\n%+v\n", errorsx.WithStack(err))
+					os.Exit(1)
+					return
+				}
+				_ = status.Write(os.Stdout)
+
+				// apply migrations
+				if err := p.MigrateUp(context.Background()); err != nil {
+					fmt.Printf("Could not apply migrations:\n%+v\n", errorsx.WithStack(err))
+				}
+
+				/*
 				reg = driver.NewRegistrySQL().WithConfig(defaultConf.GetProvider()).WithLogger(l)
-				r := reg.(*driver.RegistrySQL).WithDB(db)
-				if err := r.Init(); err != nil {
+				r := reg.(*driver.RegistrySQL) // .WithDB(db)
+				if err := r.Init(context.Background()); err != nil {
 					log.Error("Error registering oauth registry", zap.Error(err))
 				}
+
+
+				// TODO V4
 
 				sql.LockMigratePackage()
 				defer func() {
 					sql.UnlockMigratePackage()
 				}()
+
 				if _, err := r.ClientManager().(*client.SQLManager).CreateSchemas(dao.Driver()); err != nil {
 					log.Warn("Failed to create client schemas", zap.Error(err))
 					return
@@ -101,9 +150,12 @@ func InitRegistry(dao sql.DAO) {
 					log.Warn("Failed to create fosite sql store schemas", zap.Error(err))
 				}
 
-				RegisterOryProvider(r.OAuth2Provider())
+
+
+				 */
+
+				RegisterOryProvider(reg.WithConfig(defaultConf.GetProvider()).OAuth2Provider())
 			})
-	*/
 
 	if err := syncClients(context.Background(), reg.ClientManager(), defaultConf.Clients()); err != nil {
 		log.Warn("Failed to sync clients", zap.Error(err))
@@ -152,9 +204,13 @@ func syncClients(ctx context.Context, s client.Storage, c common.Scanner) error 
 		return err
 	}
 
-	old, err := s.GetClients(ctx, client.Filter{Offset: 0, Limit: n})
-	if err != nil {
-		return err
+	var old []client.Client
+	if n > 0 {
+		if o, err := s.GetClients(ctx, client.Filter{Offset: 0, Limit: n}); err != nil {
+			return err
+		} else {
+			old = o
+		}
 	}
 	sites, _ := config.LoadSites()
 
@@ -184,7 +240,7 @@ func syncClients(ctx context.Context, s client.Storage, c common.Scanner) error 
 		}
 
 		//TODO V4
-		//delete(old, cli.GetID())
+		// delete(old, cli.GetID())
 	}
 
 	for _, cli := range old {

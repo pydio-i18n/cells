@@ -20,6 +20,3 @@ func init() {
 func (o *URLOpener) OpenURL(ctx context.Context, u *url.URL) (registry.Registry, error) {
 	return registry.New(memory.NewRegistry()), nil
 }
-
-
-

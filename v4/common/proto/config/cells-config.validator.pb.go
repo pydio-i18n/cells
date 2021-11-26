@@ -59,25 +59,19 @@ func (this *GetResponse) Validate() error {
 	}
 	return nil
 }
-func (this *ReadRequest) Validate() error {
-	return nil
-}
-func (this *ReadResponse) Validate() error {
-	if this.Change != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Change); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Change", err)
+func (this *WatchRequest) Validate() error {
+	if this.Options != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Options); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Options", err)
 		}
 	}
 	return nil
 }
-func (this *Change) Validate() error {
-	if this.ChangeSet != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ChangeSet); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ChangeSet", err)
+func (this *WatchResponse) Validate() error {
+	if this.Value != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Value); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Value", err)
 		}
 	}
-	return nil
-}
-func (this *ChangeSet) Validate() error {
 	return nil
 }

@@ -188,7 +188,7 @@ ENVIRONMENT
 			return err
 		}
 
-		// initConfig()
+		initConfig()
 
 		replaceKeys := map[string]string{
 			"yaml": "install_yaml",

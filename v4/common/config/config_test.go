@@ -24,37 +24,38 @@ import (
 	"sync"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	c "github.com/smartystreets/goconvey/convey"
 )
 
+
 func TestConfig(t *testing.T) {
-	Convey("Test Set", t, func() {
+	c.Convey("Test Set", t, func() {
 		err := Set("my-test-config-value", "test")
-		So(err, ShouldBeNil)
-		So(Get("test").Default("").String(), ShouldEqual, "my-test-config-value")
+		c.So(err, c.ShouldBeNil)
+		c.So(Get("test").Default("").String(), c.ShouldEqual, "my-test-config-value")
 	})
 
-	Convey("Test Del", t, func() {
+	c.Convey("Test Del", t, func() {
 		err := Set(map[string]interface{}{
 			"bool1": true,
 			"bool2": false,
 		}, "test")
 
-		So(err, ShouldBeNil)
+		c.So(err, c.ShouldBeNil)
 		Get("test/bool1").Del()
 		// Get("test/bool2").Del()
 		Save("test", "test")
 	})
 
-	Convey("Test setting", t, func() {
-		c := Get().Val("test/test/test")
+	c.Convey("Test setting", t, func() {
+		v := Get().Val("test/test/test")
 		Set("test1", "test/test/test/test1")
-		So(c.Val("test1").String(), ShouldEqual, "test1")
+		c.So(v.Val("test1").String(), c.ShouldEqual, "test1")
 	})
 
-	Convey("Test Watch", t, func() {
+	c.Convey("Test Watch", t, func() {
 		w, err := Watch("watch", "val")
-		So(err, ShouldBeNil)
+		c.So(err, c.ShouldBeNil)
 
 		wg := &sync.WaitGroup{}
 		wg.Add(1)

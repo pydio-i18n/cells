@@ -57,6 +57,8 @@ to quickly create a Cobra application.`,
 
 		initLogLevel()
 
+		initConfig()
+
 		// Making sure we capture the signals
 		handleSignals()
 

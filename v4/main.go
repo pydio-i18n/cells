@@ -28,7 +28,7 @@ import (
 	//_ "github.com/pydio/cells/v4/data/source/objects"
 
 	// Gateways
-	_ "github.com/pydio/cells/v4/gateway/proxy"
+	// _ "github.com/pydio/cells/v4/gateway/proxy"
 
 	// Datasource
 	_ "github.com/pydio/cells/v4/data/source/index/grpc"
@@ -58,7 +58,7 @@ import (
 	//_ "github.com/pydio/cells/v4/broker/activity/grpc"
 	//_ "github.com/pydio/cells/v4/broker/activity/rest"
 	//_ "github.com/pydio/cells/v4/broker/chat/grpc"
-	_ "github.com/pydio/cells/v4/broker/log/grpc"
+	// _ "github.com/pydio/cells/v4/broker/log/grpc"
 	//_ "github.com/pydio/cells/v4/broker/log/rest"
 	//_ "github.com/pydio/cells/v4/broker/mailer/grpc"
 	//_ "github.com/pydio/cells/v4/broker/mailer/rest"
@@ -77,7 +77,7 @@ import (
 	//_ "github.com/pydio/cells/v4/idm/key/grpc"
 	//_ "github.com/pydio/cells/v4/idm/meta/grpc"
 	//_ "github.com/pydio/cells/v4/idm/meta/rest"
-	//_ "github.com/pydio/cells/v4/idm/oauth/grpc"
+	// _ "github.com/pydio/cells/v4/idm/oauth/grpc"
 	//_ "github.com/pydio/cells/v4/idm/oauth/rest"
 	//_ "github.com/pydio/cells/v4/idm/policy/grpc"
 	//_ "github.com/pydio/cells/v4/idm/policy/rest"

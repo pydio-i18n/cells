@@ -1,4 +1,4 @@
-package registry
+package config
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 //
 // This interface is generally implemented by types in driver packages.
 type URLOpener interface {
-	OpenURL(ctx context.Context, u *url.URL) (Registry, error)
+	OpenURL(ctx context.Context, u *url.URL) (Store, error)
 }
 
 // URLMux is a URL opener multiplexer. It matches the scheme of the URLs
@@ -34,18 +34,19 @@ func (mux *URLMux) ValidScheme(scheme string) bool { return mux.schemes.ValidSch
 // Register registers the opener with the given scheme. If an opener
 // already exists for the scheme, Register panics.
 func (mux *URLMux) Register(scheme string, opener URLOpener) {
-	mux.schemes.Register("registry", "Registry", scheme, opener)
+	mux.schemes.Register("config", "Config", scheme, opener)
 }
 
-// OpenTopic calls OpenTopicURL with the URL parsed from urlstr.
-// OpenTopic is safe to call from multiple goroutines.
-func (mux *URLMux) OpenRegistry(ctx context.Context, urlstr string) (Registry, error) {
-	opener, u, err := mux.schemes.FromString("Registry", urlstr)
+// OpenStore calls OpenURL with the URL parsed from urlstr.
+// OpenStore is safe to call from multiple goroutines.
+func (mux *URLMux) OpenStore(ctx context.Context, urlstr string) (Store, error) {
+	opener, u, err := mux.schemes.FromString("Config", urlstr)
 	if err != nil {
 		return nil, err
 	}
 	return opener.(URLOpener).OpenURL(ctx, u)
 }
+
 
 var defaultURLMux = &URLMux{}
 
@@ -57,10 +58,10 @@ func DefaultURLMux() *URLMux {
 	return defaultURLMux
 }
 
-// OpenTopic opens the Topic identified by the URL given.
+// OpenStore opens the Store identified by the URL given.
 // See the URLOpener documentation in driver subpackages for
 // details on supported URL formats, and https://gocloud.dev/concepts/urls
 // for more information.
-func OpenRegistry(ctx context.Context, urlstr string) (Registry, error) {
-	return defaultURLMux.OpenRegistry(ctx, urlstr)
+func OpenStore(ctx context.Context, urlstr string) (Store, error) {
+	return defaultURLMux.OpenStore(ctx, urlstr)
 }

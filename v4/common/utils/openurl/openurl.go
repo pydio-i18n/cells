@@ -94,7 +94,7 @@ func (m *SchemeMap) Schemes() []string {
 	return schemes
 }
 
-// ValidScheme returns true iff scheme has been registered.
+// ValidScheme returns true if scheme has been registered.
 func (m *SchemeMap) ValidScheme(scheme string) bool {
 	for s := range m.m {
 		if scheme == s {
