@@ -144,6 +144,9 @@ func (s *service) Version() string {
 	return s.opts.Version
 }
 func (s *service) Nodes() []registry.Node {
+	if s.opts.Server == nil {
+		return []registry.Node{}
+	}
 	return []registry.Node{s.opts.Server}
 }
 func (s *service) Tags() []string {

@@ -79,6 +79,7 @@ func init() {
 
 					fs := gzipped.FileServer(httpFs)
 
+
 					mux.Handle("/index.json", fs)
 					mux.Handle("/plug/", http.StripPrefix("/plug/", fs))
 					indexHandler := index.NewIndexHandler()
@@ -87,6 +88,7 @@ func init() {
 						w.Header().Set("Content-Type", "text/plain")
 						w.Write([]byte(RobotsString))
 					})
+					mux.Handle("/", indexHandler)
 					mux.Handle("/gui", indexHandler)
 					mux.Handle("/user/reset-password/{resetPasswordKey}", indexHandler)
 					mux.Handle(path.Join(config.GetPublicBaseUri(), "{link}"), index.NewPublicHandler())

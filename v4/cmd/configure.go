@@ -23,6 +23,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/registry/middleware"
 	"github.com/pydio/cells/v4/common/server/caddy"
 	"net/url"
 	"os"
@@ -391,34 +392,23 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 		}
 	}
 
-	/*
-		// starting the microservice
-		micro := registry.Default.GetServiceByName(common.ServiceMicroApi)
-		micro.Start(ctx)
-
-		// starting the installation REST service
-		regService := registry.Default.GetServiceByName(common.ServiceInstall)
-
-		// Starting service install
-		regService.Start(ctx)
-	*/
-
-	/*lisHTTP, err := net.Listen("tcp", viper.GetString("http.address"))
-	if err != nil {
-		log.Fatal("error listening", zap.Error(err))
-	}
-	defer lisHTTP.Close()*/
-
-	srvHTTP, _  := caddy.New(cmd.Context(), dir)
-
-	broker.Connect()
-
 	reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
 	if err != nil {
 		return
 	}
+	// TODO v4 - move that to the registry with options
+	reg = middleware.NewNodeRegistry(reg)
 
 	ctx = servicecontext.WithRegistry(ctx, reg)
+
+	srvHTTP, err  := caddy.New(ctx, dir)
+	if err != nil {
+		panic(err)
+	}
+
+	broker.Connect()
+
+
 	ctx = servicecontext.WithServer(ctx, "http", srvHTTP)
 
 	plugins.Init(ctx, "install")

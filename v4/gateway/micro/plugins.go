@@ -57,7 +57,7 @@ func register(ctx context.Context) {
 			rt := regRouter.NewRouter(
 				router.WithHandler(aapi.Handler),
 				// router.WithResolver(rr), ???
-				router.WithRegistry(defaults.Registry()),
+				// router.WithRegistry(defaults.Registry()),
 			)
 			ap := aapi.NewHandler(
 				ahandler.WithNamespace(ns),
