@@ -7,6 +7,9 @@ import (
 type Server interface {
 	Serve(net.Listener) error
 	Address() []string
+	Id() string
+	Endpoints() []string
+	Metadata() map[string]string
 }
 
 type WrappedServer interface {

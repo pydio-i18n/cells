@@ -24,10 +24,12 @@ package rest
 import (
 	"context"
 	"encoding/gob"
+	"github.com/pydio/cells/v4/common"
 	"os"
 
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/service"
 	"github.com/pydio/cells/v4/common/service/frontend"
 	"github.com/pydio/cells/v4/frontend/front-srv"
 	"github.com/pydio/cells/v4/frontend/front-srv/rest/modifiers"
@@ -100,21 +102,19 @@ func init() {
 		frontend.WrapAuthMiddleware(modifiers.LoginSuccessWrapper)
 		frontend.WrapAuthMiddleware(modifiers.LoginFailedWrapper)
 
-		/*
-			s := service.NewService(
-				service.Name(common.ServiceRestNamespace_+common.ServiceFrontend),
-				service.Context(ctx),
-				service.Tag(common.ServiceTagFrontend),
-				service.Description("REST service for serving specific requests directly to frontend"),
-				service.PluginBoxes(BasePluginsBox),
-				service.WithWeb(func() service.WebHandler {
-					return NewFrontendHandler()
-				}),
-			)
-			// Make sure to have the WebSession wrapper happen before the policies
-			// Exclude POST binaries for using Cookies as it's the only one subject to possible CSRF
-			s.Init(service.WithWebSession("POST:/frontend/binaries"))
-		*/
+		service.NewService(
+			service.Name(common.ServiceRestNamespace_+common.ServiceFrontend),
+			service.Context(ctx),
+			service.Tag(common.ServiceTagFrontend),
+			service.Description("REST service for serving specific requests directly to frontend"),
+			service.PluginBoxes(BasePluginsBox),
+			service.WithWeb(func() service.WebHandler {
+				return NewFrontendHandler()
+			}),
+		)
+		// Make sure to have the WebSession wrapper happen before the policies
+		// Exclude POST binaries for using Cookies as it's the only one subject to possible CSRF
+		// TODO v4 s.Init(service.WithWebSession("POST:/frontend/binaries"))
 	})
 
 	if os.Getenv("CELLS_ENABLE_FORMS_DEVEL") == "1" {

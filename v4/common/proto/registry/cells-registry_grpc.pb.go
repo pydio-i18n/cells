@@ -18,11 +18,15 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RegistryClient interface {
-	GetService(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
-	Register(ctx context.Context, in *Service, opts ...grpc.CallOption) (*EmptyResponse, error)
-	Deregister(ctx context.Context, in *Service, opts ...grpc.CallOption) (*EmptyResponse, error)
-	ListServices(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error)
-	Watch(ctx context.Context, in *WatchRequest, opts ...grpc.CallOption) (Registry_WatchClient, error)
+	GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*GetServiceResponse, error)
+	RegisterService(ctx context.Context, in *Service, opts ...grpc.CallOption) (*EmptyResponse, error)
+	DeregisterService(ctx context.Context, in *Service, opts ...grpc.CallOption) (*EmptyResponse, error)
+	ListServices(ctx context.Context, in *ListServicesRequest, opts ...grpc.CallOption) (*ListServicesResponse, error)
+	WatchServices(ctx context.Context, in *WatchServicesRequest, opts ...grpc.CallOption) (Registry_WatchServicesClient, error)
+	RegisterNode(ctx context.Context, in *Node, opts ...grpc.CallOption) (*EmptyResponse, error)
+	DeregisterNode(ctx context.Context, in *Node, opts ...grpc.CallOption) (*EmptyResponse, error)
+	GetNode(ctx context.Context, in *GetNodeRequest, opts ...grpc.CallOption) (*GetNodeResponse, error)
+	ListNodes(ctx context.Context, in *ListNodesRequest, opts ...grpc.CallOption) (*ListNodesResponse, error)
 }
 
 type registryClient struct {
@@ -33,8 +37,8 @@ func NewRegistryClient(cc grpc.ClientConnInterface) RegistryClient {
 	return &registryClient{cc}
 }
 
-func (c *registryClient) GetService(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
-	out := new(GetResponse)
+func (c *registryClient) GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*GetServiceResponse, error) {
+	out := new(GetServiceResponse)
 	err := c.cc.Invoke(ctx, "/registry.Registry/GetService", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -42,26 +46,26 @@ func (c *registryClient) GetService(ctx context.Context, in *GetRequest, opts ..
 	return out, nil
 }
 
-func (c *registryClient) Register(ctx context.Context, in *Service, opts ...grpc.CallOption) (*EmptyResponse, error) {
+func (c *registryClient) RegisterService(ctx context.Context, in *Service, opts ...grpc.CallOption) (*EmptyResponse, error) {
 	out := new(EmptyResponse)
-	err := c.cc.Invoke(ctx, "/registry.Registry/Register", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/registry.Registry/RegisterService", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *registryClient) Deregister(ctx context.Context, in *Service, opts ...grpc.CallOption) (*EmptyResponse, error) {
+func (c *registryClient) DeregisterService(ctx context.Context, in *Service, opts ...grpc.CallOption) (*EmptyResponse, error) {
 	out := new(EmptyResponse)
-	err := c.cc.Invoke(ctx, "/registry.Registry/Deregister", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/registry.Registry/DeregisterService", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *registryClient) ListServices(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error) {
-	out := new(ListResponse)
+func (c *registryClient) ListServices(ctx context.Context, in *ListServicesRequest, opts ...grpc.CallOption) (*ListServicesResponse, error) {
+	out := new(ListServicesResponse)
 	err := c.cc.Invoke(ctx, "/registry.Registry/ListServices", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -69,12 +73,12 @@ func (c *registryClient) ListServices(ctx context.Context, in *ListRequest, opts
 	return out, nil
 }
 
-func (c *registryClient) Watch(ctx context.Context, in *WatchRequest, opts ...grpc.CallOption) (Registry_WatchClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Registry_ServiceDesc.Streams[0], "/registry.Registry/Watch", opts...)
+func (c *registryClient) WatchServices(ctx context.Context, in *WatchServicesRequest, opts ...grpc.CallOption) (Registry_WatchServicesClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Registry_ServiceDesc.Streams[0], "/registry.Registry/WatchServices", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &registryWatchClient{stream}
+	x := &registryWatchServicesClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -84,16 +88,16 @@ func (c *registryClient) Watch(ctx context.Context, in *WatchRequest, opts ...gr
 	return x, nil
 }
 
-type Registry_WatchClient interface {
+type Registry_WatchServicesClient interface {
 	Recv() (*Result, error)
 	grpc.ClientStream
 }
 
-type registryWatchClient struct {
+type registryWatchServicesClient struct {
 	grpc.ClientStream
 }
 
-func (x *registryWatchClient) Recv() (*Result, error) {
+func (x *registryWatchServicesClient) Recv() (*Result, error) {
 	m := new(Result)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -101,15 +105,55 @@ func (x *registryWatchClient) Recv() (*Result, error) {
 	return m, nil
 }
 
+func (c *registryClient) RegisterNode(ctx context.Context, in *Node, opts ...grpc.CallOption) (*EmptyResponse, error) {
+	out := new(EmptyResponse)
+	err := c.cc.Invoke(ctx, "/registry.Registry/RegisterNode", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *registryClient) DeregisterNode(ctx context.Context, in *Node, opts ...grpc.CallOption) (*EmptyResponse, error) {
+	out := new(EmptyResponse)
+	err := c.cc.Invoke(ctx, "/registry.Registry/DeregisterNode", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *registryClient) GetNode(ctx context.Context, in *GetNodeRequest, opts ...grpc.CallOption) (*GetNodeResponse, error) {
+	out := new(GetNodeResponse)
+	err := c.cc.Invoke(ctx, "/registry.Registry/GetNode", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *registryClient) ListNodes(ctx context.Context, in *ListNodesRequest, opts ...grpc.CallOption) (*ListNodesResponse, error) {
+	out := new(ListNodesResponse)
+	err := c.cc.Invoke(ctx, "/registry.Registry/ListNodes", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RegistryServer is the server API for Registry service.
 // All implementations must embed UnimplementedRegistryServer
 // for forward compatibility
 type RegistryServer interface {
-	GetService(context.Context, *GetRequest) (*GetResponse, error)
-	Register(context.Context, *Service) (*EmptyResponse, error)
-	Deregister(context.Context, *Service) (*EmptyResponse, error)
-	ListServices(context.Context, *ListRequest) (*ListResponse, error)
-	Watch(*WatchRequest, Registry_WatchServer) error
+	GetService(context.Context, *GetServiceRequest) (*GetServiceResponse, error)
+	RegisterService(context.Context, *Service) (*EmptyResponse, error)
+	DeregisterService(context.Context, *Service) (*EmptyResponse, error)
+	ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error)
+	WatchServices(*WatchServicesRequest, Registry_WatchServicesServer) error
+	RegisterNode(context.Context, *Node) (*EmptyResponse, error)
+	DeregisterNode(context.Context, *Node) (*EmptyResponse, error)
+	GetNode(context.Context, *GetNodeRequest) (*GetNodeResponse, error)
+	ListNodes(context.Context, *ListNodesRequest) (*ListNodesResponse, error)
 	mustEmbedUnimplementedRegistryServer()
 }
 
@@ -117,20 +161,32 @@ type RegistryServer interface {
 type UnimplementedRegistryServer struct {
 }
 
-func (UnimplementedRegistryServer) GetService(context.Context, *GetRequest) (*GetResponse, error) {
+func (UnimplementedRegistryServer) GetService(context.Context, *GetServiceRequest) (*GetServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetService not implemented")
 }
-func (UnimplementedRegistryServer) Register(context.Context, *Service) (*EmptyResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
+func (UnimplementedRegistryServer) RegisterService(context.Context, *Service) (*EmptyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterService not implemented")
 }
-func (UnimplementedRegistryServer) Deregister(context.Context, *Service) (*EmptyResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Deregister not implemented")
+func (UnimplementedRegistryServer) DeregisterService(context.Context, *Service) (*EmptyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeregisterService not implemented")
 }
-func (UnimplementedRegistryServer) ListServices(context.Context, *ListRequest) (*ListResponse, error) {
+func (UnimplementedRegistryServer) ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListServices not implemented")
 }
-func (UnimplementedRegistryServer) Watch(*WatchRequest, Registry_WatchServer) error {
-	return status.Errorf(codes.Unimplemented, "method Watch not implemented")
+func (UnimplementedRegistryServer) WatchServices(*WatchServicesRequest, Registry_WatchServicesServer) error {
+	return status.Errorf(codes.Unimplemented, "method WatchServices not implemented")
+}
+func (UnimplementedRegistryServer) RegisterNode(context.Context, *Node) (*EmptyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterNode not implemented")
+}
+func (UnimplementedRegistryServer) DeregisterNode(context.Context, *Node) (*EmptyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeregisterNode not implemented")
+}
+func (UnimplementedRegistryServer) GetNode(context.Context, *GetNodeRequest) (*GetNodeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetNode not implemented")
+}
+func (UnimplementedRegistryServer) ListNodes(context.Context, *ListNodesRequest) (*ListNodesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListNodes not implemented")
 }
 func (UnimplementedRegistryServer) mustEmbedUnimplementedRegistryServer() {}
 
@@ -146,7 +202,7 @@ func RegisterRegistryServer(s grpc.ServiceRegistrar, srv RegistryServer) {
 }
 
 func _Registry_GetService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetRequest)
+	in := new(GetServiceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -158,49 +214,49 @@ func _Registry_GetService_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/registry.Registry/GetService",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RegistryServer).GetService(ctx, req.(*GetRequest))
+		return srv.(RegistryServer).GetService(ctx, req.(*GetServiceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Registry_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Registry_RegisterService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Service)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RegistryServer).Register(ctx, in)
+		return srv.(RegistryServer).RegisterService(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/registry.Registry/Register",
+		FullMethod: "/registry.Registry/RegisterService",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RegistryServer).Register(ctx, req.(*Service))
+		return srv.(RegistryServer).RegisterService(ctx, req.(*Service))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Registry_Deregister_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Registry_DeregisterService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Service)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RegistryServer).Deregister(ctx, in)
+		return srv.(RegistryServer).DeregisterService(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/registry.Registry/Deregister",
+		FullMethod: "/registry.Registry/DeregisterService",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RegistryServer).Deregister(ctx, req.(*Service))
+		return srv.(RegistryServer).DeregisterService(ctx, req.(*Service))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Registry_ListServices_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListRequest)
+	in := new(ListServicesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -212,30 +268,102 @@ func _Registry_ListServices_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/registry.Registry/ListServices",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RegistryServer).ListServices(ctx, req.(*ListRequest))
+		return srv.(RegistryServer).ListServices(ctx, req.(*ListServicesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Registry_Watch_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(WatchRequest)
+func _Registry_WatchServices_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(WatchServicesRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(RegistryServer).Watch(m, &registryWatchServer{stream})
+	return srv.(RegistryServer).WatchServices(m, &registryWatchServicesServer{stream})
 }
 
-type Registry_WatchServer interface {
+type Registry_WatchServicesServer interface {
 	Send(*Result) error
 	grpc.ServerStream
 }
 
-type registryWatchServer struct {
+type registryWatchServicesServer struct {
 	grpc.ServerStream
 }
 
-func (x *registryWatchServer) Send(m *Result) error {
+func (x *registryWatchServicesServer) Send(m *Result) error {
 	return x.ServerStream.SendMsg(m)
+}
+
+func _Registry_RegisterNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Node)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistryServer).RegisterNode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/registry.Registry/RegisterNode",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistryServer).RegisterNode(ctx, req.(*Node))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Registry_DeregisterNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Node)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistryServer).DeregisterNode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/registry.Registry/DeregisterNode",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistryServer).DeregisterNode(ctx, req.(*Node))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Registry_GetNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetNodeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistryServer).GetNode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/registry.Registry/GetNode",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistryServer).GetNode(ctx, req.(*GetNodeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Registry_ListNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListNodesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistryServer).ListNodes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/registry.Registry/ListNodes",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistryServer).ListNodes(ctx, req.(*ListNodesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 // Registry_ServiceDesc is the grpc.ServiceDesc for Registry service.
@@ -250,22 +378,38 @@ var Registry_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Registry_GetService_Handler,
 		},
 		{
-			MethodName: "Register",
-			Handler:    _Registry_Register_Handler,
+			MethodName: "RegisterService",
+			Handler:    _Registry_RegisterService_Handler,
 		},
 		{
-			MethodName: "Deregister",
-			Handler:    _Registry_Deregister_Handler,
+			MethodName: "DeregisterService",
+			Handler:    _Registry_DeregisterService_Handler,
 		},
 		{
 			MethodName: "ListServices",
 			Handler:    _Registry_ListServices_Handler,
 		},
+		{
+			MethodName: "RegisterNode",
+			Handler:    _Registry_RegisterNode_Handler,
+		},
+		{
+			MethodName: "DeregisterNode",
+			Handler:    _Registry_DeregisterNode_Handler,
+		},
+		{
+			MethodName: "GetNode",
+			Handler:    _Registry_GetNode_Handler,
+		},
+		{
+			MethodName: "ListNodes",
+			Handler:    _Registry_ListNodes_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "Watch",
-			Handler:       _Registry_Watch_Handler,
+			StreamName:    "WatchServices",
+			Handler:       _Registry_WatchServices_Handler,
 			ServerStreams: true,
 		},
 	},

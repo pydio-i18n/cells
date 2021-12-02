@@ -5,11 +5,15 @@ package registry;
 option go_package = "github.com/pydio/cells/v4/common/proto/registry";
 
 service Registry {
-  rpc GetService(GetRequest) returns (GetResponse) {};
-  rpc Register(Service) returns (EmptyResponse) {};
-  rpc Deregister(Service) returns (EmptyResponse) {};
-  rpc ListServices(ListRequest) returns (ListResponse) {};
-  rpc Watch(WatchRequest) returns (stream Result) {};
+  rpc GetService(GetServiceRequest) returns (GetServiceResponse) {};
+  rpc RegisterService(Service) returns (EmptyResponse) {};
+  rpc DeregisterService(Service) returns (EmptyResponse) {};
+  rpc ListServices(ListServicesRequest) returns (ListServicesResponse) {};
+  rpc WatchServices(WatchServicesRequest) returns (stream Result) {};
+  rpc RegisterNode(Node) returns (EmptyResponse) {};
+  rpc DeregisterNode(Node) returns (EmptyResponse) {};
+  rpc GetNode(GetNodeRequest) returns (GetNodeResponse) {};
+  rpc ListNodes(ListNodesRequest) returns (ListNodesResponse) {};
 }
 
 // Service represents a go-micro service
@@ -17,9 +21,8 @@ message Service {
   string name = 1;
   string version = 2;
   map<string,string> metadata = 3;
-  repeated Endpoint endpoints = 4;
-  repeated Node nodes = 5;
-  Options options = 6;
+  repeated Node nodes = 4;
+  Options options = 5;
 }
 
 // Node represents the node the service is on
@@ -28,6 +31,7 @@ message Node {
   string address = 2;
   int64 port = 3;
   map<string,string> metadata = 4;
+  repeated string endpoints = 5;
 }
 
 // Endpoint is a endpoint provided by a service
@@ -60,27 +64,44 @@ message Result {
 
 message EmptyResponse {}
 
-message GetRequest {
+message GetServiceRequest {
   string service = 1;
   Options options = 2;
 }
 
-message GetResponse {
-  repeated Service services = 1;
+message GetServiceResponse {
+  Service service = 1;
 }
 
-message ListRequest {
+message ListServicesRequest {
   Options options = 1;
 }
 
-message ListResponse {
+message ListServicesResponse {
   repeated Service services = 1;
 }
 
-message WatchRequest {
+message WatchServicesRequest {
   // service is optional
   string service = 1;
   Options options = 2;
+}
+
+message GetNodeRequest {
+  string node = 1;
+  Options options = 2;
+}
+
+message GetNodeResponse {
+  Node node = 1;
+}
+
+message ListNodesRequest {
+  Options options = 1;
+}
+
+message ListNodesResponse {
+  repeated Node nodes = 1;
 }
 
 // EventType defines the type of event

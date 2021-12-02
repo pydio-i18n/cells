@@ -23,6 +23,7 @@ package servicecontext
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/server"
 
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -42,6 +43,7 @@ const (
 	configKey
 	loggerKey
 	registryKey
+	serversKey
 
 	ContextMetaJobUuid        = "X-Pydio-Job-Uuid"
 	ContextMetaTaskUuid       = "X-Pydio-Task-Uuid"
@@ -80,6 +82,13 @@ func WithConfig(ctx context.Context, config configx.Values) context.Context {
 // WithRegistry links a registry to the context
 func WithRegistry(ctx context.Context, reg registry.Registry) context.Context {
 	return context.WithValue(ctx, registryKey, reg)
+}
+
+// WithServer links a grpc server to the context
+func WithServer(ctx context.Context, name string, server server.Server) context.Context {
+	servers := getServers(ctx)
+	servers[name] = server
+	return context.WithValue(ctx, serversKey, servers)
 }
 
 // GetServiceName returns the service name associated to this context
@@ -129,6 +138,39 @@ func GetConfig(ctx context.Context) configx.Values {
 
 // GetRegistry returns the registry from the context in argument
 func GetRegistry(ctx context.Context) registry.Registry {
+	if conf, ok := ctx.Value(registryKey).(registry.Registry); ok {
+		return conf
+	}
+	return nil
+}
+
+
+func getServers(ctx context.Context) map[string]server.Server {
+	if conf, ok := ctx.Value(serversKey).(map[string]server.Server); ok {
+		return conf
+	}
+	return map[string]server.Server{}
+}
+
+// GetServer returns the server from the context and name in argument
+func GetServer(ctx context.Context, name string) server.Server {
+	if srv, ok := getServers(ctx)[name]; ok {
+		return srv
+	}
+
+	return nil
+}
+
+// GetRegistry returns the registry from the context in argument
+func GetHTTP(ctx context.Context) registry.Registry {
+	if conf, ok := ctx.Value(registryKey).(registry.Registry); ok {
+		return conf
+	}
+	return nil
+}
+
+// GetRegistry returns the registry from the context in argument
+func GetGeneric(ctx context.Context) registry.Registry {
 	if conf, ok := ctx.Value(registryKey).(registry.Registry); ok {
 		return conf
 	}

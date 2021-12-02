@@ -23,16 +23,29 @@ package service
 import (
 	"errors"
 
-	"github.com/micro/micro/v3/service/registry"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
+	"github.com/pydio/cells/v4/common/registry"
 )
 
 type serviceWatcher struct {
-	stream pb.Registry_WatchClient
+	stream pb.Registry_WatchServicesClient
 	closed chan bool
 }
 
-func (s *serviceWatcher) Next() (*registry.Result, error) {
+type result struct {
+	action string
+	service registry.Service
+}
+
+func (r *result) Action() string {
+	return r.action
+}
+
+func (r *result) Service() registry.Service {
+	return r.service
+}
+
+func (s *serviceWatcher) Next() (registry.Result, error) {
 	// check if closed
 	select {
 	case <-s.closed:
@@ -45,9 +58,9 @@ func (s *serviceWatcher) Next() (*registry.Result, error) {
 		return nil, err
 	}
 
-	return &registry.Result{
-		Action:  r.Action,
-		Service: ToService(r.Service),
+	return &result{
+		action:  r.Action,
+		service: ToService(r.Service),
 	}, nil
 }
 
@@ -61,7 +74,7 @@ func (s *serviceWatcher) Stop() {
 	}
 }
 
-func newWatcher(stream pb.Registry_WatchClient) registry.Watcher {
+func newWatcher(stream pb.Registry_WatchServicesClient) registry.Watcher {
 	return &serviceWatcher{
 		stream: stream,
 		closed: make(chan bool),

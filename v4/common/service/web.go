@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/pydio/cells/v4/common/server"
-	httpserver "github.com/pydio/cells/v4/common/server/http"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"net/http"
 	"reflect"
 	"strings"
@@ -50,13 +50,10 @@ func WithWeb(handler func() WebHandler) ServiceOption {
 	return func(o *ServiceOptions) {
 		ctx := o.Context
 
-		o.Server = httpserver.Default
+		o.Server = servicecontext.GetServer(o.Context,"http")
 		o.ServerInit = func() error {
-			var srvh *http.Server
-			o.Server.(server.Converter).As(&srvh)
-
-			mux, ok := srvh.Handler.(*http.ServeMux)
-			if !ok {
+			var mux *http.ServeMux
+			if !o.Server.(server.Converter).As(&mux) {
 				return fmt.Errorf("server is not a mux")
 			}
 
@@ -72,7 +69,7 @@ func WithWeb(handler func() WebHandler) ServiceOption {
 			// 	micro.Metadata(registry.BuildServiceMeta()),
 			// )
 
-			rootPath := "/" + strings.TrimPrefix(o.Name, common.ServiceRestNamespace_)
+			rootPath := "/a/" + strings.TrimPrefix(o.Name, common.ServiceRestNamespace_)
 			log.Logger(ctx).Info("starting", zap.String("service", o.Name), zap.String("hook router to", rootPath))
 
 			ws := new(restful.WebService)
@@ -163,7 +160,7 @@ func operationToRoute(rootPath string, swaggerTags []string, path string, operat
 	method := handlerValue.MethodByName(operation.ID)
 	if method.IsValid() {
 		casted := method.Interface().(func(req *restful.Request, rsp *restful.Response))
-		shortPath := strings.TrimPrefix(path, rootPath)
+		shortPath := strings.TrimPrefix("/a" + path, rootPath)
 		if shortPath == "" {
 			shortPath = "/"
 		}

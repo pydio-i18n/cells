@@ -18,14 +18,6 @@ type Handler interface {
 	Stop() error
 }
 
-var (
-	Default = New(context.Background())
-)
-
-func Register(s *Server) {
-	Default = s
-}
-
 func New(ctx context.Context) *Server {
 	return &Server{
 		ctx: ctx,
@@ -78,7 +70,19 @@ func (s *Server) Serve(l net.Listener) error {
 	return err
 }
 
+func (s *Server) Id() string {
+	return "testgeneric"
+}
+
+func (s *Server) Metadata() map[string]string {
+	return map[string]string{}
+}
+
 func (s *Server) Address() []string {
+	return []string{}
+}
+
+func (s *Server) Endpoints() []string {
 	return []string{}
 }
 

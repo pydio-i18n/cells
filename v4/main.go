@@ -6,6 +6,10 @@ import (
 	// Register minio client for objects storage
 	_ "github.com/pydio/cells/v4/common/nodes/objects/mc"
 
+	// Frontend
+	_ "github.com/pydio/cells/v4/frontend/front-srv/rest"
+	_ "github.com/pydio/cells/v4/frontend/front-srv/web"
+
 	// Discovery
 	_ "github.com/pydio/cells/v4/discovery/config/grpc"
 	_ "github.com/pydio/cells/v4/discovery/config/web"
@@ -28,7 +32,7 @@ import (
 	//_ "github.com/pydio/cells/v4/data/source/objects"
 
 	// Gateways
-	// _ "github.com/pydio/cells/v4/gateway/proxy"
+	_ "github.com/pydio/cells/v4/gateway/proxy"
 
 	// Datasource
 	_ "github.com/pydio/cells/v4/data/source/index/grpc"
@@ -66,7 +70,7 @@ import (
 	//_ "github.com/pydio/cells/v4/gateway/data"
 	//_ "github.com/pydio/cells/v4/gateway/dav"
 	//_ "github.com/pydio/cells/v4/gateway/proxy"
-	//_ "github.com/pydio/cells/v4/gateway/websocket"
+	_ "github.com/pydio/cells/v4/gateway/websocket/api"
 	//_ "github.com/pydio/cells/v4/gateway/wopi"
 	// TODO V4 Not running yet, defaults.Registry() nil
 	// _ "github.com/pydio/cells/v4/gateway/micro"
@@ -75,7 +79,7 @@ import (
 	//_ "github.com/pydio/cells/v4/idm/acl/rest"
 	//_ "github.com/pydio/cells/v4/idm/graph/rest"
 	//_ "github.com/pydio/cells/v4/idm/key/grpc"
-	//_ "github.com/pydio/cells/v4/idm/meta/grpc"
+	_ "github.com/pydio/cells/v4/idm/meta/grpc"
 	//_ "github.com/pydio/cells/v4/idm/meta/rest"
 	// _ "github.com/pydio/cells/v4/idm/oauth/grpc"
 	//_ "github.com/pydio/cells/v4/idm/oauth/rest"

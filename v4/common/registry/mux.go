@@ -57,7 +57,7 @@ func DefaultURLMux() *URLMux {
 	return defaultURLMux
 }
 
-// OpenTopic opens the Topic identified by the URL given.
+// OpenRegistry opens the Registry identified by the URL given.
 // See the URLOpener documentation in driver subpackages for
 // details on supported URL formats, and https://gocloud.dev/concepts/urls
 // for more information.

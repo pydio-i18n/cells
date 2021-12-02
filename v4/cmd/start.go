@@ -16,6 +16,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/pydio/cells/v4/common/config/runtime"
+	"github.com/pydio/cells/v4/common/server"
+	"github.com/pydio/cells/v4/common/server/http"
 	"net"
 
 	"github.com/spf13/cobra"
@@ -26,9 +29,10 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/registry"
+	"github.com/pydio/cells/v4/common/registry/middleware"
+	"github.com/pydio/cells/v4/common/server/caddy"
 	"github.com/pydio/cells/v4/common/server/generic"
 	"github.com/pydio/cells/v4/common/server/grpc"
-	"github.com/pydio/cells/v4/common/server/http"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 )
 
@@ -69,44 +73,52 @@ to quickly create a Cobra application.`,
 
 		broker.Connect()
 
+		reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
+		if err != nil {
+			return err
+		}
+		// TODO v4 - move that to the registry with options
+		reg = middleware.NewNodeRegistry(reg)
+
+		ctx = servicecontext.WithRegistry(ctx, reg)
+
 		lisGRPC, err := net.Listen("tcp", viper.GetString("grpc.address"))
 		if err != nil {
 			log.Fatal("error listening", zap.Error(err))
 		}
 		defer lisGRPC.Close()
 
-		lisHTTP, err := net.Listen("tcp", viper.GetString("http.address"))
-		if err != nil {
-			log.Fatal("error listening", zap.Error(err))
-		}
-		defer lisHTTP.Close()
-
 		srvGRPC := grpc.New()
-		grpc.Register(srvGRPC)
-
-		srvHTTP := http.New()
-		http.Register(srvHTTP)
-
-		srvGeneric := generic.New(cmd.Context())
-		generic.Register(srvGeneric)
-
-		reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
+		var srvHTTP server.Server
+		if !runtime.IsFork() {
+			if h, err := caddy.New(ctx, ""); err != nil {
+				return err
+			} else {
+				srvHTTP = h
+			}
+		} else {
+			srvHTTP = http.New()
+		}
 		if err != nil {
 			return err
 		}
+		srvGeneric := generic.New(ctx)
 
-		ctx = servicecontext.WithRegistry(ctx, reg)
+
+		ctx = servicecontext.WithServer(ctx, "grpc", srvGRPC)
+		ctx = servicecontext.WithServer(ctx, "http", srvHTTP)
+		ctx = servicecontext.WithServer(ctx, "generic", srvGeneric)
 
 		plugins.Init(ctx, "main")
 
 		go func() {
-			if err := srvHTTP.Serve(lisHTTP); err != nil {
+			if err := srvGRPC.Serve(lisGRPC); err != nil {
 				fmt.Println(err)
 			}
 		}()
 
 		go func() {
-			if err := srvGRPC.Serve(lisGRPC); err != nil {
+			if err := srvHTTP.Serve(nil); err != nil {
 				fmt.Println(err)
 			}
 		}()
@@ -116,6 +128,10 @@ to quickly create a Cobra application.`,
 				fmt.Println(err)
 			}
 		}()
+
+		var rn registry.NodeRegistry
+		reg.As(&rn)
+		fmt.Println(rn.ListNodes())
 
 		log.Info("started")
 
