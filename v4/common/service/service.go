@@ -2,19 +2,18 @@ package service
 
 import (
 	"fmt"
+	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/registry"
 	"strings"
 
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
-	mregistry "github.com/micro/micro/v3/service/registry"
 
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/server"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
-
 )
 
 // Service for the pydio app
@@ -43,7 +42,6 @@ func NewService(opts ...ServiceOption) Service {
 	}
 
 	name := s.opts.Name
-	tags := s.opts.Tags
 
 	if !runtime.IsRequired(name) {
 		return nil
@@ -59,54 +57,23 @@ func NewService(opts ...ServiceOption) Service {
 	if ok {
 		bs.RegisterBeforeServe(s.Init)
 		bs.RegisterAfterServe(func() error {
+			// Register service again to update nodes information
+			if err := reg.RegisterService(s); err != nil {
+				return err
+			}
+
 			log.Info("started", zap.String("name", name))
 			return nil
 		})
 		bs.RegisterAfterServe(func() error {
-			for _, addr := range s.opts.Server.Address() {
-				reg.Register(registry.NewService(&mregistry.Service{
-					Name: name,
-					Version: "0.0.0",
-					Metadata: map[string]string{
-						"tags": strings.Join(tags, ","),
-					},
-					Nodes: []*mregistry.Node{{
-						Id: name + "-0",
-						Address: addr,
-					}},
-				}))
-			}
-
 			return nil
 		})
 		bs.RegisterAfterStop(func() error {
-			for _, addr := range s.opts.Server.Address() {
-				reg.Deregister(registry.NewService(&mregistry.Service{
-					Name: name,
-					Version: "0.0.0",
-					Metadata: map[string]string{
-						"tags": strings.Join(tags, ","),
-					},
-					Nodes: []*mregistry.Node{{
-						Id: name + "-0",
-						Address: addr,
-					}},
-				}))
-			}
-
-
 			return nil
 		})
 	}
 
-
-	reg.Register(registry.NewService(&mregistry.Service{
-		Name: name,
-		Version: "0.0.0",
-		Metadata: map[string]string{
-			"tags": strings.Join(tags, ","),
-		},
-	}))
+	reg.RegisterService(s)
 
 	return s
 }
@@ -168,4 +135,26 @@ func buildForkStartParams(serviceName string) []string {
 		params = append(params, bindFlags...)
 	}
 	return params
+}
+
+func (s *service) Name() string {
+	return s.opts.Name
+}
+func (s *service) Version() string {
+	return s.opts.Version
+}
+func (s *service) Nodes() []registry.Node {
+	return []registry.Node{s.opts.Server}
+}
+func (s *service) Tags() []string {
+	return s.opts.Tags
+}
+func (s *service) IsGeneric() bool {
+	return !s.IsGRPC() && !s.IsREST()
+}
+func (s *service) IsGRPC() bool {
+	return strings.HasPrefix(s.Name(), common.ServiceGrpcNamespace_)
+}
+func (s *service) IsREST() bool {
+	return strings.HasPrefix(s.Name(), common.ServiceRestNamespace_)
 }

@@ -24,13 +24,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/pydio/cells/v4/common/config/file"
-
 	"github.com/pydio/cells/v4/x/configx"
 )
 
 var (
-	std   Store = New(file.New("/tmp/pydio.json"))
+	std   Store
 	local Store = std
 )
 

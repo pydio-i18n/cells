@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 	"crypto/tls"
+	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/service/frontend"
 
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/server"
@@ -143,6 +145,14 @@ func Metadata(name, value string) ServiceOption {
 func Dependency(n string, t []string) ServiceOption {
 	return func(o *ServiceOptions) {
 		o.Dependencies = append(o.Dependencies, &dependency{n, t})
+	}
+}
+
+// PluginBoxes option for a service
+func PluginBoxes(boxes ...frontend.PluginBox) ServiceOption {
+	return func(o *ServiceOptions) {
+		o.Dependencies = append(o.Dependencies, &dependency{common.ServiceWebNamespace_ + common.ServiceFrontStatics, []string{}})
+		frontend.RegisterPluginBoxes(boxes...)
 	}
 }
 

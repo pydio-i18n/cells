@@ -61,7 +61,7 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 	var m = map[string][]string{}
 	for _, s := range services {
 		for _, n := range s.Nodes() {
-			m[n.Address()] = append(m[n.Address()], s.Name())
+			m[n.Address()[0]] = append(m[n.Address()[0]], s.Name())
 		}
 	}
 
@@ -80,7 +80,7 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 }
 
 func (cr *cellsResolver) watch() {
-	w, err := cr.reg.Watch()
+	w, err := cr.reg.WatchServices()
 	if err != nil {
 		return
 	}
@@ -94,7 +94,7 @@ func (cr *cellsResolver) watch() {
 		s := r.Service()
 		if r.Action() == "create" {
 			for _, n := range r.Service().Nodes() {
-				cr.m[n.Address()] = append(cr.m[n.Address()], s.Name())
+				cr.m[n.Address()[0]] = append(cr.m[n.Address()[0]], s.Name())
 			}
 
 			cr.updateState()

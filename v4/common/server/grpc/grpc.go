@@ -13,14 +13,6 @@ type Server struct {
 	*server.ServerImpl
 }
 
-var (
-	Default = New()
-)
-
-func Register(s server.Server) {
-	Default = s
-}
-
 func New() server.Server {
 	return &Server{
 		Server: grpc.NewServer(
@@ -73,8 +65,29 @@ func (s *Server) Serve(l net.Listener) error {
 	return err
 }
 
+func (s *Server) Id() string {
+	return "test"
+}
+
+func (s *Server) Metadata() map[string]string {
+	return map[string]string{}
+}
+
 func (s *Server) Address() []string{
 	return []string{s.Listener.Addr().String()}
+}
+
+func (s *Server) Endpoints() []string{
+	var endpoints []string
+
+	info := s.Server.GetServiceInfo()
+	for _, i := range info {
+		for _, m := range i.Methods {
+			endpoints = append(endpoints, m.Name)
+		}
+	}
+
+	return endpoints
 }
 
 func (s *Server) As(i interface{}) bool {

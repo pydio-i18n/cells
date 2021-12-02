@@ -23,6 +23,9 @@ package grpc
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/config"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/sql"
 	"log"
 
 	"google.golang.org/grpc"
@@ -51,17 +54,23 @@ func init() {
 				},
 			}),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
-				h := &Handler{}
+				h := &Handler{name: common.ServiceGrpcNamespace_+common.ServiceOAuth}
+
 				auth2.RegisterLoginProviderServer(server, h)
 				auth2.RegisterConsentProviderServer(server, h)
 				auth2.RegisterLogoutProviderServer(server, h)
 				auth2.RegisterAuthCodeProviderServer(server, h)
 				auth2.RegisterAuthCodeExchangerServer(server, h)
-				auth2.RegisterAuthTokenVerifierServer(server, h)
+				auth2.RegisterMultiAuthTokenVerifierServer(server, h)
 				auth2.RegisterAuthTokenRefresherServer(server, h)
 				auth2.RegisterAuthTokenRevokerServer(server, h)
-				auth2.RegisterAuthTokenPrunerServer(server, h)
+				auth2.RegisterMultiAuthTokenPrunerServer(server, h)
 				auth2.RegisterPasswordCredentialsTokenServer(server, h)
+
+				dao := servicecontext.GetDAO(ctx).(sql.DAO)
+
+				// Registry
+				auth.InitRegistry(dao)
 
 				return nil
 			}),
@@ -81,10 +90,10 @@ func init() {
 			service.Description("Personal Access Token Provider"),
 			service.WithStorage(oauth.NewDAO, "idm_oauth_"),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
-				pat := &PatHandler{}
+				pat := &PatHandler{name: common.ServiceGrpcNamespace_+common.ServiceToken}
 				auth2.RegisterPersonalAccessTokenServiceServer(server, pat)
-				auth2.RegisterAuthTokenVerifierServer(server, pat)
-				auth2.RegisterAuthTokenPrunerServer(server, pat)
+				auth2.RegisterMultiAuthTokenVerifierServer(server, pat)
+				auth2.RegisterMultiAuthTokenPrunerServer(server, pat)
 				return nil
 			}),
 		)
@@ -109,8 +118,7 @@ func init() {
 		})
 
 		// load configuration
-		// TODO V4
-		// auth.InitConfiguration(config.Get("services", common.ServiceWebNamespace_+common.ServiceOAuth))
+		 auth.InitConfiguration(config.Get("services", common.ServiceWebNamespace_+common.ServiceOAuth))
 
 		// Register the services as GRPC Auth Providers
 		auth.RegisterGRPCProvider(auth.ProviderTypeGrpc, common.ServiceGrpcNamespace_+common.ServiceOAuth)

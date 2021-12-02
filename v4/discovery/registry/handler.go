@@ -2,58 +2,49 @@ package registry
 
 import (
 	"context"
-	mregistry "github.com/micro/micro/v3/service/registry"
+
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 
 	"github.com/pydio/cells/v4/common/registry"
+	"github.com/pydio/cells/v4/common/registry/service"
 )
 
-type Handler struct{
+type Handler struct {
 	pb.UnimplementedRegistryServer
 
 	reg registry.Registry
 }
 
-func (h *Handler) GetService(ctx context.Context, req *pb.GetRequest) (*pb.GetResponse, error) {
-	resp := &pb.GetResponse{}
+func (h *Handler) GetService(ctx context.Context, req *pb.GetServiceRequest) (*pb.GetServiceResponse, error) {
+	resp := &pb.GetServiceResponse{}
 
 	ss, err := h.reg.GetService(req.GetService())
 	if err != nil {
 		return nil, err
 	}
 
-	var services []*pb.Service
-
-	for _, s := range ss {
-		var p *mregistry.Service
-		if ok := s.As(&p); ok {
-			continue
-		}
-		services = append(services, registry.ToProto(p))
-	}
-
-	resp.Services = services
+	resp.Service = service.ToProtoService(ss)
 
 	return resp, nil
 }
-func (h *Handler) Register(ctx context.Context, s *pb.Service) (*pb.EmptyResponse, error) {
-	if err := h.reg.Register(registry.ToService(s)); err != nil { // , mregistry.RegisterTTL(time.Duration(s.GetOptions().GetTtl())*time.Second)); err != nil {
+func (h *Handler) RegisterService(ctx context.Context, s *pb.Service) (*pb.EmptyResponse, error) {
+	if err := h.reg.RegisterService(service.ToService(s)); err != nil { // , mregistry.RegisterTTL(time.Duration(s.GetOptions().GetTtl())*time.Second)); err != nil {
 		return nil, err
 	}
 
 	return &pb.EmptyResponse{}, nil
 }
 
-func (h *Handler) Deregister(ctx context.Context, s *pb.Service) (*pb.EmptyResponse, error) {
-	if err := h.reg.Deregister(registry.ToService(s)); err != nil {
+func (h *Handler) DeregisterService(ctx context.Context, s *pb.Service) (*pb.EmptyResponse, error) {
+	if err := h.reg.DeregisterService(service.ToService(s)); err != nil {
 		return nil, err
 	}
 
 	return &pb.EmptyResponse{}, nil
 }
 
-func (h *Handler) ListServices(ctx context.Context, req *pb.ListRequest) (*pb.ListResponse, error) {
-	resp := &pb.ListResponse{}
+func (h *Handler) ListServices(ctx context.Context, req *pb.ListServicesRequest) (*pb.ListServicesResponse, error) {
+	resp := &pb.ListServicesResponse{}
 
 	ss, err := h.reg.ListServices()
 	if err != nil {
@@ -62,11 +53,7 @@ func (h *Handler) ListServices(ctx context.Context, req *pb.ListRequest) (*pb.Li
 
 	var services []*pb.Service
 	for _, s := range ss {
-		var p *mregistry.Service
-		if ok := s.As(&p); !ok {
-			continue
-		}
-		services = append(services, registry.ToProto(p))
+		services = append(services, service.ToProtoService(s))
 	}
 
 	resp.Services = services
@@ -74,14 +61,15 @@ func (h *Handler) ListServices(ctx context.Context, req *pb.ListRequest) (*pb.Li
 	return resp, nil
 }
 
-func (h *Handler) Watch(req *pb.WatchRequest, stream pb.Registry_WatchServer) error {
-	var opts []mregistry.WatchOption
-	if s := req.GetService(); s != "" {
-		opts = append(opts, mregistry.WatchService(s))
-	}
+func (h *Handler) WatchServices(req *pb.WatchServicesRequest, stream pb.Registry_WatchServicesServer) error {
 
 	//TODO v4 options
-	w, err := h.reg.Watch()
+	//var opts []registry.WatchOption
+	//if s := req.GetService(); s != "" {
+	//	opts = append(opts, registry.WatchService(s))
+	//}
+
+	w, err := h.reg.WatchServices()
 	if err != nil {
 		return err
 	}
@@ -92,14 +80,9 @@ func (h *Handler) Watch(req *pb.WatchRequest, stream pb.Registry_WatchServer) er
 			return err
 		}
 
-		var p *mregistry.Service
-		if ok := res.Service().As(&p); !ok {
-			continue
-		}
-
 		stream.Send(&pb.Result{
 			Action:  res.Action(),
-			Service: registry.ToProto(p),
+			Service: service.ToProtoService(res.Service()),
 		})
 	}
 }

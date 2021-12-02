@@ -4,12 +4,13 @@ import (
 	"context"
 	"github.com/pydio/cells/v4/common/server"
 	"github.com/pydio/cells/v4/common/server/generic"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 )
 
 // WithGeneric adds a http micro service handler to the current service
 func WithGeneric(f func(context.Context, *generic.Server) error) ServiceOption {
 	return func(o *ServiceOptions) {
-		o.Server = generic.Default
+		o.Server = servicecontext.GetServer(o.Context, "generic")
 		o.ServerInit = func() error {
 			var srvg *generic.Server
 

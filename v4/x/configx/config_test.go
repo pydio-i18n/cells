@@ -54,7 +54,18 @@ var (
 	}`)
 
 	dataArray = []byte(`[{"Id":0,"Date":"2021-04-19T15:26:56.276288+02:00","User":"pydio.system.user","Log":"Import done","Data":{"databases":{"bc1ffe07aa51180396883a100ca989df3e3430e8":{"driver":"mysql","dsn":"root@tcp(localhost:3306)/cells?parseTime=true"},"pydio.grpc.activity":{"driver":"boltdb","dsn":"/Users/ghecquet/Library/Application Support/Pydio/cells/services/pydio.grpc.activity/activities.db"},"pydio.grpc.chat":{"driver":"boltdb","dsn":"/Users/ghecquet/Library/Application Support/Pydio/cells/services/pydio.grpc.chat/chat.db"}},"defaults":{"database":{"$ref":"#/databases/bc1ffe07aa51180396883a100ca989df3e3430e8"},"update":{"publicKey":"-----BEGIN PUBLIC KEY-----\nMIIBCgKCAQEAwh/ofjZTITlQc4h/qDZMR3RquBxlG7UTunDKLG85JQwRtU7EL90v\nlWxamkpSQsaPeqho5Q6OGkhJvZkbWsLBJv6LZg+SBhk6ZSPxihD+Kfx8AwCcWZ46\nDTpKpw+mYnkNH1YEAedaSfJM8d1fyU1YZ+WM3P/j1wTnUGRgebK9y70dqZEo2dOK\nn98v3kBP7uEN9eP/wig63RdmChjCpPb5gK1/WKnY4NFLQ60rPAOBsXurxikc9N/3\nEvbIB/1vQNqm7yEwXk8LlOC6Fp8W/6A0DIxr2BnZAJntMuH2ulUfhJgw0yJalMNF\nDR0QNzGVktdLOEeSe8BSrASe9uZY2SDbTwIDAQAB\n-----END PUBLIC KEY-----","updateUrl":"https://updatecells.pydio.com/"}},"frontend":{"plugin":{"editor.libreoffice":{"LIBREOFFICE_HOST":"localhost","LIBREOFFICE_PORT":"9980","LIBREOFFICE_SSL":true}},"secureHeaders":{"X-XSS-Protection":"1; mode=block"}},"ports":{"nats":4222},"services":{"pydio.docstore-binaries":{"bucket":"binaries","datasource":"default"},"pydio.grpc.acl":{"dsn":"default"},"pydio.grpc.changes":{"dsn":"default"},"pydio.grpc.config":{"dsn":"default"},"pydio.grpc.data-key":{"dsn":"default"},"pydio.grpc.mailer":{"queue":{"@value":"boltdb"},"sender":{"@value":"smtp","host":"my.smtp.server","password":"","port":465,"user":"name"}},"pydio.grpc.meta":{"dsn":"default"},"pydio.grpc.policy":{"dsn":"databaseParseTime"},"pydio.grpc.role":{"dsn":"default"},"pydio.grpc.search":{"basenameAnalyzer":"standard","contentAnalyzer":"en","indexContent":false},"pydio.grpc.tasks":{"fork":true},"pydio.grpc.tree":{"dsn":"default"},"pydio.grpc.update":{"channel":"stable"},"pydio.grpc.user":{"dsn":"default","tables":{"attributes":"idm_user_attributes","nodes":"idm_user_nodes","roles":"idm_user_roles","tree":"idm_user_tree"}},"pydio.grpc.user-key":{"dsn":"default"},"pydio.grpc.user-meta":{"dsn":"default"},"pydio.grpc.workspace":{"dsn":"default"},"pydio.thumbs_store":{"bucket":"thumbs","datasource":"default"},"pydio.versions-store":{"bucket":"versions","datasource":"default"},"pydio.web.oauth":{"connectors":[{"id":"pydio","name":"Pydio Cells","type":"pydio"}],"cors":{"public":{"allowedOrigins":"*"}},"staticClients":[{"client_id":"cells-frontend","client_name":"CellsFrontend Application","grant_types":["authorization_code","refresh_token"],"post_logout_redirect_uris":["#default_bind#/auth/logout"],"redirect_uris":["#default_bind#/auth/callback"],"response_types":["code","token","id_token"],"revokeRefreshTokenAfterInactivity":"2h","scope":"openid email profile pydio offline"},{"client_id":"cells-sync","client_name":"CellsSync Application","grant_types":["authorization_code","refresh_token"],"redirect_uris":["http://localhost:3000/servers/callback","http://localhost:[3636-3666]/servers/callback"],"response_types":["code","token","id_token"],"scope":"openid email profile pydio offline"},{"client_id":"cells-client","client_name":"Cells Client CLI Tool","grant_types":["authorization_code","refresh_token"],"redirect_uris":["http://localhost:3000/servers/callback","#binds...#/oauth2/oob"],"response_types":["code","token","id_token"],"scope":"openid email profile pydio offline"},{"client_id":"cells-mobile","client_name":"Mobile Applications","grant_types":["authorization_code","refresh_token"],"redirect_uris":["cellsauth://callback"],"response_types":["code","token","id_token"],"scope":"openid email profile pydio offline"}]}},"version":"2.3.0-dev"}}]`)
-)
+
+	dataYAML = []byte(`
+---
+defaults:
+    key1: val1
+    key2: val2
+
+pointer:
+    key1:
+        $ref: "#/defaults/key2"
+`)
+	)
 
 func TestStd(t *testing.T) {
 	Convey("Testing map get", t, func() {
@@ -315,5 +326,38 @@ func TestProtoScan(t *testing.T) {
 		So(p.ID, ShouldEqual, "DocId")
 		So(p.Owner, ShouldEqual, "DocOwner")
 		So(p.Type, ShouldEqual, docstore.DocumentType_JSON)
+	})
+}
+
+func TestYAML(t *testing.T) {
+	Convey("Testing yaml encoding", t, func() {
+		m := New(WithYAML())
+		err := m.Set(dataYAML)
+		m.Val("test").Set(Reference("#/defaults/key1"))
+		fmt.Println(m)
+		So(err, ShouldBeNil)
+		So(m.Val("defaults/key1").String(), ShouldEqual, "val1")
+		So(m.Val("pointer/key1").String(), ShouldEqual, "val2")
+	})
+}
+
+type encrypter struct {
+}
+func (encrypter) Encrypt(b []byte) (string, error) {
+	return "encrypted : " + string(b), nil
+}
+func (encrypter) Decrypt(s string) ([]byte, error) {
+	return []byte(strings.TrimPrefix(s, "encrypted : ")), nil
+}
+
+func TestEncrypt(t *testing.T) {
+	Convey("Testing encryption", t, func() {
+		e := encrypter{}
+		m := New(WithYAML(), WithEncrypt(e), WithDecrypt(e))
+		err := m.Set(dataYAML)
+		So(err, ShouldBeNil)
+		So(m.Val("secrets/test").Set("test"), ShouldBeNil
+
+		m.Val("secrets/test").Scan(&s)
 	})
 }

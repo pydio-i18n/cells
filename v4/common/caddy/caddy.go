@@ -31,6 +31,7 @@ import (
 
 	caddy "github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig"
+	_ "github.com/caddyserver/caddy/v2/modules/caddyhttp/standard"
 	"github.com/micro/micro/v3/service/registry"
 	"go.uber.org/zap"
 
@@ -99,9 +100,6 @@ type Caddy struct {
 
 // Enable the caddy builder
 func Enable(caddyfile string, player hooks.TemplateFunc) {
-	/* TODO v4 dirOnce.Do(func() {
-		httpserver.RegisterDevDirective("pydioproxy", "proxy")
-	})*/
 	caddytemplate, err := template.New("pydiocaddy").Funcs(FuncMap).Parse(caddyfile)
 	if err != nil {
 		log.Fatal("could not load template: ", zap.Error(err))
@@ -125,6 +123,7 @@ func Start() error {
 	}
 
 	b := buf.Bytes()
+
 	// Load config directly from memory
 	adapter := caddyconfig.GetAdapter("caddyfile")
 	confs, warns, err := adapter.Adapt(b, map[string]interface{}{})

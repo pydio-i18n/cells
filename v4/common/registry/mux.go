@@ -46,3 +46,21 @@ func (mux *URLMux) OpenRegistry(ctx context.Context, urlstr string) (Registry, e
 	}
 	return opener.(URLOpener).OpenURL(ctx, u)
 }
+
+var defaultURLMux = &URLMux{}
+
+// DefaultURLMux returns the URLMux used by OpenTopic and OpenSubscription.
+//
+// Driver packages can use this to register their TopicURLOpener and/or
+// SubscriptionURLOpener on the mux.
+func DefaultURLMux() *URLMux {
+	return defaultURLMux
+}
+
+// OpenRegistry opens the Registry identified by the URL given.
+// See the URLOpener documentation in driver subpackages for
+// details on supported URL formats, and https://gocloud.dev/concepts/urls
+// for more information.
+func OpenRegistry(ctx context.Context, urlstr string) (Registry, error) {
+	return defaultURLMux.OpenRegistry(ctx, urlstr)
+}

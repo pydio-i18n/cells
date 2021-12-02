@@ -21,6 +21,7 @@
 package auth
 
 import (
+	"github.com/ory/x/logrusx"
 	"net/http"
 	"net/url"
 	"sync"
@@ -28,6 +29,7 @@ import (
 
 	hconf "github.com/ory/hydra/driver/config"
 	"github.com/ory/hydra/x"
+	hconfx "github.com/ory/x/configx"
 	"github.com/rs/cors"
 
 	"github.com/pydio/cells/v4/common"
@@ -118,7 +120,6 @@ func init() {
 }
 
 func InitConfiguration(values configx.Values) {
-
 	confMutex.Lock()
 	defer confMutex.Unlock()
 	initConnector := false
@@ -165,7 +166,9 @@ func GetConfigurationProvider(hostname ...string) ConfigurationProvider {
 
 func NewProvider(rootURL string, values configx.Values) ConfigurationProvider {
 	// Todo V4 : INIT A  PROPER hconf.Provider with New
+	provider, _ := hconf.New(logrusx.New("test", "test"), hconfx.WithValues(values.Map()))
 	return &configurationProvider{
+		Provider: provider,
 		r: rootURL,
 		v: values,
 	}

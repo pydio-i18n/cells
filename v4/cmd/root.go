@@ -16,9 +16,13 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/pydio/cells/v4/common/config/service"
 	"os"
+	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -28,6 +32,11 @@ import (
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	context_wrapper "github.com/pydio/cells/v4/common/log/context-wrapper"
+	"github.com/pydio/cells/v4/common/config/migrations"
+	// "github.com/pydio/cells/v4/common/config/remote"
+	"github.com/pydio/cells/v4/common/config/file"
+	"github.com/pydio/cells/v4/common/config/sql"
+	"github.com/pydio/cells/v4/x/filex"
 )
 
 var (
@@ -93,7 +102,7 @@ func skipCoreInit() bool {
 	return false
 }
 
-/*
+
 func initConfig() (new bool) {
 
 	if skipCoreInit() {
@@ -109,17 +118,10 @@ func initConfig() (new bool) {
 
 	switch viper.GetString("config") {
 	case "mysql":
-		localSource := file.NewSource(
-			microconfig.SourceName(filepath.Join(config.PydioConfigDir, config.PydioConfigFile)),
-		)
+		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile))
 
 		localConfig = config.New(
-			micro.New(
-				microconfig.NewConfig(
-					microconfig.WithSource(localSource),
-					microconfig.PollInterval(10*time.Second),
-				),
-			),
+			localSource,
 		)
 
 		config.Register(localConfig)
@@ -141,55 +143,40 @@ func initConfig() (new bool) {
 		defaultConfig = config.NewVersionStore(versionsStore, defaultConfig)
 
 	case "remote":
-		localSource := file.NewSource(
-			microconfig.SourceName(filepath.Join(config.PydioConfigDir, config.PydioConfigFile)),
-		)
+		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile))
 
 		localConfig = config.New(
-			micro.New(
-				microconfig.NewConfig(
-					microconfig.WithSource(localSource),
-					microconfig.PollInterval(10*time.Second),
-				),
-			),
+			localSource,
 		)
 
 		config.RegisterLocal(localConfig)
 
 		vaultConfig = config.New(
-			remote.New(common.ServiceGrpcNamespace_+common.ServiceConfig, "vault"),
+			service.New(common.ServiceGrpcNamespace_+common.ServiceConfig, "vault"),
 		)
 		defaultConfig = config.New(
-			remote.New(common.ServiceGrpcNamespace_+common.ServiceConfig, "config"),
+			service.New(common.ServiceGrpcNamespace_+common.ServiceConfig, "config"),
 		)
 	case "raft":
-		localSource := file.NewSource(
-			microconfig.SourceName(filepath.Join(config.PydioConfigDir, config.PydioConfigFile)),
-		)
+		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile))
 
 		localConfig = config.New(
-			micro.New(
-				microconfig.NewConfig(
-					microconfig.WithSource(localSource),
-					microconfig.PollInterval(10*time.Second),
-				),
-			),
+			localSource,
 		)
 
 		config.RegisterLocal(localConfig)
 
 		vaultConfig = config.New(
-			remote.New(common.ServiceStorageNamespace_+common.ServiceConfig, "vault"),
+			service.New(common.ServiceStorageNamespace_+common.ServiceConfig, "vault"),
 		)
 		defaultConfig = config.New(
-			remote.New(common.ServiceStorageNamespace_+common.ServiceConfig, "config"),
+			service.New(common.ServiceStorageNamespace_+common.ServiceConfig, "config"),
 		)
 	default:
-		source := file.NewSource(
-			microconfig.SourceName(filepath.Join(config.PydioConfigDir, config.PydioConfigFile)),
-		)
+		source := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile))
 
-		vaultConfig = config.New(
+		vaultConfig = config.New(file.New(filepath.Join(config.PydioConfigDir, "pydio-vault.json")))
+		/*vaultConfig = config.New(
 			micro.New(
 				microconfig.NewConfig(
 					microconfig.WithSource(
@@ -201,15 +188,10 @@ func initConfig() (new bool) {
 					),
 					microconfig.PollInterval(10*time.Second),
 				),
-			))
+			))*/
 
 		defaultConfig = config.New(
-			micro.New(
-				microconfig.NewConfig(
-					microconfig.WithSource(source),
-					microconfig.PollInterval(10*time.Second),
-				),
-			),
+			source,
 		)
 
 		defaultConfig = config.NewVersionStore(versionsStore, defaultConfig)
@@ -224,38 +206,36 @@ func initConfig() (new bool) {
 	config.RegisterVault(vaultConfig)
 	config.RegisterVersionStore(versionsStore)
 
-	/*
-		if skipUpgrade {
-			return
-		}
+	//if skipUpgrade {
+	//	return
+	//}
 
-		if defaultConfig.Val("version").String() == "" && defaultConfig.Val("defaults/database").String() == "" {
-			new = true
+	if defaultConfig.Val("version").String() == "" && defaultConfig.Val("defaults/database").String() == "" {
+		new = true
 
-			var data interface{}
-			if err := json.Unmarshal([]byte(config.SampleConfig), &data); err == nil {
-				if err := defaultConfig.Val().Set(data); err == nil {
-					versionsStore.Put(&filex.Version{
-						User: "cli",
-						Date: time.Now(),
-						Log:  "Initialize with sample config",
-						Data: data,
-					})
-				}
+		var data interface{}
+		if err := json.Unmarshal([]byte(config.SampleConfig), &data); err == nil {
+			if err := defaultConfig.Val().Set(data); err == nil {
+				versionsStore.Put(&filex.Version{
+					User: "cli",
+					Date: time.Now(),
+					Log:  "Initialize with sample config",
+					Data: data,
+				})
 			}
 		}
+	}
 
-		// Need to do something for the versions
-		if save, err := migrations.UpgradeConfigsIfRequired(defaultConfig.Val(), common.Version()); err == nil && save {
-			if err := config.Save(common.PydioSystemUsername, "Configs upgrades applied"); err != nil {
-				log.Fatal("Could not save config migrations", zap.Error(err))
-			}
+	// Need to do something for the versions
+	if save, err := migrations.UpgradeConfigsIfRequired(defaultConfig.Val(), common.Version()); err == nil && save {
+		if err := config.Save(common.PydioSystemUsername, "Configs upgrades applied"); err != nil {
+			log.Fatal("Could not save config migrations", zap.Error(err))
 		}
-
+	}
 
 	return
 }
-*/
+
 
 func initLogLevel() {
 

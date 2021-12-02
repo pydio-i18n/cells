@@ -21,136 +21,129 @@
 package service
 
 import (
+	"github.com/pydio/cells/v4/common"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
-	"github.com/micro/micro/v3/service/registry"
+	"github.com/pydio/cells/v4/common/registry"
+	"strings"
 )
 
-func values(v []*registry.Value) []*pb.Value {
-	if len(v) == 0 {
-		return []*pb.Value{}
-	}
-
-	vs := make([]*pb.Value, 0, len(v))
-	for _, vi := range v {
-		vs = append(vs, &pb.Value{
-			Name:   vi.Name,
-			Type:   vi.Type,
-			Values: values(vi.Values),
-		})
-	}
-	return vs
+type service struct {
+	s *pb.Service
 }
 
-func toValues(v []*pb.Value) []*registry.Value {
-	if len(v) == 0 {
-		return []*registry.Value{}
-	}
-
-	vs := make([]*registry.Value, 0, len(v))
-	for _, vi := range v {
-		vs = append(vs, &registry.Value{
-			Name:   vi.Name,
-			Type:   vi.Type,
-			Values: toValues(vi.Values),
-		})
-	}
-	return vs
+func (s *service) Name() string {
+	return s.s.Name
 }
 
-func ToProto(s *registry.Service) *pb.Service {
-	endpoints := make([]*pb.Endpoint, 0, len(s.Endpoints))
-	for _, ep := range s.Endpoints {
-		var request, response *pb.Value
+func (s *service) Version() string {
+	return s.s.Version
+}
 
-		if ep.Request != nil {
-			request = &pb.Value{
-				Name:   ep.Request.Name,
-				Type:   ep.Request.Type,
-				Values: values(ep.Request.Values),
-			}
-		}
+func (s *service) Metadata() map[string] string {
+	return s.s.Metadata
+}
 
-		if ep.Response != nil {
-			response = &pb.Value{
-				Name:   ep.Response.Name,
-				Type:   ep.Response.Type,
-				Values: values(ep.Response.Values),
-			}
-		}
+func (s *service) Nodes() []registry.Node {
+	var nodes []registry.Node
+	for _, n := range s.s.Nodes {
+		nodes = append(nodes, &node{n})
+	}
+	return nodes
+}
 
-		endpoints = append(endpoints, &pb.Endpoint{
-			Name:     ep.Name,
-			Request:  request,
-			Response: response,
-			Metadata: ep.Metadata,
-		})
+func (s *service) Tags() []string {
+	return strings.Split(s.s.Metadata["tags"], ",")
+}
+
+func (s *service) IsGRPC() bool {
+	return strings.HasPrefix(s.s.Name, common.ServiceGrpcNamespace_)
+}
+
+func (s *service) IsREST() bool {
+	return strings.HasPrefix(s.s.Name, common.ServiceRestNamespace_)
+}
+
+func (s *service) IsGeneric() bool {
+	return !s.IsGRPC() && !s.IsREST()
+}
+
+
+type node struct {
+	n *pb.Node
+}
+
+func (n *node) Id() string {
+	return n.n.Id
+}
+
+func (n *node) Address() []string {
+	return []string{n.n.Address}
+}
+
+func (n *node) Endpoints() []string {
+	return n.n.Endpoints
+}
+
+func (n *node) Metadata() map[string]string {
+	return n.n.Metadata
+}
+
+type endpoint struct {
+	e *pb.Endpoint
+}
+
+func (e *endpoint) Name() string {
+	return e.e.Name
+}
+
+func (e *endpoint) Metadata() map[string]string {
+	return e.e.Metadata
+}
+
+func ToProtoService(s registry.Service) *pb.Service {
+	if ss, ok := s.(*service); ok {
+		return ss.s
 	}
 
-	nodes := make([]*pb.Node, 0, len(s.Nodes))
+	var nodes []*pb.Node
 
-	for _, node := range s.Nodes {
-		// address, portStr, _ := net.SplitHostPort(node.Address)
-		// port, _ := strconv.Atoi(portStr)
-		nodes = append(nodes, &pb.Node{
-			Id:       node.Id,
-			Address:  node.Address,
-			Metadata: node.Metadata,
-		})
+	for _, n := range s.Nodes() {
+		nodes = append(nodes, ToProtoNode(n))
 	}
 
 	return &pb.Service{
-		Name:      s.Name,
-		Version:   s.Version,
-		Metadata:  s.Metadata,
-		Endpoints: endpoints,
+		Name:      s.Name(),
+		Version:   s.Version(),
+		// Metadata:  s.Metadata(),
+		// Endpoints: endpoints,
 		Nodes:     nodes,
 		Options:   new(pb.Options),
 	}
 }
 
-func ToService(s *pb.Service) *registry.Service {
-	endpoints := make([]*registry.Endpoint, 0, len(s.Endpoints))
-	for _, ep := range s.Endpoints {
-		var request, response *registry.Value
-
-		if ep.Request != nil {
-			request = &registry.Value{
-				Name:   ep.Request.Name,
-				Type:   ep.Request.Type,
-				Values: toValues(ep.Request.Values),
-			}
-		}
-
-		if ep.Response != nil {
-			response = &registry.Value{
-				Name:   ep.Response.Name,
-				Type:   ep.Response.Type,
-				Values: toValues(ep.Response.Values),
-			}
-		}
-
-		endpoints = append(endpoints, &registry.Endpoint{
-			Name:     ep.Name,
-			Request:  request,
-			Response: response,
-			Metadata: ep.Metadata,
-		})
+func ToProtoNode(n registry.Node) *pb.Node {
+	if nn, ok := n.(*node); ok {
+		return nn.n
 	}
 
-	nodes := make([]*registry.Node, 0, len(s.Nodes))
-	for _, node := range s.Nodes {
-		nodes = append(nodes, &registry.Node{
-			Id:       node.Id,
-			Address:  node.Address,
-			Metadata: node.Metadata,
-		})
+	// TODO v4
+	address := ""
+	if len(n.Address()) > 0 {
+		address = n.Address()[0]
 	}
 
-	return &registry.Service{
-		Name:      s.Name,
-		Version:   s.Version,
-		Metadata:  s.Metadata,
-		Endpoints: endpoints,
-		Nodes:     nodes,
+	return &pb.Node{
+		Id:      n.Id(),
+		Address:   address,
+		Endpoints: n.Endpoints(),
+		Metadata:  n.Metadata(),
 	}
+}
+
+func ToService(s *pb.Service) registry.Service {
+	return &service{s}
+}
+
+func ToNode(n *pb.Node) registry.Node {
+	return &node{n}
 }

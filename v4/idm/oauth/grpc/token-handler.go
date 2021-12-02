@@ -31,10 +31,15 @@ type PatScopeClaims struct {
 }
 
 type PatHandler struct {
+	name string
 	auth.UnimplementedAuthTokenPrunerServer
 	auth.UnimplementedAuthTokenVerifierServer
 	auth.UnimplementedPersonalAccessTokenServiceServer
 	strategy *hmac.HMACStrategy
+}
+
+func (p *PatHandler) Name() string {
+	return p.name
 }
 
 func (p *PatHandler) getDao(ctx context.Context) oauth.DAO {

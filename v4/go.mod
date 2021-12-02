@@ -43,6 +43,7 @@ require (
 	github.com/krolaw/zipstream v0.0.0-20180621105154-0a2661891f94
 	github.com/kylelemons/godebug v1.1.0
 	github.com/livekit/protocol v0.10.0
+	github.com/lpar/gzipped v1.1.0 // indirect
 	github.com/lucas-clemente/quic-go v0.24.0 // indirect
 	github.com/manifoldco/promptui v0.8.0
 	github.com/matcornic/hermes/v2 v2.1.0

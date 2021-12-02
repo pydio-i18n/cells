@@ -2,7 +2,6 @@ package index
 
 import (
 	"compress/gzip"
-	"context"
 	"encoding/xml"
 	"html/template"
 	"net/http"
@@ -10,10 +9,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
-	"github.com/pydio/cells/v4/common/log"
-	defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/service/frontend"
 )
 
@@ -121,14 +117,16 @@ func (h *IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (h *IndexHandler) detectFrontendService() bool {
 
-	if h.frontendDetected {
-		return true
-	}
-	if s, e := defaults.Registry().GetService(common.ServiceRestNamespace_ + common.ServiceFrontend); e == nil && len(s) > 0 {
-		h.frontendDetected = true
-		return true
-	}
-	log.Logger(context.Background()).Error("Frontend Service Not Detected")
-	return false
+	return true
+	//if h.frontendDetected {
+		//return true
+	//}
+	// TODO v4 ?
+	//if s, e := defaults.Registry().GetService(common.ServiceRestNamespace_ + common.ServiceFrontend); e == nil && len(s) > 0 {
+	//	h.frontendDetected = true
+	//	return true
+	//}
+	//log.Logger(context.Background()).Error("Frontend Service Not Detected")
+	// return false
 
 }

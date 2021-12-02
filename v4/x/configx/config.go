@@ -1,6 +1,7 @@
 package configx
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -8,8 +9,11 @@ import (
 	json "github.com/pydio/cells/v4/x/jsonx"
 
 	"github.com/spf13/cast"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
+)
+
+var (
+	ErrNoMarshallerDefined = errors.New("no marshaller defined")
+	ErrNoUnmarshalerDefined = errors.New("no unmarshaler defined")
 )
 
 type Scanner interface {
@@ -105,6 +109,16 @@ func (v *config) get() interface{} {
 		useDefault := false
 
 		switch vv := v.v.(type) {
+		case map[interface{}]interface{}:
+			if ref, ok := vv["$ref"]; ok {
+				vvv := v.r.Val(ref.(string)).Get()
+				switch vvvv := vvv.(type) {
+				case *config:
+					return vvvv.get()
+				default:
+					return vvvv
+				}
+			}
 		case map[string]interface{}:
 			if ref, ok := vv["$ref"]; ok {
 				vvv := v.r.Val(ref.(string)).Get()
@@ -122,6 +136,16 @@ func (v *config) get() interface{} {
 		}
 
 		if !useDefault {
+			str, ok := v.v.(string)
+			if ok {
+				if d := v.opts.Decrypter; d != nil {
+					b, err := d.Decrypt(str)
+					if err != nil {
+						return v.v
+					}
+					return string(b)
+				}
+			}
 			return v.v
 		}
 	}
@@ -223,8 +247,30 @@ func (v *config) Set(data interface{}) error {
 	if data == nil {
 		delete(m, k)
 	} else {
+		if enc := v.opts.Encrypter; enc != nil {
+			switch vv := data.(type) {
+			case []byte:
+				// Encrypting value
+				str, err := enc.Encrypt(vv)
+				if err != nil {
+					return err
+				}
+
+				data = str
+			case string:
+				// Encrypting value
+				str, err := enc.Encrypt([]byte(vv))
+				if err != nil {
+					return err
+				}
+
+				data = str
+			}
+		}
+
 		m[k] = data
 	}
+
 	p.Set(m)
 
 	v.v = data
@@ -272,6 +318,14 @@ func (v *config) Val(s ...string) Values {
 
 	for _, pkk := range pk {
 		switch cv := current.(type) {
+		case map[interface{}]interface{}:
+			c, ok := cv[pkk]
+			if !ok {
+				// The parent doesn't actually exist here, we return the nil value
+				return &config{nil, nil, root, keys, v.opts}
+			}
+
+			current = c
 		case map[string]interface{}:
 			c, ok := cv[pkk]
 			if !ok {
@@ -298,24 +352,28 @@ func (v *config) Val(s ...string) Values {
 }
 
 // Scan to interface
-func (v *config) Scan(val interface{}) error {
-	if (v.v) == nil {
+func (c *config) Scan(val interface{}) error {
+	v := c.get()
+	if v == nil {
 		return nil
 	}
 
-	jsonStr, err := json.Marshal(v.v)
+	marshaller := c.opts.Marshaller
+	if marshaller == nil {
+		return ErrNoMarshallerDefined
+	}
+
+	str, err := marshaller.Marshal(v)
 	if err != nil {
 		return err
 	}
 
-	switch v := val.(type) {
-	case proto.Message:
-		err = protojson.Unmarshal(jsonStr, val.(proto.Message))
-	default:
-		err = json.Unmarshal(jsonStr, v)
+	unmarshaler := c.opts.Unmarshaler
+	if unmarshaler == nil {
+		return ErrNoUnmarshalerDefined
 	}
 
-	return err
+	return unmarshaler.Unmarshal(str, val)
 }
 
 func (c *config) Bool() bool {
@@ -332,12 +390,16 @@ func (c *config) Bytes() []byte {
 	}
 	switch v := c.v.(type) {
 	case []interface{}, map[string]interface{}:
-		data, err := json.Marshal(v)
-		if err != nil {
-			return []byte{}
+		if m := c.opts.Marshaller; m != nil {
+			data, err := m.Marshal(v)
+			if err != nil {
+				return []byte{}
+			}
+
+			return data
 		}
 
-		return data
+		return []byte{}
 	case string:
 		// Need to handle it differently
 		if v == "default" {
@@ -372,12 +434,16 @@ func (c *config) String() string {
 
 	switch v := c.v.(type) {
 	case []interface{}, map[string]interface{}:
-		data, err := json.Marshal(v)
-		if err != nil {
-			return ""
+		if m := c.opts.Marshaller; m != nil {
+			data, err := m.Marshal(v)
+			if err != nil {
+				return ""
+			}
+
+			return string(data)
 		}
 
-		return string(data)
+		return ""
 	case string:
 		// Need to handle it differently
 		if v == "default" {

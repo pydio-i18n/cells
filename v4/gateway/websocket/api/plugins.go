@@ -23,10 +23,13 @@ package api
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/micro/micro/v3/service/broker"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/nodes"
+	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
@@ -56,32 +59,22 @@ func init() {
 			service.Fork(true),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceChat, []string{}),
 			service.Description("WebSocket server pushing event to the clients"),
+			service.WithHTTP(func(ctx context.Context, mux *http.ServeMux) error {
+				ws = websocket.NewWebSocketHandler(ctx)
+				chat = websocket.NewChatHandler(ctx)
+
+				ws.EventRouter = compose.ReverseClient(nodes.WithRegistryWatch())
+
+				mux.HandleFunc("/ws/event", func(w http.ResponseWriter, r *http.Request) {
+					ws.Websocket.HandleRequest(w, r)
+				})
+				mux.HandleFunc("/ws/chat", func(w http.ResponseWriter, r *http.Request) {
+					chat.Websocket.HandleRequest(w, r)
+				})
+
+				return nil
+			}),
 			/*
-				service.WithHTTP(func() http.Handler {
-
-					// ctx := s.Options().Context
-
-					ctx := context.TODO()
-
-					ws = websocket.NewWebSocketHandler(ctx)
-					chat = websocket.NewChatHandler(ctx)
-
-					ws.EventRouter = compose.ReverseClient(nodes.WithRegistryWatch())
-
-					gin.SetMode(gin.ReleaseMode)
-					gin.DisableConsoleColor()
-					Server := gin.New()
-					Server.Use(gin.Recovery())
-					Server.GET("/event", func(c *gin.Context) {
-						ws.Websocket.HandleRequest(c.Writer, c.Request)
-					})
-
-					Server.GET("/chat", func(c *gin.Context) {
-						chat.Websocket.HandleRequest(c.Writer, c.Request)
-					})
-
-					return Server
-				}),
 				service.AfterStart(func(_ service.Service) error {
 					brok := defaults.Broker()
 

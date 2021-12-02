@@ -21,8 +21,7 @@ type ConfigClient interface {
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	Set(ctx context.Context, in *SetRequest, opts ...grpc.CallOption) (*SetResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
-	// These methods are here for backwards compatibility reasons
-	Read(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*ReadResponse, error)
+	Watch(ctx context.Context, in *WatchRequest, opts ...grpc.CallOption) (Config_WatchClient, error)
 }
 
 type configClient struct {
@@ -60,13 +59,36 @@ func (c *configClient) Delete(ctx context.Context, in *DeleteRequest, opts ...gr
 	return out, nil
 }
 
-func (c *configClient) Read(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*ReadResponse, error) {
-	out := new(ReadResponse)
-	err := c.cc.Invoke(ctx, "/config.Config/Read", in, out, opts...)
+func (c *configClient) Watch(ctx context.Context, in *WatchRequest, opts ...grpc.CallOption) (Config_WatchClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Config_ServiceDesc.Streams[0], "/config.Config/Watch", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &configWatchClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Config_WatchClient interface {
+	Recv() (*WatchResponse, error)
+	grpc.ClientStream
+}
+
+type configWatchClient struct {
+	grpc.ClientStream
+}
+
+func (x *configWatchClient) Recv() (*WatchResponse, error) {
+	m := new(WatchResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // ConfigServer is the server API for Config service.
@@ -76,8 +98,7 @@ type ConfigServer interface {
 	Get(context.Context, *GetRequest) (*GetResponse, error)
 	Set(context.Context, *SetRequest) (*SetResponse, error)
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
-	// These methods are here for backwards compatibility reasons
-	Read(context.Context, *ReadRequest) (*ReadResponse, error)
+	Watch(*WatchRequest, Config_WatchServer) error
 	mustEmbedUnimplementedConfigServer()
 }
 
@@ -94,8 +115,8 @@ func (UnimplementedConfigServer) Set(context.Context, *SetRequest) (*SetResponse
 func (UnimplementedConfigServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedConfigServer) Read(context.Context, *ReadRequest) (*ReadResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Read not implemented")
+func (UnimplementedConfigServer) Watch(*WatchRequest, Config_WatchServer) error {
+	return status.Errorf(codes.Unimplemented, "method Watch not implemented")
 }
 func (UnimplementedConfigServer) mustEmbedUnimplementedConfigServer() {}
 
@@ -164,22 +185,25 @@ func _Config_Delete_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Config_Read_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReadRequest)
-	if err := dec(in); err != nil {
-		return nil, err
+func _Config_Watch_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(WatchRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
 	}
-	if interceptor == nil {
-		return srv.(ConfigServer).Read(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/config.Config/Read",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ConfigServer).Read(ctx, req.(*ReadRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return srv.(ConfigServer).Watch(m, &configWatchServer{stream})
+}
+
+type Config_WatchServer interface {
+	Send(*WatchResponse) error
+	grpc.ServerStream
+}
+
+type configWatchServer struct {
+	grpc.ServerStream
+}
+
+func (x *configWatchServer) Send(m *WatchResponse) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 // Config_ServiceDesc is the grpc.ServiceDesc for Config service.
@@ -201,11 +225,13 @@ var Config_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Delete",
 			Handler:    _Config_Delete_Handler,
 		},
+	},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "Read",
-			Handler:    _Config_Read_Handler,
+			StreamName:    "Watch",
+			Handler:       _Config_Watch_Handler,
+			ServerStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "cells-config.proto",
 }

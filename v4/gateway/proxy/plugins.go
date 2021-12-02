@@ -22,17 +22,14 @@
 package proxy
 
 import (
+	"bytes"
 	"context"
-	"fmt"
 
-	"go.uber.org/zap"
-
-	caddy "github.com/caddyserver/caddy/v2"
-	"github.com/caddyserver/caddy/v2/caddyconfig"
 	_ "github.com/caddyserver/caddy/v2/modules/standard"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/caddy"
+	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/server/generic"
 	"github.com/pydio/cells/v4/common/service"
@@ -40,31 +37,19 @@ import (
 
 var (
 	cfile = `
-:8181 {
+{
+  auto_https disable_redirects
+}
+
+{{range .Sites}}
+{{range .Binds}}{{.}} {{end}} {
+
 	route /* {
-		reverse_proxy :8002 {
-			fail_duration 20s
-			header_up Host {host}
-			header_up X-Real-IP {remote}
-		}
+		mux
+		request_header Host {host}
+		request_header X-Real-IP {remote}
 	}
 
-	route /a* {
-		uri strip_prefix /a
-        reverse_proxy pydio.gateway.rest {
-			fail_duration 20s
-			header_up Host {host}
-			header_up X-Real-IP {remote}
-		}
- 	}
-	reverse_proxy /oidc* pydio.web.oauth {
-		transport http {
-			tls_insecure_skip_verify
-		}
-		fail_duration 20s
-		header_up Host {host}
-		header_up X-Real-IP {remote}	
-	}
 	reverse_proxy /io*   pydio.gateway.data {
 		header_up Host {host}
 		header_up X-Real-IP {remote}
@@ -102,45 +87,11 @@ var (
 		header_down Content-Security-Policy "script-src 'none'"
 		header_down X-Content-Security-Policy "sandbox"
 	}
-	reverse_proxy /plug/* pydio.web.statics {
-		fail_duration 20s
-		header_up Host {host}
-		header_up X-Real-IP {remote}
-		header_down Cache-Control "public, max-age=31536000"
-	}
-	reverse_proxy /public/* pydio.web.statics {
-		fail_duration 20s
-		header_up Host {host}
-		header_up X-Real-IP {remote}
-	}
-	route /public/plug/* {
-		uri strip_prefix /public
-		reverse_proxy pydio.web.statics {
-			fail_duration 20s
-			header_up Host {host}
-			header_up X-Real-IP {remote}
-			header_down Cache-Control "public, max-age=31536000"
-		}
-	}
-	reverse_proxy /user/reset-password/* pydio.web.statics {
-		fail_duration 20s
-		header_up Host {host}
-		header_up X-Real-IP {remote}
-	}
-	reverse_proxy /robots.txt pydio.web.statics {
-		fail_duration 20s
-		header_up Host {host}
-		header_up X-Real-IP {remote}
-		
-	}
+
 	route /login {
 		uri replace /login /gui
-		reverse_proxy pydio.web.statics {
-			fail_duration 20s
-			header_up Host {host}
-			header_up X-Real-IP {remote}		
-		}
 	}
+
 	route /grpc* {
 		uri strip_prefix /grpc
 		reverse_proxy pydio.gateway.grpc {
@@ -150,11 +101,7 @@ var (
 			fail_duration 20s
 		}
 	}
-	
-	reverse_proxy /wopi/ pydio.gateway.wopi {
-		header_up Host {host}
-		header_up X-Real-IP {remote}
-	}
+
 	@grpc-content {
 		header Content-type *application/grpc*
 	}
@@ -175,8 +122,8 @@ var (
 	rewrite @list_buckets /buckets{path}
 	redir @root_standard /login 302
 	rewrite @uri_standard /login
-
 }
+{{end}}
 `
 )
 
@@ -189,21 +136,36 @@ func init() {
 			service.Description("Main HTTP proxy for exposing a unique address to the world"),
 			// service.Unique(true),
 			service.WithGeneric(func(c context.Context, srv *generic.Server) error {
-				// Load config directly from memory
-				adapter := caddyconfig.GetAdapter("caddyfile")
-				confs, warns, err := adapter.Adapt([]byte(cfile), map[string]interface{}{})
+				// Creating temporary caddy file
+				sites, err := config.LoadSites()
 				if err != nil {
-					fmt.Println(err)
 					return err
 				}
-				for _, w := range warns {
-					log.Info("[WARN]", zap.String("", w.String()))
-				}
-				// caddy.TrapSignals()
-				fmt.Println("loading caddy")
-				if e := caddy.Load(confs, true); e != nil {
+
+				caddyconf := struct {
+					Sites   []caddy.SiteConf
+					WebRoot string
+					Micro   string
+				}{}
+
+				var er error
+				caddyconf.Sites, er = caddy.SitesToCaddyConfigs(sites)
+				if er != nil {
 					return err
 				}
+				// caddyconf.WebRoot = dir
+
+				caddy.Enable(cfile, func(site ...interface{}) (*bytes.Buffer, error) {
+					template := caddy.Get().GetTemplate()
+
+					buf := bytes.NewBuffer([]byte{})
+					if err := template.Execute(buf, caddyconf); err != nil {
+						return nil, err
+					}
+
+					return buf, nil
+				})
+
 				return nil
 			}),
 		)

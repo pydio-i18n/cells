@@ -21,11 +21,9 @@
 package cmd
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"net"
-	"net/http"
+	"github.com/pydio/cells/v4/common/server/caddy"
 	"net/url"
 	"os"
 	"os/exec"
@@ -34,26 +32,27 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/manifoldco/promptui"
-	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
-	"go.uber.org/zap"
+	"github.com/pydio/cells/v4/common/registry"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 
+	"github.com/manifoldco/promptui"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
-	"github.com/pydio/cells/v4/common/caddy"
 	"github.com/pydio/cells/v4/common/config"
-	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/install"
 	"github.com/pydio/cells/v4/common/utils/statics"
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
+
 	// "github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/service/metrics"
 	unet "github.com/pydio/cells/v4/common/utils/net"
 	"github.com/pydio/cells/v4/discovery/install/assets"
 )
 
+/*
 const (
 	caddyfile = `
 {
@@ -65,29 +64,18 @@ const (
 	root * "{{$.WebRoot}}"
 	file_server
 
-	route /a/* {
-		uri strip_prefix /a
-		reverse_proxy :8002 {
-			fail_duration 20s
-			header_up Host {host}
-			header_up X-Real-IP {remote}
-		}
+	route /* {
+		mux
+		request_header Host {host}
+		request_header X-Real-IP {remote}
 	}
-
-	route /install* {
-		reverse_proxy :8002 {
-			fail_duration 20s
-			header_up Host {host}
-			header_up X-Real-IP {remote}
-		}
-	}
-
+	
 	{{if .TLS}}tls {{.TLS}}{{end}}
 	{{if .TLSCert}}tls "{{.TLSCert}}" "{{.TLSKey}}"{{end}}
 }
 {{end}}
 	 `
-)
+)*/
 
 var (
 	DefaultStartCmd *cobra.Command
@@ -98,11 +86,10 @@ func init() {
 }
 
 var (
-	caddyconf = struct {
+	/*caddyconf = struct {
 		Sites   []caddy.SiteConf
 		WebRoot string
-		Micro   string
-	}{}
+	}{}*/
 
 	niBindUrl          string
 	niExtUrl           string
@@ -188,7 +175,7 @@ ENVIRONMENT
 			return err
 		}
 
-		// initConfig()
+		initConfig()
 
 		replaceKeys := map[string]string{
 			"yaml": "install_yaml",
@@ -416,21 +403,27 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 		regService.Start(ctx)
 	*/
 
-	lisHTTP, err := net.Listen("tcp", ":8002")
+	/*lisHTTP, err := net.Listen("tcp", viper.GetString("http.address"))
 	if err != nil {
 		log.Fatal("error listening", zap.Error(err))
 	}
+	defer lisHTTP.Close()*/
 
-	srvHTTP := http.NewServeMux()
-	ctx = context.WithValue(ctx, "httpServerKey", srvHTTP)
-
-	go func() {
-		http.Serve(lisHTTP, srvHTTP)
-	}()
+	srvHTTP, _  := caddy.New(cmd.Context(), dir)
 
 	broker.Connect()
+
+	reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
+	if err != nil {
+		return
+	}
+
+	ctx = servicecontext.WithRegistry(ctx, reg)
+	ctx = servicecontext.WithServer(ctx, "http", srvHTTP)
+
 	plugins.Init(ctx, "install")
 
+	/*
 	// Creating temporary caddy file
 	sites, err := config.LoadSites()
 	if err != nil {
@@ -443,7 +436,6 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 		cmd.Println("Could not convert sites to caddy confs", er)
 	}
 	caddyconf.WebRoot = dir
-	caddyconf.Micro = common.ServiceMicroApi
 
 	caddy.Enable(caddyfile, play)
 
@@ -451,7 +443,7 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 	if err != nil {
 		cmd.Println("Could not start with fast restart:", err)
 		os.Exit(1)
-	}
+	}*/
 
 	cmd.Println("")
 	cmd.Println(promptui.Styler(promptui.BGMagenta, promptui.FGWhite)("Installation Server is starting..."))
@@ -482,7 +474,13 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 	instanceDone := make(chan struct{}, 1)
 
 	go func() {
-		<-restartDone
+		if err := srvHTTP.Serve(nil); err != nil {
+			fmt.Println(err)
+		}
+	}()
+
+	go func() {
+		// <-restartDone
 		/* TODO v4 instance := caddy.GetInstance()
 		instance.Wait()
 		instanceDone <- struct{}{}
@@ -502,6 +500,7 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 
 /* HELPERS */
 
+/*
 func play(site ...interface{}) (*bytes.Buffer, error) {
 	template := caddy.Get().GetTemplate()
 
@@ -511,7 +510,7 @@ func play(site ...interface{}) (*bytes.Buffer, error) {
 	}
 
 	return buf, nil
-}
+}*/
 
 // open opens the specified URL in the default browser of the user.
 func open(url string) error {
@@ -547,6 +546,8 @@ func fatalIfError(cmd *cobra.Command, err error) {
 func init() {
 	flags := ConfigureCmd.Flags()
 
+	flags.String("http.address", ":8002", "HTTP Server Address")
+
 	flags.String("bind", "", "Internal IP|DOMAIN:PORT on which the main proxy will bind. Self-signed SSL will be used by default")
 	flags.String("external", "", "External full URL (http[s]://IP|DOMAIN[:PORT]) exposed to the outside")
 
@@ -565,7 +566,7 @@ func init() {
 	flags.String("json", "", "Points toward a configuration in JSON format")
 	flags.Bool("exit_after_install", false, "Simply exits main process after the installation is done")
 
-	// addRegistryFlags(flags, true)
+	addRegistryFlags(flags, true)
 
 	RootCmd.AddCommand(ConfigureCmd)
 }

@@ -49,6 +49,7 @@ import (
 
 // Handler for the plugin
 type Handler struct {
+	name string
 	pauth.UnimplementedLoginProviderServer
 	pauth.UnimplementedConsentProviderServer
 	pauth.UnimplementedAuthCodeProviderServer
@@ -70,6 +71,10 @@ var (
 	_ pauth.AuthTokenRefresherServer = (*Handler)(nil)
 	_ pauth.AuthTokenRevokerServer   = (*Handler)(nil)
 )
+
+func (h *Handler) Name() string {
+	return h.name
+}
 
 func (h *Handler) GetLogin(ctx context.Context, in *pauth.GetLoginRequest) (*pauth.GetLoginResponse, error) {
 	req, err := auth.GetRegistry().ConsentManager().GetLoginRequest(ctx, in.Challenge)
