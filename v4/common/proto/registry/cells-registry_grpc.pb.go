@@ -18,6 +18,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RegistryClient interface {
+	StartService(ctx context.Context, in *StartServiceRequest, opts ...grpc.CallOption) (*EmptyResponse, error)
+	StopService(ctx context.Context, in *StopServiceRequest, opts ...grpc.CallOption) (*EmptyResponse, error)
 	GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*GetServiceResponse, error)
 	RegisterService(ctx context.Context, in *Service, opts ...grpc.CallOption) (*EmptyResponse, error)
 	DeregisterService(ctx context.Context, in *Service, opts ...grpc.CallOption) (*EmptyResponse, error)
@@ -35,6 +37,24 @@ type registryClient struct {
 
 func NewRegistryClient(cc grpc.ClientConnInterface) RegistryClient {
 	return &registryClient{cc}
+}
+
+func (c *registryClient) StartService(ctx context.Context, in *StartServiceRequest, opts ...grpc.CallOption) (*EmptyResponse, error) {
+	out := new(EmptyResponse)
+	err := c.cc.Invoke(ctx, "/registry.Registry/StartService", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *registryClient) StopService(ctx context.Context, in *StopServiceRequest, opts ...grpc.CallOption) (*EmptyResponse, error) {
+	out := new(EmptyResponse)
+	err := c.cc.Invoke(ctx, "/registry.Registry/StopService", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *registryClient) GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*GetServiceResponse, error) {
@@ -145,6 +165,8 @@ func (c *registryClient) ListNodes(ctx context.Context, in *ListNodesRequest, op
 // All implementations must embed UnimplementedRegistryServer
 // for forward compatibility
 type RegistryServer interface {
+	StartService(context.Context, *StartServiceRequest) (*EmptyResponse, error)
+	StopService(context.Context, *StopServiceRequest) (*EmptyResponse, error)
 	GetService(context.Context, *GetServiceRequest) (*GetServiceResponse, error)
 	RegisterService(context.Context, *Service) (*EmptyResponse, error)
 	DeregisterService(context.Context, *Service) (*EmptyResponse, error)
@@ -161,6 +183,12 @@ type RegistryServer interface {
 type UnimplementedRegistryServer struct {
 }
 
+func (UnimplementedRegistryServer) StartService(context.Context, *StartServiceRequest) (*EmptyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartService not implemented")
+}
+func (UnimplementedRegistryServer) StopService(context.Context, *StopServiceRequest) (*EmptyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StopService not implemented")
+}
 func (UnimplementedRegistryServer) GetService(context.Context, *GetServiceRequest) (*GetServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetService not implemented")
 }
@@ -199,6 +227,42 @@ type UnsafeRegistryServer interface {
 
 func RegisterRegistryServer(s grpc.ServiceRegistrar, srv RegistryServer) {
 	s.RegisterService(&Registry_ServiceDesc, srv)
+}
+
+func _Registry_StartService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartServiceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistryServer).StartService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/registry.Registry/StartService",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistryServer).StartService(ctx, req.(*StartServiceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Registry_StopService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StopServiceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistryServer).StopService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/registry.Registry/StopService",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistryServer).StopService(ctx, req.(*StopServiceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Registry_GetService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -373,6 +437,14 @@ var Registry_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "registry.Registry",
 	HandlerType: (*RegistryServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "StartService",
+			Handler:    _Registry_StartService_Handler,
+		},
+		{
+			MethodName: "StopService",
+			Handler:    _Registry_StopService_Handler,
+		},
 		{
 			MethodName: "GetService",
 			Handler:    _Registry_GetService_Handler,

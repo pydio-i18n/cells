@@ -38,10 +38,19 @@ func (this *ResourcePolicyQuery) Validate() error {
 func (this *ResourcePolicy) Validate() error {
 	return nil
 }
-func (this *StopEvent) Validate() error {
+func (this *StartRequest) Validate() error {
 	return nil
 }
-func (this *StatusResponse) Validate() error {
+func (this *StartResponse) Validate() error {
+	return nil
+}
+func (this *StopRequest) Validate() error {
+	return nil
+}
+func (this *StopResponse) Validate() error {
+	return nil
+}
+func (this *ArchiveResponse) Validate() error {
 	return nil
 }
 func (this *ChangesArchiveQuery) Validate() error {

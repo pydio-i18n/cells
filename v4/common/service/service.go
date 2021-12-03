@@ -6,14 +6,12 @@ import (
 	"github.com/pydio/cells/v4/common/registry"
 	"strings"
 
-	"github.com/spf13/viper"
-	"go.uber.org/zap"
-
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/server"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/spf13/viper"
 )
 
 // Service for the pydio app
@@ -33,7 +31,8 @@ var (
 )
 
 type Service interface {
-	Init() error
+	Start() error
+	Stop() error
 }
 
 func NewService(opts ...ServiceOption) Service {
@@ -57,16 +56,15 @@ func NewService(opts ...ServiceOption) Service {
 
 	bs, ok := s.opts.Server.(server.WrappedServer)
 	if ok {
-		bs.RegisterBeforeServe(s.Init)
+		bs.RegisterBeforeServe(s.Start)
 		bs.RegisterAfterServe(func() error {
 			// Register service again to update nodes information
 			if err := reg.RegisterService(s); err != nil {
 				return err
 			}
-
-			log.Info("started", zap.String("name", name))
 			return nil
 		})
+		bs.RegisterBeforeStop(s.Stop)
 	}
 
 	reg.RegisterService(s)
@@ -74,22 +72,50 @@ func NewService(opts ...ServiceOption) Service {
 	return s
 }
 
-func (s *service) Init() error {
-	for _, before := range s.opts.BeforeInit {
+func (s *service) Start() error {
+	for _, before := range s.opts.BeforeStart {
 		if err := before(s.opts.Context); err != nil {
 			return err
 		}
 	}
 
-	if err := s.opts.ServerInit(); err != nil {
-		return err
+	if s.opts.serverStart != nil {
+		if err := s.opts.serverStart(); err != nil {
+			return err
+		}
 	}
 
-	for _, after := range s.opts.AfterInit {
+	for _, after := range s.opts.AfterStart {
 		if err := after(s.opts.Context); err != nil {
 			return err
 		}
 	}
+
+	log.Logger(s.opts.Context).Info("started")
+
+	return nil
+}
+
+func (s *service) Stop() error {
+	for _, before := range s.opts.BeforeStop {
+		if err := before(s.opts.Context); err != nil {
+			return err
+		}
+	}
+
+	if s.opts.serverStop != nil {
+		if err := s.opts.serverStop(); err != nil {
+			return err
+		}
+	}
+
+	for _, after := range s.opts.AfterStop {
+		if err := after(s.opts.Context); err != nil {
+			return err
+		}
+	}
+
+	log.Logger(s.opts.Context).Info("stopped")
 
 	return nil
 }

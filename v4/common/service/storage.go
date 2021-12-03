@@ -19,7 +19,7 @@ func WithStorage(fd func(dao.DAO) dao.DAO, prefix ...interface{}) ServiceOption 
 			o.Prefix = prefix[0]
 		}
 
-		o.BeforeInit = append(o.BeforeInit, func(ctx context.Context) error {
+		o.BeforeStart = append(o.BeforeStart, func(ctx context.Context) error {
 			// log.Logger(ctx).Debug("BeforeStart - Database connection")
 
 			var d dao.DAO

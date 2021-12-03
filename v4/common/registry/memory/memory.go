@@ -51,6 +51,24 @@ func newMemory() registry.Registry {
 	}
 }
 
+func (m *memory) StartService(name string) error {
+	s, err := m.GetService(name)
+	if err != nil {
+		return err
+	}
+
+	return s.Start()
+}
+
+func (m *memory) StopService(name string) error {
+	s, err := m.GetService(name)
+	if err != nil {
+		return err
+	}
+
+	return s.Stop()
+}
+
 func (m *memory) RegisterService(service registry.Service) error {
 	for k, v := range m.services {
 		if v.Name() == service.Name() {

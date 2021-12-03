@@ -20,6 +20,7 @@ type ServiceOptions struct {
 	Version     string
 	Description string
 	Source      string
+
 	// TODO V4 - MUST BE FOUND IN REGISTRY
 	Metadata map[string]string
 
@@ -34,7 +35,8 @@ type ServiceOptions struct {
 	TLSConfig *tls.Config
 
 	Server     server.Server
-	ServerInit func() error
+	serverStart func() error
+	serverStop  func() error
 
 	Dependencies []*dependency
 
@@ -45,9 +47,12 @@ type ServiceOptions struct {
 	Unique      bool
 
 	// Before and After funcs
-	BeforeInit []func(context.Context) error
-	Init       []func(context.Context) error
-	AfterInit  []func(context.Context) error
+	BeforeStart []func(context.Context) error
+	AfterStart  []func(context.Context) error
+
+	BeforeStop []func(context.Context) error
+	AfterStop []func(context.Context) error
+
 }
 
 type dependency struct {

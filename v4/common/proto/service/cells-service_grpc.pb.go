@@ -7,7 +7,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -15,172 +14,122 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// StarterClient is the client API for Starter service.
+// ServiceManagerClient is the client API for ServiceManager service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type StarterClient interface {
-	Start(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
+type ServiceManagerClient interface {
+	Start(ctx context.Context, in *StartRequest, opts ...grpc.CallOption) (*StartResponse, error)
+	Stop(ctx context.Context, in *StopRequest, opts ...grpc.CallOption) (*StopResponse, error)
 }
 
-type starterClient struct {
+type serviceManagerClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewStarterClient(cc grpc.ClientConnInterface) StarterClient {
-	return &starterClient{cc}
+func NewServiceManagerClient(cc grpc.ClientConnInterface) ServiceManagerClient {
+	return &serviceManagerClient{cc}
 }
 
-func (c *starterClient) Start(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/service.Starter/Start", in, out, opts...)
+func (c *serviceManagerClient) Start(ctx context.Context, in *StartRequest, opts ...grpc.CallOption) (*StartResponse, error) {
+	out := new(StartResponse)
+	err := c.cc.Invoke(ctx, "/service.ServiceManager/Start", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// StarterServer is the server API for Starter service.
-// All implementations must embed UnimplementedStarterServer
+func (c *serviceManagerClient) Stop(ctx context.Context, in *StopRequest, opts ...grpc.CallOption) (*StopResponse, error) {
+	out := new(StopResponse)
+	err := c.cc.Invoke(ctx, "/service.ServiceManager/Stop", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ServiceManagerServer is the server API for ServiceManager service.
+// All implementations must embed UnimplementedServiceManagerServer
 // for forward compatibility
-type StarterServer interface {
-	Start(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
-	mustEmbedUnimplementedStarterServer()
+type ServiceManagerServer interface {
+	Start(context.Context, *StartRequest) (*StartResponse, error)
+	Stop(context.Context, *StopRequest) (*StopResponse, error)
+	mustEmbedUnimplementedServiceManagerServer()
 }
 
-// UnimplementedStarterServer must be embedded to have forward compatible implementations.
-type UnimplementedStarterServer struct {
+// UnimplementedServiceManagerServer must be embedded to have forward compatible implementations.
+type UnimplementedServiceManagerServer struct {
 }
 
-func (UnimplementedStarterServer) Start(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+func (UnimplementedServiceManagerServer) Start(context.Context, *StartRequest) (*StartResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Start not implemented")
 }
-func (UnimplementedStarterServer) mustEmbedUnimplementedStarterServer() {}
+func (UnimplementedServiceManagerServer) Stop(context.Context, *StopRequest) (*StopResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Stop not implemented")
+}
+func (UnimplementedServiceManagerServer) mustEmbedUnimplementedServiceManagerServer() {}
 
-// UnsafeStarterServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to StarterServer will
+// UnsafeServiceManagerServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ServiceManagerServer will
 // result in compilation errors.
-type UnsafeStarterServer interface {
-	mustEmbedUnimplementedStarterServer()
+type UnsafeServiceManagerServer interface {
+	mustEmbedUnimplementedServiceManagerServer()
 }
 
-func RegisterStarterServer(s grpc.ServiceRegistrar, srv StarterServer) {
-	s.RegisterService(&Starter_ServiceDesc, srv)
+func RegisterServiceManagerServer(s grpc.ServiceRegistrar, srv ServiceManagerServer) {
+	s.RegisterService(&ServiceManager_ServiceDesc, srv)
 }
 
-func _Starter_Start_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+func _ServiceManager_Start_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(StarterServer).Start(ctx, in)
+		return srv.(ServiceManagerServer).Start(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/service.Starter/Start",
+		FullMethod: "/service.ServiceManager/Start",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StarterServer).Start(ctx, req.(*emptypb.Empty))
+		return srv.(ServiceManagerServer).Start(ctx, req.(*StartRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Starter_ServiceDesc is the grpc.ServiceDesc for Starter service.
+func _ServiceManager_Stop_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StopRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServiceManagerServer).Stop(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.ServiceManager/Stop",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServiceManagerServer).Stop(ctx, req.(*StopRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// ServiceManager_ServiceDesc is the grpc.ServiceDesc for ServiceManager service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Starter_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "service.Starter",
-	HandlerType: (*StarterServer)(nil),
+var ServiceManager_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "service.ServiceManager",
+	HandlerType: (*ServiceManagerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Start",
-			Handler:    _Starter_Start_Handler,
+			Handler:    _ServiceManager_Start_Handler,
 		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "cells-service.proto",
-}
-
-// ServiceClient is the client API for Service service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ServiceClient interface {
-	Status(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*StatusResponse, error)
-}
-
-type serviceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewServiceClient(cc grpc.ClientConnInterface) ServiceClient {
-	return &serviceClient{cc}
-}
-
-func (c *serviceClient) Status(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*StatusResponse, error) {
-	out := new(StatusResponse)
-	err := c.cc.Invoke(ctx, "/service.Service/Status", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// ServiceServer is the server API for Service service.
-// All implementations must embed UnimplementedServiceServer
-// for forward compatibility
-type ServiceServer interface {
-	Status(context.Context, *emptypb.Empty) (*StatusResponse, error)
-	mustEmbedUnimplementedServiceServer()
-}
-
-// UnimplementedServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedServiceServer struct {
-}
-
-func (UnimplementedServiceServer) Status(context.Context, *emptypb.Empty) (*StatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Status not implemented")
-}
-func (UnimplementedServiceServer) mustEmbedUnimplementedServiceServer() {}
-
-// UnsafeServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ServiceServer will
-// result in compilation errors.
-type UnsafeServiceServer interface {
-	mustEmbedUnimplementedServiceServer()
-}
-
-func RegisterServiceServer(s grpc.ServiceRegistrar, srv ServiceServer) {
-	s.RegisterService(&Service_ServiceDesc, srv)
-}
-
-func _Service_Status_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ServiceServer).Status(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/service.Service/Status",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceServer).Status(ctx, req.(*emptypb.Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// Service_ServiceDesc is the grpc.ServiceDesc for Service service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var Service_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "service.Service",
-	HandlerType: (*ServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Status",
-			Handler:    _Service_Status_Handler,
+			MethodName: "Stop",
+			Handler:    _ServiceManager_Stop_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -191,7 +140,7 @@ var Service_ServiceDesc = grpc.ServiceDesc{
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ArchiverClient interface {
-	Archive(ctx context.Context, in *Query, opts ...grpc.CallOption) (*StatusResponse, error)
+	Archive(ctx context.Context, in *Query, opts ...grpc.CallOption) (*ArchiveResponse, error)
 }
 
 type archiverClient struct {
@@ -202,8 +151,8 @@ func NewArchiverClient(cc grpc.ClientConnInterface) ArchiverClient {
 	return &archiverClient{cc}
 }
 
-func (c *archiverClient) Archive(ctx context.Context, in *Query, opts ...grpc.CallOption) (*StatusResponse, error) {
-	out := new(StatusResponse)
+func (c *archiverClient) Archive(ctx context.Context, in *Query, opts ...grpc.CallOption) (*ArchiveResponse, error) {
+	out := new(ArchiveResponse)
 	err := c.cc.Invoke(ctx, "/service.Archiver/Archive", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -215,7 +164,7 @@ func (c *archiverClient) Archive(ctx context.Context, in *Query, opts ...grpc.Ca
 // All implementations must embed UnimplementedArchiverServer
 // for forward compatibility
 type ArchiverServer interface {
-	Archive(context.Context, *Query) (*StatusResponse, error)
+	Archive(context.Context, *Query) (*ArchiveResponse, error)
 	mustEmbedUnimplementedArchiverServer()
 }
 
@@ -223,7 +172,7 @@ type ArchiverServer interface {
 type UnimplementedArchiverServer struct {
 }
 
-func (UnimplementedArchiverServer) Archive(context.Context, *Query) (*StatusResponse, error) {
+func (UnimplementedArchiverServer) Archive(context.Context, *Query) (*ArchiveResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Archive not implemented")
 }
 func (UnimplementedArchiverServer) mustEmbedUnimplementedArchiverServer() {}

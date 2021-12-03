@@ -2,8 +2,8 @@ package grpc
 
 import (
 	"context"
-	pb "github.com/pydio/cells/v4/common/proto/config"
 	"github.com/pydio/cells/v4/common"
+	pb "github.com/pydio/cells/v4/common/proto/config"
 	"github.com/pydio/cells/v4/common/service"
 	"google.golang.org/grpc"
 
@@ -20,8 +20,12 @@ func init() {
 			// service.WithStorage(config.NewDAO),
 			service.WithGRPC(func(c context.Context, srv *grpc.Server) error {
 				// Register handler
-				pb.RegisterConfigServer(srv, &Handler{})
+				pb.RegisterMultiConfigServer(srv, &Handler{})
 
+				return nil
+			}),
+			service.WithGRPCStop(func(c context.Context, srv *grpc.Server) error {
+				pb.DeregisterMultiConfigServer(srv, common.ServiceGrpcNamespace_+common.ServiceConfig)
 
 				return nil
 			}),

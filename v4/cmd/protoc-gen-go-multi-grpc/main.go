@@ -21,7 +21,6 @@ func main() {
 	}
 
 	var flags flag.FlagSet
-	requireUnimplemented = flags.Bool("require_unimplemented_servers", true, "set to false to match legacy behavior")
 
 	protogen.Options{
 		ParamFunc: flags.Set,

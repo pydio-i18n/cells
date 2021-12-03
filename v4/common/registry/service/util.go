@@ -21,6 +21,7 @@
 package service
 
 import (
+	"errors"
 	"github.com/pydio/cells/v4/common"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
@@ -49,6 +50,14 @@ func (s *service) Nodes() []registry.Node {
 		nodes = append(nodes, &node{n})
 	}
 	return nodes
+}
+
+func (s *service) Start() error {
+	return errors.New("not implemented")
+}
+
+func (s *service) Stop() error {
+	return errors.New("not implemented")
 }
 
 func (s *service) Tags() []string {

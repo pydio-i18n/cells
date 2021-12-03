@@ -105,7 +105,3 @@ func parseCaddyfile(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler, error)
 	err := m.UnmarshalCaddyfile(h.Dispenser)
 	return m, err
 }
-
-
-
-

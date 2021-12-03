@@ -55,107 +55,56 @@ var (
 )
 
 func InitRegistry(dao sql.DAO) {
+	once.Do(func() {
 
-			once.Do(func() {
+		// db := sqlx.NewDb(dao.DB(), dao.Driver())
+		// l := logrusx.New("oauth", "1", logrusx.ForceLevel(logrus.PanicLevel))
+		// l.SetLevel(logrus.PanicLevel)
 
-				// db := sqlx.NewDb(dao.DB(), dao.Driver())
-				// l := logrusx.New("oauth", "1", logrusx.ForceLevel(logrus.PanicLevel))
-				// l.SetLevel(logrus.PanicLevel)
+		reg = driver.New(
+			context.Background(),
+			driver.WithOptions(
+				configx.SkipValidation(),
+				configx.WithValue("dsn", "mysql://root@tcp(localhost:3306)/cells?parseTime=true"),
+			),
+			driver.DisableValidation(),
+			driver.DisablePreloading())
 
-				reg = driver.New(
-					context.Background(),
-					driver.WithOptions(
-						configx.SkipValidation(),
-						configx.WithValue("dsn", "mysql://root:P@ssw0rd@tcp(localhost:3306)/cells?parseTime=true"),
-					),
-					driver.DisableValidation(),
-					driver.DisablePreloading())
+		p := reg.WithConfig(defaultConf.GetProvider()).Persister()
+		conn := p.Connection(context.Background())
 
-				p := reg.WithConfig(defaultConf.GetProvider()).Persister()
-				conn := p.Connection(context.Background())
+		if err := conn.Open(); err != nil {
+			fmt.Printf("Could not open the database connection:\n%+v\n", err)
+			os.Exit(1)
+			return
+		}
 
-				if err := conn.Open(); err != nil {
-					fmt.Printf("Could not open the database connection:\n%+v\n", err)
-					os.Exit(1)
-					return
-				}
+		// convert migration tables
+		if err := p.PrepareMigration(context.Background()); err != nil {
+			fmt.Printf("Could not convert the migration table:\n%+v\n", err)
+			os.Exit(1)
+			return
+		}
 
-				// convert migration tables
-				if err := p.PrepareMigration(context.Background()); err != nil {
-					fmt.Printf("Could not convert the migration table:\n%+v\n", err)
-					os.Exit(1)
-					return
-				}
+		// print migration status
+		fmt.Println("The following migration is planned:")
+		fmt.Println("")
 
-				// print migration status
-				fmt.Println("The following migration is planned:")
-				fmt.Println("")
+		status, err := p.MigrationStatus(context.Background())
+		if err != nil {
+			fmt.Printf("Could not get the migration status:\n%+v\n", errorsx.WithStack(err))
+			os.Exit(1)
+			return
+		}
+		_ = status.Write(os.Stdout)
 
-				status, err := p.MigrationStatus(context.Background())
-				if err != nil {
-					fmt.Printf("Could not get the migration status:\n%+v\n", errorsx.WithStack(err))
-					os.Exit(1)
-					return
-				}
-				_ = status.Write(os.Stdout)
+		// apply migrations
+		if err := p.MigrateUp(context.Background()); err != nil {
+			fmt.Printf("Could not apply migrations:\n%+v\n", errorsx.WithStack(err))
+		}
 
-				// apply migrations
-				if err := p.MigrateUp(context.Background()); err != nil {
-					fmt.Printf("Could not apply migrations:\n%+v\n", errorsx.WithStack(err))
-				}
-
-				/*
-				reg = driver.NewRegistrySQL().WithConfig(defaultConf.GetProvider()).WithLogger(l)
-				r := reg.(*driver.RegistrySQL) // .WithDB(db)
-				if err := r.Init(context.Background()); err != nil {
-					log.Error("Error registering oauth registry", zap.Error(err))
-				}
-
-
-				// TODO V4
-
-				sql.LockMigratePackage()
-				defer func() {
-					sql.UnlockMigratePackage()
-				}()
-
-				if _, err := r.ClientManager().(*client.SQLManager).CreateSchemas(dao.Driver()); err != nil {
-					log.Warn("Failed to create client schemas", zap.Error(err))
-					return
-				}
-
-				km := r.KeyManager().(*jwk.SQLManager)
-				if _, err := km.CreateSchemas(dao.Driver()); err != nil {
-					log.Warn("Failed to create key schemas", zap.Error(err))
-					return
-				} else {
-					if err := jwk.EnsureAsymmetricKeypairExists(context.Background(), r, new(jwk.RS256Generator), x.OpenIDConnectKeyName); err != nil {
-						log.Info("Could not ensure key exists, deleting...", zap.String("key", x.OpenIDConnectKeyName))
-						km.DeleteKeySet(context.Background(), x.OpenIDConnectKeyName)
-					}
-
-					if err := jwk.EnsureAsymmetricKeypairExists(context.Background(), r, new(jwk.RS256Generator), x.OAuth2JWTKeyName); err != nil {
-						log.Info("Could not ensure key exists, deleting...", zap.String("key", x.OAuth2JWTKeyName))
-						km.DeleteKeySet(context.Background(), x.OAuth2JWTKeyName)
-					}
-				}
-
-				if _, err := r.ConsentManager().(*consent.SQLManager).CreateSchemas(dao.Driver()); err != nil {
-					log.Warn("Failed to create consent schemas", zap.Error(err))
-					return
-				}
-
-				store := oauth2.NewFositeSQLStore(db, r, defaultConf)
-				if _, err := store.CreateSchemas(dao.Driver()); err != nil {
-					log.Warn("Failed to create fosite sql store schemas", zap.Error(err))
-				}
-
-
-
-				 */
-
-				RegisterOryProvider(reg.WithConfig(defaultConf.GetProvider()).OAuth2Provider())
-			})
+		RegisterOryProvider(reg.WithConfig(defaultConf.GetProvider()).OAuth2Provider())
+	})
 
 	if err := syncClients(context.Background(), reg.ClientManager(), defaultConf.Clients()); err != nil {
 		log.Warn("Failed to sync clients", zap.Error(err))

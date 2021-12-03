@@ -46,6 +46,8 @@ const (
 )
 
 type Server struct {
+	ctx context.Context
+
 	*http.ServeMux
 	*server.ServerImpl
 	Confs []byte
@@ -79,7 +81,6 @@ func New(ctx context.Context, dir string) (server.Server, error) {
 		return nil, err
 	}
 
-	fmt.Println(sites)
 	caddySites, err := SitesToCaddyConfigs(sites)
 	if err != nil {
 		return nil, err
@@ -113,9 +114,8 @@ func New(ctx context.Context, dir string) (server.Server, error) {
 		return nil, err
 	}
 
-
-
 	return &Server{
+		ctx: ctx,
 		ServeMux: srvMUX,
 		Confs: confs,
 		ServerImpl: &server.ServerImpl{},
@@ -135,8 +135,9 @@ func (s *Server) Serve(l net.Listener) error {
 		return err
 	}
 
-	// todo v4 - find a way to block
-	select{}
+	select{
+	case <-s.ctx.Done():
+	}
 
 	if err := s.BeforeStop(); err != nil {
 		return err

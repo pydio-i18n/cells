@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"google.golang.org/grpc"
 	"google.golang.org/protobuf/compiler/protogen"
 	"strings"
 )
@@ -127,6 +128,15 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 	g.P("Register", server, "(s, m)")
 	g.P("}")
 	g.P("m = append(m, srv)")
+	g.P("}")
+
+	g.P("func Deregister", multiServer, "(s grpc.ServiceRegistrar, name string) {")
+	g.P("addr := ", fmtPackage.Ident("Sprintf"), "(\"%p\", s)")
+	g.P("m, ok := multi", server, "s[addr]")
+	g.P("if !ok {")
+	g.P("return")
+	g.P("}")
+	g.P("delete(m, name)")
 	g.P("}")
 }
 

@@ -15,6 +15,20 @@ type Handler struct {
 	reg registry.Registry
 }
 
+func (h *Handler) StartService(ctx context.Context, req *pb.StartServiceRequest) (*pb.EmptyResponse, error) {
+	if err := h.reg.StartService(req.Service); err != nil {
+		return nil, err
+	}
+
+	return &pb.EmptyResponse{}, nil
+}
+func (h *Handler) StopService(ctx context.Context, req *pb.StopServiceRequest) (*pb.EmptyResponse, error) {
+	if err := h.reg.StopService(req.Service); err != nil {
+		return nil, err
+	}
+
+	return &pb.EmptyResponse{}, nil
+}
 func (h *Handler) GetService(ctx context.Context, req *pb.GetServiceRequest) (*pb.GetServiceResponse, error) {
 	resp := &pb.GetServiceResponse{}
 

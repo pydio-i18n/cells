@@ -17,6 +17,14 @@ func NewNodeRegistry(r registry.Registry) registry.Registry {
 	}
 }
 
+func (r *NodeRegistry) StartService(s string) error {
+	return r.r.StartService(s)
+}
+
+func (r *NodeRegistry) StopService(s string) error {
+	return r.r.StopService(s)
+}
+
 func (r *NodeRegistry) RegisterService(service registry.Service) error {
 	// First register all nodes
 	for _, node := range service.Nodes() {

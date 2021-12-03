@@ -14,6 +14,14 @@ func NewMockRegistry(r registry.Registry) registry.Registry {
 	}
 }
 
+func (r *mockRegistry) StartService(s string) error {
+	return r.r.StartService(s)
+}
+
+func (r *mockRegistry) StopService(s string) error {
+	return r.r.StopService(s)
+}
+
 func (r *mockRegistry) RegisterService(service registry.Service) error {
 	return r.r.RegisterService(service)
 }
