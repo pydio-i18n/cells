@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/server/caddy/mux"
 	"html/template"
 	"net"
 	"net/http"
@@ -13,10 +12,12 @@ import (
 
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig"
+	_ "github.com/caddyserver/caddy/v2/modules/standard"
 
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/proto/install"
 	"github.com/pydio/cells/v4/common/server"
+	"github.com/pydio/cells/v4/common/server/caddy/mux"
 )
 
 const (
@@ -28,7 +29,7 @@ const (
 {{range .Sites}}
 {{$SiteWebRoot := .WebRoot}}
 {{range .Binds}}{{.}} {{end}} {
-	root "{{if $SiteWebRoot}}{{$SiteWebRoot}}{{else}}{{$.WebRoot}}{{end}}"
+	root * "{{if $SiteWebRoot}}{{$SiteWebRoot}}{{else}}{{$.WebRoot}}{{end}}"
 	file_server
 
 	route /* {

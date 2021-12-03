@@ -4,7 +4,7 @@ import (
 	"github.com/pydio/cells/v4/cmd"
 
 	// Register minio client for objects storage
-	_ "github.com/pydio/cells/v4/common/nodes/objects/mc"
+	// _ "github.com/pydio/cells/v4/common/nodes/objects/mc"
 
 	// Frontend
 	_ "github.com/pydio/cells/v4/frontend/front-srv/rest"
@@ -32,13 +32,13 @@ import (
 	//_ "github.com/pydio/cells/v4/data/source/objects"
 
 	// Gateways
-	_ "github.com/pydio/cells/v4/gateway/proxy"
+	// _ "github.com/pydio/cells/v4/gateway/proxy"
 
 	// Datasource
-	_ "github.com/pydio/cells/v4/data/source/index/grpc"
-	_ "github.com/pydio/cells/v4/data/source/objects/grpc"
-	_ "github.com/pydio/cells/v4/data/source/sync/grpc"
-	_ "github.com/pydio/cells/v4/data/source/test"
+	// _ "github.com/pydio/cells/v4/data/source/index/grpc"
+	// _ "github.com/pydio/cells/v4/data/source/objects/grpc"
+	// _ "github.com/pydio/cells/v4/data/source/sync/grpc"
+	// _ "github.com/pydio/cells/v4/data/source/test"
 
 	// Registry
 	_ "github.com/pydio/cells/v4/common/registry/memory"

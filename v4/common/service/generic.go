@@ -19,16 +19,6 @@ func WithGeneric(f func(context.Context, *generic.Server) error) ServiceOption {
 			return f(o.Context, srvg)
 		}
 
-		//		ctx := o.Context
-
-		//		srv, ok := ctx.Value("genericServerKey").(server.Server)
-		//		if !ok {
-		// log.Println("Context does not contain server key")
-		//	return
-		//}
-
-		// srv.Handle(f)
-
 		// TODO v4 import wrappers for the server
 	}
 }
