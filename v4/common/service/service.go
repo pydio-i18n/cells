@@ -43,6 +43,8 @@ func NewService(opts ...ServiceOption) Service {
 
 	name := s.opts.Name
 
+	s.opts.Context = servicecontext.WithServiceName(s.opts.Context, name)
+
 	if !runtime.IsRequired(name) {
 		return nil
 	}
@@ -63,12 +65,6 @@ func NewService(opts ...ServiceOption) Service {
 			}
 
 			log.Info("started", zap.String("name", name))
-			return nil
-		})
-		bs.RegisterAfterServe(func() error {
-			return nil
-		})
-		bs.RegisterAfterStop(func() error {
 			return nil
 		})
 	}

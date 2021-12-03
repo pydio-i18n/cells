@@ -49,7 +49,7 @@ func (m Middleware) Provision(ctx caddy.Context) error {
 func (m Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
 	// try to find it in the current mux
 	_, pattern := m.s.Handler(r)
-	if len(pattern) > 0 {
+	if len(pattern) > 0 && (pattern != "/" || r.URL.Path == "/") {
 		m.s.ServeHTTP(w, r)
 		return nil
 	}

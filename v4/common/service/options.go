@@ -115,11 +115,11 @@ func AutoStart(b bool) ServiceOption {
 }
 
 // Fork option for a service
-func Fork(b bool) ServiceOption {
-	return func(o *ServiceOptions) {
-		o.Fork = b
-	}
-}
+//func Fork(b bool) ServiceOption {
+//	return func(o *ServiceOptions) {
+//		o.Fork = b
+//	}
+//}
 
 // Unique option for a service
 func Unique(b bool) ServiceOption {
@@ -163,6 +163,10 @@ func newOptions(opts ...ServiceOption) *ServiceOptions {
 	opt.Metadata = make(map[string]string)
 
 	for _, o := range opts {
+		if o == nil {
+			continue
+		}
+
 		o(opt)
 	}
 
