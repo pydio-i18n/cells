@@ -87,16 +87,16 @@ func InitRegistry(dao sql.DAO) {
 		}
 
 		// print migration status
-		fmt.Println("The following migration is planned:")
-		fmt.Println("")
+		//fmt.Println("The following migration is planned:")
+		//fmt.Println("")
 
-		status, err := p.MigrationStatus(context.Background())
+		_, err := p.MigrationStatus(context.Background())
 		if err != nil {
 			fmt.Printf("Could not get the migration status:\n%+v\n", errorsx.WithStack(err))
 			os.Exit(1)
 			return
 		}
-		_ = status.Write(os.Stdout)
+		//_ = status.Write(os.Stdout)
 
 		// apply migrations
 		if err := p.MigrateUp(context.Background()); err != nil {
@@ -188,8 +188,14 @@ func syncClients(ctx context.Context, s client.Storage, c common.Scanner) error 
 			}
 		}
 
-		//TODO V4
-		// delete(old, cli.GetID())
+		var cleanOld []client.Client
+		for _, o := range old {
+			if o.GetID() == cli.GetID() {
+				continue
+			}
+			cleanOld = append(cleanOld, o)
+		}
+		old = cleanOld
 	}
 
 	for _, cli := range old {
