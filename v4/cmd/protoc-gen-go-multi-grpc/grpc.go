@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"google.golang.org/grpc"
 	"google.golang.org/protobuf/compiler/protogen"
 	"strings"
 )
@@ -84,7 +83,7 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 
 
 	g.Annotate(multiServer, service.Location)
-	g.P("type " + multiServer + " []" + namedServer)
+	g.P("type " + multiServer + " map[string]" + namedServer)
 
 	for _, method := range service.Methods {
 		g.Annotate(multiServer+"."+method.GoName, method.Location)
@@ -127,7 +126,7 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 	g.P("multi", server, "s[addr] = m")
 	g.P("Register", server, "(s, m)")
 	g.P("}")
-	g.P("m = append(m, srv)")
+	g.P("m[srv.Name()] = srv")
 	g.P("}")
 
 	g.P("func Deregister", multiServer, "(s grpc.ServiceRegistrar, name string) {")
