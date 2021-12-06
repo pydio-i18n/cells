@@ -5,6 +5,9 @@ import (
 )
 
 type Registry interface{
+	StartService(string) error
+	StopService(string) error
+
 	RegisterService(Service) error
 	DeregisterService(Service) error
 	GetService(string) (Service, error)

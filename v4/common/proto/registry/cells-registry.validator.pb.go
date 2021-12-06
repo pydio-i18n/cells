@@ -73,6 +73,12 @@ func (this *Result) Validate() error {
 func (this *EmptyResponse) Validate() error {
 	return nil
 }
+func (this *StartServiceRequest) Validate() error {
+	return nil
+}
+func (this *StopServiceRequest) Validate() error {
+	return nil
+}
 func (this *GetServiceRequest) Validate() error {
 	if this.Options != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Options); err != nil {

@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"context"
 	"github.com/pydio/cells/v4/common/server"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"google.golang.org/grpc"
@@ -8,23 +9,27 @@ import (
 )
 
 type Server struct {
+	ctx context.Context
 	net.Listener
 	*grpc.Server
 	*server.ServerImpl
 }
 
-func New() server.Server {
-	return &Server{
-		Server: grpc.NewServer(
-			grpc.ChainUnaryInterceptor(
-				servicecontext.SpanUnaryServerInterceptor(),
-				servicecontext.MetricsUnaryServerInterceptor(),
-			),
-			grpc.ChainStreamInterceptor(
-				servicecontext.SpanStreamServerInterceptor(),
-				servicecontext.MetricsStreamServerInterceptor(),
-			),
+func New(ctx context.Context) server.Server {
+	s := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			servicecontext.SpanUnaryServerInterceptor(),
+			servicecontext.MetricsUnaryServerInterceptor(),
 		),
+		grpc.ChainStreamInterceptor(
+			servicecontext.SpanStreamServerInterceptor(),
+			servicecontext.MetricsStreamServerInterceptor(),
+		),
+	)
+
+	return &Server{
+		ctx: ctx,
+		Server: s,
 		ServerImpl: &server.ServerImpl{},
 	}
 }
@@ -50,16 +55,23 @@ func (s *Server) Serve(l net.Listener) error {
 		return err
 	}
 
-	err := <-errCh
-
-	if err := s.BeforeStop(); err != nil {
-		errCh <- err
+	var err error
+	select {
+	case err = <-errCh:
+		if err != nil {
+			return err
+		}
+	case <-s.ctx.Done():
 	}
 
-	s.Server.GracefulStop()
+	if err := s.BeforeStop(); err != nil {
+		return err
+	}
+
+	s.Server.Stop()
 
 	if err := s.AfterStop(); err != nil {
-		errCh <- err
+		return err
 	}
 
 	return err

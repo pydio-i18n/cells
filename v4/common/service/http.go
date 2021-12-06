@@ -13,7 +13,7 @@ import (
 func WithHTTP(f func(context.Context, *http.ServeMux) error) ServiceOption {
 	return func(o *ServiceOptions) {
 		o.Server = servicecontext.GetServer(o.Context, "http")
-		o.ServerInit = func() error {
+		o.serverStart = func() error {
 			var mux *http.ServeMux
 			if !o.Server.(server.Converter).As(&mux) {
 				return fmt.Errorf("server is not a mux")
@@ -23,5 +23,15 @@ func WithHTTP(f func(context.Context, *http.ServeMux) error) ServiceOption {
 		}
 
 		// TODO v4 import wrappers for the server
+	}
+}
+
+func WithHTTPStop(f func(context.Context, *http.ServeMux) error) ServiceOption {
+	return func(o *ServiceOptions) {
+		o.serverStop = func() error {
+			var mux *http.ServeMux
+			o.Server.(server.Converter).As(&mux)
+			return f(o.Context, mux)
+		}
 	}
 }

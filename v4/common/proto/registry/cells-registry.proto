@@ -5,6 +5,8 @@ package registry;
 option go_package = "github.com/pydio/cells/v4/common/proto/registry";
 
 service Registry {
+  rpc StartService(StartServiceRequest) returns (EmptyResponse) {};
+  rpc StopService(StopServiceRequest) returns (EmptyResponse) {};
   rpc GetService(GetServiceRequest) returns (GetServiceResponse) {};
   rpc RegisterService(Service) returns (EmptyResponse) {};
   rpc DeregisterService(Service) returns (EmptyResponse) {};
@@ -63,6 +65,14 @@ message Result {
 }
 
 message EmptyResponse {}
+
+message StartServiceRequest {
+  string service = 1;
+}
+
+message StopServiceRequest {
+  string service = 1;
+}
 
 message GetServiceRequest {
   string service = 1;

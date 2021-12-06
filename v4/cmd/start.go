@@ -20,6 +20,7 @@ import (
 	"github.com/pydio/cells/v4/common/server"
 	"github.com/pydio/cells/v4/common/server/http"
 	"net"
+	"sync"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -88,7 +89,7 @@ to quickly create a Cobra application.`,
 		}
 		defer lisGRPC.Close()
 
-		srvGRPC := grpc.New()
+		srvGRPC := grpc.New(ctx)
 		var srvHTTP server.Server
 		if !runtime.IsFork() {
 			if h, err := caddy.New(ctx, ""); err != nil {
@@ -104,29 +105,37 @@ to quickly create a Cobra application.`,
 		}
 		srvGeneric := generic.New(ctx)
 
-
 		ctx = servicecontext.WithServer(ctx, "grpc", srvGRPC)
 		ctx = servicecontext.WithServer(ctx, "http", srvHTTP)
 		ctx = servicecontext.WithServer(ctx, "generic", srvGeneric)
 
 		plugins.Init(ctx, "main")
 
+		wg := &sync.WaitGroup{}
+		wg.Add(3)
 		go func() {
+			defer wg.Done()
 			if err := srvGRPC.Serve(lisGRPC); err != nil {
 				fmt.Println(err)
 			}
+			fmt.Println("GRPC is done")
 		}()
 
 		go func() {
+			defer wg.Done()
 			if err := srvHTTP.Serve(nil); err != nil {
 				fmt.Println(err)
 			}
+			fmt.Println("HTTP is done")
 		}()
 
 		go func() {
+			defer wg.Done()
 			if err := srvGeneric.Serve(nil); err != nil {
 				fmt.Println(err)
 			}
+
+			fmt.Println("GENERIC is done")
 		}()
 
 		var rn registry.NodeRegistry
@@ -135,7 +144,7 @@ to quickly create a Cobra application.`,
 
 		log.Info("started")
 
-		<-cmd.Context().Done()
+		wg.Wait()
 
 		return nil
 	},

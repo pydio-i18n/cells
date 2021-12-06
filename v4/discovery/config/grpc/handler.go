@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"github.com/google/uuid"
 	pb "github.com/pydio/cells/v4/common/proto/config"
 	"github.com/pydio/cells/v4/x/configx"
 )
@@ -11,6 +12,14 @@ var config = configx.New()
 type Handler struct {
 	serviceName string
 	pb.UnimplementedConfigServer
+}
+
+func (h *Handler) Id() string {
+	return uuid.NewString()
+}
+
+func (h *Handler) Name() string {
+	return h.serviceName
 }
 
 func (h *Handler) ServiceName() string {

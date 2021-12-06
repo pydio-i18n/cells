@@ -10,7 +10,7 @@ import (
 // WithLogger adds a logger to the service context
 func WithLogger(logger *zap.Logger) ServiceOption {
 	return func(o *ServiceOptions) {
-		o.BeforeInit = append(o.BeforeInit, func(ctx context.Context) error {
+		o.BeforeStart = append(o.BeforeStart, func(ctx context.Context) error {
 			ctx = servicecontext.WithLogger(ctx, logger.Named(o.Name))
 
 			o.Context = ctx

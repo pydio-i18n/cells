@@ -115,6 +115,28 @@ func (s *serviceRegistry) Options() mregistry.Options {
 	return s.opts
 }
 
+func (s *serviceRegistry) StartService(name string) error {
+	_, err := s.client.StartService(s.opts.Context, &pb.StartServiceRequest{
+		Service: name,
+	}, s.callOpts()...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *serviceRegistry) StopService(name string) error {
+	_, err := s.client.StopService(s.opts.Context, &pb.StopServiceRequest{
+		Service: name,
+	}, s.callOpts()...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *serviceRegistry) RegisterService(srv registry.Service) error {
 	_, err := s.client.RegisterService(s.opts.Context, ToProtoService(srv), s.callOpts()...)
 	if err != nil {

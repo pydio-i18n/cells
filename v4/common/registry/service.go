@@ -6,6 +6,9 @@ type Service interface{
 	Nodes() []Node
 	Tags() []string
 
+	Start() error
+	Stop() error
+
 	IsGeneric() bool
 	IsGRPC() bool
 	IsREST() bool
