@@ -8,7 +8,7 @@ import (
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/pydio/cells/v4/common/registry"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	servercontext "github.com/pydio/cells/v4/common/server/context"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -19,7 +19,7 @@ import (
 
 func RegisterServerMux(ctx context.Context, s *http.ServeMux) {
 	var r registry.NodeRegistry
-	servicecontext.GetRegistry(ctx).As(&r)
+	servercontext.GetRegistry(ctx).As(&r)
 	caddy.RegisterModule(Middleware{
 		r: r,
 		s: s,

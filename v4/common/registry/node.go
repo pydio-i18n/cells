@@ -1,7 +1,7 @@
 package registry
 
 type Node interface{
-	Id() string
+	Name() string
 	Address() []string
 	Endpoints() []string
 	Metadata() map[string]string

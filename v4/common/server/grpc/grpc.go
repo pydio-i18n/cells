@@ -4,15 +4,15 @@ import (
 	"context"
 	"github.com/pydio/cells/v4/common/server"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"net"
 )
 
 type Server struct {
-	ctx context.Context
+	cancel context.CancelFunc
 	net.Listener
 	*grpc.Server
-	*server.ServerImpl
 }
 
 func New(ctx context.Context) server.Server {
@@ -27,58 +27,41 @@ func New(ctx context.Context) server.Server {
 		),
 	)
 
-	return &Server{
-		ctx: ctx,
+	ctx, cancel := context.WithCancel(ctx)
+
+	return server.NewServer(ctx, &Server{
+		cancel: cancel,
 		Server: s,
-		ServerImpl: &server.ServerImpl{},
-	}
+	})
 }
 
-func (s *Server) Serve(l net.Listener) error {
-	s.Listener = l
-
-	if err := s.BeforeServe(); err != nil {
+func (s *Server) Serve() error {
+	lis, err := net.Listen("tcp", viper.GetString("grpc.address"))
+	if err != nil {
 		return err
 	}
 
-	errCh := make(chan error, 1)
+	s.Listener = lis
 
 	go func() {
-		defer close(errCh)
+		defer s.cancel()
 
-		if err := s.Server.Serve(l); err != nil {
-			errCh <- err
+		if err := s.Server.Serve(lis); err != nil {
+			// TODO v4 - log or summat
 		}
 	}()
 
-	if err := s.AfterServe(); err != nil {
-		return err
-	}
-
-	var err error
-	select {
-	case err = <-errCh:
-		if err != nil {
-			return err
-		}
-	case <-s.ctx.Done():
-	}
-
-	if err := s.BeforeStop(); err != nil {
-		return err
-	}
-
-	s.Server.Stop()
-
-	if err := s.AfterStop(); err != nil {
-		return err
-	}
-
-	return err
+	return nil
 }
 
-func (s *Server) Id() string {
-	return "test"
+func (s *Server) Stop() error {
+	s.Server.Stop()
+
+	return s.Listener.Close()
+}
+
+func (s *Server) Name() string {
+	return "testgrpc"
 }
 
 func (s *Server) Metadata() map[string]string {

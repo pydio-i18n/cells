@@ -54,7 +54,7 @@ func (r *NodeRegistry) WatchServices(option ...registry.WatchOption) (registry.W
 
 func (r *NodeRegistry) RegisterNode(node registry.Node) error {
 	for k, v := range r.nodes {
-		if v.Id() == node.Id() {
+		if v.Name() == node.Name() {
 			r.nodes[k] = node
 			return nil
 		}
@@ -66,7 +66,7 @@ func (r *NodeRegistry) RegisterNode(node registry.Node) error {
 
 func (r *NodeRegistry) DeregisterNode(node registry.Node) error {
 	for k, v := range r.nodes {
-		if node.Id() == v.Id() {
+		if node.Name() == v.Name() {
 			r.nodes = append(r.nodes[:k], r.nodes[k+1:]...)
 		}
 	}
@@ -75,7 +75,7 @@ func (r *NodeRegistry) DeregisterNode(node registry.Node) error {
 
 func (r *NodeRegistry) GetNode(s string) (registry.Node, error) {
 	for _, v := range r.nodes {
-		if s == v.Id() {
+		if s == v.Name() {
 			return v, nil
 		}
 	}

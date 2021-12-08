@@ -81,7 +81,7 @@ type node struct {
 	n *pb.Node
 }
 
-func (n *node) Id() string {
+func (n *node) Name() string {
 	return n.n.Id
 }
 
@@ -142,7 +142,7 @@ func ToProtoNode(n registry.Node) *pb.Node {
 	}
 
 	return &pb.Node{
-		Id:      n.Id(),
+		Id:        n.Name(),
 		Address:   address,
 		Endpoints: n.Endpoints(),
 		Metadata:  n.Metadata(),

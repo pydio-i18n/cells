@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"github.com/pydio/cells/v4/common/registry/middleware"
 	"github.com/pydio/cells/v4/common/server/caddy"
+	servercontext "github.com/pydio/cells/v4/common/server/context"
 	"net/url"
 	"os"
 	"os/exec"
@@ -399,6 +400,7 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 	// TODO v4 - move that to the registry with options
 	reg = middleware.NewNodeRegistry(reg)
 
+	ctx = servercontext.WithRegistry(ctx, reg)
 	ctx = servicecontext.WithRegistry(ctx, reg)
 
 	srvHTTP, err  := caddy.New(ctx, dir)
@@ -407,8 +409,7 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 	}
 
 	broker.Connect()
-
-
+	
 	ctx = servicecontext.WithServer(ctx, "http", srvHTTP)
 
 	plugins.Init(ctx, "install")
@@ -464,7 +465,7 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 	instanceDone := make(chan struct{}, 1)
 
 	go func() {
-		if err := srvHTTP.Serve(nil); err != nil {
+		if err := srvHTTP.Serve(); err != nil {
 			fmt.Println(err)
 		}
 	}()

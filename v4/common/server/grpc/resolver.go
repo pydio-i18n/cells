@@ -91,11 +91,11 @@ func (cr *cellsResolver) watch() {
 			return
 		}
 
-		s := r.Service()
+		// s := r.Service()
 		if r.Action() == "create" {
-			for _, n := range r.Service().Nodes() {
+			/*for _, n := range r.Service().Nodes() {
 				cr.m[n.Address()[0]] = append(cr.m[n.Address()[0]], s.Name())
-			}
+			}*/
 
 			cr.updateState()
 		}

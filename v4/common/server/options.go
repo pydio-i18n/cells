@@ -1,9 +1,13 @@
 package server
 
-import "net"
+import (
+	"context"
+	"net"
+)
 
 // ServiceOptions stores all options for a pydio service
 type ServerOptions struct {
+	Context context.Context
 	Listener *net.Listener
 
 	// Before and After funcs

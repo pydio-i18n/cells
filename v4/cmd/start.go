@@ -16,31 +16,30 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/pydio/cells/v4/common/config/runtime"
-	"github.com/pydio/cells/v4/common/server"
-	"github.com/pydio/cells/v4/common/server/http"
-	"net"
-	"sync"
-
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"go.uber.org/zap"
-
 	"github.com/pydio/cells/v4/common/broker"
-	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/registry/middleware"
+	"github.com/pydio/cells/v4/common/server"
 	"github.com/pydio/cells/v4/common/server/caddy"
+	servercontext "github.com/pydio/cells/v4/common/server/context"
 	"github.com/pydio/cells/v4/common/server/generic"
 	"github.com/pydio/cells/v4/common/server/grpc"
+	"github.com/pydio/cells/v4/common/server/http"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
 	FilterStartTags    []string
 	FilterStartExclude []string
 )
+
+type serverer interface{
+	Serve() error
+}
 
 // startCmd represents the start command
 var StartCmd = &cobra.Command{
@@ -78,16 +77,11 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			return err
 		}
+
 		// TODO v4 - move that to the registry with options
 		reg = middleware.NewNodeRegistry(reg)
-
+		ctx = servercontext.WithRegistry(ctx, reg)
 		ctx = servicecontext.WithRegistry(ctx, reg)
-
-		lisGRPC, err := net.Listen("tcp", viper.GetString("grpc.address"))
-		if err != nil {
-			log.Fatal("error listening", zap.Error(err))
-		}
-		defer lisGRPC.Close()
 
 		srvGRPC := grpc.New(ctx)
 		var srvHTTP server.Server
@@ -98,7 +92,7 @@ to quickly create a Cobra application.`,
 				srvHTTP = h
 			}
 		} else {
-			srvHTTP = http.New()
+			srvHTTP = http.New(ctx)
 		}
 		if err != nil {
 			return err
@@ -111,40 +105,26 @@ to quickly create a Cobra application.`,
 
 		plugins.Init(ctx, "main")
 
-		wg := &sync.WaitGroup{}
-		wg.Add(3)
-		go func() {
-			defer wg.Done()
-			if err := srvGRPC.Serve(lisGRPC); err != nil {
-				fmt.Println(err)
-			}
-			fmt.Println("GRPC is done")
-		}()
-
-		go func() {
-			defer wg.Done()
-			if err := srvHTTP.Serve(nil); err != nil {
-				fmt.Println(err)
-			}
-			fmt.Println("HTTP is done")
-		}()
-
-		go func() {
-			defer wg.Done()
-			if err := srvGeneric.Serve(nil); err != nil {
-				fmt.Println(err)
-			}
-
-			fmt.Println("GENERIC is done")
-		}()
-
 		var rn registry.NodeRegistry
 		reg.As(&rn)
-		fmt.Println(rn.ListNodes())
 
-		log.Info("started")
+		nodes, _ := rn.ListNodes()
+		for _, node := range nodes {
+			srv, ok := node.(serverer)
+			if !ok {
+				continue
+			}
 
-		wg.Wait()
+			go func() {
+				if err := srv.Serve(); err != nil {
+					fmt.Println(err)
+				}
+			}()
+		}
+
+		select {
+		case <-cmd.Context().Done():
+		}
 
 		return nil
 	},
