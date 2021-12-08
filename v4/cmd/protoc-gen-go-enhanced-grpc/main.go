@@ -10,8 +10,6 @@ import (
 
 const version = "1.1.0"
 
-var requireUnimplemented *bool
-
 func main() {
 	showVersion := flag.Bool("version", false, "print the version and exit")
 	flag.Parse()

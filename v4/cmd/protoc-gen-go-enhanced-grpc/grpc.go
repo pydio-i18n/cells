@@ -69,7 +69,7 @@ func generateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.
 func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service) {
 	server := service.GoName + "Server"
 	namedServer := "Named" + server
-	multiServer := "Multi" + server
+	multiServer := service.GoName + "EnhancedServer"
 
 	g.P("var (")
 	g.P("multi", server, "s = make(map[string]", multiServer,")")
