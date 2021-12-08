@@ -3,14 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"io"
 	"log"
-	"sync"
 
 	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/proto/config"
-	"github.com/pydio/cells/v4/common/proto/registry"
-	"github.com/pydio/cells/v4/common/proto/tree"
 
 	_ "github.com/pydio/cells/v4/common/registry/service"
 	_ "github.com/pydio/cells/v4/common/server/grpc"
@@ -28,15 +24,15 @@ func main() {
 		log.Panic(err)
 	}
 
-	c = grpc.NewClientConn("pydio.grpc.registry")
+	// c = grpc.NewClientConn("pydio.grpc.registry")
 
-	regCli := registry.NewRegistryClient(c)
+	/*regCli := registry.NewRegistryClient(c)
 	/*go func() {
 		err := watchRegistry(regCli)
 		if err != nil {
 			log.Panic("Error in watch reg ", err)
 		}
-	}()*/
+	}()
 	if err := setRegistry(regCli); err != nil {
 		log.Panic(err)
 	}
@@ -81,7 +77,7 @@ func main() {
 	nodeProviderStreamCli := tree.NewNodeProviderStreamerClient(c)
 	if err := readNodeStream(nodeProviderStreamCli); err != nil {
 		log.Panic(err)
-	}
+	}*/
 }
 
 func setConfig(cli config.ConfigClient) error {
@@ -114,6 +110,7 @@ func getConfig(cli config.ConfigClient) error {
 	return nil
 }
 
+/*
 func setRegistry(cli registry.RegistryClient) error {
 	req := &registry.Service{
 		Name: "testing",
@@ -420,3 +417,4 @@ func readNodeStream(cli tree.NodeProviderStreamerClient) error {
 
 	return nil
 }
+*/
