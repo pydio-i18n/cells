@@ -3,13 +3,13 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"google.golang.org/grpc/metadata"
 	"strings"
 	"sync"
 
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 )
 
 var (
@@ -49,13 +49,13 @@ type clientConn struct {
 // Invoke performs a unary RPC and returns after the response is received
 // into reply.
 func (cc *clientConn) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	ctx = servicecontext.WithServiceName(ctx, cc.serviceName)
+	ctx = metadata.AppendToOutgoingContext(ctx,"targetName", cc.serviceName)
 	return cc.ClientConn.Invoke(ctx, method, args, reply, opts...)
 }
 
 // NewStream begins a streaming RPC.
 func (cc *clientConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	ctx = servicecontext.WithServiceName(ctx, cc.serviceName)
+	ctx = metadata.AppendToOutgoingContext(ctx,"targetName", cc.serviceName)
 	return cc.ClientConn.NewStream(ctx, desc, method, opts...)
 }
 
