@@ -6,6 +6,8 @@ import (
 	"strings"
 	"sync"
 
+	metadata2 "github.com/pydio/cells/v4/common/service/context/metadata"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
@@ -50,13 +52,27 @@ type clientConn struct {
 // Invoke performs a unary RPC and returns after the response is received
 // into reply.
 func (cc *clientConn) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
+	md := metadata.MD{}
+	if lmd, ok := metadata2.FromContext(ctx); ok {
+		for k, v := range lmd {
+			md.Set(k, v)
+		}
+	}
+	md.Set(ckeys.TargetServiceName, cc.serviceName)
 	ctx = metadata.AppendToOutgoingContext(ctx, ckeys.TargetServiceName, cc.serviceName)
 	return cc.ClientConn.Invoke(ctx, method, args, reply, opts...)
 }
 
 // NewStream begins a streaming RPC.
 func (cc *clientConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	ctx = metadata.AppendToOutgoingContext(ctx, ckeys.TargetServiceName, cc.serviceName)
+	md := metadata.MD{}
+	if lmd, ok := metadata2.FromContext(ctx); ok {
+		for k, v := range lmd {
+			md.Set(k, v)
+		}
+	}
+	md.Set(ckeys.TargetServiceName, cc.serviceName)
+	ctx = metadata.NewOutgoingContext(ctx, md)
 	return cc.ClientConn.NewStream(ctx, desc, method, opts...)
 }
 

@@ -47,11 +47,6 @@ import (
 	// Gateways
 	// _ "github.com/pydio/cells/v4/gateway/proxy"
 	//
-	// Gateway Micro (Rest API)
-	// Not running yet, defaults.Registry() nil
-	//_ "github.com/pydio/cells/v4/gateway/micro"
-	//
-	//
 	// Broker
 	//_ "github.com/pydio/cells/v4/broker/activity/grpc"
 	//_ "github.com/pydio/cells/v4/broker/activity/rest"

@@ -2,11 +2,13 @@ package grpc
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/server"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"net"
+
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
-	"net"
+
+	"github.com/pydio/cells/v4/common/server"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 )
 
 type Server struct {
@@ -20,10 +22,12 @@ func New(ctx context.Context) server.Server {
 		grpc.ChainUnaryInterceptor(
 			servicecontext.SpanUnaryServerInterceptor(),
 			servicecontext.MetricsUnaryServerInterceptor(),
+			servicecontext.MetaUnaryServerInterceptor(),
 		),
 		grpc.ChainStreamInterceptor(
 			servicecontext.SpanStreamServerInterceptor(),
 			servicecontext.MetricsStreamServerInterceptor(),
+			servicecontext.MetaStreamServerInterceptor(),
 		),
 	)
 
@@ -68,11 +72,11 @@ func (s *Server) Metadata() map[string]string {
 	return map[string]string{}
 }
 
-func (s *Server) Address() []string{
+func (s *Server) Address() []string {
 	return []string{s.Listener.Addr().String()}
 }
 
-func (s *Server) Endpoints() []string{
+func (s *Server) Endpoints() []string {
 	var endpoints []string
 
 	info := s.Server.GetServiceInfo()
