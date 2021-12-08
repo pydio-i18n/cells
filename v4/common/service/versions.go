@@ -60,8 +60,25 @@ func Latest() *version.Version {
 	return common.Version()
 }
 
-// LastKnownVersion looks on this server if there was a previous version of this service
-func LastKnownVersion(serviceName string) (v *version.Version, e error) {
+// UpdateServiceVersion applies migration(s) if necessary and stores new current version for future use.
+func UpdateServiceVersion(opts *ServiceOptions) error {
+	newVersion, _ := version.NewVersion(opts.Version)
+	lastVersion, e := lastKnownVersion(opts.Name)
+	if e != nil {
+		return e
+	}
+
+	writeVersion, err := applyMigrations(opts.Context, lastVersion, newVersion, opts.Migrations)
+	if writeVersion != nil {
+		if e := updateVersion(opts.Name, writeVersion); e != nil {
+			log.Logger(opts.Context).Error("could not write version file", zap.Error(e))
+		}
+	}
+	return err
+}
+
+// lastKnownVersion looks on this server if there was a previous version of this service
+func lastKnownVersion(serviceName string) (v *version.Version, e error) {
 
 	serviceDir, e := config.ServiceDataDir(serviceName)
 	if e != nil {
@@ -79,13 +96,10 @@ func LastKnownVersion(serviceName string) (v *version.Version, e error) {
 	}
 	return version.NewVersion(strings.TrimSpace(string(data)))
 
-	//versionFile := config.Get("versions", serviceName).Default("0.0.0").String()
-	//
-	//return version.NewVersion(versionFile)
 }
 
-// UpdateVersion writes the version string to file
-func UpdateVersion(serviceName string, v *version.Version) error {
+// updateVersion writes the version string to file
+func updateVersion(serviceName string, v *version.Version) error {
 	dir, err := config.ServiceDataDir(serviceName)
 	if err != nil {
 		return err
@@ -93,36 +107,12 @@ func UpdateVersion(serviceName string, v *version.Version) error {
 	versionFile := filepath.Join(dir, "version")
 	return ioutil.WriteFile(versionFile, []byte(v.String()), 0755)
 
-	// return config.Get("versions", serviceName).Set(v.String())
 }
 
-// UpdateServiceVersion applies migration(s) if necessary and stores new current version for future use.
-func UpdateServiceVersion(s Service) error {
-	return nil
-	/*
-		// TODO V4
-		options := s.Options()
-		newVersion, _ := version.NewVersion(options.Version)
-
-		lastVersion, e := LastKnownVersion(options.Name)
-		if e != nil {
-			return e
-		}
-
-		writeVersion, err := ApplyMigrations(options.Context, lastVersion, newVersion, options.Migrations)
-		if writeVersion != nil {
-			if e := UpdateVersion(options.Name, writeVersion); e != nil {
-				log.Logger(options.Context).Error("could not write version file", zap.Error(e))
-			}
-		}
-		return err
-	*/
-}
-
-// ApplyMigrations browse migrations upward on downward and apply them sequentially. It returns a version to be
+// applyMigrations browse migrations upward on downward and apply them sequentially. It returns a version to be
 // saved as the current valid version of the service, or nil if no changes were necessary. In specific case where
 // current version is 0.0.0 (first run), it only applies first run migration (if any) and returns target version.
-func ApplyMigrations(ctx context.Context, current *version.Version, target *version.Version, migrations []*Migration) (*version.Version, error) {
+func applyMigrations(ctx context.Context, current *version.Version, target *version.Version, migrations []*Migration) (*version.Version, error) {
 
 	if target.Equal(current) {
 		return nil, nil

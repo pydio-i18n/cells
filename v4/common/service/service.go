@@ -2,9 +2,10 @@ package service
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/registry"
-	"strings"
 
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/config/runtime"
@@ -90,6 +91,11 @@ func (s *service) Start() error {
 			return err
 		}
 	}
+
+	//log.Logger(s.opts.Context).Info("update service version")
+	//if er := UpdateServiceVersion(s.opts); er != nil {
+	//	return er
+	//}
 
 	log.Logger(s.opts.Context).Info("started")
 

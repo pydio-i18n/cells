@@ -29,15 +29,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pydio/cells/v4/common/client/grpc"
-
 	"github.com/emicklei/go-restful"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
-	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth/claim"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
@@ -625,7 +623,9 @@ func (h *SharesHandler) UpdateSharePolicies(req *restful.Request, rsp *restful.R
 func (h *SharesHandler) docStoreStatus() error {
 	return nil
 	// TODO V4
-	s := service2.NewServiceClient(grpc.NewClientConn(common.ServiceDocStore))
-	_, err := s.Status(context.Background(), &emptypb.Empty{})
-	return err
+	/*
+		s := service2.NewServiceClient(grpc.NewClientConn(common.ServiceDocStore))
+		_, err := s.Status(context.Background(), &emptypb.Empty{})
+		return err
+	*/
 }

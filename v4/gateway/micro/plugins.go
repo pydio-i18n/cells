@@ -32,7 +32,7 @@ import (
 	regRouter "github.com/micro/micro/v3/service/api/router/registry"
 
 	"github.com/pydio/cells/v4/common"
-	defaults "github.com/pydio/cells/v4/common/micro"
+	//defaults "github.com/pydio/cells/v4/common/micro"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/service"
 )
@@ -62,7 +62,7 @@ func register(ctx context.Context) {
 			ap := aapi.NewHandler(
 				ahandler.WithNamespace(ns),
 				ahandler.WithRouter(rt),
-				ahandler.WithClient(defaults.NewClient()),
+				//ahandler.WithClient(defaults.NewClient()),
 			)
 
 			serveMux.Handle("/{service:[a-zA-Z0-9]+}", ap)

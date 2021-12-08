@@ -27,7 +27,7 @@ func init() {
 }
 
 func (o *URLOpener) OpenURL(ctx context.Context, u *url.URL) (registry.Registry, error) {
-	if u.Query().Has("cache") && u.Query().Get("cache") == "shared" {
+	if u.Query().Get("cache") == "shared" {
 		sharedOnce.Do(func() {
 			shared = newMemory()
 		})

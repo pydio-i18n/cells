@@ -30,7 +30,7 @@ import (
 	"github.com/pydio/cells/v4/common/service/metrics"
 )
 
-func NewMetricsHttpWrapper(h http.Handler) http.Handler {
+func HttpWrapperMetrics(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		scope := metrics.GetMetricsForService(GetServiceName(r.Context()))
 		if scope == tally.NoopScope {

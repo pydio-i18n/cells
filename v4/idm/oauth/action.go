@@ -23,8 +23,9 @@ package oauth
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"time"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
@@ -50,6 +51,9 @@ func init() {
 func InsertPruningJob(ctx context.Context) error {
 
 	T := lang.Bundle().GetTranslationFunc(i18n.GetDefaultLanguage(config.Get()))
+
+	// todo v4 // Jobs must be active
+	return nil
 
 	return std.Retry(ctx, func() error {
 

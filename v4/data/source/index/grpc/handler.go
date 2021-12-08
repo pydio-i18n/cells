@@ -98,6 +98,10 @@ func NewTreeServer(ds *object.DataSource, dao index.DAO, logger *zap.Logger) *Tr
 	}
 }
 
+func (s *TreeServer) Name() string {
+	return "tree-index-server-" + s.DataSourceName
+}
+
 // setDataSourceMeta adds the datasource name as metadata, and eventually the internal flag
 func (s *TreeServer) setDataSourceMeta(node *mtree.TreeNode) {
 	node.SetMeta(common.MetaNamespaceDatasourceName, s.DataSourceName)

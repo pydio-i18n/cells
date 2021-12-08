@@ -57,7 +57,7 @@ func init() {
 
 				handler := NewHandler(ctx, servicecontext.GetDAO(ctx).(acl.DAO))
 				idm.RegisterACLServiceServer(server, handler)
-				tree.RegisterNodeProviderStreamerServer(server, handler)
+				tree.RegisterMultiNodeProviderStreamerServer(server, handler)
 
 				// Clean acls on Ws or Roles deletion
 				rCleaner := &WsRolesCleaner{Handler: handler}

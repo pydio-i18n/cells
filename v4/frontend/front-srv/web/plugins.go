@@ -28,6 +28,9 @@ import (
 	"path"
 	"path/filepath"
 
+	"github.com/pydio/cells/v4/common/proto/front"
+	"google.golang.org/grpc"
+
 	"github.com/lpar/gzipped"
 	"go.uber.org/zap"
 
@@ -54,67 +57,63 @@ func init() {
 			service.Context(ctx),
 			service.Tag(common.ServiceTagFrontend),
 			service.Description("Grpc service for internal requests about frontend manifest"),
-			/*
-				service.WithMicro(func(m micro.Service) error {
-					mH := &index.ManifestHandler{}
-					front.RegisterManifestServiceHandler(m.Server(), mH)
-					return nil
-				}),
-
-			*/
+			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
+				mH := &index.ManifestHandler{}
+				front.RegisterManifestServiceServer(server, mH)
+				return nil
+			}),
 		)
 		service.NewService(
 			service.Name(Name),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagFrontend),
 			service.Description("WEB service for serving statics"),
-				service.Migrations([]*service.Migration{
-					{
-						TargetVersion: service.ValidVersion("1.2.0"),
-						Up:            DropLegacyStatics,
-					},
-				}),
-				service.WithHTTP(func(ctx context.Context, mux *http.ServeMux) error {
-					httpFs := http.FS(frontend.GetPluginsFS())
+			service.Migrations([]*service.Migration{
+				{
+					TargetVersion: service.ValidVersion("1.2.0"),
+					Up:            DropLegacyStatics,
+				},
+			}),
+			service.WithHTTP(func(ctx context.Context, mux *http.ServeMux) error {
+				httpFs := http.FS(frontend.GetPluginsFS())
 
-					fs := gzipped.FileServer(httpFs)
+				fs := gzipped.FileServer(httpFs)
 
+				mux.Handle("/index.json", fs)
+				mux.Handle("/plug/", http.StripPrefix("/plug/", fs))
+				indexHandler := index.NewIndexHandler()
+				mux.HandleFunc("/robots.txt", func(w http.ResponseWriter, r *http.Request) {
+					w.WriteHeader(200)
+					w.Header().Set("Content-Type", "text/plain")
+					w.Write([]byte(RobotsString))
+				})
+				mux.Handle("/", indexHandler)
+				mux.Handle("/gui", indexHandler)
+				mux.Handle("/user/reset-password/{resetPasswordKey}", indexHandler)
+				mux.Handle(path.Join(config.GetPublicBaseUri(), "{link}"), index.NewPublicHandler())
 
-					mux.Handle("/index.json", fs)
-					mux.Handle("/plug/", http.StripPrefix("/plug/", fs))
-					indexHandler := index.NewIndexHandler()
-					mux.HandleFunc("/robots.txt", func(w http.ResponseWriter, r *http.Request) {
-						w.WriteHeader(200)
-						w.Header().Set("Content-Type", "text/plain")
-						w.Write([]byte(RobotsString))
-					})
-					mux.Handle("/", indexHandler)
-					mux.Handle("/gui", indexHandler)
-					mux.Handle("/user/reset-password/{resetPasswordKey}", indexHandler)
-					mux.Handle(path.Join(config.GetPublicBaseUri(), "{link}"), index.NewPublicHandler())
+				// TODO v4
+				//routerWithTimeout := http.TimeoutHandler(
+				//	mux,
+				//	15*time.Second,
+				//	"There was a timeout while serving the request...",
+				//)
 
-					// TODO v4
-					//routerWithTimeout := http.TimeoutHandler(
-					//	mux,
-					//	15*time.Second,
-					//	"There was a timeout while serving the request...",
-					//)
-
-					// Adding subscriber
-					/*if _, err := defaults.Broker().Subscribe(common.TopicReloadAssets, func(p broker.Publication) error {
-						// Reload FS
-						log.Logger(servicecontext.WithServiceName(ctx, common.ServiceGrpcNamespace_+common.ServiceFrontStatics)).Info("Reloading frontend plugins from file system")
-						frontend.HotReload()
-						httpFs = http.FS(frontend.GetPluginsFS())
-						return nil
-					}); err != nil {
-						return nil
-					}*/
-
-					// return routerWithTimeout
-
+				// Adding subscriber
+				/*if _, err := defaults.Broker().Subscribe(common.TopicReloadAssets, func(p broker.Publication) error {
+					// Reload FS
+					log.Logger(servicecontext.WithServiceName(ctx, common.ServiceGrpcNamespace_+common.ServiceFrontStatics)).Info("Reloading frontend plugins from file system")
+					frontend.HotReload()
+					httpFs = http.FS(frontend.GetPluginsFS())
 					return nil
-				}),
+				}); err != nil {
+					return nil
+				}*/
+
+				// return routerWithTimeout
+
+				return nil
+			}),
 		)
 	})
 }

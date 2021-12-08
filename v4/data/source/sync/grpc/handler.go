@@ -34,6 +34,7 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
+	grpccli "github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes/objects/mc"
@@ -54,8 +55,6 @@ import (
 	"github.com/pydio/cells/v4/scheduler/tasks"
 	"github.com/pydio/cells/v4/x/configx"
 	json "github.com/pydio/cells/v4/x/jsonx"
-	grpccli "github.com/pydio/cells/v4/common/client/grpc"
-
 )
 
 // Handler structure
@@ -101,6 +100,10 @@ func NewHandler(ctx context.Context, datasource string) (*Handler, error) {
 	e := h.initSync(syncConfig)
 
 	return h, e
+}
+
+func (s *Handler) Name() string {
+	return "sync-server-" + s.dsName
 }
 
 func (s *Handler) Start() {

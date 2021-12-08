@@ -119,9 +119,9 @@ func (w *WebsocketHandler) InitHandlers(serviceCtx context.Context) {
 			}
 			ctx := context.Background()
 			verifier := auth.DefaultJWTVerifier()
-			_, claims, e := verifier.Verify(ctx, msg.JWT)
-			if e != nil {
-				log.Logger(serviceCtx).Error("invalid jwt received from websocket connection")
+			_, claims, er := verifier.Verify(ctx, msg.JWT)
+			if er != nil {
+				log.Logger(serviceCtx).Error("invalid jwt received from websocket connection", zap.Any("msg", msg))
 				session.CloseWithMsg(NewErrorMessage(e))
 				return
 			}

@@ -4,12 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/pydio/cells/v4/common/server"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"net/http"
 	"reflect"
 	"strings"
 	"sync"
+
+	"github.com/pydio/cells/v4/common/server/middleware"
+
+	"github.com/pydio/cells/v4/common/server"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 
 	"github.com/emicklei/go-restful"
 	"github.com/go-openapi/loads"
@@ -26,6 +29,9 @@ var (
 	swaggerSyncOnce       = &sync.Once{}
 	swaggerJSONStrings    []string
 	swaggerMergedDocument *loads.Document
+
+	wm     []func(handler http.Handler) http.Handler
+	wmOnce = &sync.Once{}
 )
 
 // RegisterSwaggerJSON receives a json string and adds it to the swagger definition
@@ -45,12 +51,25 @@ type WebHandler interface {
 	Filter() func(string) string
 }
 
+func getWebMiddlewares() []func(handler http.Handler) http.Handler {
+	wmOnce.Do(func() {
+		wm = append(wm,
+			servicecontext.HttpWrapperMetrics,
+			middleware.HttpWrapperPolicy,
+			middleware.HttpWrapperJWT,
+			servicecontext.HttpWrapperSpan,
+			servicecontext.HttpWrapperMeta,
+		)
+	})
+	return wm
+}
+
 // WithWeb returns a web handler
 func WithWeb(handler func() WebHandler) ServiceOption {
 	return func(o *ServiceOptions) {
 		ctx := o.Context
 
-		o.Server = servicecontext.GetServer(o.Context,"http")
+		o.Server = servicecontext.GetServer(o.Context, "http")
 		o.serverStart = func() error {
 			var mux *http.ServeMux
 			if !o.Server.(server.Converter).As(&mux) {
@@ -130,14 +149,16 @@ func WithWeb(handler func() WebHandler) ServiceOption {
 			// var e error
 			wrapped := http.Handler(wc)
 
-			// for _, wrap := range o.webHandlerWraps {
-			// 	wrapped = wrap(wrapped)
-			//}
+			if o.Name != common.ServiceRestNamespace_+common.ServiceInstall {
+				for _, wrap := range getWebMiddlewares() {
+					wrapped = wrap(wrapped)
+				}
+			}
 
-			// if wrapped, e = NewConfigHTTPHandlerWrapper(wrapped, name); e != nil {
+			//if wrapped, e = NewConfigHTTPHandlerWrapper(wrapped, name); e != nil {
 			//	return e
 			//}
-			// wrapped = NewLogHTTPHandlerWrapper(wrapped, name)
+			//wrapped = NewLogHTTPHandlerWrapper(wrapped, name)
 
 			wrapped = cors.Default().Handler(wrapped)
 
@@ -169,7 +190,7 @@ func operationToRoute(rootPath string, swaggerTags []string, path string, operat
 	method := handlerValue.MethodByName(operation.ID)
 	if method.IsValid() {
 		casted := method.Interface().(func(req *restful.Request, rsp *restful.Response))
-		shortPath := strings.TrimPrefix("/a" + path, rootPath)
+		shortPath := strings.TrimPrefix(common.DefaultRouteREST+path, rootPath)
 		if shortPath == "" {
 			shortPath = "/"
 		}

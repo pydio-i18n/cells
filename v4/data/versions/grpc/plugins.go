@@ -23,9 +23,10 @@ package grpc
 
 import (
 	"context"
-	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"path"
 	"time"
+
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 
 	"google.golang.org/grpc"
 
@@ -105,6 +106,8 @@ func init() {
 }
 
 func InitDefaults(ctx context.Context) error {
+
+	// todo V4
 
 	log.Logger(ctx).Info("Inserting default versioning policies")
 

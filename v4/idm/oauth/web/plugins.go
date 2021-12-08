@@ -66,12 +66,12 @@ func init() {
 						keyHandler.SetRoutes(admin, public, driver.OAuth2AwareCORSMiddleware("public", reg, conf))
 
 						if conf.CORSEnabled("admin") {
-							r.PathPrefix("/oidc-admin/").Handler(http.StripPrefix("/oidc-admin", cors.New(conf.CORSOptions("admin")).Handler(servicecontext.HttpMetaExtractorWrapper(admin))))
+							r.PathPrefix("/oidc-admin/").Handler(http.StripPrefix("/oidc-admin", cors.New(conf.CORSOptions("admin")).Handler(servicecontext.HttpWrapperMeta(admin))))
 						} else {
-							r.PathPrefix("/oidc-admin/").Handler(http.StripPrefix("/oidc-admin", servicecontext.HttpMetaExtractorWrapper(admin)))
+							r.PathPrefix("/oidc-admin/").Handler(http.StripPrefix("/oidc-admin", servicecontext.HttpWrapperMeta(admin)))
 						}
 
-						r.PathPrefix("/oidc/").Handler(http.StripPrefix("/oidc", servicecontext.HttpMetaExtractorWrapper(public)))
+						r.PathPrefix("/oidc/").Handler(http.StripPrefix("/oidc", servicecontext.HttpWrapperMeta(public)))
 					}
 
 					return router

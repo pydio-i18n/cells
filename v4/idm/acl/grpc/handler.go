@@ -43,6 +43,10 @@ func NewHandler(_ context.Context, dao acl.DAO) *Handler {
 	return &Handler{dao: dao}
 }
 
+func (h *Handler) Name() string {
+	return "acl-meta-provider"
+}
+
 // CreateACL in database
 func (h *Handler) CreateACL(ctx context.Context, req *idm.CreateACLRequest) (*idm.CreateACLResponse, error) {
 

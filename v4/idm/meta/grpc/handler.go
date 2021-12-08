@@ -57,6 +57,10 @@ func NewHandler(ctx context.Context, dao meta.DAO) *Handler {
 	return h
 }
 
+func (h *Handler) Name() string {
+	return "user-meta-server"
+}
+
 func (h *Handler) Stop() {
 	h.searchCache.Close()
 }

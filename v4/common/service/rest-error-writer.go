@@ -33,18 +33,6 @@ import (
 
 type restErrorEmitter func(req *restful.Request, resp *restful.Response, err error)
 
-func isNetworkError(err error) bool {
-	s := err.Error()
-	parsed := errors.Parse(s)
-	return strings.Contains(s, "context deadline exceeded") ||
-		strings.Contains(s, "unexpected EOF") ||
-		strings.Contains(s, "context canceled") ||
-		strings.Contains(s, "can't assign requested address") ||
-		strings.Contains(s, "SubConns are in TransientFailure") ||
-		parsed.Id == "go.micro.client" && parsed.Code == 500 && parsed.Detail == "not found"
-
-}
-
 // RestError500 logs the error with context and write an Error 500 on the response.
 func RestError500(req *restful.Request, resp *restful.Response, err error) {
 	log.Logger(req.Request.Context()).Error("Rest Error 500", zap.Error(err))
@@ -62,7 +50,7 @@ func RestError500(req *restful.Request, resp *restful.Response, err error) {
 
 // RestError404 logs the error with context and writes an Error 404 on the response.
 func RestError404(req *restful.Request, resp *restful.Response, err error) {
-	if isNetworkError(err) {
+	if errors.IsNetworkError(err) {
 		RestError503(req, resp, err)
 		return
 	}
@@ -81,7 +69,7 @@ func RestError404(req *restful.Request, resp *restful.Response, err error) {
 
 // RestError403 logs the error with context and write an Error 403 on the response.
 func RestError403(req *restful.Request, resp *restful.Response, err error) {
-	if isNetworkError(err) {
+	if errors.IsNetworkError(err) {
 		RestError503(req, resp, err)
 		return
 	}
@@ -130,7 +118,7 @@ func RestError423(req *restful.Request, resp *restful.Response, err error) {
 
 // RestError401 logs the error with context and write an Error 401 on the response.
 func RestError401(req *restful.Request, resp *restful.Response, err error) {
-	if isNetworkError(err) {
+	if errors.IsNetworkError(err) {
 		RestError503(req, resp, err)
 		return
 	}
@@ -151,7 +139,7 @@ func RestError401(req *restful.Request, resp *restful.Response, err error) {
 
 // RestErrorDetect parses the error and tries to detect the correct code.
 func RestErrorDetect(req *restful.Request, resp *restful.Response, err error, defaultCode ...int32) {
-	if isNetworkError(err) {
+	if errors.IsNetworkError(err) {
 		RestError503(req, resp, err)
 		return
 	}

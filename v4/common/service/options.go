@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"crypto/tls"
+
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/service/frontend"
 
@@ -34,7 +35,7 @@ type ServiceOptions struct {
 	// Port      string
 	TLSConfig *tls.Config
 
-	Server     server.Server
+	Server      server.Server
 	serverStart func() error
 	serverStop  func() error
 
@@ -51,8 +52,7 @@ type ServiceOptions struct {
 	AfterStart  []func(context.Context) error
 
 	BeforeStop []func(context.Context) error
-	AfterStop []func(context.Context) error
-
+	AfterStop  []func(context.Context) error
 }
 
 type dependency struct {
@@ -166,6 +166,7 @@ func newOptions(opts ...ServiceOption) *ServiceOptions {
 
 	opt.ID = uuid.New()
 	opt.Metadata = make(map[string]string)
+	opt.Version = common.Version().String()
 
 	for _, o := range opts {
 		if o == nil {

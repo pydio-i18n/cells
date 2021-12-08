@@ -287,6 +287,10 @@ var (
 	}
 )
 
+const (
+	DefaultRouteREST = "/a"
+)
+
 // Version returns the current code version as an object.
 func Version() *hashiversion.Version {
 	v, _ := hashiversion.NewVersion(version)

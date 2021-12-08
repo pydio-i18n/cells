@@ -26,6 +26,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 
 	"google.golang.org/grpc"
@@ -75,11 +76,12 @@ func init() {
 						return fmt.Errorf("cannot find datasource configuration for " + sourceOpt)
 					}
 					engine := NewTreeServer(dsObject, servicecontext.GetDAO(ctx).(index.DAO), servicecontext.GetLogger(ctx))
-					tree.RegisterNodeReceiverServer(srv, engine)
-					tree.RegisterNodeProviderServer(srv, engine)
-					tree.RegisterNodeReceiverStreamServer(srv, engine)
-					tree.RegisterNodeProviderStreamerServer(srv, engine)
-					tree.RegisterSessionIndexerServer(srv, engine)
+					tree.RegisterMultiNodeReceiverServer(srv, engine)
+					tree.RegisterMultiNodeProviderServer(srv, engine)
+					tree.RegisterMultiNodeReceiverStreamServer(srv, engine)
+					tree.RegisterMultiNodeProviderStreamerServer(srv, engine)
+					tree.RegisterMultiSessionIndexerServer(srv, engine)
+					fmt.Println(os.Getpid(), sourceOpt, "Register Cleaner")
 					object.RegisterResourceCleanerEndpointServer(srv, engine)
 					sync.RegisterSyncEndpointServer(srv, engine)
 

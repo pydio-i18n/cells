@@ -105,8 +105,8 @@ func newService(ctx context.Context, dsObject *object.DataSource) {
 				return e
 			}
 
-			tree.RegisterNodeProviderServer(srv, syncHandler)
-			tree.RegisterNodeReceiverServer(srv, syncHandler)
+			tree.RegisterMultiNodeProviderServer(srv, syncHandler)
+			tree.RegisterMultiNodeReceiverServer(srv, syncHandler)
 			protosync.RegisterSyncEndpointServer(srv, syncHandler)
 			object.RegisterDataSourceEndpointServer(srv, syncHandler)
 			object.RegisterResourceCleanerEndpointServer(srv, syncHandler)

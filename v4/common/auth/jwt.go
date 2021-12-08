@@ -136,7 +136,7 @@ type JWTVerifier struct {
 // DefaultJWTVerifier creates a ready to use JWTVerifier
 func DefaultJWTVerifier() *JWTVerifier {
 	return &JWTVerifier{
-		types: []ProviderType{ProviderTypeGrpc, ProviderTypeOry, ProviderTypePAT},
+		types: []ProviderType{ProviderTypeOry, ProviderTypeGrpc, ProviderTypePAT},
 	}
 }
 
@@ -247,7 +247,7 @@ func (j *JWTVerifier) verifyTokenWithRetry(ctx context.Context, rawIDToken strin
 			break
 		}
 
-		log.Logger(ctx).Debug("jwt rawIdToken verify: failed", zap.Error(err))
+		log.Logger(ctx).Info("jwt rawIdToken verify: failed", zap.Error(err))
 	}
 
 	if (idToken == nil || err != nil) && !isRetry {

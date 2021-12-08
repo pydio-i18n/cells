@@ -95,7 +95,7 @@ func (s *Handler) EndpointsDiscovery(req *restful.Request, resp *restful.Respons
 		wsProtocol = "wss"
 	}
 
-	endpointResponse.Endpoints["rest"] = withPath(urlParsed, "/a").String()
+	endpointResponse.Endpoints["rest"] = withPath(urlParsed, common.DefaultRouteREST).String()
 	endpointResponse.Endpoints["openapi"] = withPath(urlParsed, "/a/config/discovery/openapi").String()
 	endpointResponse.Endpoints["forms"] = withPath(urlParsed, "/a/config/discovery/forms").String() + "/{serviceName}"
 	endpointResponse.Endpoints["oidc"] = withPath(urlParsed, "/auth").String()
@@ -159,10 +159,10 @@ func (s *Handler) OpenApiDiscovery(req *restful.Request, resp *restful.Response)
 		s.documentOpResponse(ops.Post)
 		s.documentOpResponse(ops.Delete)
 		s.documentOpResponse(ops.Put)
-		if strings.HasPrefix(path, "/a/") {
+		if strings.HasPrefix(path, common.DefaultRouteREST+"/") {
 			continue
 		}
-		outPath := "/a" + path
+		outPath := common.DefaultRouteREST + path
 		delete(jsonSpec.Spec().Paths.Paths, path)
 		jsonSpec.Spec().Paths.Paths[outPath] = ops
 	}

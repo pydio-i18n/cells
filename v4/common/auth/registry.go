@@ -23,15 +23,17 @@ package auth
 import (
 	"context"
 	"fmt"
-	"github.com/ory/x/configx"
-	"github.com/ory/x/errorsx"
-	"github.com/pydio/cells/v4/common/log"
-	"go.uber.org/zap"
+	"io"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/ory/x/errorsx"
+	"github.com/ory/x/logrusx"
+	"github.com/pydio/cells/v4/common/log"
+	"go.uber.org/zap"
 
 	"github.com/ory/fosite"
 	"github.com/ory/hydra/client"
@@ -58,18 +60,30 @@ func InitRegistry(dao sql.DAO) {
 	once.Do(func() {
 
 		// db := sqlx.NewDb(dao.DB(), dao.Driver())
-		// l := logrusx.New("oauth", "1", logrusx.ForceLevel(logrus.PanicLevel))
-		// l.SetLevel(logrus.PanicLevel)
+		testL := logrus.New()
+		testL.SetOutput(io.Discard)
+		lx := logrusx.New("test", "1", logrusx.UseLogger(testL))
 
-		reg = driver.New(
-			context.Background(),
-			driver.WithOptions(
-				configx.SkipValidation(),
-				configx.WithValue("dsn", "mysql://root@tcp(localhost:3306)/cells?parseTime=true"),
-			),
-			driver.DisableValidation(),
-			driver.DisablePreloading())
-
+		var e error
+		cfg := defaultConf.GetProvider()
+		cfg.Set("dsn", "mysql://root@tcp(localhost:3306)/cells?parseTime=true")
+		reg, e = driver.NewRegistryFromDSN(context.Background(), cfg, lx)
+		if e != nil {
+			fmt.Printf("Cannot init registryFromDSN", e)
+			os.Exit(1)
+		}
+		/*
+			reg = driver.New(
+				context.Background(),
+				driver.WithOptions(
+					configx.SkipValidation(),
+					configx.WithLogger(lx),
+					// TODO V4
+					configx.WithValue("dsn", "mysql://root@tcp(localhost:3306)/cells?parseTime=true"),
+				),
+				driver.DisableValidation(),
+				driver.DisablePreloading())
+		*/
 		p := reg.WithConfig(defaultConf.GetProvider()).Persister()
 		conn := p.Connection(context.Background())
 
@@ -99,9 +113,11 @@ func InitRegistry(dao sql.DAO) {
 		//_ = status.Write(os.Stdout)
 
 		// apply migrations
+		fmt.Println("Applying migrations for oauth if required")
 		if err := p.MigrateUp(context.Background()); err != nil {
 			fmt.Printf("Could not apply migrations:\n%+v\n", errorsx.WithStack(err))
 		}
+		fmt.Println("Finished")
 
 		RegisterOryProvider(reg.WithConfig(defaultConf.GetProvider()).OAuth2Provider())
 	})

@@ -38,6 +38,10 @@ type MetaProvider struct {
 	dao activity.DAO
 }
 
+func (m *MetaProvider) Name() string {
+	return "activity-meta-provider"
+}
+
 func (m *MetaProvider) ReadNodeStream(streamer tree.NodeProviderStreamer_ReadNodeStreamServer) error {
 
 	ctx := streamer.Context()

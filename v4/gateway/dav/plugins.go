@@ -52,7 +52,7 @@ func init() {
 					)
 					// handler := newHandler(s.Options().Context, davRouter)
 					handler := newHandler(context.TODO(), davRouter)
-					handler = servicecontext.HttpMetaExtractorWrapper(handler)
+					handler = servicecontext.HttpWrapperMeta(handler)
 
 					return handler
 				}),

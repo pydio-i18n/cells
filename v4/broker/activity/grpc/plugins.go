@@ -128,7 +128,7 @@ func init() {
 				}
 
 				proto.RegisterActivityServiceServer(srv, &Handler{dao: dao})
-				tree.RegisterNodeProviderStreamerServer(srv, &MetaProvider{dao: dao})
+				tree.RegisterMultiNodeProviderStreamerServer(srv, &MetaProvider{dao: dao})
 
 				return nil
 			}),

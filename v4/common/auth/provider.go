@@ -165,12 +165,13 @@ func GetConfigurationProvider(hostname ...string) ConfigurationProvider {
 }
 
 func NewProvider(rootURL string, values configx.Values) ConfigurationProvider {
-	// Todo V4 : INIT A  PROPER hconf.Provider with New
+	// Todo V4 : Do we need more from the original conf ?
+	_ = values.Val("secrets.system").Set([]string{values.Val("secret").String()})
 	provider, _ := hconf.New(logrusx.New("test", "test"), hconfx.WithValues(values.Map()))
 	return &configurationProvider{
 		Provider: provider,
-		r: rootURL,
-		v: values,
+		r:        rootURL,
+		v:        values,
 	}
 }
 

@@ -23,8 +23,9 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"time"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/pydio/cells/v4/common/utils/std"
 
@@ -163,17 +164,22 @@ func InitRoles(ctx context.Context) error {
 		} else {
 			break
 		}
-		e = std.Retry(ctx, func() error {
-			aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
-			for _, acl := range insert.Acls {
-				_, e := aclClient.CreateACL(ctx, &idm.CreateACLRequest{ACL: acl})
-				if e != nil {
-					return e
+		go func() {
+			<-time.After(20 * time.Second)
+			log.Logger(ctx).Info("Trying to insert ACLs now ?")
+			e = std.Retry(ctx, func() error {
+				aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+				for _, acl := range insert.Acls {
+					_, e := aclClient.CreateACL(ctx, &idm.CreateACLRequest{ACL: acl})
+					if e != nil {
+						return e
+					}
 				}
-			}
-			log.Logger(ctx).Info(fmt.Sprintf(" - ACLS set for role %s", insert.Role.Label))
-			return nil
-		}, 8*time.Second, 50*time.Second)
+				log.Logger(ctx).Info(fmt.Sprintf(" - ACLS set for role %s", insert.Role.Label))
+				return nil
+			}, 8*time.Second, 50*time.Second)
+			log.Logger(ctx).Info("Done inserting ACLs")
+		}()
 	}
 
 	return e

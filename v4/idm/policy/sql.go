@@ -69,7 +69,7 @@ func (s *sqlimpl) Init(options configx.Values) error {
 	manag := ladon_manager.NewSQLManager(db, nil)
 
 	sql.LockMigratePackage()
-	if _, err := manag.CreateSchemas("", ""); err != nil {
+	if _, err := manag.CreateSchemas("", "ladon_migrations"); err != nil {
 		sql.UnlockMigratePackage()
 		return err
 	}

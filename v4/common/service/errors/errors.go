@@ -23,6 +23,7 @@ package errors
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
@@ -210,4 +211,17 @@ func Equal(err1 error, err2 error) bool {
 	}
 
 	return true
+}
+
+// IsNetworkError tries to detect if error is a network error.
+func IsNetworkError(err error) bool {
+	s := err.Error()
+	parsed := Parse(s)
+	return strings.Contains(s, "context deadline exceeded") ||
+		strings.Contains(s, "unexpected EOF") ||
+		strings.Contains(s, "context canceled") ||
+		strings.Contains(s, "can't assign requested address") ||
+		strings.Contains(s, "SubConns are in TransientFailure") ||
+		parsed.Id == "go.micro.client" && parsed.Code == 500 && parsed.Detail == "not found"
+
 }
