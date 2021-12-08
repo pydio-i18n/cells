@@ -11,6 +11,7 @@ INSERT INTO cells.idm_user_idx_tree (uuid, level, name, leaf, mtime, etag, size,
 INSERT INTO cells.idm_user_idx_tree (uuid, level, name, leaf, mtime, etag, size, mode, mpath1, mpath2, mpath3, mpath4, hash, hash2) VALUES ('68e315b6-0389-461f-89d3-baf067782484', 2, 'pydio.anon.user', 1, 1638877573, 'sha256:1000:WmF0YWVOeGZXUE1BckRjbXZJc1Z4ZklVYmdYREJid1U=:G0eMlnBKfXdUnZno6IsCgSiy33EWJ3lj', 1, '0', '1.2', '', '', '', '8114b9dabe64741f5700c676da07d4182530a754', '77f01a2ce15954dc3ac687eda177d48087e08ada');
 INSERT INTO cells.idm_user_idx_tree (uuid, level, name, leaf, mtime, etag, size, mode, mpath1, mpath2, mpath3, mpath4, hash, hash2) VALUES ('ROOT_GROUP', 1, '', 0, 1638877573, '', 0, '0', '1', '', '', '', '356a192b7913b04c54574d18c28d46e6395428ab', '7ecef65939fd8828c0e64dab9ae2649956e4b4cf');
 
+INSERT INTO cells.idm_user_attributes (uuid, name, value) values ('31031d63-341d-4fb5-b0b3-fad2533855bc', 'profile', 'admin');
 
 INSERT INTO cells.idm_user_policies (id, resource, action, subject, effect, conditions) VALUES (1, '31031d63-341d-4fb5-b0b3-fad2533855bc', 'READ', 'profile:standard', 'allow', '');
 INSERT INTO cells.idm_user_policies (id, resource, action, subject, effect, conditions) VALUES (2, '31031d63-341d-4fb5-b0b3-fad2533855bc', 'WRITE', 'user:admin', 'allow', '');
