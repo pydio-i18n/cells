@@ -36,10 +36,14 @@ import (
 	"github.com/pydio/cells/v4/idm/workspace"
 )
 
+const (
+	ServiceName = common.ServiceGrpcNamespace_ + common.ServiceWorkspace
+)
+
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
 		service.NewService(
-			service.Name(common.ServiceGrpcNamespace_+common.ServiceWorkspace),
+			service.Name(ServiceName),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagIdm),
 			service.Description("Workspaces Service"),
@@ -48,7 +52,7 @@ func init() {
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 
 				h := NewHandler(ctx, servicecontext.GetDAO(ctx).(workspace.DAO))
-				idm.RegisterWorkspaceServiceServer(server, h)
+				idm.RegisterWorkspaceServiceEnhancedServer(server, h)
 
 				// Register a cleaner for removing a workspace when there are no more ACLs on it.
 				wsCleaner := NewWsCleaner(ctx, h)

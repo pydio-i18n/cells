@@ -35,10 +35,12 @@ import (
 	"github.com/pydio/cells/v4/common/service"
 )
 
+const ServiceName = common.ServiceGrpcNamespace_ + common.ServicePolicy
+
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
 		service.NewService(
-			service.Name(common.ServiceGrpcNamespace_+common.ServicePolicy),
+			service.Name(ServiceName),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagIdm),
 			service.Description("Policy Engine Service"),
@@ -87,7 +89,7 @@ func init() {
 			}),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 				handler := NewHandler(ctx, servicecontext.GetDAO(ctx).(policy.DAO))
-				idm.RegisterPolicyEngineServiceServer(server, handler)
+				idm.RegisterPolicyEngineServiceEnhancedServer(server, handler)
 				return nil
 			}),
 		)

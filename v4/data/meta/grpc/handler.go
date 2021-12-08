@@ -53,7 +53,7 @@ type MetaServer struct {
 
 func NewMetaServer(c context.Context, dao meta.DAO) *MetaServer {
 	m := &MetaServer{dao: dao}
-	m.cache = cache.NewSharded(common.ServiceGrpcNamespace_ + common.ServiceMeta)
+	m.cache = cache.NewSharded(ServiceName)
 	m.cacheMutex = cache.NewKeyMutex()
 	go func() {
 		<-c.Done()
@@ -63,7 +63,7 @@ func NewMetaServer(c context.Context, dao meta.DAO) *MetaServer {
 }
 
 func (s *MetaServer) Name() string {
-	return common.ServiceGrpcNamespace_ + common.ServiceMeta
+	return ServiceName
 }
 
 func (s *MetaServer) Stop() {

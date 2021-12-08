@@ -23,8 +23,9 @@ package grpc
 
 import (
 	"context"
-	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"time"
+
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -74,7 +75,7 @@ func init() {
 				}
 				log.Logger(ctx).Debug("Init handler OK", zap.Any("h", handler))
 
-				mailer.RegisterMailerServiceServer(server, handler)
+				mailer.RegisterMailerServiceEnhancedServer(server, handler)
 
 				go func() {
 					<-c.Done()

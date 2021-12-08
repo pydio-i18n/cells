@@ -79,10 +79,11 @@ func init() {
 				}
 
 				engine := &Handler{
-					db: store,
+					srvName: Name,
+					db:      store,
 				}
 
-				tree.RegisterNodeVersionerServer(server, engine)
+				tree.RegisterNodeVersionerEnhancedServer(server, engine)
 
 				jobsClient := jobs.NewJobServiceClient(grpc2.NewClientConn(common.ServiceJobs))
 				// TODO V4

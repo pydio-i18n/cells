@@ -32,6 +32,10 @@ type Handler struct {
 	jobs.UnimplementedTaskServiceServer
 }
 
+func (h *Handler) Name() string {
+	return ServiceName
+}
+
 // Control publishes the passed command
 func (h *Handler) Control(ctx context.Context, command *jobs.CtrlCommand) (*jobs.CtrlCommandResponse, error) {
 

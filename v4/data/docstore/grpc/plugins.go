@@ -40,10 +40,12 @@ import (
 	"github.com/pydio/cells/v4/data/docstore"
 )
 
+var Name = common.ServiceGrpcNamespace_ + common.ServiceDocStore
+
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
 		service.NewService(
-			service.Name(common.ServiceGrpcNamespace_+common.ServiceDocStore),
+			service.Name(Name),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagData),
 			service.Description("Generic document store"),
@@ -103,8 +105,8 @@ func init() {
 					}
 				}
 
-				proto.RegisterDocStoreServer(server, handler)
-				sync.RegisterSyncEndpointServer(server, handler)
+				proto.RegisterDocStoreEnhancedServer(server, handler)
+				sync.RegisterSyncEndpointEnhancedServer(server, handler)
 
 				go func() {
 					<-c.Done()

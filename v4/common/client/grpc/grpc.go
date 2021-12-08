@@ -55,11 +55,11 @@ func (cc *clientConn) Invoke(ctx context.Context, method string, args interface{
 	md := metadata.MD{}
 	if lmd, ok := metadata2.FromContext(ctx); ok {
 		for k, v := range lmd {
-			md.Set(k, v)
+			md.Set(ckeys.CellsMetaPrefix+k, v)
 		}
 	}
 	md.Set(ckeys.TargetServiceName, cc.serviceName)
-	ctx = metadata.AppendToOutgoingContext(ctx, ckeys.TargetServiceName, cc.serviceName)
+	ctx = metadata.NewOutgoingContext(ctx, md)
 	return cc.ClientConn.Invoke(ctx, method, args, reply, opts...)
 }
 
@@ -68,7 +68,7 @@ func (cc *clientConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, meth
 	md := metadata.MD{}
 	if lmd, ok := metadata2.FromContext(ctx); ok {
 		for k, v := range lmd {
-			md.Set(k, v)
+			md.Set(ckeys.CellsMetaPrefix+k, v)
 		}
 	}
 	md.Set(ckeys.TargetServiceName, cc.serviceName)

@@ -58,7 +58,7 @@ func NewHandler(ctx context.Context, dao meta.DAO) *Handler {
 }
 
 func (h *Handler) Name() string {
-	return "user-meta-server"
+	return Name
 }
 
 func (h *Handler) Stop() {

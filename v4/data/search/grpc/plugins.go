@@ -25,8 +25,9 @@ package grpc
 
 import (
 	"context"
-	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"path/filepath"
+
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/pydio/cells/v4/common/nodes/meta"
 
@@ -94,8 +95,8 @@ func init() {
 					ReIndexThrottler: make(chan struct{}, 5),
 				}
 
-				tree.RegisterSearcherServer(server, searcher)
-				sync.RegisterSyncEndpointServer(server, searcher)
+				tree.RegisterSearcherEnhancedServer(server, searcher)
+				sync.RegisterSyncEndpointEnhancedServer(server, searcher)
 
 				subscriber := searcher.Subscriber()
 				if e := broker.SubscribeCancellable(c, common.TopicMetaChanges, func(message broker.Message) error {

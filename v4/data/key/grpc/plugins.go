@@ -35,10 +35,12 @@ import (
 	"github.com/pydio/cells/v4/data/key"
 )
 
+var ServiceName = common.ServiceGrpcNamespace_ + common.ServiceEncKey
+
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
 		service.NewService(
-			service.Name(common.ServiceGrpcNamespace_+common.ServiceEncKey),
+			service.Name(ServiceName),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagData),
 			service.Description("Encryption Keys server"),
@@ -46,7 +48,7 @@ func init() {
 			service.WithStorage(key.NewDAO, "data_key"),
 			service.WithGRPC(func(c context.Context, srv *grpc.Server) error {
 				h := &NodeKeyManagerHandler{}
-				encryption.RegisterNodeKeyManagerServer(srv, h)
+				encryption.RegisterNodeKeyManagerEnhancedServer(srv, h)
 				if e := broker.SubscribeCancellable(c, common.TopicTreeChanges, func(message broker.Message) error {
 					msg := &tree.NodeChangeEvent{}
 					if ctx, e := message.Unmarshal(msg); e == nil {

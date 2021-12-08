@@ -23,11 +23,12 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 
@@ -44,7 +45,12 @@ import (
 type Handler struct {
 	sync.UnimplementedSyncEndpointServer
 	proto.UnimplementedLogRecorderServer
-	Repo log.MessageRepository
+	Repo        log.MessageRepository
+	HandlerName string
+}
+
+func (h *Handler) Name() string {
+	return h.HandlerName
 }
 
 // PutLog retrieves the log messages from the proto stream and stores them in the index.

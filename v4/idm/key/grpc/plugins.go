@@ -35,10 +35,12 @@ import (
 	"github.com/pydio/cells/v4/common/service"
 )
 
+const ServiceName = common.ServiceGrpcNamespace_ + common.ServiceUserKey
+
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
 		service.NewService(
-			service.Name(common.ServiceGrpcNamespace_+common.ServiceUserKey),
+			service.Name(ServiceName),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagIdm),
 			service.Description("Encryption Keys server"),
@@ -46,7 +48,7 @@ func init() {
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 
 				h := NewUserKeyStore(ctx, servicecontext.GetDAO(ctx).(key.DAO))
-				encryption.RegisterUserKeyStoreServer(server, h)
+				encryption.RegisterUserKeyStoreEnhancedServer(server, h)
 
 				return nil
 			}),

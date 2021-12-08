@@ -46,10 +46,12 @@ var (
 	Migration230 = false
 )
 
+const ServiceName = common.ServiceGrpcNamespace_ + common.ServiceJobs
+
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
 		service.NewService(
-			service.Name(common.ServiceGrpcNamespace_+common.ServiceJobs),
+			service.Name(ServiceName),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagScheduler),
 			service.Description("Store for scheduler jobs description"),
@@ -83,7 +85,7 @@ func init() {
 			}),
 			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
 
-				serviceDir, e := config.ServiceDataDir(common.ServiceGrpcNamespace_ + common.ServiceJobs)
+				serviceDir, e := config.ServiceDataDir(ServiceName)
 				if e != nil {
 					return e
 				}
@@ -96,9 +98,9 @@ func init() {
 					return err
 				}
 				handler := NewJobsHandler(store, logStore)
-				proto.RegisterJobServiceServer(server, handler)
-				log2.RegisterLogRecorderServer(server, handler)
-				sync.RegisterSyncEndpointServer(server, handler)
+				proto.RegisterJobServiceEnhancedServer(server, handler)
+				log2.RegisterLogRecorderEnhancedServer(server, handler)
+				sync.RegisterSyncEndpointEnhancedServer(server, handler)
 
 				for _, j := range getDefaultJobs() {
 					if _, e := handler.GetJob(c, &proto.GetJobRequest{JobID: j.ID}); e != nil {

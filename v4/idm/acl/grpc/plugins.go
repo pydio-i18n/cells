@@ -38,10 +38,12 @@ import (
 	"github.com/pydio/cells/v4/idm/acl"
 )
 
+var ServiceName = common.ServiceGrpcNamespace_ + common.ServiceAcl
+
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
 		service.NewService(
-			service.Name(common.ServiceGrpcNamespace_+common.ServiceAcl),
+			service.Name(ServiceName),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagIdm),
 			service.Description("Access Control List service"),
@@ -56,8 +58,8 @@ func init() {
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 
 				handler := NewHandler(ctx, servicecontext.GetDAO(ctx).(acl.DAO))
-				idm.RegisterACLServiceServer(server, handler)
-				tree.RegisterMultiNodeProviderStreamerServer(server, handler)
+				idm.RegisterACLServiceEnhancedServer(server, handler)
+				tree.RegisterNodeProviderStreamerEnhancedServer(server, handler)
 
 				// Clean acls on Ws or Roles deletion
 				rCleaner := &WsRolesCleaner{Handler: handler}

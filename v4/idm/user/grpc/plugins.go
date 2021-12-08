@@ -48,8 +48,9 @@ import (
 )
 
 const (
-	ENV_PYDIO_ADMIN_USER_LOGIN    = "PYDIO_ADMIN_USER_LOGIN"
-	ENV_PYDIO_ADMIN_USER_PASSWORD = "PYDIO_ADMIN_USER_PASSWORD"
+	EnvPydioAdminUserLogin    = "PYDIO_ADMIN_USER_LOGIN"
+	EnvPydioAdminUserPassword = "PYDIO_ADMIN_USER_PASSWORD"
+	ServiceName               = common.ServiceGrpcNamespace_ + common.ServiceUser
 )
 
 func init() {
@@ -60,7 +61,7 @@ func init() {
 
 	plugins.Register("main", func(ctx context.Context) {
 		service.NewService(
-			service.Name(common.ServiceGrpcNamespace_+common.ServiceUser),
+			service.Name(ServiceName),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagIdm),
 			service.Description("Users persistence layer"),
@@ -75,7 +76,7 @@ func init() {
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 
 				dao := servicecontext.GetDAO(ctx).(user.DAO)
-				idm.RegisterUserServiceServer(server, NewHandler(ctx, dao))
+				idm.RegisterUserServiceEnhancedServer(server, NewHandler(ctx, dao))
 
 				// Register a cleaner for removing a workspace when there are no more ACLs on it.
 				cleaner := &RolesCleaner{Dao: dao}
@@ -103,9 +104,9 @@ func InitDefaults(ctx context.Context) error {
 	var login, pwd string
 	dao := servicecontext.GetDAO(ctx).(user.DAO)
 
-	if os.Getenv(ENV_PYDIO_ADMIN_USER_LOGIN) != "" && os.Getenv(ENV_PYDIO_ADMIN_USER_PASSWORD) != "" {
-		login = os.Getenv(ENV_PYDIO_ADMIN_USER_LOGIN)
-		pwd = os.Getenv(ENV_PYDIO_ADMIN_USER_PASSWORD)
+	if os.Getenv(EnvPydioAdminUserLogin) != "" && os.Getenv(EnvPydioAdminUserPassword) != "" {
+		login = os.Getenv(EnvPydioAdminUserLogin)
+		pwd = os.Getenv(EnvPydioAdminUserPassword)
 	}
 
 	if rootConfig := config.Get("defaults", "root").String(); rootConfig != "" {

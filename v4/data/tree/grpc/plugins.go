@@ -33,10 +33,12 @@ import (
 	"github.com/pydio/cells/v4/common/service"
 )
 
+var ServiceName = common.ServiceGrpcNamespace_ + common.ServiceTree
+
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
 		service.NewService(
-			service.Name(common.ServiceGrpcNamespace_+common.ServiceTree),
+			service.Name(ServiceName),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagData),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceMeta, []string{}),
@@ -44,18 +46,18 @@ func init() {
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 
 				treeServer := &TreeServer{
-					name: common.ServiceGrpcNamespace_+common.ServiceTree,
+					name:        ServiceName,
 					DataSources: map[string]DataSource{},
 				}
 				eventSubscriber := NewEventSubscriber(treeServer)
 
 				updateServicesList(ctx, treeServer, 0)
 
-				tree.RegisterMultiNodeProviderServer(server, treeServer)
-				tree.RegisterMultiNodeReceiverServer(server, treeServer)
-				tree.RegisterMultiSearcherServer(server, treeServer)
-				tree.RegisterMultiNodeChangesStreamerServer(server, treeServer)
-				tree.RegisterMultiNodeProviderStreamerServer(server, treeServer)
+				tree.RegisterNodeProviderEnhancedServer(server, treeServer)
+				tree.RegisterNodeReceiverEnhancedServer(server, treeServer)
+				tree.RegisterSearcherEnhancedServer(server, treeServer)
+				tree.RegisterNodeChangesStreamerEnhancedServer(server, treeServer)
+				tree.RegisterNodeProviderStreamerEnhancedServer(server, treeServer)
 
 				go watchRegistry(ctx, treeServer)
 

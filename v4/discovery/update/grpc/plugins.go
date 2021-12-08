@@ -33,10 +33,12 @@ import (
 	"github.com/pydio/cells/v4/common/service"
 )
 
+var ServiceName = common.ServiceGrpcNamespace_ + common.ServiceUpdate
+
 func init() {
 
 	plugins.Register("main", func(ctx context.Context) {
-		config.RegisterExposedConfigs(common.ServiceGrpcNamespace_+common.ServiceUpdate, ExposedConfigs)
+		config.RegisterExposedConfigs(ServiceName, ExposedConfigs)
 
 		service.NewService(
 			service.Name(common.ServiceGrpcNamespace_+common.ServiceUpdate),
@@ -45,7 +47,7 @@ func init() {
 			service.Description("Update checker service"),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 				handler := new(Handler)
-				update.RegisterUpdateServiceServer(server, handler)
+				update.RegisterUpdateServiceEnhancedServer(server, handler)
 				return nil
 			}),
 		)

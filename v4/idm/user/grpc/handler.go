@@ -72,8 +72,12 @@ type Handler struct {
 	dao user.DAO
 }
 
-func NewHandler(ctx context.Context, dao user.DAO) idm.UserServiceServer {
+func NewHandler(ctx context.Context, dao user.DAO) idm.NamedUserServiceServer {
 	return &Handler{dao: dao}
+}
+
+func (h *Handler) Name() string {
+	return ServiceName
 }
 
 // BindUser binds a user with login/password

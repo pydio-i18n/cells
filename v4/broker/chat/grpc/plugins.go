@@ -33,17 +33,19 @@ import (
 	"github.com/pydio/cells/v4/common/service"
 )
 
+var ServiceName = common.ServiceGrpcNamespace_ + common.ServiceChat
+
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
 		service.NewService(
-			service.Name(common.ServiceGrpcNamespace_+common.ServiceChat),
+			service.Name(ServiceName),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagBroker),
 			service.Description("Chat Service to attach real-time chats to various object. Coupled with WebSocket"),
 			service.WithStorage(chat.NewDAO, "broker_chat"),
 			service.Unique(true),
 			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
-				proto.RegisterChatServiceServer(server, new(ChatHandler))
+				proto.RegisterChatServiceEnhancedServer(server, new(ChatHandler))
 				return nil
 			}),
 		)

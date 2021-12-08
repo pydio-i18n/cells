@@ -27,8 +27,9 @@ package grpc
 
 import (
 	"context"
-	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"time"
+
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -127,8 +128,8 @@ func init() {
 					return e
 				}
 
-				proto.RegisterActivityServiceServer(srv, &Handler{dao: dao})
-				tree.RegisterMultiNodeProviderStreamerServer(srv, &MetaProvider{dao: dao})
+				proto.RegisterActivityServiceEnhancedServer(srv, &Handler{dao: dao})
+				tree.RegisterNodeProviderStreamerEnhancedServer(srv, &MetaProvider{dao: dao})
 
 				return nil
 			}),

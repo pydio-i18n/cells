@@ -25,18 +25,31 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/micro/micro/v3/service/context/metadata"
 	"golang.org/x/net/http/httpguts"
 
 	"github.com/pydio/cells/v4/common"
 )
 
-func FromContext(ctx context.Context) (metadata.Metadata, bool) {
-	return metadata.FromContext(ctx)
+type metadataKey struct{}
+type Metadata map[string]string
+
+func FromContext(ctx context.Context) (Metadata, bool) {
+	md, ok := ctx.Value(metadataKey{}).(Metadata)
+	if !ok {
+		return nil, ok
+	}
+
+	// capitalize
+	newMD := make(Metadata, len(md))
+	for k, v := range md {
+		newMD[strings.Title(k)] = v
+	}
+
+	return newMD, ok
 }
 
 func NewContext(ctx context.Context, md map[string]string) context.Context {
-	return metadata.NewContext(ctx, md)
+	return context.WithValue(ctx, metadataKey{}, md)
 }
 
 // MinioMetaFromContext prepares metadata for minio client, merging context medata

@@ -39,6 +39,10 @@ type Handler struct {
 	Indexer docstore.Indexer
 }
 
+func (h *Handler) Name() string {
+	return Name
+}
+
 func (h *Handler) Close() error {
 	var err error
 	err = h.Db.Close()

@@ -22,11 +22,12 @@ package grpc
 
 import (
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 	"golang.org/x/net/context"
@@ -42,6 +43,10 @@ import (
 type Handler struct {
 	proto.UnimplementedActivityServiceServer
 	dao activity.DAO
+}
+
+func (h *Handler) Name() string {
+	return Name
 }
 
 func (h *Handler) PostActivity(stream proto.ActivityService_PostActivityServer) error {

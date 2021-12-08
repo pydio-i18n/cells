@@ -46,6 +46,10 @@ type NodeKeyManagerHandler struct {
 	encryption.UnimplementedNodeKeyManagerServer
 }
 
+func (km *NodeKeyManagerHandler) Name() string {
+	return ServiceName
+}
+
 func getDAO(ctx context.Context) (key.DAO, error) {
 	dao := servicecontext.GetDAO(ctx)
 	if dao == nil {

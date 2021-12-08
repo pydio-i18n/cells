@@ -61,6 +61,7 @@ import (
 type Handler struct {
 	globalCtx      context.Context
 	dsName         string
+	handlerName    string
 	errorsDetected chan string
 
 	indexClientRead    tree.NodeProviderClient
@@ -83,10 +84,11 @@ type Handler struct {
 	object.UnimplementedResourceCleanerEndpointServer
 }
 
-func NewHandler(ctx context.Context, datasource string) (*Handler, error) {
+func NewHandler(ctx context.Context, handlerName, datasource string) (*Handler, error) {
 	h := &Handler{
 		globalCtx:      ctx,
 		dsName:         datasource,
+		handlerName:    handlerName,
 		errorsDetected: make(chan string),
 		stop:           make(chan bool),
 	}
@@ -103,7 +105,7 @@ func NewHandler(ctx context.Context, datasource string) (*Handler, error) {
 }
 
 func (s *Handler) Name() string {
-	return "sync-server-" + s.dsName
+	return s.handlerName
 }
 
 func (s *Handler) Start() {

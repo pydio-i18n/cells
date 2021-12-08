@@ -39,7 +39,7 @@ type MetaProvider struct {
 }
 
 func (m *MetaProvider) Name() string {
-	return "activity-meta-provider"
+	return Name
 }
 
 func (m *MetaProvider) ReadNodeStream(streamer tree.NodeProviderStreamer_ReadNodeStreamServer) error {

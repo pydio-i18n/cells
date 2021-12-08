@@ -78,6 +78,10 @@ func (j *JobsHandler) Close() {
 	close(j.stop)
 }
 
+func (j *JobsHandler) Name() string {
+	return ServiceName
+}
+
 //////////////////
 // JOBS STORE
 /////////////////

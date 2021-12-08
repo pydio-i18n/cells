@@ -23,11 +23,12 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/proto/sync"
 	"net/http"
 	"runtime/debug"
 	"strings"
 	"time"
+
+	"github.com/pydio/cells/v4/common/proto/sync"
 
 	"go.uber.org/zap"
 
@@ -53,6 +54,7 @@ type TreeServer struct {
 	// logger
 	logger *zap.Logger
 
+	handlerName        string
 	DataSourceName     string
 	DataSourceInternal bool
 
@@ -88,18 +90,19 @@ func getDAO(ctx context.Context, session string) index.DAO {
 }
 
 // NewTreeServer factory.
-func NewTreeServer(ds *object.DataSource, dao index.DAO, logger *zap.Logger) *TreeServer {
+func NewTreeServer(ds *object.DataSource, handlerName string, dao index.DAO, logger *zap.Logger) *TreeServer {
 	return &TreeServer{
 		DataSourceName:     ds.Name,
 		DataSourceInternal: ds.IsInternal(),
 		sessionStore:       sessions.NewSessionMemoryStore(),
 		dao:                dao,
 		logger:             logger,
+		handlerName:        handlerName,
 	}
 }
 
 func (s *TreeServer) Name() string {
-	return "tree-index-server-" + s.DataSourceName
+	return s.handlerName
 }
 
 // setDataSourceMeta adds the datasource name as metadata, and eventually the internal flag

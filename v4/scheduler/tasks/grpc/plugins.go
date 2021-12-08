@@ -34,18 +34,20 @@ import (
 	"github.com/pydio/cells/v4/scheduler/tasks"
 )
 
+const ServiceName = common.ServiceGrpcNamespace_ + common.ServiceTasks
+
 func init() {
 	jobs.RegisterNodesFreeStringEvaluator(bleveimpl.EvalFreeString)
 
 	plugins.Register("main", func(ctx context.Context) {
 		service.NewService(
-			service.Name(common.ServiceGrpcNamespace_+common.ServiceTasks),
+			service.Name(ServiceName),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagScheduler),
 			service.Description("Tasks are running jobs dispatched on multiple workers"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceJobs, []string{}),
 			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
-				jobs.RegisterTaskServiceServer(server, new(Handler))
+				jobs.RegisterTaskServiceEnhancedServer(server, new(Handler))
 				multiplexer := tasks.NewSubscriber(ctx)
 				multiplexer.Init()
 				go func() {

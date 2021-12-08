@@ -24,6 +24,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
@@ -51,6 +52,10 @@ func getMetaClient() tree.NodeReceiverClient {
 
 type ChatHandler struct {
 	chat.UnimplementedChatServiceServer
+}
+
+func (c *ChatHandler) Name() string {
+	return ServiceName
 }
 
 func (c *ChatHandler) PutRoom(ctx context.Context, req *chat.PutRoomRequest) (*chat.PutRoomResponse, error) {

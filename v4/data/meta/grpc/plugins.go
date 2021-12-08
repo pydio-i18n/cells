@@ -24,8 +24,6 @@ package grpc
 import (
 	"context"
 
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
-
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
@@ -33,13 +31,18 @@ import (
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/data/meta"
+)
+
+var (
+	ServiceName = common.ServiceGrpcNamespace_ + common.ServiceMeta
 )
 
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
 		service.NewService(
-			service.Name(common.ServiceGrpcNamespace_+common.ServiceMeta),
+			service.Name(ServiceName),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagData),
 			service.Description("Metadata server for tree nodes"),
@@ -49,10 +52,10 @@ func init() {
 
 				engine := NewMetaServer(c, servicecontext.GetDAO(ctx).(meta.DAO))
 
-				tree.RegisterMultiNodeProviderServer(server, engine)
-				tree.RegisterMultiNodeProviderStreamerServer(server, engine)
-				tree.RegisterMultiNodeReceiverServer(server, engine)
-				tree.RegisterMultiSearcherServer(server, engine)
+				tree.RegisterNodeProviderEnhancedServer(server, engine)
+				tree.RegisterNodeProviderStreamerEnhancedServer(server, engine)
+				tree.RegisterNodeReceiverEnhancedServer(server, engine)
+				tree.RegisterSearcherEnhancedServer(server, engine)
 
 				// Register Subscribers
 				sub := engine.Subscriber(c)

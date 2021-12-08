@@ -44,8 +44,12 @@ type Handler struct {
 	dao policy.DAO
 }
 
-func NewHandler(ctx context.Context, dao policy.DAO) idm.PolicyEngineServiceServer {
+func NewHandler(ctx context.Context, dao policy.DAO) idm.NamedPolicyEngineServiceServer {
 	return &Handler{dao: dao}
+}
+
+func (h *Handler) Name() string {
+	return ServiceName
 }
 
 func (h *Handler) IsAllowed(ctx context.Context, request *idm.PolicyEngineRequest) (*idm.PolicyEngineResponse, error) {

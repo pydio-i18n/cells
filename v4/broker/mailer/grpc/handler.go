@@ -56,6 +56,10 @@ func NewHandler(serviceCtx context.Context, conf configx.Values) (*Handler, erro
 	return h, nil
 }
 
+func (h *Handler) Name() string {
+	return Name
+}
+
 // SendMail either queues or send a mail directly
 func (h *Handler) SendMail(ctx context.Context, req *proto.SendMailRequest) (*proto.SendMailResponse, error) {
 	mail := req.Mail

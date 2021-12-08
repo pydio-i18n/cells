@@ -45,6 +45,11 @@ type ObjectHandler struct {
 	object.UnimplementedObjectsEndpointServer
 	Config           *object.MinioConfig
 	MinioConsolePort int
+	handlerName      string
+}
+
+func (o *ObjectHandler) Name() string {
+	return o.handlerName
 }
 
 // StartMinioServer handler

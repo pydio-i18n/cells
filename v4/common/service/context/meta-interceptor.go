@@ -28,17 +28,22 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
+	"github.com/pydio/cells/v4/common/service/context/ckeys"
 	metadata2 "github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 func MetaUnaryServerInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		if md, ok := metadata.FromIncomingContext(ctx); ok {
-			localMd := make(map[string]string, len(md))
+			cellsMeta := make(map[string]string)
 			for k, v := range md {
-				localMd[k] = strings.Join(v, "")
+				if strings.HasPrefix(k, ckeys.CellsMetaPrefix) {
+					cellsMeta[strings.TrimPrefix(k, ckeys.CellsMetaPrefix)] = strings.Join(v, "")
+				}
 			}
-			ctx = metadata2.NewContext(ctx, localMd)
+			if len(cellsMeta) > 0 {
+				ctx = metadata2.NewContext(ctx, cellsMeta)
+			}
 		}
 		return handler(ctx, req)
 	}
@@ -48,11 +53,15 @@ func MetaStreamServerInterceptor() grpc.StreamServerInterceptor {
 	return func(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		ctx := stream.Context()
 		if md, ok := metadata.FromIncomingContext(ctx); ok {
-			localMd := make(map[string]string, len(md))
+			cellsMeta := make(map[string]string)
 			for k, v := range md {
-				localMd[k] = strings.Join(v, "")
+				if strings.HasPrefix(k, ckeys.CellsMetaPrefix) {
+					cellsMeta[strings.TrimPrefix(k, ckeys.CellsMetaPrefix)] = strings.Join(v, "")
+				}
 			}
-			ctx = metadata2.NewContext(ctx, localMd)
+			if len(cellsMeta) > 0 {
+				ctx = metadata2.NewContext(ctx, cellsMeta)
+			}
 			wrapped := grpc_middleware.WrapServerStream(stream)
 			wrapped.WrappedContext = ctx
 			return handler(srv, wrapped)

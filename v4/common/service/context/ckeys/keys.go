@@ -21,3 +21,4 @@
 package ckeys
 
 const TargetServiceName = "targetName"
+const CellsMetaPrefix = "x-cells-"

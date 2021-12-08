@@ -52,6 +52,10 @@ type SearchServer struct {
 	ReIndexThrottler chan struct{}
 }
 
+func (s *SearchServer) Name() string {
+	return Name
+}
+
 // Subscriber create a handler that will treat events for the meta server
 func (s *SearchServer) Subscriber() *EventsSubscriber {
 

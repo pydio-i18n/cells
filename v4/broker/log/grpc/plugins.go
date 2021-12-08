@@ -47,7 +47,7 @@ func init() {
 			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
 				// TODO v4
 				//conf := servicecontext.GetConfig(c)
-				conf := config.Get("services", common.ServiceGrpcNamespace_ + common.ServiceLog)
+				conf := config.Get("services", common.ServiceGrpcNamespace_+common.ServiceLog)
 
 				serviceDir, e := config.ServiceDataDir(common.ServiceGrpcNamespace_ + common.ServiceLog)
 				if e != nil {
@@ -63,10 +63,11 @@ func init() {
 				}
 
 				handler := &Handler{
-					Repo: repo,
+					Repo:        repo,
+					HandlerName: common.ServiceGrpcNamespace_ + common.ServiceLog,
 				}
-				proto.RegisterLogRecorderServer(server, handler)
-				sync.RegisterSyncEndpointServer(server, handler)
+				proto.RegisterLogRecorderEnhancedServer(server, handler)
+				sync.RegisterSyncEndpointEnhancedServer(server, handler)
 
 				go func() {
 					<-c.Done()

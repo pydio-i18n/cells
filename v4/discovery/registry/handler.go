@@ -3,6 +3,8 @@ package registry
 import (
 	"context"
 
+	"github.com/pydio/cells/v4/common"
+
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 
 	"github.com/pydio/cells/v4/common/registry"
@@ -13,6 +15,10 @@ type Handler struct {
 	pb.UnimplementedRegistryServer
 
 	reg registry.Registry
+}
+
+func (h *Handler) Name() string {
+	return common.ServiceGrpcNamespace_ + common.ServiceRegistry
 }
 
 func (h *Handler) StartService(ctx context.Context, req *pb.StartServiceRequest) (*pb.EmptyResponse, error) {

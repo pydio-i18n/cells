@@ -45,6 +45,10 @@ type Handler struct {
 	update.UnimplementedUpdateServiceServer
 }
 
+func (h *Handler) Name() string {
+	return ServiceName
+}
+
 func (h *Handler) UpdateRequired(ctx context.Context, request *update.UpdateRequest) (*update.UpdateResponse, error) {
 
 	configs := config.GetUpdatesConfigs()

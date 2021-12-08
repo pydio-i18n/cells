@@ -44,8 +44,12 @@ type userKeyStore struct {
 }
 
 // NewUserKeyStore creates a master password based
-func NewUserKeyStore(_ context.Context, dao key.DAO) enc.UserKeyStoreServer {
+func NewUserKeyStore(_ context.Context, dao key.DAO) enc.NamedUserKeyStoreServer {
 	return &userKeyStore{dao: dao}
+}
+
+func (ukm *userKeyStore) Name() string {
+	return ServiceName
 }
 
 func (ukm *userKeyStore) getDAO() key.DAO {

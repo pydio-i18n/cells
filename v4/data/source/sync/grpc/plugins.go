@@ -72,8 +72,9 @@ func init() {
 func newService(ctx context.Context, dsObject *object.DataSource) {
 	datasource := dsObject.Name
 	var sOptions []service.ServiceOption
+	srvName := common.ServiceGrpcNamespace_ + common.ServiceDataSync_ + datasource
 	sOptions = append(sOptions,
-		service.Name(common.ServiceGrpcNamespace_+common.ServiceDataSync_+datasource),
+		service.Name(srvName),
 		service.Context(ctx),
 		service.Tag(common.ServiceTagDatasource),
 		service.Description("Synchronization service between objects and index for a given datasource"),
@@ -100,16 +101,16 @@ func newService(ctx context.Context, dsObject *object.DataSource) {
 			})
 
 			var e error
-			syncHandler, e = NewHandler(ctx, datasource)
+			syncHandler, e = NewHandler(ctx, srvName, datasource)
 			if e != nil {
 				return e
 			}
 
-			tree.RegisterMultiNodeProviderServer(srv, syncHandler)
-			tree.RegisterMultiNodeReceiverServer(srv, syncHandler)
-			protosync.RegisterSyncEndpointServer(srv, syncHandler)
-			object.RegisterDataSourceEndpointServer(srv, syncHandler)
-			object.RegisterResourceCleanerEndpointServer(srv, syncHandler)
+			tree.RegisterNodeProviderEnhancedServer(srv, syncHandler)
+			tree.RegisterNodeReceiverEnhancedServer(srv, syncHandler)
+			protosync.RegisterSyncEndpointEnhancedServer(srv, syncHandler)
+			object.RegisterDataSourceEndpointEnhancedServer(srv, syncHandler)
+			object.RegisterResourceCleanerEndpointEnhancedServer(srv, syncHandler)
 
 			md := make(map[string]string)
 			md[common.PydioContextUserKey] = common.PydioSystemUsername

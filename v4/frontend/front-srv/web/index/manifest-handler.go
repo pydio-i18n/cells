@@ -9,6 +9,11 @@ import (
 
 type ManifestHandler struct {
 	front.UnimplementedManifestServiceServer
+	HandlerName string
+}
+
+func (m *ManifestHandler) Name() string {
+	return m.HandlerName
 }
 
 func (m *ManifestHandler) ExposedParameters(ctx context.Context, request *front.ExposedParametersRequest) (*front.ExposedParametersResponse, error) {

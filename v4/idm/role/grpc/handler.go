@@ -49,8 +49,12 @@ type Handler struct {
 	dao role.DAO
 }
 
-func NewHandler(ctx context.Context, dao role.DAO) idm.RoleServiceServer {
+func NewHandler(ctx context.Context, dao role.DAO) idm.NamedRoleServiceServer {
 	return &Handler{dao: dao}
+}
+
+func (h *Handler) Name() string {
+	return ServiceName
 }
 
 // CreateRole adds a role and its policies in database

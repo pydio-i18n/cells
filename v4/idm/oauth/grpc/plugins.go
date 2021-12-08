@@ -57,17 +57,16 @@ func init() {
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 				h := &Handler{name: common.ServiceGrpcNamespace_ + common.ServiceOAuth}
 
-				auth2.RegisterAuthTokenVerifierServer(server, h)
-				//auth2.RegisterMultiAuthTokenVerifierServer(server, h)
-				auth2.RegisterLoginProviderServer(server, h)
-				auth2.RegisterConsentProviderServer(server, h)
-				auth2.RegisterLogoutProviderServer(server, h)
-				auth2.RegisterAuthCodeProviderServer(server, h)
-				auth2.RegisterAuthCodeExchangerServer(server, h)
-				auth2.RegisterAuthTokenRefresherServer(server, h)
-				auth2.RegisterAuthTokenRevokerServer(server, h)
-				auth2.RegisterMultiAuthTokenPrunerServer(server, h)
-				auth2.RegisterPasswordCredentialsTokenServer(server, h)
+				auth2.RegisterAuthTokenVerifierEnhancedServer(server, h)
+				auth2.RegisterLoginProviderEnhancedServer(server, h)
+				auth2.RegisterConsentProviderEnhancedServer(server, h)
+				auth2.RegisterLogoutProviderEnhancedServer(server, h)
+				auth2.RegisterAuthCodeProviderEnhancedServer(server, h)
+				auth2.RegisterAuthCodeExchangerEnhancedServer(server, h)
+				auth2.RegisterAuthTokenRefresherEnhancedServer(server, h)
+				auth2.RegisterAuthTokenRevokerEnhancedServer(server, h)
+				auth2.RegisterAuthTokenPrunerEnhancedServer(server, h)
+				auth2.RegisterPasswordCredentialsTokenEnhancedServer(server, h)
 
 				dao := servicecontext.GetDAO(ctx).(sql.DAO)
 
@@ -93,9 +92,9 @@ func init() {
 			service.WithStorage(oauth.NewDAO, "idm_oauth_"),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 				pat := &PatHandler{name: common.ServiceGrpcNamespace_ + common.ServiceToken}
-				auth2.RegisterPersonalAccessTokenServiceServer(server, pat)
-				//auth2.RegisterMultiAuthTokenVerifierServer(server, pat)
-				auth2.RegisterMultiAuthTokenPrunerServer(server, pat)
+				auth2.RegisterPersonalAccessTokenServiceEnhancedServer(server, pat)
+				auth2.RegisterAuthTokenVerifierEnhancedServer(server, pat)
+				auth2.RegisterAuthTokenPrunerEnhancedServer(server, pat)
 				return nil
 			}),
 		)

@@ -37,10 +37,12 @@ import (
 	"github.com/pydio/cells/v4/idm/role"
 )
 
+const ServiceName = common.ServiceGrpcNamespace_ + common.ServiceRole
+
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
 		service.NewService(
-			service.Name(common.ServiceGrpcNamespace_+common.ServiceRole),
+			service.Name(ServiceName),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagIdm),
 			service.Description("Roles Service"),
@@ -66,7 +68,7 @@ func init() {
 					return fmt.Errorf("cannot convert DAO to role.DAO")
 				}
 				handler := NewHandler(ctx, rDao)
-				idm.RegisterRoleServiceServer(server, handler)
+				idm.RegisterRoleServiceEnhancedServer(server, handler)
 
 				// Clean role on user deletion
 				cleaner := NewCleaner(ctx, handler)

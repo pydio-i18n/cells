@@ -26,7 +26,6 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"os"
 	"strings"
 
 	"google.golang.org/grpc"
@@ -51,10 +50,10 @@ func init() {
 
 		for _, source := range sources {
 
-			name := common.ServiceDataIndex_ + source
+			name := common.ServiceGrpcNamespace_ + common.ServiceDataIndex_ + source
 
 			service.NewService(
-				service.Name(common.ServiceGrpcNamespace_+name),
+				service.Name(name),
 				service.Context(ctx),
 				service.WithLogger(log.Logger(ctx)),
 				service.Tag(common.ServiceTagDatasource),
@@ -75,15 +74,15 @@ func init() {
 					if e != nil {
 						return fmt.Errorf("cannot find datasource configuration for " + sourceOpt)
 					}
-					engine := NewTreeServer(dsObject, servicecontext.GetDAO(ctx).(index.DAO), servicecontext.GetLogger(ctx))
-					tree.RegisterMultiNodeReceiverServer(srv, engine)
-					tree.RegisterMultiNodeProviderServer(srv, engine)
-					tree.RegisterMultiNodeReceiverStreamServer(srv, engine)
-					tree.RegisterMultiNodeProviderStreamerServer(srv, engine)
-					tree.RegisterMultiSessionIndexerServer(srv, engine)
-					fmt.Println(os.Getpid(), sourceOpt, "Register Cleaner")
-					object.RegisterResourceCleanerEndpointServer(srv, engine)
-					sync.RegisterSyncEndpointServer(srv, engine)
+					engine := NewTreeServer(dsObject, name, servicecontext.GetDAO(ctx).(index.DAO), servicecontext.GetLogger(ctx))
+					tree.RegisterNodeReceiverEnhancedServer(srv, engine)
+					tree.RegisterNodeProviderEnhancedServer(srv, engine)
+					tree.RegisterNodeReceiverStreamEnhancedServer(srv, engine)
+					tree.RegisterNodeProviderStreamerEnhancedServer(srv, engine)
+					tree.RegisterSessionIndexerEnhancedServer(srv, engine)
+
+					object.RegisterResourceCleanerEndpointEnhancedServer(srv, engine)
+					sync.RegisterSyncEndpointEnhancedServer(srv, engine)
 
 					return nil
 				}),

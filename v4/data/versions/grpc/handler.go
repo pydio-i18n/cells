@@ -22,10 +22,11 @@ package grpc
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"net/url"
 	"sync"
 	"time"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 
@@ -45,7 +46,12 @@ import (
 
 type Handler struct {
 	tree.UnimplementedNodeVersionerServer
-	db versions.DAO
+	db      versions.DAO
+	srvName string
+}
+
+func (h *Handler) Name() string {
+	return h.srvName
 }
 
 func (h *Handler) buildVersionDescription(ctx context.Context, version *tree.ChangeLog) string {

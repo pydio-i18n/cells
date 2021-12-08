@@ -60,6 +60,10 @@ func NewHandler() *Handler {
 	return &Handler{}
 }
 
+func (h *Handler) Name() string {
+	return name
+}
+
 // Run runs the defined tests
 func (h *Handler) Run(ctx context.Context, req *test.RunTestsRequest) (*test.RunTestsResponse, error) {
 

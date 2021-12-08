@@ -62,7 +62,8 @@ func init() {
 					mc.RunningSecure = false
 					fmt.Println("Starting minio with config", mc)
 					engine := &ObjectHandler{
-						Config: mc,
+						handlerName: common.ServiceGrpcNamespace_ + common.ServiceDataObjects_ + datasource,
+						Config:      mc,
 						/*
 							Config: &object.MinioConfig{
 								Name:        datasource,
@@ -74,7 +75,7 @@ func init() {
 						*/
 						MinioConsolePort: 8383,
 					}
-					object.RegisterObjectsEndpointServer(server, engine)
+					object.RegisterObjectsEndpointEnhancedServer(server, engine)
 					var startErr error
 					go func() {
 						startErr = engine.StartMinioServer(ctx, datasource)

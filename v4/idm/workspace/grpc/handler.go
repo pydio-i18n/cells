@@ -41,8 +41,12 @@ type Handler struct {
 	dao workspace.DAO
 }
 
-func NewHandler(ctx context.Context, dao workspace.DAO) idm.WorkspaceServiceServer {
+func NewHandler(ctx context.Context, dao workspace.DAO) idm.NamedWorkspaceServiceServer {
 	return &Handler{dao: dao}
+}
+
+func (h *Handler) Name() string {
+	return ServiceName
 }
 
 // CreateWorkspace in database
