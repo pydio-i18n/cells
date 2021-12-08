@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
-	"google.golang.org/protobuf/compiler/protogen"
 	"strings"
+
+	"google.golang.org/protobuf/compiler/protogen"
 )
 
 const (
-	fmtPackage     = protogen.GoImportPath("fmt")
-	contextPackage = protogen.GoImportPath("context")
-	grpcPackage    = protogen.GoImportPath("google.golang.org/grpc")
-	statusPackage  = protogen.GoImportPath("google.golang.org/grpc/status")
-	codesPackage   = protogen.GoImportPath("google.golang.org/grpc/codes")
+	fmtPackage             = protogen.GoImportPath("fmt")
+	contextPackage         = protogen.GoImportPath("context")
+	grpcPackage            = protogen.GoImportPath("google.golang.org/grpc")
+	statusPackage          = protogen.GoImportPath("google.golang.org/grpc/status")
+	codesPackage           = protogen.GoImportPath("google.golang.org/grpc/codes")
 	metadataContextPackage = protogen.GoImportPath("google.golang.org/grpc/metadata")
 )
 
@@ -72,7 +73,7 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 	multiServer := service.GoName + "EnhancedServer"
 
 	g.P("var (")
-	g.P("enhanced", server, "s = make(map[string]", multiServer,")")
+	g.P("enhanced", server, "s = make(map[string]", multiServer, ")")
 	g.P(")")
 
 	g.Annotate(namedServer, service.Location)
@@ -81,7 +82,6 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 	g.P("Name() string")
 	g.P("}")
 
-
 	g.Annotate(multiServer, service.Location)
 	g.P("type " + multiServer + " map[string]" + namedServer)
 
@@ -89,49 +89,49 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 		g.Annotate(multiServer+"."+method.GoName, method.Location)
 
 		g.P(method.Comments.Leading)
-		g.P("func (m ", multiServer, ") ",  serverSignature(g, method), " {")
+		g.P("func (m ", multiServer, ") ", serverSignature(g, method), " {")
 		if !method.Desc.IsStreamingClient() && !method.Desc.IsStreamingServer() {
 			// Get the metadata from the incoming context
 			g.P("md, ok := ", metadataContextPackage.Ident("FromIncomingContext"), "(ctx)")
-			g.P("if !ok {")
-			g.P("return nil, ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("FailedPrecondition"),", \"method ", method.GoName, " should have a context\")")
+			g.P("if !ok || len(md.Get(\"targetname\")) == 0 {")
+			g.P("return nil, ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("FailedPrecondition"), ", \"method ", method.GoName, " should have a context\")")
 			g.P("}")
 			g.P("for _, mm := range m {")
 			g.P("if mm.Name() == md.Get(\"targetname\")[0] {")
-			g.P("return mm.", method.GoName,"(ctx, r)")
+			g.P("return mm.", method.GoName, "(ctx, r)")
 			g.P("}")
 			g.P("}")
-			g.P("return nil, ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("Unimplemented"),", \"method ", method.GoName, " not implemented\")")
+			g.P("return nil, ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("Unimplemented"), ", \"method ", method.GoName, " not implemented\")")
 
 		} else if !method.Desc.IsStreamingClient() {
 			g.P("md, ok := ", metadataContextPackage.Ident("FromIncomingContext"), "(s.Context())")
-			g.P("if !ok {")
-			g.P("return ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("FailedPrecondition"),", \"method ", method.GoName, " should have a context\")")
+			g.P("if !ok || len(md.Get(\"targetname\")) == 0 {")
+			g.P("return ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("FailedPrecondition"), ", \"method ", method.GoName, " should have a context\")")
 			g.P("}")
 			g.P("for _, mm := range m {")
 			g.P("if mm.Name() == md.Get(\"targetname\")[0] {")
-			g.P("return mm.", method.GoName,"(r, s)")
+			g.P("return mm.", method.GoName, "(r, s)")
 			g.P("}")
 			g.P("}")
-			g.P("return ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("Unimplemented"),", \"method ", method.GoName, " not implemented\")")
+			g.P("return ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("Unimplemented"), ", \"method ", method.GoName, " not implemented\")")
 		} else {
 			g.P("md, ok := ", metadataContextPackage.Ident("FromIncomingContext"), "(s.Context())")
-			g.P("if !ok {")
-			g.P("return ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("FailedPrecondition"),", \"method ", method.GoName, " should have a context\")")
+			g.P("if !ok || len(md.Get(\"targetname\")) == 0 {")
+			g.P("return ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("FailedPrecondition"), ", \"method ", method.GoName, " should have a context\")")
 			g.P("}")
 			g.P("for _, mm := range m {")
 			g.P("if mm.Name() == md.Get(\"targetname\")[0] {")
-			g.P("return mm.", method.GoName,"(s)")
+			g.P("return mm.", method.GoName, "(s)")
 			g.P("}")
 			g.P("}")
-			g.P("return ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("Unimplemented"),", \"method ", method.GoName, " not implemented\")")
+			g.P("return ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("Unimplemented"), ", \"method ", method.GoName, " not implemented\")")
 		}
 		g.P("}")
 	}
 
 	g.P("func (m ", multiServer, ") mustEmbedUnimplemented", server, "() {}")
 
-	g.P("func Register", multiServer, "(s grpc.ServiceRegistrar, srv ", namedServer,") {")
+	g.P("func Register", multiServer, "(s grpc.ServiceRegistrar, srv ", namedServer, ") {")
 	g.P("addr := ", fmtPackage.Ident("Sprintf"), "(\"%p\", s)")
 	g.P("m, ok := enhanced", server, "s[addr]")
 	g.P("if !ok {")
@@ -156,14 +156,14 @@ func serverSignature(g *protogen.GeneratedFile, method *protogen.Method) string 
 	var reqArgs []string
 	ret := "error"
 	if !method.Desc.IsStreamingClient() && !method.Desc.IsStreamingServer() {
-		reqArgs = append(reqArgs, "ctx " + g.QualifiedGoIdent(contextPackage.Ident("Context")))
+		reqArgs = append(reqArgs, "ctx "+g.QualifiedGoIdent(contextPackage.Ident("Context")))
 		ret = "(*" + g.QualifiedGoIdent(method.Output.GoIdent) + ", error)"
 	}
 	if !method.Desc.IsStreamingClient() {
 		reqArgs = append(reqArgs, "r *"+g.QualifiedGoIdent(method.Input.GoIdent))
 	}
 	if method.Desc.IsStreamingClient() || method.Desc.IsStreamingServer() {
-		reqArgs = append(reqArgs, "s " + method.Parent.GoName+"_"+method.GoName+"Server")
+		reqArgs = append(reqArgs, "s "+method.Parent.GoName+"_"+method.GoName+"Server")
 	}
 	return method.GoName + "(" + strings.Join(reqArgs, ", ") + ") " + ret
 }
