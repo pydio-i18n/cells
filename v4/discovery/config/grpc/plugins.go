@@ -20,12 +20,12 @@ func init() {
 			// service.WithStorage(config.NewDAO),
 			service.WithGRPC(func(c context.Context, srv *grpc.Server) error {
 				// Register handler
-				pb.RegisterMultiConfigServer(srv, &Handler{})
+				pb.RegisterConfigEnhancedServer(srv, &Handler{serviceName: common.ServiceGrpcNamespace_+common.ServiceConfig})
 
 				return nil
 			}),
 			service.WithGRPCStop(func(c context.Context, srv *grpc.Server) error {
-				pb.DeregisterMultiConfigServer(srv, common.ServiceGrpcNamespace_+common.ServiceConfig)
+				pb.DeregisterConfigEnhancedServer(srv, common.ServiceGrpcNamespace_+common.ServiceConfig)
 
 				return nil
 			}),

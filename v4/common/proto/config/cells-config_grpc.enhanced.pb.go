@@ -21,7 +21,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedConfigServers = make(map[string]*ConfigEnhancedServer)
+	enhancedConfigServers = make(map[string]ConfigEnhancedServer)
 )
 
 type NamedConfigServer interface {
@@ -86,11 +86,11 @@ func RegisterConfigEnhancedServer(s grpc.ServiceRegistrar, srv NamedConfigServer
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedConfigServers[addr]
 	if !ok {
-		m = &ConfigEnhancedServer{}
+		m = ConfigEnhancedServer{}
 		enhancedConfigServers[addr] = m
 		RegisterConfigServer(s, m)
 	}
-	(*m)[srv.Name()] = srv
+	m[srv.Name()] = srv
 }
 func DeregisterConfigEnhancedServer(s grpc.ServiceRegistrar, name string) {
 	addr := fmt.Sprintf("%p", s)
@@ -98,5 +98,5 @@ func DeregisterConfigEnhancedServer(s grpc.ServiceRegistrar, name string) {
 	if !ok {
 		return
 	}
-	delete(*m, name)
+	delete(m, name)
 }
