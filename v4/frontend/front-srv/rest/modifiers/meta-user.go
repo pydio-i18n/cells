@@ -2,9 +2,9 @@ package modifiers
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/service"

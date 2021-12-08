@@ -23,13 +23,13 @@ package servicecontext
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/server"
 
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/registry"
+	"github.com/pydio/cells/v4/common/server"
 	"github.com/pydio/cells/v4/x/configx"
 )
 
@@ -143,7 +143,6 @@ func GetRegistry(ctx context.Context) registry.Registry {
 	}
 	return nil
 }
-
 
 func getServers(ctx context.Context) map[string]server.Server {
 	if conf, ok := ctx.Value(serversKey).(map[string]server.Server); ok {

@@ -4,14 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/pydio/cells/v4/common/config/runtime"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"net/http"
 	"reflect"
 	"strings"
 	"sync"
-
-	"github.com/pydio/cells/v4/common/server/middleware"
 
 	"github.com/emicklei/go-restful"
 	"github.com/go-openapi/loads"
@@ -20,8 +16,11 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/rest"
+	"github.com/pydio/cells/v4/common/server/middleware"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 )
 
 var (

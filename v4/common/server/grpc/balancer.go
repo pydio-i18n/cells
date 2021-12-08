@@ -1,11 +1,16 @@
 package grpc
 
 import (
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"fmt"
+	"math/rand"
+	"strings"
+	"sync"
+
+	"github.com/pydio/cells/v4/common/service/context/ckeys"
+
 	"google.golang.org/grpc/balancer"
 	"google.golang.org/grpc/balancer/base"
-	"math/rand"
-	"sync"
+	"google.golang.org/grpc/metadata"
 )
 
 const name = "lb"
@@ -52,12 +57,18 @@ type rrPicker struct {
 
 type rrPickerConns struct {
 	subConns []balancer.SubConn
-	mu   sync.Mutex
-	next int
+	mu       sync.Mutex
+	next     int
 }
 
 func (p *rrPicker) Pick(i balancer.PickInfo) (balancer.PickResult, error) {
-	serviceName := servicecontext.GetServiceName(i.Ctx)
+	var serviceName string
+	if md, o := metadata.FromOutgoingContext(i.Ctx); o {
+		serviceName = strings.Join(md.Get(ckeys.TargetServiceName), "")
+	}
+	if serviceName == "" {
+		return balancer.PickResult{}, fmt.Errorf("cannot find targetName in context")
+	}
 	pc, ok := p.subConns[serviceName]
 	if !ok {
 		return balancer.PickResult{}, balancer.ErrNoSubConnAvailable
