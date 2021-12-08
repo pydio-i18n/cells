@@ -58,6 +58,7 @@ func init() {
 			service.Tag(common.ServiceTagGateway),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceChat, []string{}),
 			service.Description("WebSocket server pushing event to the clients"),
+			service.Fork(true),
 			service.WithHTTP(func(ctx context.Context, mux *http.ServeMux) error {
 				ws = websocket.NewWebSocketHandler(ctx)
 				chat = websocket.NewChatHandler(ctx)
@@ -73,7 +74,7 @@ func init() {
 
 				return nil
 			}),
-			service.Fork(true),
+
 			/*
 				service.AfterStart(func(_ service.Service) error {
 					brok := defaults.Broker()

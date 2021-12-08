@@ -3,13 +3,10 @@ package generic
 import (
 	"context"
 	"github.com/pydio/cells/v4/common/server"
-	"net"
 )
 
 type Server struct {
-	*server.ServerImpl
-
-	ctx      context.Context
+	cancel      context.CancelFunc
 	handlers []func() error
 }
 
@@ -18,59 +15,38 @@ type Handler interface {
 	Stop() error
 }
 
-func New(ctx context.Context) *Server {
-	return &Server{
-		ctx: ctx,
-		ServerImpl: &server.ServerImpl{},
-	}
+func New(ctx context.Context) server.Server {
+	ctx, cancel := context.WithCancel(ctx)
+	return server.NewServer(ctx, &Server{
+		cancel: cancel,
+	})
 }
 
 func (s *Server) RegisterHandler(h Handler) {
 	s.Handle(h.Start)
-	s.RegisterAfterServe(h.Stop)
 }
 
 func (s *Server) Handle(h func() error) {
 	s.handlers = append(s.handlers, h)
 }
 
-func (s *Server) Serve(l net.Listener) error {
-	if err := s.BeforeServe(); err != nil {
-		return err
-	}
-
-	errCh := make(chan error, 1)
-
+func (s *Server) Serve() error {
 	go func() {
-		defer close(errCh)
+		defer s.cancel()
 
 		for _, handler := range s.handlers {
 			go handler()
 		}
-
-
-		/* TODO improve that */
-		if err := s.BeforeStop(); err != nil {
-			errCh <- err
-		}
-
-
-
-		if err := s.AfterStop(); err != nil {
-			errCh <- err
-		}
 	}()
 
-	if err := s.AfterServe(); err != nil {
-		return err
-	}
-
-	err := <-errCh
-
-	return err
+	return nil
 }
 
-func (s *Server) Id() string {
+func (s *Server) Stop() error {
+	return nil
+}
+
+func (s *Server) Name() string {
 	return "testgeneric"
 }
 

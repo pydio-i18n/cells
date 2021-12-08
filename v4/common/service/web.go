@@ -4,15 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/pydio/cells/v4/common/config/runtime"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"net/http"
 	"reflect"
 	"strings"
 	"sync"
 
 	"github.com/pydio/cells/v4/common/server/middleware"
-
-	"github.com/pydio/cells/v4/common/server"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 
 	"github.com/emicklei/go-restful"
 	"github.com/go-openapi/loads"
@@ -67,12 +66,15 @@ func getWebMiddlewares() []func(handler http.Handler) http.Handler {
 // WithWeb returns a web handler
 func WithWeb(handler func() WebHandler) ServiceOption {
 	return func(o *ServiceOptions) {
-		ctx := o.Context
+		// Making sure the runtime is correct
+		if o.Fork && !runtime.IsFork() {
+			return
+		}
 
 		o.Server = servicecontext.GetServer(o.Context, "http")
 		o.serverStart = func() error {
 			var mux *http.ServeMux
-			if !o.Server.(server.Converter).As(&mux) {
+			if !o.Server.As(&mux) {
 				return fmt.Errorf("server is not a mux")
 			}
 
@@ -87,6 +89,8 @@ func WithWeb(handler func() WebHandler) ServiceOption {
 			// svc.Init(
 			// 	micro.Metadata(registry.BuildServiceMeta()),
 			// )
+
+			ctx := o.Context
 
 			rootPath := "/a/" + strings.TrimPrefix(o.Name, common.ServiceRestNamespace_)
 			log.Logger(ctx).Info("starting", zap.String("service", o.Name), zap.String("hook router to", rootPath))

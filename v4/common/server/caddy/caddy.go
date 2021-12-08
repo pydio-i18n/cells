@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"html/template"
-	"net"
 	"net/http"
 	"net/http/pprof"
 	"reflect"
@@ -46,10 +45,7 @@ const (
 )
 
 type Server struct {
-	ctx context.Context
-
 	*http.ServeMux
-	*server.ServerImpl
 	Confs []byte
 }
 
@@ -114,44 +110,18 @@ func New(ctx context.Context, dir string) (server.Server, error) {
 		return nil, err
 	}
 
-	return &Server{
-		ctx: ctx,
+	return server.NewServer(ctx, &Server{
 		ServeMux: srvMUX,
 		Confs: confs,
-		ServerImpl: &server.ServerImpl{},
-	}, nil
+	}), nil
 }
 
-func (s *Server) Serve(l net.Listener) error {
-	if err := s.BeforeServe(); err != nil {
-		return err
-	}
+func (s *Server) Serve() error {
+	return caddy.Load(s.Confs, true)
+}
 
-	if err := caddy.Load(s.Confs, true); err != nil {
-		return err
-	}
-
-	if err := s.AfterServe(); err != nil {
-		return err
-	}
-
-	select{
-	case <-s.ctx.Done():
-	}
-
-	if err := s.BeforeStop(); err != nil {
-		return err
-	}
-
-	if err := caddy.Stop(); err != nil {
-		return err
-	}
-
-	if err := s.AfterStop(); err != nil {
-		return err
-	}
-
-	return nil
+func (s *Server) Stop() error {
+	return caddy.Stop()
 }
 
 func (s *Server) Address() []string{
@@ -167,8 +137,8 @@ func (s *Server) Endpoints() []string {
 	return endpoints
 }
 
-func (s *Server) Id() string {
-	return "testhttp"
+func (s *Server) Name() string {
+	return "testcaddy"
 }
 
 func (s *Server) Metadata() map[string]string {

@@ -11,13 +11,13 @@ import (
 )
 
 type Server struct {
+	cancel context.CancelFunc
 	net.Listener
 	*http.ServeMux
 	*http.Server
-	*server.ServerImpl
 }
 
-func New() server.Server {
+func New(ctx context.Context) server.Server {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/debug/pprof/", pprof.Index)
 	mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
@@ -28,14 +28,16 @@ func New() server.Server {
 	srv := &http.Server{}
 	srv.Handler = mux
 
-	return &Server{
+	ctx, cancel := context.WithCancel(ctx)
+
+	return server.NewServer(ctx, &Server{
+		cancel: cancel,
 		ServeMux: mux,
 		Server:     srv,
-		ServerImpl: &server.ServerImpl{},
-	}
+	})
 }
 
-func (s *Server) Serve(l net.Listener) error {
+func (s *Server) Serve() error {
 	lis, err := net.Listen("tcp", viper.GetString("http.address"))
 	if err != nil {
 		return err
@@ -44,38 +46,20 @@ func (s *Server) Serve(l net.Listener) error {
 
 	s.Listener = lis
 
-	if err := s.BeforeServe(); err != nil {
-		return err
-	}
-
-	errCh := make(chan error, 1)
-
 	go func() {
-		defer close(errCh)
+		defer s.cancel()
 
 		if err := s.Server.Serve(lis); err != nil {
-			errCh <- err
+			// TODO v4 log or summat
 		}
 	}()
 
-	if err := s.AfterServe(); err != nil {
-		return err
-	}
+	return nil
+}
 
-	err = <-errCh
-
-	if err := s.BeforeStop(); err != nil {
-		errCh <- err
-	}
-
-	// todo v4 - probably pass it the context initially
-	s.Server.Shutdown(context.TODO())
-
-	if err := s.AfterStop(); err != nil {
-		errCh <- err
-	}
-
-	return err
+func (s *Server) Stop() error {
+	// Return initial context ?
+	return s.Server.Shutdown(context.TODO())
 }
 
 func (s *Server) Address() []string{
@@ -94,7 +78,7 @@ func (s *Server) Endpoints() []string {
 	return endpoints
 }
 
-func (s *Server) Id() string {
+func (s *Server) Name() string {
 	return "testhttp"
 }
 

@@ -36,6 +36,8 @@ type Service interface {
 	Stop() error
 }
 
+type Stopper func() error
+
 func NewService(opts ...ServiceOption) Service {
 	s := &service{
 		opts: newOptions(append(mandatoryOptions, opts...)...),
@@ -46,10 +48,6 @@ func NewService(opts ...ServiceOption) Service {
 	s.opts.Context = servicecontext.WithServiceName(s.opts.Context, name)
 
 	if !runtime.IsRequired(name) {
-		return nil
-	}
-
-	if s.opts.Fork && !runtime.IsFork() {
 		return nil
 	}
 

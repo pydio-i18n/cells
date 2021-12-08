@@ -12,7 +12,7 @@ const (
 	grpcPackage    = protogen.GoImportPath("google.golang.org/grpc")
 	statusPackage  = protogen.GoImportPath("google.golang.org/grpc/status")
 	codesPackage   = protogen.GoImportPath("google.golang.org/grpc/codes")
-	serviceContextPackage = protogen.GoImportPath("github.com/pydio/cells/v4/common/service/context")
+	metadataContextPackage = protogen.GoImportPath("google.golang.org/grpc/metadata")
 )
 
 // generateFile generates a _grpc.pb.go file containing gRPC service definitions.
@@ -91,23 +91,36 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 		g.P(method.Comments.Leading)
 		g.P("func (m ", multiServer, ") ",  serverSignature(g, method), " {")
 		if !method.Desc.IsStreamingClient() && !method.Desc.IsStreamingServer() {
+			// Get the metadata from the incoming context
+			g.P("md, ok := ", metadataContextPackage.Ident("FromIncomingContext"), "(ctx)")
+			g.P("if !ok {")
+			g.P("return nil, ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("FailedPrecondition"),", \"method ", method.GoName, " should have a context\")")
+			g.P("}")
 			g.P("for _, mm := range m {")
-			g.P("if mm.Name() == ", serviceContextPackage.Ident("GetServiceName"), "(ctx) {")
+			g.P("if mm.Name() == md.Get(\"targetName\")[0] {")
 			g.P("return mm.", method.GoName,"(ctx, r)")
 			g.P("}")
 			g.P("}")
 			g.P("return nil, ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("Unimplemented"),", \"method ", method.GoName, " not implemented\")")
 
 		} else if !method.Desc.IsStreamingClient() {
+			g.P("md, ok := ", metadataContextPackage.Ident("FromIncomingContext"), "(ctx)")
+			g.P("if !ok {")
+			g.P("return nil, ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("FailedPrecondition"),", \"method ", method.GoName, " should have a context\")")
+			g.P("}")
 			g.P("for _, mm := range m {")
-			g.P("if mm.Name() == ", serviceContextPackage.Ident("GetServiceName"), "(s.Context()) {")
+			g.P("if mm.Name() == md.Get(\"targetName\")[0] {")
 			g.P("return mm.", method.GoName,"(r, s)")
 			g.P("}")
 			g.P("}")
 			g.P("return ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("Unimplemented"),", \"method ", method.GoName, " not implemented\")")
 		} else {
+			g.P("md, ok := ", metadataContextPackage.Ident("FromIncomingContext"), "(ctx)")
+			g.P("if !ok {")
+			g.P("return ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("FailedPrecondition"),", \"method ", method.GoName, " should have a context\")")
+			g.P("}")
 			g.P("for _, mm := range m {")
-			g.P("if mm.Name() == ", serviceContextPackage.Ident("GetServiceName"), "(s.Context()) {")
+			g.P("if mm.Name() == md.Get(\"targetName\")[0] {")
 			g.P("return mm.", method.GoName,"(s)")
 			g.P("}")
 			g.P("}")
