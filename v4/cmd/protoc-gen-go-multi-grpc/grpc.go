@@ -106,7 +106,7 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 		} else if !method.Desc.IsStreamingClient() {
 			g.P("md, ok := ", metadataContextPackage.Ident("FromIncomingContext"), "(ctx)")
 			g.P("if !ok {")
-			g.P("return nil, ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("FailedPrecondition"),", \"method ", method.GoName, " should have a context\")")
+			g.P("return ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("FailedPrecondition"),", \"method ", method.GoName, " should have a context\")")
 			g.P("}")
 			g.P("for _, mm := range m {")
 			g.P("if mm.Name() == md.Get(\"targetName\")[0] {")
