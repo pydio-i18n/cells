@@ -5,6 +5,8 @@ type Node interface{
 	Address() []string
 	Endpoints() []string
 	Metadata() map[string]string
+
+	As(interface{}) bool
 }
 
 type Endpoint interface {

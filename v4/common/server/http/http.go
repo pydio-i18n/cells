@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"github.com/pydio/cells/v4/common/server"
 	"github.com/spf13/viper"
 	"net"
@@ -79,7 +80,7 @@ func (s *Server) Endpoints() []string {
 }
 
 func (s *Server) Name() string {
-	return "testhttp"
+	return "http-" + uuid.NewString()
 }
 
 func (s *Server) Metadata() map[string]string {

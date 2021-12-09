@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"net"
 
 	"github.com/spf13/viper"
@@ -62,10 +63,11 @@ func (s *Server) Stop() error {
 	s.Server.Stop()
 
 	return s.Listener.Close()
+
 }
 
 func (s *Server) Name() string {
-	return "testgrpc"
+	return "grpc-" + uuid.NewString()
 }
 
 func (s *Server) Metadata() map[string]string {
@@ -73,6 +75,9 @@ func (s *Server) Metadata() map[string]string {
 }
 
 func (s *Server) Address() []string {
+	if s.Listener == nil {
+		return []string{}
+	}
 	return []string{s.Listener.Addr().String()}
 }
 

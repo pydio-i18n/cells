@@ -12,4 +12,6 @@ type Service interface{
 	IsGeneric() bool
 	IsGRPC() bool
 	IsREST() bool
+	
+	As(interface{}) bool
 }

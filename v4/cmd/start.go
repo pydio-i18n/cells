@@ -16,11 +16,14 @@ package cmd
 
 import (
 	"fmt"
+
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/registry"
-	"github.com/pydio/cells/v4/common/registry/middleware"
 	"github.com/pydio/cells/v4/common/server"
 	"github.com/pydio/cells/v4/common/server/caddy"
 	servercontext "github.com/pydio/cells/v4/common/server/context"
@@ -28,8 +31,6 @@ import (
 	"github.com/pydio/cells/v4/common/server/grpc"
 	"github.com/pydio/cells/v4/common/server/http"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -37,7 +38,7 @@ var (
 	FilterStartExclude []string
 )
 
-type serverer interface{
+type serverer interface {
 	Serve() error
 }
 
@@ -78,10 +79,36 @@ to quickly create a Cobra application.`,
 			return err
 		}
 
-		// TODO v4 - move that to the registry with options
-		reg = middleware.NewNodeRegistry(reg)
 		ctx = servercontext.WithRegistry(ctx, reg)
 		ctx = servicecontext.WithRegistry(ctx, reg)
+
+		watcher, err := reg.Watch()
+		if err != nil {
+			return err
+		}
+
+		go func() {
+			for {
+				w, _ := watcher.Next()
+
+				if w.Action() == "start_request" {
+					var node registry.Node
+
+					if w.Item().As(&node) {
+						serverType, ok := node.Metadata()["type"]
+						if !ok {
+							continue
+						}
+
+						fmt.Println("Starting ", node.Name())
+						switch serverType {
+						case "grpc":
+							grpc.New(ctx)
+						}
+					}
+				}
+			}
+		}()
 
 		srvGRPC := grpc.New(ctx)
 		var srvHTTP server.Server
@@ -99,16 +126,14 @@ to quickly create a Cobra application.`,
 		}
 		srvGeneric := generic.New(ctx)
 
+		ctx = servicecontext.WithRegistry(ctx, reg)
 		ctx = servicecontext.WithServer(ctx, "grpc", srvGRPC)
 		ctx = servicecontext.WithServer(ctx, "http", srvHTTP)
 		ctx = servicecontext.WithServer(ctx, "generic", srvGeneric)
 
 		plugins.Init(ctx, "main")
 
-		var rn registry.NodeRegistry
-		reg.As(&rn)
-
-		nodes, _ := rn.ListNodes()
+		nodes, _ := reg.List()
 		for _, node := range nodes {
 			srv, ok := node.(serverer)
 			if !ok {

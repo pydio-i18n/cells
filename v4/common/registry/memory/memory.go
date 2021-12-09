@@ -2,6 +2,7 @@ package memory
 
 import (
 	"context"
+	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"net/url"
 	"os"
 	"sync"
@@ -29,20 +30,23 @@ func init() {
 func (o *URLOpener) OpenURL(ctx context.Context, u *url.URL) (registry.Registry, error) {
 	if u.Query().Get("cache") == "shared" {
 		sharedOnce.Do(func() {
-			shared = newMemory()
+			shared = registry.NewRegistry(newMemory())
 		})
 
 		return shared, nil
 	}
-	return newMemory(), nil
+	return registry.NewRegistry(newMemory()), nil
 }
 
 type memory struct {
-	services []registry.Service
-	nodes    []registry.Node
+	register []registry.Item
 
 	sync.RWMutex
 	watchers map[string]*watcher
+}
+
+type options struct {
+	itemType int
 }
 
 func newMemory() registry.Registry {
@@ -51,53 +55,53 @@ func newMemory() registry.Registry {
 	}
 }
 
-func (m *memory) StartService(name string) error {
-	s, err := m.GetService(name)
-	if err != nil {
-		return err
-	}
-
-	return s.Start()
+func (m *memory) Start(item registry.Item) error {
+	go m.sendEvent(&result{action: "start_request", item: item})
+	return nil
 }
 
-func (m *memory) StopService(name string) error {
-	s, err := m.GetService(name)
-	if err != nil {
-		return err
-	}
+func (m *memory) Stop(item registry.Item) error {
+	go m.sendEvent(&result{action: "stop_request", item: item})
 
-	return s.Stop()
+	return nil
 }
 
-func (m *memory) RegisterService(service registry.Service) error {
-	for k, v := range m.services {
-		if v.Name() == service.Name() {
-			// TODO v4 merge nodes here
-			m.services[k] = service
-			go m.sendEvent(&result{action: "update", service: service})
+func (m *memory) Register(item registry.Item) error {
+	// Then register all services
+	for k, v := range m.register {
+		if v.Name() == item.Name() {
+			m.register[k] = item
+			go m.sendEvent(&result{action: "update", item: item})
 			return nil
 		}
 	}
 
 	// not found - adding it
-	go m.sendEvent(&result{action: "create", service: service})
-	m.services = append(m.services, service)
+	go m.sendEvent(&result{action: "create", item: item})
+	m.register = append(m.register, item)
 
 	return nil
 }
 
-func (m *memory) DeregisterService(service registry.Service) error {
-	for k, v := range m.services {
-		if service.Name() == v.Name() {
-			m.services = append(m.services[:k], m.services[k+1:]...)
-			go m.sendEvent(&result{action: "delete", service: service})
+func (m *memory) Deregister(item registry.Item) error {
+	for k, v := range m.register {
+		if item.Name() == v.Name() {
+			m.register = append(m.register[:k], m.register[k+1:]...)
+			go m.sendEvent(&result{action: "delete", item: item})
 		}
 	}
 	return nil
 }
 
-func (m *memory) GetService(s string) (registry.Service, error) {
-	for _, v := range m.services {
+func (m *memory) Get(s string, opts ...registry.Option) (registry.Item, error) {
+	o := registry.Options{}
+	for _, opt := range opts {
+		if err := opt(&o); err != nil {
+			return nil, err
+		}
+	}
+
+	for _, v := range m.register {
 		if s == v.Name() {
 			return v, nil
 		}
@@ -105,13 +109,39 @@ func (m *memory) GetService(s string) (registry.Service, error) {
 	return nil, os.ErrNotExist
 }
 
-func (m *memory) ListServices() ([]registry.Service, error) {
-	return m.services, nil
+func (m *memory) List(opts ...registry.Option) ([]registry.Item, error) {
+	var items []registry.Item
+
+	o := registry.Options{}
+	for _, opt := range opts {
+		if err := opt(&o); err != nil {
+			return nil, err
+		}
+	}
+
+	if o.Type == pb.ItemType_ALL {
+		return m.register, nil
+	}
+
+	for _, item := range m.register {
+		switch o.Type {
+		case pb.ItemType_SERVICE:
+			if service, ok := item.(registry.Service); ok {
+				items = append(items, service)
+			}
+		case pb.ItemType_NODE:
+			if node, ok := item.(registry.Node); ok {
+				items = append(items, node)
+			}
+		}
+	}
+
+	return items, nil
 }
 
-func (m *memory) WatchServices(opts ...registry.WatchOption) (registry.Watcher, error) {
+func (m *memory) Watch(opts ...registry.Option) (registry.Watcher, error) {
 	// parse the options, fallback to the default domain
-	var wo registry.WatchOptions
+	var wo registry.Options
 	for _, o := range opts {
 		o(&wo)
 	}

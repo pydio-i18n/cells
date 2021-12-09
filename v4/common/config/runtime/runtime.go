@@ -26,6 +26,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+// TODO v4 : rethink how the runitme is defined (cmd, config, ...)
+
 // IsFork checks if the runtime is originally a fork of a different process
 func IsFork() bool {
 	return viper.GetBool("is_fork")

@@ -23,9 +23,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/registry/middleware"
-	"github.com/pydio/cells/v4/common/server/caddy"
-	servercontext "github.com/pydio/cells/v4/common/server/context"
 	"net/url"
 	"os"
 	"os/exec"
@@ -34,23 +31,23 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/pydio/cells/v4/common/registry"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
-
 	"github.com/manifoldco/promptui"
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
+
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/install"
-	"github.com/pydio/cells/v4/common/utils/statics"
-	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
-
-	// "github.com/pydio/cells/v4/common/registry"
+	"github.com/pydio/cells/v4/common/registry"
+	"github.com/pydio/cells/v4/common/server/caddy"
+	servercontext "github.com/pydio/cells/v4/common/server/context"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/metrics"
 	unet "github.com/pydio/cells/v4/common/utils/net"
+	"github.com/pydio/cells/v4/common/utils/statics"
 	"github.com/pydio/cells/v4/discovery/install/assets"
 )
 
@@ -71,7 +68,7 @@ const (
 		request_header Host {host}
 		request_header X-Real-IP {remote}
 	}
-	
+
 	{{if .TLS}}tls {{.TLS}}{{end}}
 	{{if .TLSCert}}tls "{{.TLSCert}}" "{{.TLSKey}}"{{end}}
 }
@@ -397,13 +394,11 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 	if err != nil {
 		return
 	}
-	// TODO v4 - move that to the registry with options
-	reg = middleware.NewNodeRegistry(reg)
 
 	ctx = servercontext.WithRegistry(ctx, reg)
 	ctx = servicecontext.WithRegistry(ctx, reg)
 
-	srvHTTP, err  := caddy.New(ctx, dir)
+	srvHTTP, err := caddy.New(ctx, dir)
 	if err != nil {
 		panic(err)
 	}
@@ -415,47 +410,47 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 	plugins.Init(ctx, "install")
 
 	/*
-	// Creating temporary caddy file
-	sites, err := config.LoadSites()
-	if err != nil {
-		cmd.Println("Could not start with fast restart:", err)
-		os.Exit(1)
-	}
-	var er error
-	caddyconf.Sites, er = caddy.SitesToCaddyConfigs(sites)
-	if er != nil {
-		cmd.Println("Could not convert sites to caddy confs", er)
-	}
-	caddyconf.WebRoot = dir
+		// Creating temporary caddy file
+		sites, err := config.LoadSites()
+		if err != nil {
+			cmd.Println("Could not start with fast restart:", err)
+			os.Exit(1)
+		}
+		var er error
+		caddyconf.Sites, er = caddy.SitesToCaddyConfigs(sites)
+		if er != nil {
+			cmd.Println("Could not convert sites to caddy confs", er)
+		}
+		caddyconf.WebRoot = dir
 
-	caddy.Enable(caddyfile, play)
+		caddy.Enable(caddyfile, play)
 
-	restartDone, err := caddy.StartWithFastRestart()
-	if err != nil {
-		cmd.Println("Could not start with fast restart:", err)
-		os.Exit(1)
-	}*/
+		restartDone, err := caddy.StartWithFastRestart()
+		if err != nil {
+			cmd.Println("Could not start with fast restart:", err)
+			os.Exit(1)
+		}*/
 
 	cmd.Println("")
 	cmd.Println(promptui.Styler(promptui.BGMagenta, promptui.FGWhite)("Installation Server is starting..."))
 	cmd.Println(promptui.Styler(promptui.BGMagenta, promptui.FGWhite)("Listening to: " + proxyConf.GetBinds()[0]))
 	cmd.Println("")
 
-	unSubscriber, err := broker.Subscribe(common.TopicProxyRestarted, func(p broker.Message) error {
-
-		url := proxyConf.ReverseProxyURL
-		if url == "" {
-			url = proxyConf.GetDefaultBindURL()
-		}
-
-		cmd.Println("")
-		cmd.Printf(promptui.Styler(promptui.BGMagenta, promptui.FGWhite)("Opening URL ") + promptui.Styler(promptui.BGMagenta, promptui.FGWhite, promptui.FGUnderline, promptui.FGBold)(url) + promptui.Styler(promptui.BGMagenta, promptui.FGWhite)(" in your browser. Please copy/paste it if the browser is not on the same machine."))
-		cmd.Println("")
-
-		open(url)
-
-		return nil
-	})
+	//unSubscriber, err := broker.Subscribe(common.TopicProxyRestarted, func(p broker.Message) error {
+	//
+	//	url := proxyConf.ReverseProxyURL
+	//	if url == "" {
+	//		url = proxyConf.GetDefaultBindURL()
+	//	}
+	//
+	//	cmd.Println("")
+	//	cmd.Printf(promptui.Styler(promptui.BGMagenta, promptui.FGWhite)("Opening URL ") + promptui.Styler(promptui.BGMagenta, promptui.FGWhite, promptui.FGUnderline, promptui.FGBold)(url) + promptui.Styler(promptui.BGMagenta, promptui.FGWhite)(" in your browser. Please copy/paste it if the browser is not on the same machine."))
+	//	cmd.Println("")
+	//
+	//	open(url)
+	//
+	//	return nil
+	//})
 
 	if err != nil {
 		cmd.Print("Could not subscribe to broker: ", err)
@@ -479,7 +474,7 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 
 	}()
 
-	defer unSubscriber()
+	// defer unSubscriber()
 
 	select {
 	case <-instanceDone:

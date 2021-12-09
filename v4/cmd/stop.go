@@ -15,9 +15,7 @@
 package cmd
 
 import (
-	"github.com/pydio/cells/v4/common/registry"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"os"
 )
 
@@ -54,14 +52,14 @@ EXAMPLE
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
-		if err != nil {
-			return err
-		}
-
-		if err := reg.StopService(args[0]); err != nil {
-			return err
-		}
+		//reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
+		//if err != nil {
+		//	return err
+		//}
+		//
+		//if err := reg.Stop(args[0]); err != nil {
+		//	return err
+		//}
 
 		return nil
 	},

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"html/template"
 	"net/http"
 	"net/http/pprof"
@@ -138,7 +139,7 @@ func (s *Server) Endpoints() []string {
 }
 
 func (s *Server) Name() string {
-	return "testcaddy"
+	return "caddy-" + uuid.NewString()
 }
 
 func (s *Server) Metadata() map[string]string {

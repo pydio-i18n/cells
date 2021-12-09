@@ -21,67 +21,82 @@ func (h *Handler) Name() string {
 	return common.ServiceGrpcNamespace_ + common.ServiceRegistry
 }
 
-func (h *Handler) StartService(ctx context.Context, req *pb.StartServiceRequest) (*pb.EmptyResponse, error) {
-	if err := h.reg.StartService(req.Service); err != nil {
+
+func (h *Handler) Start(ctx context.Context, item *pb.Item) (*pb.EmptyResponse, error) {
+	if err := h.reg.Start(service.ToItem(item)); err != nil {
 		return nil, err
 	}
 
 	return &pb.EmptyResponse{}, nil
 }
-func (h *Handler) StopService(ctx context.Context, req *pb.StopServiceRequest) (*pb.EmptyResponse, error) {
-	if err := h.reg.StopService(req.Service); err != nil {
+func (h *Handler) Stop(ctx context.Context, item *pb.Item) (*pb.EmptyResponse, error) {
+	if err := h.reg.Stop(service.ToItem(item)); err != nil {
 		return nil, err
 	}
 
 	return &pb.EmptyResponse{}, nil
 }
-func (h *Handler) GetService(ctx context.Context, req *pb.GetServiceRequest) (*pb.GetServiceResponse, error) {
-	resp := &pb.GetServiceResponse{}
+func (h *Handler) Get(ctx context.Context, req *pb.GetRequest) (*pb.GetResponse, error) {
+	resp := &pb.GetResponse{}
 
-	ss, err := h.reg.GetService(req.GetService())
+	t := pb.ItemType_ALL
+	if req.Options != nil {
+		t = req.Options.Type
+	}
+
+	item, err := h.reg.Get(
+		req.GetName(),
+		registry.WithType(t),
+	)
 	if err != nil {
 		return nil, err
 	}
 
-	resp.Service = service.ToProtoService(ss)
+	resp.Item = service.ToProtoItem(item)
 
 	return resp, nil
 }
-func (h *Handler) RegisterService(ctx context.Context, s *pb.Service) (*pb.EmptyResponse, error) {
-	if err := h.reg.RegisterService(service.ToService(s)); err != nil { // , mregistry.RegisterTTL(time.Duration(s.GetOptions().GetTtl())*time.Second)); err != nil {
+func (h *Handler) Register(ctx context.Context, item *pb.Item) (*pb.EmptyResponse, error) {
+	if err := h.reg.Register(service.ToItem(item)); err != nil { // , mregistry.RegisterTTL(time.Duration(s.GetOptions().GetTtl())*time.Second)); err != nil {
 		return nil, err
 	}
 
 	return &pb.EmptyResponse{}, nil
 }
 
-func (h *Handler) DeregisterService(ctx context.Context, s *pb.Service) (*pb.EmptyResponse, error) {
-	if err := h.reg.DeregisterService(service.ToService(s)); err != nil {
+func (h *Handler) Deregister(ctx context.Context, item *pb.Item) (*pb.EmptyResponse, error) {
+	if err := h.reg.Deregister(service.ToItem(item)); err != nil {
 		return nil, err
 	}
 
 	return &pb.EmptyResponse{}, nil
 }
 
-func (h *Handler) ListServices(ctx context.Context, req *pb.ListServicesRequest) (*pb.ListServicesResponse, error) {
-	resp := &pb.ListServicesResponse{}
+func (h *Handler) List(ctx context.Context, req *pb.ListRequest) (*pb.ListResponse, error) {
+	resp := &pb.ListResponse{}
 
-	ss, err := h.reg.ListServices()
+	t := pb.ItemType_ALL
+	if req.Options != nil {
+		t = req.Options.Type
+	}
+	ss, err := h.reg.List(
+		registry.WithType(t),
+	)
 	if err != nil {
 		return nil, err
 	}
 
-	var services []*pb.Service
+	var items []*pb.Item
 	for _, s := range ss {
-		services = append(services, service.ToProtoService(s))
+		items = append(items, service.ToProtoItem(s))
 	}
 
-	resp.Services = services
+	resp.Items = items
 
 	return resp, nil
 }
 
-func (h *Handler) WatchServices(req *pb.WatchServicesRequest, stream pb.Registry_WatchServicesServer) error {
+func (h *Handler) Watch(req *pb.WatchRequest, stream pb.Registry_WatchServer) error {
 
 	//TODO v4 options
 	//var opts []registry.WatchOption
@@ -89,7 +104,7 @@ func (h *Handler) WatchServices(req *pb.WatchServicesRequest, stream pb.Registry
 	//	opts = append(opts, registry.WatchService(s))
 	//}
 
-	w, err := h.reg.WatchServices()
+	w, err := h.reg.Watch()
 	if err != nil {
 		return err
 	}
@@ -102,7 +117,7 @@ func (h *Handler) WatchServices(req *pb.WatchServicesRequest, stream pb.Registry
 
 		stream.Send(&pb.Result{
 			Action:  res.Action(),
-			Service: service.ToProtoService(res.Service()),
+			Item: service.ToProtoItem(res.Item()),
 		})
 	}
 }

@@ -135,12 +135,16 @@ func init() {
 func getTagsPerType(reg registry.Registry, f func(s registry.Service) bool) map[string]*Tags {
 	tags := make(map[string]*Tags)
 
-	allServices, err := reg.ListServices()
+	allServices, err := reg.List()
 	if err != nil {
 		return tags
 	}
 
-	for _, s := range allServices {
+	for _, i := range allServices {
+		var s registry.Service
+
+		i.As(&s)
+
 		name := s.Name()
 
 		if f(s) {

@@ -34,6 +34,7 @@ var (
 type Service interface {
 	Start() error
 	Stop() error
+	As(i interface{}) bool
 }
 
 type Stopper func() error
@@ -58,7 +59,7 @@ func NewService(opts ...ServiceOption) Service {
 		bs.RegisterBeforeServe(s.Start)
 		bs.RegisterAfterServe(func() error {
 			// Register service again to update nodes information
-			if err := reg.RegisterService(s); err != nil {
+			if err := reg.Register(s); err != nil {
 				return err
 			}
 			return nil
@@ -66,9 +67,13 @@ func NewService(opts ...ServiceOption) Service {
 		bs.RegisterBeforeStop(s.Stop)
 	}
 
-	reg.RegisterService(s)
+	reg.Register(s)
 
 	return s
+}
+
+func (s *service) As(i interface{}) bool {
+	return false
 }
 
 func (s *service) Start() error {
