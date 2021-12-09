@@ -3,18 +3,19 @@ package mux
 import (
 	"context"
 	"fmt"
-	"github.com/caddyserver/caddy/v2"
-	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
-	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
-	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
-	"github.com/pydio/cells/v4/common/registry"
-	servercontext "github.com/pydio/cells/v4/common/server/context"
 	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"regexp"
 	"strings"
+
+	caddy "github.com/caddyserver/caddy/v2"
+	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
+	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
+	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
+	"github.com/pydio/cells/v4/common/registry"
+	servercontext "github.com/pydio/cells/v4/common/server/context"
 )
 
 func RegisterServerMux(ctx context.Context, s *http.ServeMux) {
@@ -27,7 +28,7 @@ func RegisterServerMux(ctx context.Context, s *http.ServeMux) {
 	httpcaddyfile.RegisterHandlerDirective("mux", parseCaddyfile)
 }
 
-type Middleware struct{
+type Middleware struct {
 	r registry.NodeRegistry
 	s *http.ServeMux
 }
@@ -62,6 +63,9 @@ func (m Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 
 	for _, node := range nodes {
 		for _, endpoint := range node.Endpoints() {
+			if endpoint == "/" {
+				continue
+			}
 			ok, err := regexp.Match(endpoint, []byte(r.URL.Path))
 			if err != nil {
 				return err
@@ -80,7 +84,7 @@ func (m Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 		}
 	}
 
-	// no matching filter
+	// no matching filter found
 	return next.ServeHTTP(w, r)
 }
 

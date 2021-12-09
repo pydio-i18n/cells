@@ -55,7 +55,9 @@ func (s *Server) Serve() error {
 	go func() {
 		for scannerErr.Scan() {
 			text := strings.TrimRight(scannerOut.Text(), "\n")
-			log.Logger(s.ctx).Error(text)
+			if text != "" {
+				log.Logger(s.ctx).Error(text)
+			}
 		}
 	}()
 

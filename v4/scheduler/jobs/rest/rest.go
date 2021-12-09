@@ -22,8 +22,9 @@ package rest
 
 import (
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/emicklei/go-restful"
 	"go.uber.org/zap"
@@ -100,7 +101,6 @@ func (s *JobsHandler) UserListJobs(req *restful.Request, rsp *restful.Response) 
 		service.RestErrorDetect(req, rsp, err)
 		return
 	}
-	defer streamer.CloseSend()
 	for {
 		resp, e := streamer.Recv()
 		if e != nil {

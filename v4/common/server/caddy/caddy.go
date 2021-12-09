@@ -9,7 +9,7 @@ import (
 	"net/http/pprof"
 	"reflect"
 
-	"github.com/caddyserver/caddy/v2"
+	caddy "github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig"
 	_ "github.com/caddyserver/caddy/v2/modules/standard"
 
@@ -29,14 +29,34 @@ const (
 {{$SiteWebRoot := .WebRoot}}
 {{range .Binds}}{{.}} {{end}} {
 	root * "{{if $SiteWebRoot}}{{$SiteWebRoot}}{{else}}{{$.WebRoot}}{{end}}"
-	file_server
+
+	@grpc-content {
+		header Content-type *application/grpc*
+	}
+	@list_buckets {
+		path / /probe-bucket-sign*
+		header Authorization *AWS4-HMAC-SHA256*
+	}
 
 	route /* {
-		mux
 		request_header Host {host}
 		request_header X-Real-IP {remote}
+
+		# Special rewrite for grpc requests (always sent on root path)
+		rewrite @grpc-content /grpc{path}
+
+		# Special rewrite for s3 list buckets (always sent on root path)
+		rewrite @list_buckets /io{path}
+
+		# Apply mux
+		mux
+
+		# If mux did not find endpoint, redirect all to root and re-apply mux
+		rewrite /* /
+		mux
 	}
-	
+
+
 	{{if .TLS}}tls {{.TLS}}{{end}}
 	{{if .TLSCert}}tls "{{.TLSCert}}" "{{.TLSKey}}"{{end}}
 }
@@ -88,10 +108,10 @@ func New(ctx context.Context, dir string) (server.Server, error) {
 	}
 
 	buf := bytes.NewBuffer([]byte{})
-	if err := tmpl.Execute(buf, struct{
-		Sites []SiteConf
+	if err := tmpl.Execute(buf, struct {
+		Sites   []SiteConf
 		WebRoot string
-	} {
+	}{
 		caddySites,
 		dir,
 	}); err != nil {
@@ -112,7 +132,7 @@ func New(ctx context.Context, dir string) (server.Server, error) {
 
 	return server.NewServer(ctx, &Server{
 		ServeMux: srvMUX,
-		Confs: confs,
+		Confs:    confs,
 	}), nil
 }
 
@@ -124,7 +144,7 @@ func (s *Server) Stop() error {
 	return caddy.Stop()
 }
 
-func (s *Server) Address() []string{
+func (s *Server) Address() []string {
 	return []string{}
 }
 
