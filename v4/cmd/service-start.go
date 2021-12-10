@@ -21,9 +21,9 @@ import (
 	"os"
 )
 
-// restartCmd represents the stop command
-var restartCmd = &cobra.Command{
-	Use:   "restart",
+// serviceStartCmd represents the stop command
+var serviceStartCmd = &cobra.Command{
+	Use:   "start",
 	Short: "List all available services and their statuses",
 	Long: `
 DESCRIPTION
@@ -59,16 +59,59 @@ EXAMPLE
 			return err
 		}
 
-		if err := reg.StartService(args[0]); err != nil {
-			return err
-		}
+		reg.Start(&mockService{})
 
 		return nil
 	},
 }
 
-func init() {
-	addRegistryFlags(restartCmd.Flags())
+var _ registry.Service = (*mockService)(nil)
 
-	RootCmd.AddCommand(restartCmd)
+type mockService struct {
+}
+
+func (s mockService) Name() string {
+	return "pydio.grpc.config"
+}
+
+func (s mockService) Version() string {
+	return ""
+}
+
+func (s mockService) Nodes() []registry.Node {
+	return []registry.Node{}
+}
+
+func (s mockService) Tags() []string {
+	return []string{}
+}
+
+func (s mockService) Start() error {
+	return nil
+}
+
+func (s mockService) Stop() error {
+	return nil
+}
+
+func (s mockService) IsGeneric() bool {
+	return false
+}
+
+func (s mockService) IsGRPC() bool {
+	return true
+}
+
+func (s mockService) IsREST() bool {
+	return false
+}
+
+func (s mockService) As(i interface{}) bool {
+	return false
+}
+
+func init() {
+	addRegistryFlags(serviceStartCmd.Flags())
+
+	serviceCmd.AddCommand(serviceStartCmd)
 }

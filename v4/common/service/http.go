@@ -20,7 +20,7 @@ func WithHTTP(f func(context.Context, *http.ServeMux) error) ServiceOption {
 		o.serverStart = func() error {
 			var mux *http.ServeMux
 			if !o.Server.As(&mux) {
-				return fmt.Errorf("server is not a mux")
+				return fmt.Errorf("server is not a mux ", o.Name)
 			}
 
 			return f(o.Context, mux)

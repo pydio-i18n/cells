@@ -12,7 +12,7 @@ import (
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
 		service.NewService(
-			service.Name(common.ServiceTestNamespace_+common.ServiceHealthCheck),
+			service.Name(common.ServiceWebNamespace_+common.ServiceHealthCheck),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagDiscovery),
 			service.Description("Service launching a test discovery server."),

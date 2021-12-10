@@ -16,20 +16,22 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/pydio/cells/v4/common/server/fork"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/plugins"
+	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
-	"github.com/pydio/cells/v4/common/registry/middleware"
 	"github.com/pydio/cells/v4/common/server"
-	"github.com/pydio/cells/v4/common/server/caddy"
 	servercontext "github.com/pydio/cells/v4/common/server/context"
 	"github.com/pydio/cells/v4/common/server/generic"
 	"github.com/pydio/cells/v4/common/server/grpc"
 	"github.com/pydio/cells/v4/common/server/http"
+	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -37,11 +39,7 @@ var (
 	FilterStartExclude []string
 )
 
-type serverer interface{
-	Serve() error
-}
-
-// startCmd represents the start command
+// StartCmd represents the start command
 var StartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "A brief description of your command",
@@ -73,53 +71,182 @@ to quickly create a Cobra application.`,
 
 		broker.Connect()
 
+		pluginsReg, err := registry.OpenRegistry(ctx, "memory:///")
+		if err != nil {
+			return err
+		}
+
 		reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
 		if err != nil {
 			return err
 		}
 
-		// TODO v4 - move that to the registry with options
-		reg = middleware.NewNodeRegistry(reg)
 		ctx = servercontext.WithRegistry(ctx, reg)
-		ctx = servicecontext.WithRegistry(ctx, reg)
+		ctx = servicecontext.WithRegistry(ctx, pluginsReg)
 
-		srvGRPC := grpc.New(ctx)
-		var srvHTTP server.Server
-		if !runtime.IsFork() {
-			if h, err := caddy.New(ctx, ""); err != nil {
+		/*
+			watcher, err := reg.Watch()
+			if err != nil {
 				return err
-			} else {
-				srvHTTP = h
-			}
-		} else {
-			srvHTTP = http.New(ctx)
-		}
-		if err != nil {
-			return err
-		}
-		srvGeneric := generic.New(ctx)
-
-		ctx = servicecontext.WithServer(ctx, "grpc", srvGRPC)
-		ctx = servicecontext.WithServer(ctx, "http", srvHTTP)
-		ctx = servicecontext.WithServer(ctx, "generic", srvGeneric)
-
-		plugins.Init(ctx, "main")
-
-		var rn registry.NodeRegistry
-		reg.As(&rn)
-
-		nodes, _ := rn.ListNodes()
-		for _, node := range nodes {
-			srv, ok := node.(serverer)
-			if !ok {
-				continue
 			}
 
 			go func() {
-				if err := srv.Serve(); err != nil {
-					fmt.Println(err)
+				for {
+					w, err := watcher.Next()
+					if err != nil {
+						fmt.Println("And the error is ? ", err)
+					}
+
+					if w.Action() == "start_request" {
+						fmt.Println("Received start request for ? ", w.Item().Name())
+						var node registry.Node
+
+						if w.Item().As(&node) {
+							serverType, ok := node.Metadata()["type"]
+							if !ok {
+								continue
+							}
+
+							fmt.Println("Starting ", node.Name())
+							switch serverType {
+							case "grpc":
+								grpc.New(ctx)
+							}
+						}
+
+						var sss registry.Service
+						if w.Item().As(&sss) {
+							ss, err := pluginsReg.Get(sss.Name(), registry.WithType(pb.ItemType_SERVICE))
+							if err != nil {
+								fmt.Println(err)
+								continue
+							}
+
+							var s service.Service
+							if ss.As(&s) {
+								opts := s.Options()
+
+								opts.Context = ctx
+
+								s.Start()
+							}
+						}
+					}
 				}
 			}()
+
+
+
+			srvGRPC := grpc.New(ctx)
+			var srvHTTP server.Server
+			if !runtime.IsFork() {
+				if h, err := caddy.New(ctx, ""); err != nil {
+					return err
+				} else {
+					srvHTTP = h
+				}
+			} else {
+				srvHTTP = http.New(ctx)
+			}
+			if err != nil {
+				return err
+			}
+			srvGeneric := generic.New(ctx)
+
+		*/
+
+		//ctx = servicecontext.WithServer(ctx, "grpc", srvGRPC)
+		//ctx = servicecontext.WithServer(ctx, "http", srvHTTP)
+		//ctx = servicecontext.WithServer(ctx, "generic", srvGeneric)
+
+		plugins.Init(ctx, "main")
+
+		services, err := pluginsReg.List(registry.WithType(pb.ItemType_SERVICE))
+		if err != nil {
+			return err
+		}
+
+		var (
+			srvGRPC server.Server
+			srvHTTP server.Server
+			srvGeneric server.Server
+		)
+
+		for _, ss := range services {
+			if !runtime.IsRequired(ss.Name()) {
+				continue
+			}
+
+			var s service.Service
+			if ss.As(&s) {
+				opts := s.Options()
+
+				opts.Context = servicecontext.WithRegistry(opts.Context, reg)
+
+				if opts.Fork && !runtime.IsFork() {
+					opts.Server = fork.NewServer(opts.Context)
+					var srvf *fork.ForkServer
+					if opts.Server.As(srvf) {
+						srvf.RegisterForkParam(opts.Name)
+					}
+
+					continue
+				}
+
+				if s.IsGRPC() {
+					if srvGRPC == nil {
+						srvGRPC = grpc.New(ctx)
+					}
+
+					opts.Server = srvGRPC
+				}
+
+				if s.IsREST() {
+					if srvHTTP == nil {
+						srvHTTP = http.New(ctx)
+					}
+
+					opts.Server = srvHTTP
+				}
+
+				if s.IsGeneric() {
+					if srvGeneric == nil {
+						srvGeneric = generic.New(ctx)
+					}
+
+					opts.Server = srvGeneric
+				}
+
+				// Checking which service is needed
+				bs, ok := opts.Server.(server.WrappedServer)
+				if ok {
+					bs.RegisterBeforeServe(s.Start)
+					bs.RegisterAfterServe(func() error {
+						// Register service again to update nodes information
+						if err := reg.Register(s); err != nil {
+							return err
+						}
+						return nil
+					})
+					bs.RegisterBeforeStop(s.Stop)
+				}
+			}
+		}
+
+		nodes, err := reg.List(registry.WithType(pb.ItemType_NODE))
+		if err != nil {
+			return err
+		}
+
+		for _, node := range nodes {
+			var srv server.Server
+			if node.As(&srv) {
+				go func(srv server.Server) {
+					if err := srv.Serve(); err != nil {
+						fmt.Println(err)
+					}
+				}(srv)
+			}
 		}
 
 		select {
@@ -147,14 +274,4 @@ func init() {
 	StartCmd.Flags().MarkHidden("broker")
 
 	RootCmd.AddCommand(StartCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// startCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// startCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -49,9 +49,9 @@ func (o *URLOpener) OpenURL(ctx context.Context, u *url.URL) (registry.Registry,
 		return nil, err
 	}
 
-	return NewRegistry(
+	return registry.NewRegistry(NewRegistry(
 		WithConn(conn),
-	), nil
+	)), nil
 }
 
 var (
@@ -115,10 +115,8 @@ func (s *serviceRegistry) Options() mregistry.Options {
 	return s.opts
 }
 
-func (s *serviceRegistry) StartService(name string) error {
-	_, err := s.client.StartService(s.opts.Context, &pb.StartServiceRequest{
-		Service: name,
-	}, s.callOpts()...)
+func (s *serviceRegistry) Start(item registry.Item) error {
+	_, err := s.client.Start(s.opts.Context, ToProtoItem(item), s.callOpts()...)
 	if err != nil {
 		return err
 	}
@@ -126,10 +124,8 @@ func (s *serviceRegistry) StartService(name string) error {
 	return nil
 }
 
-func (s *serviceRegistry) StopService(name string) error {
-	_, err := s.client.StopService(s.opts.Context, &pb.StopServiceRequest{
-		Service: name,
-	}, s.callOpts()...)
+func (s *serviceRegistry) Stop(item registry.Item) error {
+	_, err := s.client.Stop(s.opts.Context, ToProtoItem(item), s.callOpts()...)
 	if err != nil {
 		return err
 	}
@@ -137,8 +133,8 @@ func (s *serviceRegistry) StopService(name string) error {
 	return nil
 }
 
-func (s *serviceRegistry) RegisterService(srv registry.Service) error {
-	_, err := s.client.RegisterService(s.opts.Context, ToProtoService(srv), s.callOpts()...)
+func (s *serviceRegistry) Register(item registry.Item) error {
+	_, err := s.client.Register(s.opts.Context, ToProtoItem(item), s.callOpts()...)
 	if err != nil {
 		return err
 	}
@@ -146,51 +142,75 @@ func (s *serviceRegistry) RegisterService(srv registry.Service) error {
 	return nil
 }
 
-func (s *serviceRegistry) DeregisterService(srv registry.Service) error {
-	_, err := s.client.DeregisterService(s.opts.Context, ToProtoService(srv), s.callOpts()...)
+func (s *serviceRegistry) Deregister(item registry.Item) error {
+	_, err := s.client.Deregister(s.opts.Context, ToProtoItem(item), s.callOpts()...)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *serviceRegistry) GetService(name string) (registry.Service, error) {
-	rsp, err := s.client.GetService(s.opts.Context, &pb.GetServiceRequest{
-		Service: name,
-	}, s.callOpts()...)
-	if err != nil {
-		return nil, err
-	}
-
-	return ToService(rsp.Service), nil
-}
-
-func (s *serviceRegistry) ListServices() ([]registry.Service, error) {
-	rsp, err := s.client.ListServices(s.opts.Context, &pb.ListServicesRequest{}, s.callOpts()...)
-	if err != nil {
-		return nil, err
-	}
-
-	services := make([]registry.Service, 0, len(rsp.Services))
-	for _, service := range rsp.Services {
-		services = append(services, ToService(service))
-	}
-
-	return services, nil
-}
-
-func (s *serviceRegistry) WatchServices(opts ...registry.WatchOption) (registry.Watcher, error) {
-	var options mregistry.WatchOptions
+func (s *serviceRegistry) Get(name string, opts ...registry.Option) (registry.Item, error) {
+	var options registry.Options
 	for _, o := range opts {
 		o(&options)
 	}
-	if options.Context == nil {
-		options.Context = context.TODO()
+
+	rsp, err := s.client.Get(s.opts.Context, &pb.GetRequest{
+		Name: name,
+		Options: &pb.Options{
+			Type: options.Type,
+		},
+	}, s.callOpts()...)
+	if err != nil {
+		return nil, err
 	}
 
-	stream, err := s.client.WatchServices(options.Context, &pb.WatchServicesRequest{
-		Service: options.Service,
+	return ToItem(rsp.Item), nil
+}
+
+func (s *serviceRegistry) List(opts ...registry.Option) ([]registry.Item, error) {
+	var options registry.Options
+	for _, o := range opts {
+		o(&options)
+	}
+	rsp, err := s.client.List(s.opts.Context, &pb.ListRequest{
+		Options: &pb.Options{
+			Type: options.Type,
+		},
 	}, s.callOpts()...)
+	if err != nil {
+		return nil, err
+	}
+
+	items := make([]registry.Item, 0, len(rsp.Items))
+	for _, item := range rsp.Items {
+		items = append(items, ToItem(item))
+	}
+
+	return items, nil
+}
+
+func (s *serviceRegistry) Watch(opts ...registry.Option) (registry.Watcher, error) {
+	var options registry.Options
+	for _, o := range opts {
+		o(&options)
+	}
+
+	ctx := context.TODO()
+	req := &pb.WatchRequest{
+		Options: &pb.Options{
+			Type: options.Type,
+		},
+	}
+
+	if options.Context != nil {
+		ctx = options.Context
+	}
+
+	req.Name = options.Name
+
+	stream, err := s.client.Watch(ctx, req, s.callOpts()...)
 
 	if err != nil {
 		return nil, err
@@ -244,7 +264,7 @@ func NewRegistry(opts ...mregistry.Option) registry.Registry {
 
 	go func() {
 		// Check the stream has a connection to the registry
-		watcher, err := r.WatchServices()
+		watcher, err := r.Watch()
 		if err != nil {
 			cancel()
 			return

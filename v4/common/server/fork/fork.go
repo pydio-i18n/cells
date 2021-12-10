@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"os"
 	"os/exec"
 	"strings"
@@ -81,7 +82,7 @@ func (s *Server) Stop() error {
 }
 
 func (s *Server) Name() string {
-	return "testfork"
+	return "fork-" + uuid.NewString()
 }
 
 func (s *Server) Metadata() map[string]string {

@@ -37,7 +37,7 @@ import (
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
 		service.NewService(
-			service.Name(common.ServiceGrpcNamespace_+common.ServiceTimer),
+			service.Name(common.ServiceGenericNamespace_+common.ServiceTimer),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagScheduler),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceJobs, []string{}),

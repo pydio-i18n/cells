@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
 	"google.golang.org/grpc/attributes"
 	"google.golang.org/grpc/resolver"
@@ -53,14 +54,13 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 		return nil, err
 	}
 
-	services, err := reg.ListServices()
+	services, err := reg.List(registry.WithType(pb.ItemType_SERVICE))
 	if err != nil {
 		return nil, err
 	}
-
 	var m = map[string][]string{}
 	for _, s := range services {
-		for _, n := range s.Nodes() {
+		for _, n := range s.(registry.Service).Nodes() {
 			m[n.Address()[0]] = append(m[n.Address()[0]], s.Name())
 		}
 	}
@@ -80,7 +80,7 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 }
 
 func (cr *cellsResolver) watch() {
-	w, err := cr.reg.WatchServices()
+	w, err := cr.reg.Watch()
 	if err != nil {
 		return
 	}

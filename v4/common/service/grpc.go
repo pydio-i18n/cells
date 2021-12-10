@@ -2,9 +2,12 @@ package service
 
 import (
 	"context"
+
+	"google.golang.org/grpc"
+
 	"github.com/pydio/cells/v4/common/config/runtime"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
-	"google.golang.org/grpc"
+
 )
 
 // WithGRPC adds a service handler to the current service

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pydio/cells/v4/common/registry"
 	servercontext "github.com/pydio/cells/v4/common/server/context"
 )
 
@@ -45,10 +44,7 @@ func NewServer(ctx context.Context, s Server) Server {
 		},
 	}
 
-	var rn registry.NodeRegistry
-	if reg.As(&rn) {
-		rn.RegisterNode(srv)
-	}
+	reg.Register(srv)
 
 	return srv
 }
@@ -161,5 +157,9 @@ func (s *server) AfterStop() error {
 }
 
 func (s *server) As(i interface{}) bool {
+	if v, ok := i.(*Server); ok {
+		*v = s
+		return true
+	}
 	return s.s.As(i)
 }

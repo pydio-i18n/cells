@@ -15,6 +15,23 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+func (this *Item) Validate() error {
+	if oneOfNester, ok := this.GetItem().(*Item_Service); ok {
+		if oneOfNester.Service != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.Service); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Service", err)
+			}
+		}
+	}
+	if oneOfNester, ok := this.GetItem().(*Item_Node); ok {
+		if oneOfNester.Node != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.Node); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Node", err)
+			}
+		}
+	}
+	return nil
+}
 func (this *Service) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	for _, item := range this.Nodes {
@@ -63,9 +80,9 @@ func (this *Options) Validate() error {
 	return nil
 }
 func (this *Result) Validate() error {
-	if this.Service != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Service); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Service", err)
+	if this.Item != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Item); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Item", err)
 		}
 	}
 	return nil
@@ -73,13 +90,23 @@ func (this *Result) Validate() error {
 func (this *EmptyResponse) Validate() error {
 	return nil
 }
-func (this *StartServiceRequest) Validate() error {
+func (this *StartRequest) Validate() error {
+	if this.Item != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Item); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Item", err)
+		}
+	}
 	return nil
 }
-func (this *StopServiceRequest) Validate() error {
+func (this *StopRequest) Validate() error {
+	if this.Item != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Item); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Item", err)
+		}
+	}
 	return nil
 }
-func (this *GetServiceRequest) Validate() error {
+func (this *GetRequest) Validate() error {
 	if this.Options != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Options); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Options", err)
@@ -87,15 +114,15 @@ func (this *GetServiceRequest) Validate() error {
 	}
 	return nil
 }
-func (this *GetServiceResponse) Validate() error {
-	if this.Service != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Service); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Service", err)
+func (this *GetResponse) Validate() error {
+	if this.Item != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Item); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Item", err)
 		}
 	}
 	return nil
 }
-func (this *ListServicesRequest) Validate() error {
+func (this *ListRequest) Validate() error {
 	if this.Options != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Options); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Options", err)
@@ -103,62 +130,28 @@ func (this *ListServicesRequest) Validate() error {
 	}
 	return nil
 }
-func (this *ListServicesResponse) Validate() error {
-	for _, item := range this.Services {
+func (this *ListResponse) Validate() error {
+	for _, item := range this.Items {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Services", err)
+				return github_com_mwitkow_go_proto_validators.FieldError("Items", err)
 			}
 		}
 	}
 	return nil
 }
-func (this *WatchServicesRequest) Validate() error {
+func (this *WatchRequest) Validate() error {
 	if this.Options != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Options); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Options", err)
-		}
-	}
-	return nil
-}
-func (this *GetNodeRequest) Validate() error {
-	if this.Options != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Options); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Options", err)
-		}
-	}
-	return nil
-}
-func (this *GetNodeResponse) Validate() error {
-	if this.Node != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Node); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Node", err)
-		}
-	}
-	return nil
-}
-func (this *ListNodesRequest) Validate() error {
-	if this.Options != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Options); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Options", err)
-		}
-	}
-	return nil
-}
-func (this *ListNodesResponse) Validate() error {
-	for _, item := range this.Nodes {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Nodes", err)
-			}
 		}
 	}
 	return nil
 }
 func (this *Event) Validate() error {
-	if this.Service != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Service); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Service", err)
+	if this.Item != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Item); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Item", err)
 		}
 	}
 	return nil

@@ -15,13 +15,19 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"os"
+
+	pb "github.com/pydio/cells/v4/common/proto/registry"
+	"github.com/pydio/cells/v4/common/registry"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 )
 
-// serverCmd represents the server command
-var serverCmd = &cobra.Command{
-	Use:   "server",
+// serverListCmd represents the ps command of a server
+var serverListCmd = &cobra.Command{
+	Use:   "ps",
 	Short: "List all available services and their statuses",
 	Long: `
 DESCRIPTION
@@ -46,9 +52,34 @@ EXAMPLE
 	- pydio.rest.mailer     [X]
 
 `,
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		bindViperFlags(cmd.Flags(), map[string]string{})
 
+		return nil
+	},
+	RunE: func(cmd *cobra.Command, args []string) error {
+		reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
+		if err != nil {
+			return err
+		}
+
+		ctx = servicecontext.WithRegistry(cmd.Context(), reg)
+
+		nodes, err := reg.List(registry.WithType(pb.ItemType_NODE))
+		if err != nil {
+			return err
+		}
+
+		for _, node := range nodes {
+			fmt.Println(node.Name(), node.(registry.Node).Address(), node.(registry.Node).Metadata())
+		}
+
+		return nil
+	},
 }
 
 func init() {
-	RootCmd.AddCommand(serverCmd)
+	addRegistryFlags(serverListCmd.Flags())
+
+	serverCmd.AddCommand(serverListCmd)
 }

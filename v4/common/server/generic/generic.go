@@ -2,6 +2,7 @@ package generic
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"github.com/pydio/cells/v4/common/server"
 )
 
@@ -47,7 +48,7 @@ func (s *Server) Stop() error {
 }
 
 func (s *Server) Name() string {
-	return "testgeneric"
+	return "generic-" + uuid.NewString()
 }
 
 func (s *Server) Metadata() map[string]string {

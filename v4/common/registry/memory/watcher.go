@@ -2,12 +2,13 @@ package memory
 
 import (
 	"errors"
+	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
 )
 
 type watcher struct {
 	id   string
-	wo   registry.WatchOptions
+	wo   registry.Options
 	res  chan registry.Result
 	exit chan bool
 }
@@ -16,14 +17,28 @@ func (m *watcher) Next() (registry.Result, error) {
 	for {
 		select {
 		case r := <-m.res:
-			if r.Service() == nil {
+			if r.Item() == nil {
 				continue
 			}
 
-			// TODO v4
-			//if len(m.wo.Service) > 0 && m.wo.Service != r.Service.Name {
-			//	continue
-			//}
+			if len(m.wo.Name) > 0 && m.wo.Name != r.Item().Name() {
+				continue
+			}
+
+			switch m.wo.Type {
+			case pb.ItemType_SERVICE:
+				var service registry.Service
+				if r.Item().As(&service) {
+					return r, nil
+				}
+				continue
+			case pb.ItemType_NODE:
+				var node registry.Node
+				if r.Item().As(&node) {
+					return r, nil
+				}
+				continue
+			}
 
 			return r, nil
 		case <-m.exit:
@@ -43,13 +58,13 @@ func (m *watcher) Stop() {
 
 type result struct {
 	action string
-	service registry.Service
+	item registry.Item
 }
 
 func (r *result) Action() string {
 	return r.action
 }
 
-func (r *result) Service() registry.Service {
-	return r.service
+func (r *result) Item() registry.Item {
+	return r.item
 }

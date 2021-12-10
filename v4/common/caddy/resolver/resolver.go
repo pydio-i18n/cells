@@ -31,8 +31,6 @@ func (Middleware) CaddyModule() caddy.ModuleInfo {
 // ServeHTTP implements caddyhttp.MiddlewareHandler.
 func (m Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
 	reg, _ := registry.OpenRegistry(context.Background(),"memory:///?cache=shared")
-	
-	fmt.Println(reg.ListServices())
 
 	r.Header.Set("X-Pydio-Upstream-Dial", ":8002")
 

@@ -28,21 +28,21 @@ import (
 )
 
 type serviceWatcher struct {
-	stream pb.Registry_WatchServicesClient
+	stream pb.Registry_WatchClient
 	closed chan bool
 }
 
 type result struct {
 	action string
-	service registry.Service
+	item registry.Item
 }
 
 func (r *result) Action() string {
 	return r.action
 }
 
-func (r *result) Service() registry.Service {
-	return r.service
+func (r *result) Item() registry.Item {
+	return r.item
 }
 
 func (s *serviceWatcher) Next() (registry.Result, error) {
@@ -60,7 +60,7 @@ func (s *serviceWatcher) Next() (registry.Result, error) {
 
 	return &result{
 		action:  r.Action,
-		service: ToService(r.Service),
+		item: ToItem(r.Item),
 	}, nil
 }
 
@@ -74,7 +74,7 @@ func (s *serviceWatcher) Stop() {
 	}
 }
 
-func newWatcher(stream pb.Registry_WatchServicesClient) registry.Watcher {
+func newWatcher(stream pb.Registry_WatchClient) registry.Watcher {
 	return &serviceWatcher{
 		stream: stream,
 		closed: make(chan bool),

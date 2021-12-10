@@ -76,13 +76,21 @@ func (s *service) IsGeneric() bool {
 	return !s.IsGRPC() && !s.IsREST()
 }
 
+func (s *service) As(i interface{}) bool {
+	ii, ok := i.(*registry.Service)
+	if ok {
+		*ii = s
+		return true
+	}
+	return false
+}
 
 type node struct {
 	n *pb.Node
 }
 
 func (n *node) Name() string {
-	return n.n.Id
+	return n.n.Name
 }
 
 func (n *node) Address() []string {
@@ -97,6 +105,16 @@ func (n *node) Metadata() map[string]string {
 	return n.n.Metadata
 }
 
+func (n *node) As(i interface{}) bool {
+	ii, ok := i.(*registry.Node)
+	if ok {
+		*ii = n
+		return true
+	}
+
+	return false
+}
+
 type endpoint struct {
 	e *pb.Endpoint
 }
@@ -107,6 +125,19 @@ func (e *endpoint) Name() string {
 
 func (e *endpoint) Metadata() map[string]string {
 	return e.e.Metadata
+}
+
+func ToProtoItem(i registry.Item) *pb.Item {
+	item := &pb.Item{}
+
+	switch v := i.(type) {
+	case registry.Service:
+		item.Item = &pb.Item_Service{Service:ToProtoService(v)}
+	case registry.Node:
+		item.Item = &pb.Item_Node{Node: ToProtoNode(v)}
+	}
+
+	return item
 }
 
 func ToProtoService(s registry.Service) *pb.Service {
@@ -142,11 +173,22 @@ func ToProtoNode(n registry.Node) *pb.Node {
 	}
 
 	return &pb.Node{
-		Id:        n.Name(),
+		Name:      n.Name(),
 		Address:   address,
 		Endpoints: n.Endpoints(),
 		Metadata:  n.Metadata(),
 	}
+}
+
+func ToItem(s *pb.Item) registry.Item {
+	switch v := s.Item.(type) {
+	case *pb.Item_Service:
+		return ToService(v.Service)
+	case *pb.Item_Node:
+		return ToNode(v.Node)
+	}
+
+	return nil
 }
 
 func ToService(s *pb.Service) registry.Service {

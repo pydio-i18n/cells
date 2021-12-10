@@ -5,17 +5,26 @@ package registry;
 option go_package = "github.com/pydio/cells/v4/common/proto/registry";
 
 service Registry {
-  rpc StartService(StartServiceRequest) returns (EmptyResponse) {};
-  rpc StopService(StopServiceRequest) returns (EmptyResponse) {};
-  rpc GetService(GetServiceRequest) returns (GetServiceResponse) {};
-  rpc RegisterService(Service) returns (EmptyResponse) {};
-  rpc DeregisterService(Service) returns (EmptyResponse) {};
-  rpc ListServices(ListServicesRequest) returns (ListServicesResponse) {};
-  rpc WatchServices(WatchServicesRequest) returns (stream Result) {};
-  rpc RegisterNode(Node) returns (EmptyResponse) {};
-  rpc DeregisterNode(Node) returns (EmptyResponse) {};
-  rpc GetNode(GetNodeRequest) returns (GetNodeResponse) {};
-  rpc ListNodes(ListNodesRequest) returns (ListNodesResponse) {};
+  rpc Start(Item) returns (EmptyResponse) {};
+  rpc Stop(Item) returns (EmptyResponse) {};
+  rpc Get(GetRequest) returns (GetResponse) {};
+  rpc Register(Item) returns (EmptyResponse) {};
+  rpc Deregister(Item) returns (EmptyResponse) {};
+  rpc List(ListRequest) returns (ListResponse) {};
+  rpc Watch(WatchRequest) returns (stream Result) {};
+}
+
+enum ItemType {
+  ALL = 0;
+  SERVICE = 1;
+  NODE = 2;
+}
+
+message Item {
+  oneof item {
+    Service service = 1;
+    Node node = 2;
+  }
 }
 
 // Service represents a go-micro service
@@ -29,7 +38,7 @@ message Service {
 
 // Node represents the node the service is on
 message Node {
-  string id = 1;
+  string name = 1;
   string address = 2;
   int64 port = 3;
   map<string,string> metadata = 4;
@@ -54,64 +63,46 @@ message Value {
 // Options are registry options
 message Options {
   int64 ttl = 1;
-  string domain = 2;
+  ItemType type = 2;
 }
 
 // Result is returns by the watcher
 message Result {
   string action = 1; // create, update, delete
-  Service service = 2;
+  Item item = 2;
   int64 timestamp = 3; // unix timestamp
 }
 
 message EmptyResponse {}
 
-message StartServiceRequest {
-  string service = 1;
+message StartRequest {
+  Item item = 1;
 }
 
-message StopServiceRequest {
-  string service = 1;
+message StopRequest {
+  Item item = 1;
 }
 
-message GetServiceRequest {
-  string service = 1;
+message GetRequest {
+  string name = 1;
   Options options = 2;
 }
 
-message GetServiceResponse {
-  Service service = 1;
+message GetResponse {
+  Item item = 1;
 }
 
-message ListServicesRequest {
+message ListRequest {
   Options options = 1;
 }
 
-message ListServicesResponse {
-  repeated Service services = 1;
+message ListResponse {
+  repeated Item items = 1;
 }
 
-message WatchServicesRequest {
-  // service is optional
-  string service = 1;
+message WatchRequest {
+  string name = 1;
   Options options = 2;
-}
-
-message GetNodeRequest {
-  string node = 1;
-  Options options = 2;
-}
-
-message GetNodeResponse {
-  Node node = 1;
-}
-
-message ListNodesRequest {
-  Options options = 1;
-}
-
-message ListNodesResponse {
-  repeated Node nodes = 1;
 }
 
 // EventType defines the type of event
@@ -129,6 +120,6 @@ message Event {
   EventType type = 2;
   // unix timestamp of event
   int64 timestamp = 3;
-  // service entry
-  Service service = 4;
+  // item entry
+  Item item = 4;
 }
