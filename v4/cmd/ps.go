@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"os"
 	"strings"
 	"text/tabwriter"
@@ -135,15 +136,13 @@ func init() {
 func getTagsPerType(reg registry.Registry, f func(s registry.Service) bool) map[string]*Tags {
 	tags := make(map[string]*Tags)
 
-	allServices, err := reg.List()
+	allServices, err := reg.List(registry.WithType(pb.ItemType_SERVICE))
 	if err != nil {
 		return tags
 	}
 
 	for _, i := range allServices {
-		var s registry.Service
-
-		i.As(&s)
+		s := i.(registry.Service)
 
 		name := s.Name()
 

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/server/generic"
@@ -20,7 +21,9 @@ func WithGeneric(f func(context.Context, *generic.Server) error) ServiceOption {
 		o.serverStart = func() error {
 			var srvg *generic.Server
 
-			o.Server.As(&srvg)
+			if !o.Server.As(&srvg) {
+				return fmt.Errorf("server is not a generic server")
+			}
 
 			return f(o.Context, srvg)
 		}

@@ -76,7 +76,12 @@ func (s *service) IsGeneric() bool {
 	return !s.IsGRPC() && !s.IsREST()
 }
 
-func (s *service) As(interface{}) bool {
+func (s *service) As(i interface{}) bool {
+	ii, ok := i.(*registry.Service)
+	if ok {
+		*ii = s
+		return true
+	}
 	return false
 }
 

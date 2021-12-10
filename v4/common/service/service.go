@@ -8,9 +8,7 @@ import (
 	"github.com/pydio/cells/v4/common/registry"
 
 	"github.com/pydio/cells/v4/common/config"
-	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/server"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/spf13/viper"
 )
@@ -32,8 +30,14 @@ var (
 )
 
 type Service interface {
+	Init(opts ...ServiceOption)
+	Options() *ServiceOptions
+	Name() string
 	Start() error
 	Stop() error
+	IsGRPC() bool
+	IsREST() bool
+	IsGeneric() bool
 	As(i interface{}) bool
 }
 
@@ -48,31 +52,33 @@ func NewService(opts ...ServiceOption) Service {
 
 	s.opts.Context = servicecontext.WithServiceName(s.opts.Context, name)
 
-	if !runtime.IsRequired(name) {
-		return nil
-	}
-
 	reg := servicecontext.GetRegistry(s.opts.Context)
-
-	bs, ok := s.opts.Server.(server.WrappedServer)
-	if ok {
-		bs.RegisterBeforeServe(s.Start)
-		bs.RegisterAfterServe(func() error {
-			// Register service again to update nodes information
-			if err := reg.Register(s); err != nil {
-				return err
-			}
-			return nil
-		})
-		bs.RegisterBeforeStop(s.Stop)
-	}
 
 	reg.Register(s)
 
 	return s
 }
 
+func (s *service) Init(opts ...ServiceOption) {
+	for _, o := range opts {
+		if o == nil {
+			continue
+		}
+
+		o(s.opts)
+	}
+}
+
+func (s *service) Options() *ServiceOptions {
+	return s.opts
+}
+
 func (s *service) As(i interface{}) bool {
+	if v, ok := i.(*Service); ok {
+		*v = s
+		return true
+	}
+
 	return false
 }
 
@@ -131,15 +137,8 @@ func (s *service) Stop() error {
 
 func buildForkStartParams(serviceName string) []string {
 
-	//r := viper.GetString("registry")
-	//if r == "memory" {
 	r := fmt.Sprintf("grpc://%s", viper.GetString("grpc.address"))
-	//}
-
-	//b := viper.GetString("broker")
-	//if b == "memory" {
 	b := fmt.Sprintf("grpc://%s", viper.GetString("grpc.address"))
-	//}
 
 	params := []string{
 		"start",
@@ -190,5 +189,5 @@ func (s *service) IsGRPC() bool {
 	return strings.HasPrefix(s.Name(), common.ServiceGrpcNamespace_)
 }
 func (s *service) IsREST() bool {
-	return strings.HasPrefix(s.Name(), common.ServiceRestNamespace_)
+	return strings.HasPrefix(s.Name(), common.ServiceRestNamespace_) || strings.HasPrefix(s.Name(), common.ServiceWebNamespace_)
 }

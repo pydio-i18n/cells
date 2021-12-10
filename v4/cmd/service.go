@@ -19,9 +19,9 @@ import (
 	"os"
 )
 
-// serverCmd represents the server command
-var serverCmd = &cobra.Command{
-	Use:   "server",
+// serviceCmd represents the service command
+var serviceCmd = &cobra.Command{
+	Use:   "service",
 	Short: "List all available services and their statuses",
 	Long: `
 DESCRIPTION
@@ -50,5 +50,5 @@ EXAMPLE
 }
 
 func init() {
-	RootCmd.AddCommand(serverCmd)
+	RootCmd.AddCommand(serviceCmd)
 }

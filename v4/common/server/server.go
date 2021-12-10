@@ -157,5 +157,9 @@ func (s *server) AfterStop() error {
 }
 
 func (s *server) As(i interface{}) bool {
+	if v, ok := i.(*Server); ok {
+		*v = s
+		return true
+	}
 	return s.s.As(i)
 }

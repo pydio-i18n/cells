@@ -19,8 +19,8 @@ import (
 	"os"
 )
 
-// stopCmd represents the stop command
-var stopCmd = &cobra.Command{
+// serviceStopCmd represents the stop command
+var serviceStopCmd = &cobra.Command{
 	Use:   "stop",
 	Short: "List all available services and their statuses",
 	Long: `
@@ -66,7 +66,7 @@ EXAMPLE
 }
 
 func init() {
-	addRegistryFlags(stopCmd.Flags())
+	addRegistryFlags(serviceStopCmd.Flags())
 
-	RootCmd.AddCommand(stopCmd)
+	RootCmd.AddCommand(serviceStopCmd)
 }

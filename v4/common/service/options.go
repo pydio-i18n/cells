@@ -112,6 +112,12 @@ func WithTLSConfig(c *tls.Config) ServiceOption {
 	}
 }
 
+func WithServer(s server.Server) ServiceOption {
+	return func(o *ServiceOptions) {
+		o.Server = s
+	}
+}
+
 // AutoStart option for a service
 func AutoStart(b bool) ServiceOption {
 	return func(o *ServiceOptions) {

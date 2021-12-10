@@ -15,13 +15,15 @@
 package cmd
 
 import (
+	"github.com/pydio/cells/v4/common/registry"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"os"
 )
 
-// restartCmd represents the stop command
-var restartCmd = &cobra.Command{
-	Use:   "restart",
+// serviceStartCmd represents the stop command
+var serviceStartCmd = &cobra.Command{
+	Use:   "start",
 	Short: "List all available services and their statuses",
 	Long: `
 DESCRIPTION
@@ -52,21 +54,64 @@ EXAMPLE
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		//reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
-		//if err != nil {
-		//	return err
-		//}
-		//
-		//if err := reg.Start(args[0]); err != nil {
-		//	return err
-		//}
+		reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
+		if err != nil {
+			return err
+		}
+
+		reg.Start(&mockService{})
 
 		return nil
 	},
 }
 
-func init() {
-	addRegistryFlags(restartCmd.Flags())
+var _ registry.Service = (*mockService)(nil)
 
-	RootCmd.AddCommand(restartCmd)
+type mockService struct {
+}
+
+func (s mockService) Name() string {
+	return "pydio.grpc.config"
+}
+
+func (s mockService) Version() string {
+	return ""
+}
+
+func (s mockService) Nodes() []registry.Node {
+	return []registry.Node{}
+}
+
+func (s mockService) Tags() []string {
+	return []string{}
+}
+
+func (s mockService) Start() error {
+	return nil
+}
+
+func (s mockService) Stop() error {
+	return nil
+}
+
+func (s mockService) IsGeneric() bool {
+	return false
+}
+
+func (s mockService) IsGRPC() bool {
+	return true
+}
+
+func (s mockService) IsREST() bool {
+	return false
+}
+
+func (s mockService) As(i interface{}) bool {
+	return false
+}
+
+func init() {
+	addRegistryFlags(serviceStartCmd.Flags())
+
+	serviceCmd.AddCommand(serviceStartCmd)
 }

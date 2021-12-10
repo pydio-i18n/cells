@@ -15,13 +15,16 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/pydio/cells/v4/common/registry"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-// serverCmd represents the server command
-var serverCmd = &cobra.Command{
-	Use:   "server",
+// serverStartCmd represents the start command of a server
+var serverStartCmd = &cobra.Command{
+	Use:   "start",
 	Short: "List all available services and their statuses",
 	Long: `
 DESCRIPTION
@@ -46,9 +49,59 @@ EXAMPLE
 	- pydio.rest.mailer     [X]
 
 `,
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		bindViperFlags(cmd.Flags(), map[string]string{})
 
+		return nil
+	},
+	RunE: func(cmd *cobra.Command, args []string) error {
+		reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
+		if err != nil {
+			return err
+		}
+
+		reg.Start(&node{
+			name: "testgrpc2",
+			addr: ":0",
+			metadata: map[string]string{
+				"type": "grpc",
+			},
+		})
+
+		return nil
+	},
+}
+
+var _ registry.Node = (*node)(nil)
+
+type node struct {
+	name string
+	addr string
+	metadata map[string]string
+}
+
+func (n *node) Name() string {
+	return n.name
+}
+
+func (n *node) Address() []string {
+	return []string{n.addr}
+}
+
+func (n *node) Endpoints() []string {
+	return []string{}
+}
+
+func (n *node) Metadata() map[string]string {
+	return n.metadata
+}
+
+func (n *node) As(interface{}) bool {
+	return false
 }
 
 func init() {
-	RootCmd.AddCommand(serverCmd)
+	addRegistryFlags(serverStartCmd.Flags())
+
+	serverCmd.AddCommand(serverStartCmd)
 }

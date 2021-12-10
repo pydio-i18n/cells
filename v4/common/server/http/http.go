@@ -43,7 +43,6 @@ func (s *Server) Serve() error {
 	if err != nil {
 		return err
 	}
-	defer lis.Close()
 
 	s.Listener = lis
 
