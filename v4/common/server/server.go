@@ -29,6 +29,14 @@ type WrappedServer interface {
 	AfterStop() error
 }
 
+type ServerType int8
+
+const (
+	ServerType_GRPC ServerType = iota
+	ServerType_HTTP
+	ServerType_GENERIC
+)
+
 type server struct {
 	s    Server
 	opts ServerOptions
@@ -61,6 +69,10 @@ func (s *server) Serve() error {
 	if err := s.AfterServe(); err != nil {
 		return err
 	}
+
+	// Making sure we register the endpoints
+	reg := servercontext.GetRegistry(s.opts.Context)
+	reg.Register(s)
 
 	return nil
 }

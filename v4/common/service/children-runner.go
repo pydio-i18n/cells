@@ -153,6 +153,7 @@ func (c *ChildrenRunner) Start(ctx context.Context, source string, retries ...in
 		}
 
 		if err := cmd.Wait(); err != nil {
+			fmt.Println("HERE WE ARE ", err.Error())
 			if err.Error() != "signal: terminated" && err.Error() != "signal: interrupt" {
 				log.Logger(serviceCtx).Error("SubProcess was not killed properly: " + err.Error())
 				c.mutex.Lock()

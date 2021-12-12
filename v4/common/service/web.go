@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/pydio/cells/v4/common/server"
 	"net/http"
 	"reflect"
 	"strings"
@@ -16,7 +17,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	"github.com/pydio/cells/v4/common/server/middleware"
@@ -65,12 +65,7 @@ func getWebMiddlewares() []func(handler http.Handler) http.Handler {
 // WithWeb returns a web handler
 func WithWeb(handler func() WebHandler) ServiceOption {
 	return func(o *ServiceOptions) {
-		// Making sure the runtime is correct
-		if o.Fork && !runtime.IsFork() {
-			return
-		}
-
-		o.Server = servicecontext.GetServer(o.Context, "http")
+		o.serverType = server.ServerType_HTTP
 		o.serverStart = func() error {
 			var mux *http.ServeMux
 			if !o.Server.As(&mux) {

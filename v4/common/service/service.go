@@ -2,10 +2,8 @@ package service
 
 import (
 	"fmt"
-	"strings"
-
-	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/registry"
+	"github.com/pydio/cells/v4/common/server"
 
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
@@ -183,11 +181,11 @@ func (s *service) Tags() []string {
 	return s.opts.Tags
 }
 func (s *service) IsGeneric() bool {
-	return !s.IsGRPC() && !s.IsREST()
+	return s.opts.serverType == server.ServerType_GENERIC
 }
 func (s *service) IsGRPC() bool {
-	return strings.HasPrefix(s.Name(), common.ServiceGrpcNamespace_)
+	return s.opts.serverType == server.ServerType_GRPC
 }
 func (s *service) IsREST() bool {
-	return strings.HasPrefix(s.Name(), common.ServiceRestNamespace_) || strings.HasPrefix(s.Name(), common.ServiceWebNamespace_)
+	return s.opts.serverType == server.ServerType_HTTP
 }

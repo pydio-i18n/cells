@@ -3,7 +3,6 @@ package caddy
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"github.com/google/uuid"
 	"html/template"
 	"net/http"
@@ -46,6 +45,7 @@ const (
 )
 
 type Server struct {
+	name string
 	*http.ServeMux
 	Confs []byte
 }
@@ -101,17 +101,15 @@ func New(ctx context.Context, dir string) (server.Server, error) {
 
 	b := buf.Bytes()
 
-	fmt.Println(string(b))
-
 	// Load config directly from memory
 	adapter := caddyconfig.GetAdapter("caddyfile")
 	confs, _, err := adapter.Adapt(b, map[string]interface{}{})
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 
 	return server.NewServer(ctx, &Server{
+		name:  "caddy-" + uuid.NewString(),
 		ServeMux: srvMUX,
 		Confs: confs,
 	}), nil
@@ -139,7 +137,7 @@ func (s *Server) Endpoints() []string {
 }
 
 func (s *Server) Name() string {
-	return "caddy-" + uuid.NewString()
+	return s.name
 }
 
 func (s *Server) Metadata() map[string]string {

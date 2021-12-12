@@ -16,6 +16,7 @@ import (
 )
 
 type Server struct {
+	name string
 	ctx    context.Context
 	cancel context.CancelFunc
 
@@ -26,6 +27,7 @@ func NewServer(ctx context.Context) server.Server {
 	ctx, cancel := context.WithCancel(ctx)
 
 	return server.NewServer(ctx, &Server{
+		name: "fork-" + uuid.NewString(),
 		ctx:    ctx,
 		cancel: cancel,
 		s:      &ForkServer{},
@@ -80,7 +82,7 @@ func (s *Server) Stop() error {
 }
 
 func (s *Server) Name() string {
-	return "fork-" + uuid.NewString()
+	return s.name
 }
 
 func (s *Server) Metadata() map[string]string {

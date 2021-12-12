@@ -16,10 +16,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/pydio/cells/v4/common/server/fork"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/plugins"
@@ -27,11 +23,14 @@ import (
 	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/server"
 	servercontext "github.com/pydio/cells/v4/common/server/context"
+	"github.com/pydio/cells/v4/common/server/fork"
 	"github.com/pydio/cells/v4/common/server/generic"
 	"github.com/pydio/cells/v4/common/server/grpc"
 	"github.com/pydio/cells/v4/common/server/http"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -170,6 +169,7 @@ to quickly create a Cobra application.`,
 			srvGRPC server.Server
 			srvHTTP server.Server
 			srvGeneric server.Server
+			srvs []server.Server
 		)
 
 		for _, ss := range services {
@@ -184,11 +184,19 @@ to quickly create a Cobra application.`,
 				opts.Context = servicecontext.WithRegistry(opts.Context, reg)
 
 				if opts.Fork && !runtime.IsFork() {
-					opts.Server = fork.NewServer(opts.Context)
-					var srvf *fork.ForkServer
-					if opts.Server.As(srvf) {
-						srvf.RegisterForkParam(opts.Name)
+					if !opts.AutoStart {
+						continue
 					}
+
+					srvFork := fork.NewServer(opts.Context)
+					var srvForkAs *fork.ForkServer
+					if srvFork.As(&srvForkAs) {
+						srvForkAs.RegisterForkParam(opts.Name)
+					}
+
+					srvs = append(srvs, srvFork)
+
+					opts.Server = srvFork
 
 					continue
 				}
@@ -196,6 +204,7 @@ to quickly create a Cobra application.`,
 				if s.IsGRPC() {
 					if srvGRPC == nil {
 						srvGRPC = grpc.New(ctx)
+						srvs = append(srvs, srvGRPC)
 					}
 
 					opts.Server = srvGRPC
@@ -204,6 +213,7 @@ to quickly create a Cobra application.`,
 				if s.IsREST() {
 					if srvHTTP == nil {
 						srvHTTP = http.New(ctx)
+						srvs = append(srvs, srvHTTP)
 					}
 
 					opts.Server = srvHTTP
@@ -212,6 +222,7 @@ to quickly create a Cobra application.`,
 				if s.IsGeneric() {
 					if srvGeneric == nil {
 						srvGeneric = generic.New(ctx)
+						srvs = append(srvs, srvGeneric)
 					}
 
 					opts.Server = srvGeneric
@@ -233,20 +244,12 @@ to quickly create a Cobra application.`,
 			}
 		}
 
-		nodes, err := reg.List(registry.WithType(pb.ItemType_NODE))
-		if err != nil {
-			return err
-		}
-
-		for _, node := range nodes {
-			var srv server.Server
-			if node.As(&srv) {
-				go func(srv server.Server) {
-					if err := srv.Serve(); err != nil {
-						fmt.Println(err)
-					}
-				}(srv)
-			}
+		for _, srv := range srvs {
+			go func(srv server.Server) {
+				if err := srv.Serve(); err != nil {
+					fmt.Println(err)
+				}
+			}(srv)
 		}
 
 		select {

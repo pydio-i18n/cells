@@ -47,7 +47,8 @@ func IsRequired(serviceName string) bool {
 	args := viper.GetStringSlice("args")
 	xx := viper.GetStringSlice("exclude")
 	for _, x := range xx {
-		if x == serviceName {
+		re := regexp.MustCompile(x)
+		if re.MatchString(serviceName) {
 			return false
 		}
 	}
