@@ -50,7 +50,7 @@ func init() {
 			service.WithStorage(meta.NewDAO, "data_meta"),
 			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
 
-				engine := NewMetaServer(c, servicecontext.GetDAO(ctx).(meta.DAO))
+				engine := NewMetaServer(c, servicecontext.GetDAO(c).(meta.DAO))
 
 				tree.RegisterNodeProviderEnhancedServer(server, engine)
 				tree.RegisterNodeProviderStreamerEnhancedServer(server, engine)
