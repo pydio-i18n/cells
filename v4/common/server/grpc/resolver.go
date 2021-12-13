@@ -80,7 +80,7 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 }
 
 func (cr *cellsResolver) watch() {
-	w, err := cr.reg.Watch()
+	w, err := cr.reg.Watch(registry.WithType(pb.ItemType_SERVICE))
 	if err != nil {
 		return
 	}
@@ -91,11 +91,11 @@ func (cr *cellsResolver) watch() {
 			return
 		}
 
-		// s := r.Service()
-		if r.Action() == "create" {
-			/*for _, n := range r.Service().Nodes() {
+		var s registry.Service
+		if r.Item().As(&s) && r.Action() == "create" {
+			for _, n := range s.Nodes() {
 				cr.m[n.Address()[0]] = append(cr.m[n.Address()[0]], s.Name())
-			}*/
+			}
 
 			cr.updateState()
 		}
