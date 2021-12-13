@@ -23,6 +23,7 @@ package datatest
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common"
 
 	_ "github.com/mattn/go-sqlite3"
 	"google.golang.org/grpc"
@@ -51,7 +52,7 @@ func NewIndexService(dsName string, nodes ...*tree.Node) (grpc.ClientConnInterfa
 		return nil, fmt.Errorf("could not start test: unable to initialise index DAO, error: ", err)
 	}
 
-	ts := srv.NewTreeServer(&object.DataSource{Name: dsName}, mockDAO.(index.DAO), log.Logger(context.Background()))
+	ts := srv.NewTreeServer(&object.DataSource{Name: dsName}, common.ServiceGrpcNamespace_+common.ServiceTree, mockDAO.(index.DAO), log.Logger(context.Background()))
 
 	srv1 := &tree.NodeProviderStub{}
 	srv1.NodeProviderServer = ts
