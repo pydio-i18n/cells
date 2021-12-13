@@ -36,6 +36,7 @@ type ServiceOptions struct {
 	TLSConfig *tls.Config
 
 	Server      server.Server
+	serverType  server.ServerType
 	serverStart func() error
 	serverStop  func() error
 
@@ -173,6 +174,7 @@ func newOptions(opts ...ServiceOption) *ServiceOptions {
 	opt.ID = uuid.New()
 	opt.Metadata = make(map[string]string)
 	opt.Version = common.Version().String()
+	opt.AutoStart = true
 
 	for _, o := range opts {
 		if o == nil {

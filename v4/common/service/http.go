@@ -3,20 +3,14 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/config/runtime"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/server"
 	"net/http"
 )
 
 // WithHTTP adds a http micro service handler to the current service
 func WithHTTP(f func(context.Context, *http.ServeMux) error) ServiceOption {
 	return func(o *ServiceOptions) {
-		// Making sure the runtime is correct
-		if o.Fork && !runtime.IsFork() {
-			return
-		}
-
-		o.Server = servicecontext.GetServer(o.Context, "http")
+		o.serverType = server.ServerType_HTTP
 		o.serverStart = func() error {
 			var mux *http.ServeMux
 			if !o.Server.As(&mux) {

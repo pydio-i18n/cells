@@ -13,6 +13,7 @@ import (
 )
 
 type Server struct {
+	name string
 	cancel context.CancelFunc
 	net.Listener
 	*grpc.Server
@@ -35,6 +36,7 @@ func New(ctx context.Context) server.Server {
 	ctx, cancel := context.WithCancel(ctx)
 
 	return server.NewServer(ctx, &Server{
+		name: "grpc-" + uuid.NewString(),
 		cancel: cancel,
 		Server: s,
 	})
@@ -67,7 +69,7 @@ func (s *Server) Stop() error {
 }
 
 func (s *Server) Name() string {
-	return "grpc-" + uuid.NewString()
+	return s.name
 }
 
 func (s *Server) Metadata() map[string]string {

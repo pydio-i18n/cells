@@ -2,24 +2,17 @@ package service
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/server"
 
 	"google.golang.org/grpc"
-
-	"github.com/pydio/cells/v4/common/config/runtime"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
-
 )
 
 // WithGRPC adds a service handler to the current service
 func WithGRPC(f func(context.Context, *grpc.Server) error) ServiceOption {
 	return func(o *ServiceOptions) {
-		// Making sure the runtime is correct
-		if o.Fork && !runtime.IsFork() {
-			return
-		}
-
-		o.Server = servicecontext.GetServer(o.Context, "grpc")
+		o.serverType = server.ServerType_GRPC
 		o.serverStart = func() error {
+
 			var srvg *grpc.Server
 			o.Server.As(&srvg)
 

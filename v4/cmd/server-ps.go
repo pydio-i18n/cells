@@ -25,8 +25,8 @@ import (
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 )
 
-// serverListCmd represents the ps command of a server
-var serverListCmd = &cobra.Command{
+// serverPsCmd represents the ps command of a server
+var serverPsCmd = &cobra.Command{
 	Use:   "ps",
 	Short: "List all available services and their statuses",
 	Long: `
@@ -71,7 +71,15 @@ EXAMPLE
 		}
 
 		for _, node := range nodes {
-			fmt.Println(node.Name(), node.(registry.Node).Address(), node.(registry.Node).Metadata())
+			var srv registry.Node
+			if node.As(&srv) {
+				fmt.Println(node.Name(), node.(registry.Node).Address(), node.(registry.Node).Metadata())
+				for _, endpoint := range srv.Endpoints() {
+					fmt.Println("- ", endpoint)
+				}
+			} else {
+				fmt.Println("Node unrecognized ", node.Name())
+			}
 		}
 
 		return nil
@@ -79,7 +87,7 @@ EXAMPLE
 }
 
 func init() {
-	addRegistryFlags(serverListCmd.Flags())
+	addRegistryFlags(serverPsCmd.Flags())
 
-	serverCmd.AddCommand(serverListCmd)
+	serverCmd.AddCommand(serverPsCmd)
 }

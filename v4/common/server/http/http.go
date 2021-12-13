@@ -2,16 +2,21 @@ package http
 
 import (
 	"context"
-	"github.com/google/uuid"
-	"github.com/pydio/cells/v4/common/server"
-	"github.com/spf13/viper"
 	"net"
 	"net/http"
 	"net/http/pprof"
 	"reflect"
+
+	"github.com/google/uuid"
+	"github.com/spf13/viper"
+
+	"github.com/pydio/cells/v4/common/server"
+	servercontext "github.com/pydio/cells/v4/common/server/context"
+	"github.com/pydio/cells/v4/common/server/http/registrymux"
 )
 
 type Server struct {
+	name string
 	cancel context.CancelFunc
 	net.Listener
 	*http.ServeMux
@@ -27,11 +32,12 @@ func New(ctx context.Context) server.Server {
 	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
 
 	srv := &http.Server{}
-	srv.Handler = mux
+	srv.Handler = registrymux.NewMiddleware(servercontext.GetRegistry(ctx), mux)
 
 	ctx, cancel := context.WithCancel(ctx)
 
 	return server.NewServer(ctx, &Server{
+		name: "http-" + uuid.NewString(),
 		cancel: cancel,
 		ServeMux: mux,
 		Server:     srv,
@@ -79,7 +85,7 @@ func (s *Server) Endpoints() []string {
 }
 
 func (s *Server) Name() string {
-	return "http-" + uuid.NewString()
+	return s.name
 }
 
 func (s *Server) Metadata() map[string]string {
