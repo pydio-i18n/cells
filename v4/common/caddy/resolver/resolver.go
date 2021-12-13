@@ -2,7 +2,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
@@ -16,7 +15,7 @@ func init() {
 	httpcaddyfile.RegisterHandlerDirective("resolver", parseCaddyfile)
 }
 
-type Middleware struct{
+type Middleware struct {
 	r registry.Registry
 }
 
@@ -30,7 +29,7 @@ func (Middleware) CaddyModule() caddy.ModuleInfo {
 
 // ServeHTTP implements caddyhttp.MiddlewareHandler.
 func (m Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
-	reg, _ := registry.OpenRegistry(context.Background(),"memory:///?cache=shared")
+	_, _ = registry.OpenRegistry(context.Background(), "memory:///?cache=shared")
 
 	r.Header.Set("X-Pydio-Upstream-Dial", ":8002")
 
@@ -53,7 +52,3 @@ func parseCaddyfile(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler, error)
 	err := m.UnmarshalCaddyfile(h.Dispenser)
 	return m, err
 }
-
-
-
-

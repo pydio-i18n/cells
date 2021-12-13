@@ -10,6 +10,8 @@ import (
 	"regexp"
 	"strings"
 
+	pb "github.com/pydio/cells/v4/common/proto/registry"
+
 	caddy "github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
@@ -19,17 +21,15 @@ import (
 )
 
 func RegisterServerMux(ctx context.Context, s *http.ServeMux) {
-	var r registry.NodeRegistry
-	servercontext.GetRegistry(ctx).As(&r)
 	caddy.RegisterModule(Middleware{
-		r: r,
+		r: servercontext.GetRegistry(ctx),
 		s: s,
 	})
 	httpcaddyfile.RegisterHandlerDirective("mux", parseCaddyfile)
 }
 
 type Middleware struct {
-	r registry.NodeRegistry
+	r registry.Registry
 	s *http.ServeMux
 }
 
@@ -56,12 +56,16 @@ func (m Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 	}
 
 	// Couldn't find it in the mux, we go through the registered endpoints
-	nodes, err := m.r.ListNodes()
+	nodes, err := m.r.List(registry.WithType(pb.ItemType_NODE))
 	if err != nil {
 		return err
 	}
 
-	for _, node := range nodes {
+	for _, item := range nodes {
+		node, ok := item.(registry.Node)
+		if !ok {
+			continue
+		}
 		for _, endpoint := range node.Endpoints() {
 			if endpoint == "/" {
 				continue

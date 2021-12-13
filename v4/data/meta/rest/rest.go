@@ -22,7 +22,6 @@ package rest
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"math"
 	"path"
 	"path/filepath"
@@ -34,6 +33,7 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/compose"

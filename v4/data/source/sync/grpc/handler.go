@@ -99,9 +99,10 @@ func NewHandler(ctx context.Context, handlerName, datasource string) (*Handler, 
 	if sec := config.GetSecret(syncConfig.ApiSecret).String(); sec != "" {
 		syncConfig.ApiSecret = sec
 	}
-	e := h.initSync(syncConfig)
+	// TODO V4 - Issues with contacting other services - Re-enable and return error
+	//e := h.initSync(syncConfig)
 
-	return h, e
+	return h, nil
 }
 
 func (s *Handler) Name() string {

@@ -23,6 +23,8 @@ package grpc
 import (
 	"context"
 	"github.com/pydio/cells/v4/common/client/grpc"
+	pb "github.com/pydio/cells/v4/common/proto/registry"
+	"github.com/spf13/viper"
 	"strings"
 	"time"
 
@@ -39,13 +41,15 @@ func updateServicesList(ctx context.Context, treeServer *TreeServer, retry int) 
 	treeServer.Unlock()
 
 	var otherServices []registry.Service
-	/*
-		TODO V4
-		otherServices, err := registry.ListRunningServices()
-		if err != nil {
-			return
-		}
-	*/
+	// TODO V4 : @ghecquet is this the right way (previously ListRunningServices) ?
+	reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
+	items, err := reg.List(registry.WithType(pb.ItemType_SERVICE))
+	if err != nil {
+		return
+	}
+	for _, i := range items {
+		otherServices = append(otherServices, i.(registry.Service))
+	}
 
 	syncServices := filterServices(otherServices, func(v string) bool {
 		return strings.Contains(v, common.ServiceGrpcNamespace_+common.ServiceDataSync_)
@@ -68,7 +72,7 @@ func updateServicesList(ctx context.Context, treeServer *TreeServer, retry int) 
 		}
 
 		dataSources[dataSourceName] = ds
-		log.Logger(ctx).Debug("[Tree:updateServicesList] Add datasource " + dataSourceName)
+		log.Logger(ctx).Info("[Tree:updateServicesList] Add datasource " + dataSourceName)
 	}
 
 	treeServer.Lock()
@@ -76,8 +80,8 @@ func updateServicesList(ctx context.Context, treeServer *TreeServer, retry int) 
 	treeServer.Unlock()
 
 	// If registry event comes too soon, running services may not be loaded yet
-	if retry < 2 && initialLength == len(dataSources) {
-		<-time.After(2 * time.Second)
+	if retry < 4 && initialLength == len(dataSources) {
+		<-time.After(10 * time.Second)
 		updateServicesList(ctx, treeServer, retry+1)
 	}
 }

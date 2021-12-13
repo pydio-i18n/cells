@@ -51,7 +51,7 @@ func init() {
 				}
 				eventSubscriber := NewEventSubscriber(treeServer)
 
-				updateServicesList(ctx, treeServer, 0)
+				go updateServicesList(ctx, treeServer, 0)
 
 				tree.RegisterNodeProviderEnhancedServer(server, treeServer)
 				tree.RegisterNodeReceiverEnhancedServer(server, treeServer)

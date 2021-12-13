@@ -16,12 +16,14 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/plugins"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/server"
+	"github.com/pydio/cells/v4/common/server/caddy"
 	servercontext "github.com/pydio/cells/v4/common/server/context"
 	"github.com/pydio/cells/v4/common/server/fork"
 	"github.com/pydio/cells/v4/common/server/generic"
@@ -166,10 +168,10 @@ to quickly create a Cobra application.`,
 		}
 
 		var (
-			srvGRPC server.Server
-			srvHTTP server.Server
+			srvGRPC    server.Server
+			srvHTTP    server.Server
 			srvGeneric server.Server
-			srvs []server.Server
+			srvs       []server.Server
 		)
 
 		for _, ss := range services {
@@ -212,7 +214,11 @@ to quickly create a Cobra application.`,
 
 				if s.IsREST() {
 					if srvHTTP == nil {
-						srvHTTP = http.New(ctx)
+						if runtime.IsFork() {
+							srvHTTP = http.New(ctx)
+						} else {
+							srvHTTP, _ = caddy.New(opts.Context, "")
+						}
 						srvs = append(srvs, srvHTTP)
 					}
 

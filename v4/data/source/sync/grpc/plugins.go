@@ -115,7 +115,7 @@ func newService(ctx context.Context, dsObject *object.DataSource) {
 			md := make(map[string]string)
 			md[common.PydioContextUserKey] = common.PydioSystemUsername
 			jobCtx := metadata.NewContext(ctx, md)
-			jobsClient := jobs.NewJobServiceClient(grpc2.NewClientConn(common.ServiceJobs))
+			jobsClient := jobs.NewJobServiceClient(grpc2.NewClientConn(common.ServiceJobs, grpc2.CallTimeoutShort))
 			serviceName := common.ServiceGrpcNamespace_ + common.ServiceDataSync_ + datasource
 
 			if !dsObject.FlatStorage {
@@ -135,7 +135,7 @@ func newService(ctx context.Context, dsObject *object.DataSource) {
 						job := getJobDefinition(datasource, serviceName, false, !dsObject.SkipSyncOnRestart)
 						_, e := jobsClient.PutJob(jobCtx, &jobs.PutJobRequest{
 							Job: job,
-						} /*, registry.ShortRequestTimeout() TODO V4*/)
+						})
 						return e
 					} else {
 						log.Logger(jobCtx).Debug("Could not get info about job, retrying...")
@@ -189,15 +189,15 @@ func newService(ctx context.Context, dsObject *object.DataSource) {
 								job := getJobDefinition(datasource, serviceName, true, false)
 								_, e := jobsClient.PutJob(jobCtx, &jobs.PutJobRequest{
 									Job: job,
-								} /*registry.ShortRequestTimeout() TODO V4*/)
+								})
 								return e
 							} else {
-								log.Logger(jobCtx).Debug("Could not get info about job, retrying...")
+								log.Logger(jobCtx).Info("Could not get info about job, retrying...", zap.Error(err))
 								return err
 							}
 						}
 						return nil
-					}, 5*time.Second, 30*time.Second)
+					}, 2*time.Second, 5*time.Second)
 					if e != nil {
 						log.Logger(jobCtx).Warn("service started but could not contact Job service insert snapshot dump")
 					}

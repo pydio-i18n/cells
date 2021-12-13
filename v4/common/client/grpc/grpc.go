@@ -3,9 +3,11 @@ package grpc
 import (
 	"context"
 	"fmt"
-	metadata2 "github.com/pydio/cells/v4/common/service/context/metadata"
 	"strings"
 	"sync"
+	"time"
+
+	metadata2 "github.com/pydio/cells/v4/common/service/context/metadata"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -18,10 +20,13 @@ var (
 	conn *grpc.ClientConn
 	once = &sync.Once{}
 	mox  = map[string]grpc.ClientConnInterface{}
+
+	CallTimeoutDefault = 10 * time.Minute
+	CallTimeoutShort   = 1 * time.Second
 )
 
 // NewClientConn returns a client attached to the defaults.
-func NewClientConn(serviceName string) grpc.ClientConnInterface {
+func NewClientConn(serviceName string, callTimeout ...time.Duration) grpc.ClientConnInterface {
 
 	if c, o := mox[strings.TrimPrefix(serviceName, common.ServiceGrpcNamespace_)]; o {
 		return c
@@ -37,7 +42,13 @@ func NewClientConn(serviceName string) grpc.ClientConnInterface {
 		return nil
 	}
 
+	to := time.Duration(0)
+	if len(callTimeout) > 0 {
+		to = callTimeout[0]
+	}
+
 	return &clientConn{
+		callTimeout: to,
 		ClientConn:  conn,
 		serviceName: common.ServiceGrpcNamespace_ + strings.TrimPrefix(serviceName, common.ServiceGrpcNamespace_),
 	}
@@ -46,6 +57,7 @@ func NewClientConn(serviceName string) grpc.ClientConnInterface {
 type clientConn struct {
 	*grpc.ClientConn
 	serviceName string
+	callTimeout time.Duration
 }
 
 // Invoke performs a unary RPC and returns after the response is received
@@ -58,6 +70,11 @@ func (cc *clientConn) Invoke(ctx context.Context, method string, args interface{
 		}
 	}
 	md.Set(ckeys.TargetServiceName, cc.serviceName)
+	if cc.callTimeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, cc.callTimeout)
+		defer cancel()
+	}
 	ctx = metadata.NewOutgoingContext(ctx, md)
 	return cc.ClientConn.Invoke(ctx, method, args, reply, opts...)
 }
@@ -71,6 +88,11 @@ func (cc *clientConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, meth
 		}
 	}
 	md.Set(ckeys.TargetServiceName, cc.serviceName)
+	if cc.callTimeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, cc.callTimeout)
+		defer cancel()
+	}
 	ctx = metadata.NewOutgoingContext(ctx, md)
 	return cc.ClientConn.NewStream(ctx, desc, method, opts...)
 }
