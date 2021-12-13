@@ -66,7 +66,8 @@ func InitRegistry(dao sql.DAO) {
 
 		var e error
 		cfg := defaultConf.GetProvider()
-		cfg.Set("dsn", "mysql://root:P@ssw0rd@tcp(localhost:3306)/cells?parseTime=true")
+		dbDriver, dbDSN := config.GetDatabase("default")
+		_ = cfg.Set("dsn", fmt.Sprintf("%s://%s", dbDriver, dbDSN))
 		reg, e = driver.NewRegistryFromDSN(context.Background(), cfg, lx)
 		if e != nil {
 			fmt.Printf("Cannot init registryFromDSN", e)
