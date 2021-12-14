@@ -29,8 +29,6 @@ import (
 	"context"
 	"time"
 
-	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
-
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -38,6 +36,7 @@ import (
 	"github.com/pydio/cells/v4/broker/activity"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes/meta"
 	"github.com/pydio/cells/v4/common/plugins"
@@ -166,9 +165,9 @@ func RegisterDigestJob(ctx context.Context) error {
 		},
 	}
 
+	cliJob := jobs.NewJobServiceClient(grpc2.NewClientConn(common.ServiceJobs, grpc2.CallTimeoutShort))
 	return std.Retry(ctx, func() error {
-		cliJob := jobs.NewJobServiceClient(grpc2.NewClientConn(common.ServiceJobs))
-		_, e := cliJob.PutJob(ctx, &jobs.PutJobRequest{Job: job} /*, registry.ShortRequestTimeout() - TODO V4*/)
+		_, e := cliJob.PutJob(ctx, &jobs.PutJobRequest{Job: job})
 		return e
 	}, 5*time.Second, 20*time.Second)
 

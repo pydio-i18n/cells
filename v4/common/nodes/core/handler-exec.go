@@ -310,13 +310,13 @@ func (e *Executor) CopyObject(ctx context.Context, from *tree.Node, to *tree.Nod
 			delete(requestData.Metadata, common.XAmzMetaDirective)
 		}
 		var err error
-		// TODO V4
 		if destInfo.StorageType == object.StorageType_S3 && destClient.CopyObjectMultipartThreshold() > 0 && src.Size > destClient.CopyObjectMultipartThreshold() {
 			if dirOk {
 				ctx = metadata.WithAdditionalMetadata(ctx, map[string]string{common.XAmzMetaDirective: directive})
 			}
 			err = destClient.CopyObjectMultipart(ctx, src, srcBucket, fromPath, destBucket, toPath, requestData.Metadata, requestData.Progress)
 		} else {
+			// TODO V4 - Verify
 			/*
 				destinationInfo, _ := minio.NewDestinationInfo(destBucket, toPath, nil, requestData.Metadata)
 				sourceInfo := minio.NewSourceInfo(srcBucket, fromPath, nil)

@@ -99,7 +99,7 @@ func NewHandler(ctx context.Context, handlerName, datasource string) (*Handler, 
 	if sec := config.GetSecret(syncConfig.ApiSecret).String(); sec != "" {
 		syncConfig.ApiSecret = sec
 	}
-	// TODO V4 - Issues with contacting other services - Re-enable and return error
+
 	e := h.initSync(syncConfig)
 
 	return h, e
@@ -200,13 +200,12 @@ func (s *Handler) initSync(syncConfig *object.DataSource) error {
 	go func() {
 		defer wg.Done()
 		var retryCount int
-		// TODO v4
-		// <-time.After(5 * time.Second)
+		<-time.After(3 * time.Second)
 		std.Retry(ctx, func() error {
 			retryCount++
 			log.Logger(ctx).Info(fmt.Sprintf("Trying to contact object service %s (retry %d)", common.ServiceDataObjects_+syncConfig.ObjectsServiceName, retryCount))
 			cli := object.NewObjectsEndpointClient(grpccli.NewClientConn(common.ServiceDataObjects_ + syncConfig.ObjectsServiceName))
-			ctx, cancel := context.WithTimeout(ctx, 1 * time.Second)
+			ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
 			defer cancel()
 			resp, err := cli.GetMinioConfig(ctx, &object.GetMinioConfigRequest{})
 			if err != nil {

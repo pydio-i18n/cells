@@ -204,8 +204,7 @@ func (h *Handler) CreateConsent(ctx context.Context, in *pauth.CreateConsentRequ
 		return nil, err
 	}
 
-	// TODO V4 - Seems like Hydra returns a Non-nil but empty error ??
-	if session.Error != nil && session.Error.Name != "" {
+	if session.Error != nil && session.Error.IsError() {
 		return nil, fmt.Errorf(session.Error.Name)
 	}
 

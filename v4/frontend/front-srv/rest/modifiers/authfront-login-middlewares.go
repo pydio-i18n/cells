@@ -1,10 +1,13 @@
 package modifiers
 
 import (
+	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"net/http"
 	"strconv"
+	"time"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/emicklei/go-restful"
 	"github.com/gorilla/sessions"
@@ -120,13 +123,15 @@ func LoginSuccessWrapper(middleware frontend.AuthMiddleware) frontend.AuthMiddle
 				aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
 				// Remove previous value if any
 				delQ, _ := anypb.New(&idm.ACLSingleQuery{RoleIDs: []string{user.GetUuid()}, Actions: []*idm.ACLAction{{Name: "parameter:core.conf:lang"}}, WorkspaceIDs: []string{"PYDIO_REPO_SCOPE_ALL"}})
-				aclClient.DeleteACL(ctx, &idm.DeleteACLRequest{Query: &service.Query{SubQueries: []*anypb.Any{delQ}}} /* TODO V4, client.WithRequestTimeout(500*time.Millisecond)*/)
+				send, can := context.WithTimeout(ctx, 500*time.Millisecond)
+				defer can()
+				aclClient.DeleteACL(send, &idm.DeleteACLRequest{Query: &service.Query{SubQueries: []*anypb.Any{delQ}}})
 				// Insert new ACL with language value
-				_, e := aclClient.CreateACL(ctx, &idm.CreateACLRequest{ACL: &idm.ACL{
+				_, e := aclClient.CreateACL(send, &idm.CreateACLRequest{ACL: &idm.ACL{
 					Action:      &idm.ACLAction{Name: "parameter:core.conf:lang", Value: lang},
 					RoleID:      user.GetUuid(),
 					WorkspaceID: "PYDIO_REPO_SCOPE_ALL",
-				}} /* TODO V4, client.WithRequestTimeout(500*time.Millisecond)*/)
+				}})
 				if e != nil {
 					log.Logger(ctx).Error("Cannot update language for user", user.ZapLogin(), zap.String("lang", lang), zap.Error(e))
 				} else {

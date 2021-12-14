@@ -27,6 +27,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/spf13/viper"
+
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
 
@@ -246,8 +248,7 @@ func (p *ClientsPool) registerAlternativeClient(namespace string) error {
 
 func (p *ClientsPool) watchRegistry(reg registry.Registry) error {
 	if reg == nil {
-		// Todo v4
-		defaultReg, err := registry.OpenRegistry(context.Background(), fmt.Sprintf("grpc://%s%s", "", ":8001"))
+		defaultReg, err := registry.OpenRegistry(context.Background(), viper.GetString("registry"))
 		if err != nil {
 			return err
 		}

@@ -138,7 +138,7 @@ func NewEngine(ctx context.Context, nsProvider *meta.NsProvider, indexContent bo
 }
 
 func (s *Server) watchOperations() {
-	batch := NewBatch(s.nsProvider, BatchOptions{IndexContent: s.IndexContent})
+	batch := NewBatch(s.Ctx, s.nsProvider, BatchOptions{IndexContent: s.IndexContent})
 	for {
 		select {
 		case n := <-s.inserts:

@@ -21,7 +21,6 @@
 package auth
 
 import (
-	"github.com/ory/x/logrusx"
 	"net/http"
 	"net/url"
 	"sync"
@@ -30,6 +29,7 @@ import (
 	hconf "github.com/ory/hydra/driver/config"
 	"github.com/ory/hydra/x"
 	hconfx "github.com/ory/x/configx"
+	"github.com/ory/x/logrusx"
 	"github.com/rs/cors"
 
 	"github.com/pydio/cells/v4/common"
@@ -166,10 +166,8 @@ func GetConfigurationProvider(hostname ...string) ConfigurationProvider {
 
 func NewProvider(rootURL string, values configx.Values) ConfigurationProvider {
 	// Todo V4 : Do we need more from the original conf ?
-	// fmt.Println("secret ", values.Val("secret").String())
-	// _ = values.Val("secrets.system").Set([]string{values.Val("secret").String()})
 	val := configx.New()
-	val.Val("secrets.system").Set([]string{values.Val("secret").String()})
+	_ = val.Val("secrets.system").Set([]string{values.Val("secret").String()})
 	provider, _ := hconf.New(logrusx.New("test", "test"), hconfx.WithValues(val.Map()))
 	return &configurationProvider{
 		Provider: provider,

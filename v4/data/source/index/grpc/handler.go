@@ -719,9 +719,7 @@ func (s *TreeServer) CloseSession(ctx context.Context, req *tree.CloseSessionReq
 
 // CleanResourcesBeforeDelete ensure all resources are cleant before deleting.
 func (s *TreeServer) CleanResourcesBeforeDelete(ctx context.Context, request *object.CleanResourcesRequest) (resp *object.CleanResourcesResponse, err error) {
-	// todo v4 dao := servicecontext.GetDAO(ctx).(index.DAO)
-	dao := s.dao
-	msg, err := dao.CleanResourcesOnDeletion()
+	msg, err := s.getDAO("").CleanResourcesOnDeletion()
 	if err != nil {
 		resp.Success = false
 	} else {

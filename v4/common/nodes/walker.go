@@ -51,7 +51,6 @@ func HandlerListNodesWithCallback(v Handler, ctx context.Context, request *tree.
 		}
 	}
 
-	// TODO v4 - check cancel timeout
 	ctx, cancel := context.WithTimeout(ctx, 6*time.Hour)
 	defer cancel()
 

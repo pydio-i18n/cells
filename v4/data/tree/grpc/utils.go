@@ -22,11 +22,12 @@ package grpc
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
-	pb "github.com/pydio/cells/v4/common/proto/registry"
-	"github.com/spf13/viper"
 	"strings"
 	"time"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
+	pb "github.com/pydio/cells/v4/common/proto/registry"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
@@ -41,8 +42,8 @@ func updateServicesList(ctx context.Context, treeServer *TreeServer, retry int) 
 	treeServer.Unlock()
 
 	var otherServices []registry.Service
-	// TODO V4 : @ghecquet is this the right way (previously ListRunningServices) ?
-	reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
+
+	reg := servicecontext.GetRegistry(ctx)
 	items, err := reg.List(registry.WithType(pb.ItemType_SERVICE))
 	if err != nil {
 		return
@@ -98,23 +99,27 @@ func filterServices(vs []registry.Service, f func(string) bool) []string {
 
 func watchRegistry(ctx context.Context, treeServer *TreeServer) {
 
-	/*
-		TODO V4
-		watcher, err := registry.Watch()
+	reg := servicecontext.GetRegistry(ctx)
+
+	w, err := reg.Watch(registry.WithType(pb.ItemType_SERVICE))
+	if err != nil {
+		return
+	}
+
+	for {
+		r, err := w.Next()
 		if err != nil {
 			return
 		}
-		for {
-			result, err := watcher.Next()
-			if result != nil && err == nil {
-				srv := result.Service
-				if strings.Contains(srv.Name, common.ServiceDataSync_) {
-					updateServicesList(ctx, treeServer, 0)
-				}
-			} else if err != nil {
-				log.Logger(ctx).Error("Registry Watcher Error", zap.Error(err))
-			}
-		}
 
-	*/
+		var s registry.Service
+		if !r.Item().As(&s) {
+			continue
+		}
+		if !strings.Contains(s.Name(), common.ServiceDataSync_) {
+			continue
+		}
+		updateServicesList(ctx, treeServer, 0)
+	}
+
 }

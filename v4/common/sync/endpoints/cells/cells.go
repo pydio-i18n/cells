@@ -144,10 +144,12 @@ func (c *Abstract) Walk(walknFc model.WalkNodesFunc, root string, recursive bool
 	if err != nil {
 		return err
 	}
-	s, e := cli.ListNodes(ctx, &tree.ListNodesRequest{
+	send, can := context.WithTimeout(ctx, 2*time.Minute)
+	defer can()
+	s, e := cli.ListNodes(send, &tree.ListNodesRequest{
 		Node:      &tree.Node{Path: c.rooted(root)},
 		Recursive: recursive,
-	} /* TODO v4, client.WithRequestTimeout(2*time.Minute)*/)
+	})
 	if e != nil {
 		return e
 	}
@@ -342,7 +344,9 @@ func (c *Abstract) receiveEvents(ctx context.Context, changes chan *tree.NodeCha
 		}
 		return
 	}
-	streamer, e := cli.StreamChanges(ctx, &tree.StreamChangesRequest{RootPath: c.Root} /* TODO v4, client.WithRequestTimeout(10*time.Minute)*/)
+	sendCtx, can := context.WithTimeout(ctx, 10*time.Minute)
+	defer can()
+	streamer, e := cli.StreamChanges(sendCtx, &tree.StreamChangesRequest{RootPath: c.Root})
 	if e != nil {
 		if !c.watchCtxCancelled {
 			finished <- e
@@ -430,7 +434,9 @@ func (c *Abstract) DeleteNode(ctx context.Context, name string) (err error) {
 	if err != nil {
 		return err
 	}
-	_, err = cliWrite.DeleteNode(ctx, &tree.DeleteNodeRequest{Node: proto.Clone(read.Node).(*tree.Node)} /* TODO V4, client.WithRequestTimeout(5*time.Minute)*/)
+	sendCtx, can := context.WithTimeout(ctx, 5*time.Minute)
+	defer can()
+	_, err = cliWrite.DeleteNode(sendCtx, &tree.DeleteNodeRequest{Node: proto.Clone(read.Node).(*tree.Node)})
 	return
 }
 
@@ -445,7 +451,9 @@ func (c *Abstract) MoveNode(ct context.Context, oldPath string, newPath string) 
 		to := from.Clone()
 		to.Path = c.rooted(newPath)
 		from.Path = c.rooted(from.Path)
-		_, e := cli.UpdateNode(ctx, &tree.UpdateNodeRequest{From: from, To: to} /* TODO V4, client.WithRequestTimeout(5*time.Minute)*/)
+		sendCtx, can := context.WithTimeout(ctx, 5*time.Minute)
+		defer can()
+		_, e := cli.UpdateNode(sendCtx, &tree.UpdateNodeRequest{From: from, To: to})
 		if e == nil && to.Type == tree.NodeType_COLLECTION {
 			c.readNodeBlocking(to)
 		}
@@ -527,7 +535,9 @@ func (c *Abstract) readNodeBlocking(n *tree.Node) {
 		if err != nil {
 			return err
 		}
-		_, e := cli.ReadNode(ctx, &tree.ReadNodeRequest{Node: n} /* TODO V4, client.WithRequestTimeout(1*time.Second)*/)
+		sendCtx, can := context.WithTimeout(ctx, 1*time.Second)
+		defer can()
+		_, e := cli.ReadNode(sendCtx, &tree.ReadNodeRequest{Node: n})
 		return e
 	}, 1*time.Second, 10*time.Second)
 }

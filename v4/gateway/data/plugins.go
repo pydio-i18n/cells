@@ -30,13 +30,13 @@ import (
 	"os"
 
 	minio "github.com/minio/minio/cmd"
-
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/service"
+	"github.com/pydio/cells/v4/common/utils/net"
 	_ "github.com/pydio/cells/v4/gateway/data/gw"
 	"github.com/pydio/cells/v4/gateway/data/hooks"
 )
@@ -60,7 +60,9 @@ func (l *logger) Audit(entry interface{}) {
 func init() {
 
 	plugins.Register("main", func(ctx context.Context) {
-		//port := net.GetAvailablePort()
+
+		port := net.GetAvailablePort()
+
 		service.NewService(
 			service.Name(common.ServiceGatewayData),
 			service.Context(ctx),
@@ -71,7 +73,7 @@ func init() {
 			service.WithHTTP(func(c context.Context, mux *http.ServeMux) error {
 				// TODO V4 - Handle PORT
 
-				u, _ := url.Parse("http://localhost:8484")
+				u, _ := url.Parse(fmt.Sprintf("http://localhost:%d", port))
 				proxy := httputil.NewSingleHostReverseProxy(u)
 				mux.HandleFunc("/io/", func(writer http.ResponseWriter, request *http.Request) {
 					proxy.ServeHTTP(writer, request)
@@ -89,7 +91,7 @@ func init() {
 				*/
 
 				srv := &gatewayDataServer{
-					port:     8484,
+					port:     port,
 					certFile: certFile,
 					keyFile:  keyFile,
 				}

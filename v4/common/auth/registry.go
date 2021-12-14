@@ -59,7 +59,6 @@ var (
 func InitRegistry(dao sql.DAO) {
 	once.Do(func() {
 
-		// db := sqlx.NewDb(dao.DB(), dao.Driver())
 		testL := logrus.New()
 		testL.SetOutput(io.Discard)
 		lx := logrusx.New("test", "1", logrusx.UseLogger(testL))
@@ -73,18 +72,6 @@ func InitRegistry(dao sql.DAO) {
 			fmt.Printf("Cannot init registryFromDSN", e)
 			os.Exit(1)
 		}
-		/*
-			reg = driver.New(
-				context.Background(),
-				driver.WithOptions(
-					configx.SkipValidation(),
-					configx.WithLogger(lx),
-					// TODO V4
-					configx.WithValue("dsn", "mysql://root@tcp(localhost:3306)/cells?parseTime=true"),
-				),
-				driver.DisableValidation(),
-				driver.DisablePreloading())
-		*/
 		p := reg.WithConfig(defaultConf.GetProvider()).Persister()
 		conn := p.Connection(context.Background())
 
