@@ -37,7 +37,6 @@ import (
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/mailer"
 	"github.com/pydio/cells/v4/common/service"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/utils/std"
 )
 
@@ -67,7 +66,7 @@ func init() {
 			}),
 			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
 
-				conf := servicecontext.GetConfig(c)
+				conf := config.Get("services", Name)
 				handler, err := NewHandler(ctx, conf)
 				if err != nil {
 					log.Logger(ctx).Error("Init handler", zap.Error(err))

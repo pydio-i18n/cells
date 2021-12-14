@@ -127,9 +127,9 @@ func (s *TreeServer) ReadNodeStream(streamer tree.NodeProviderStreamer_ReadNodeS
 		}
 		response, err := s.ReadNode(msCtx, request)
 		if err == nil {
-			response = &tree.ReadNodeResponse{}
-		} else {
 			response.Success = true
+		} else {
+			response = &tree.ReadNodeResponse{}
 		}
 		if e := streamer.Send(response); e != nil {
 			return e

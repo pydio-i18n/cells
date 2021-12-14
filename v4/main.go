@@ -48,13 +48,13 @@ import (
 	// _ "github.com/pydio/cells/v4/gateway/proxy"
 	//
 	// Broker
-	//_ "github.com/pydio/cells/v4/broker/activity/grpc"
-	//_ "github.com/pydio/cells/v4/broker/activity/rest"
-	//_ "github.com/pydio/cells/v4/broker/chat/grpc"
-	// _ "github.com/pydio/cells/v4/broker/log/grpc"
-	//_ "github.com/pydio/cells/v4/broker/log/rest"
-	//_ "github.com/pydio/cells/v4/broker/mailer/grpc"
-	//_ "github.com/pydio/cells/v4/broker/mailer/rest"
+	_ "github.com/pydio/cells/v4/broker/activity/grpc"
+	_ "github.com/pydio/cells/v4/broker/activity/rest"
+	_ "github.com/pydio/cells/v4/broker/chat/grpc"
+	_ "github.com/pydio/cells/v4/broker/log/grpc"
+	_ "github.com/pydio/cells/v4/broker/log/rest"
+	_ "github.com/pydio/cells/v4/broker/mailer/grpc"
+	_ "github.com/pydio/cells/v4/broker/mailer/rest"
 	// Gateways
 	_ "github.com/pydio/cells/v4/gateway/data"
 	//_ "github.com/pydio/cells/v4/gateway/dav"

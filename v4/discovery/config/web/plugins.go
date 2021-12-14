@@ -3,12 +3,20 @@ package rest
 import (
 	"context"
 
+	"github.com/pydio/cells/v4/common/config"
+
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/service"
 )
 
 func init() {
+
+	config.RegisterRestEditablePath("frontend", "plugin")
+	config.RegisterRestEditablePath("services", "pydio.grpc.update")
+	config.RegisterRestEditablePath("services", "pydio.grpc.mailer")
+	config.RegisterRestEditablePath("services", "pydio.rest.share")
+
 	f := func(ctx context.Context) {
 		service.NewService(
 			service.Name(common.ServiceRestNamespace_+common.ServiceConfig),
