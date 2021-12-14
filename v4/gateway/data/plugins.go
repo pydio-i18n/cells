@@ -71,7 +71,6 @@ func init() {
 			service.Description("S3 Gateway to tree service"),
 			//service.Port(fmt.Sprintf("%d", port)),
 			service.WithHTTP(func(c context.Context, mux *http.ServeMux) error {
-				// TODO V4 - Handle PORT
 
 				u, _ := url.Parse(fmt.Sprintf("http://localhost:%d", port))
 				proxy := httputil.NewSingleHostReverseProxy(u)
