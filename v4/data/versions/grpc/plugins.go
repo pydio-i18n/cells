@@ -35,7 +35,6 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/docstore"
-	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service"
 	"github.com/pydio/cells/v4/common/utils/std"
@@ -57,16 +56,16 @@ func init() {
 			service.Context(ctx),
 			service.Tag(common.ServiceTagData),
 			service.Description("Versioning service"),
-			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceJobs, []string{}),
-			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceDocStore, []string{}),
-			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceTree, []string{}),
+			//service.Dependency(common.ServiceGrpcNamespace_+common.ServiceJobs, []string{}),
+			//service.Dependency(common.ServiceGrpcNamespace_+common.ServiceDocStore, []string{}),
+			//service.Dependency(common.ServiceGrpcNamespace_+common.ServiceTree, []string{}),
 			service.Migrations([]*service.Migration{
 				{
 					TargetVersion: service.FirstRun(),
 					Up:            InitDefaults,
 				},
 			}),
-			service.Unique(true),
+			//service.Unique(true),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 
 				serviceDir, e := config.ServiceDataDir(common.ServiceGrpcNamespace_ + common.ServiceVersions)
@@ -85,20 +84,24 @@ func init() {
 
 				tree.RegisterNodeVersionerEnhancedServer(server, engine)
 
-				jobsClient := jobs.NewJobServiceClient(grpc2.NewClientConn(common.ServiceJobs))
-				// TODO V4
-				// to := registry.ShortRequestTimeout()
-				// Migration from old prune-versions-job : delete if exists, replaced by composed job
-				var reinsert bool
-				if _, e := jobsClient.GetJob(ctx, &jobs.GetJobRequest{JobID: "prune-versions-job"}); e == nil {
-					jobsClient.DeleteJob(ctx, &jobs.DeleteJobRequest{JobID: "prune-versions-job"})
-					reinsert = true
-				}
-				vJob := getVersioningJob()
-				if _, err := jobsClient.GetJob(ctx, &jobs.GetJobRequest{JobID: vJob.ID} /*, to*/); err != nil || reinsert {
-					log.Logger(ctx).Info("Inserting versioning job")
-					jobsClient.PutJob(ctx, &jobs.PutJobRequest{Job: vJob} /*, to*/)
-				}
+				/*
+					// TODO V4 - This blocks the start ...
+					jobsClient := jobs.NewJobServiceClient(grpc2.NewClientConn(common.ServiceJobs))
+
+					to, cancel := context.WithTimeout(ctx, grpc2.CallTimeoutShort)
+					defer cancel()
+					// Migration from old prune-versions-job : delete if exists, replaced by composed job
+					var reinsert bool
+					if _, e := jobsClient.GetJob(to, &jobs.GetJobRequest{JobID: "prune-versions-job"}); e == nil {
+						jobsClient.DeleteJob(to, &jobs.DeleteJobRequest{JobID: "prune-versions-job"})
+						reinsert = true
+					}
+					vJob := getVersioningJob()
+					if _, err := jobsClient.GetJob(to, &jobs.GetJobRequest{JobID: vJob.ID}); err != nil || reinsert {
+						log.Logger(ctx).Info("Inserting versioning job")
+						jobsClient.PutJob(to, &jobs.PutJobRequest{Job: vJob})
+					}
+				*/
 
 				return nil
 			}),
@@ -107,8 +110,6 @@ func init() {
 }
 
 func InitDefaults(ctx context.Context) error {
-
-	// todo V4
 
 	log.Logger(ctx).Info("Inserting default versioning policies")
 

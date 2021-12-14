@@ -22,11 +22,11 @@ import (
 	_ "github.com/pydio/cells/v4/discovery/update/rest"
 	// Data
 	_ "github.com/pydio/cells/v4/data/docstore/grpc"
-	//_ "github.com/pydio/cells/v4/data/key/grpc"
+	_ "github.com/pydio/cells/v4/data/key/grpc"
 	_ "github.com/pydio/cells/v4/data/meta/grpc"
 	_ "github.com/pydio/cells/v4/data/meta/rest"
-	//_ "github.com/pydio/cells/v4/data/search/grpc"
-	//_ "github.com/pydio/cells/v4/data/search/rest"
+	_ "github.com/pydio/cells/v4/data/search/grpc"
+	_ "github.com/pydio/cells/v4/data/search/rest"
 	_ "github.com/pydio/cells/v4/data/source/index"
 	_ "github.com/pydio/cells/v4/data/source/index/grpc"
 	_ "github.com/pydio/cells/v4/data/source/objects"
@@ -36,7 +36,7 @@ import (
 	_ "github.com/pydio/cells/v4/data/templates/rest"
 	_ "github.com/pydio/cells/v4/data/tree/grpc"
 	_ "github.com/pydio/cells/v4/data/tree/rest"
-	//_ "github.com/pydio/cells/v4/data/versions/grpc"
+	_ "github.com/pydio/cells/v4/data/versions/grpc"
 
 	// _ "github.com/pydio/cells/v4/data/source/test"
 
