@@ -23,7 +23,10 @@ package gateway
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"os"
 
 	minio "github.com/minio/minio/cmd"
@@ -33,7 +36,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
-	"github.com/pydio/cells/v4/common/server/generic"
 	"github.com/pydio/cells/v4/common/service"
 	_ "github.com/pydio/cells/v4/gateway/data/gw"
 	"github.com/pydio/cells/v4/gateway/data/hooks"
@@ -66,7 +68,17 @@ func init() {
 			// service.RouterDependencies(),
 			service.Description("S3 Gateway to tree service"),
 			//service.Port(fmt.Sprintf("%d", port)),
-			service.WithGeneric(func(c context.Context, g *generic.Server) error {
+			service.WithHTTP(func(c context.Context, mux *http.ServeMux) error {
+				// TODO V4 - Handle PORT
+
+				u, _ := url.Parse("http://localhost:8484")
+				proxy := httputil.NewSingleHostReverseProxy(u)
+				mux.HandleFunc("/io/", func(writer http.ResponseWriter, request *http.Request) {
+					proxy.ServeHTTP(writer, request)
+				})
+				mux.HandleFunc("/data/", func(writer http.ResponseWriter, request *http.Request) {
+					proxy.ServeHTTP(writer, request)
+				})
 
 				var certFile, keyFile string
 				/*
@@ -81,7 +93,7 @@ func init() {
 					certFile: certFile,
 					keyFile:  keyFile,
 				}
-				srv.Start(ctx)
+				go srv.Start(ctx)
 
 				return nil
 			}),
@@ -98,7 +110,7 @@ type gatewayDataServer struct {
 }
 
 func (g *gatewayDataServer) Start(ctx context.Context) error {
-	// os.Setenv("MINIO_BROWSER", "off")
+	os.Setenv("MINIO_BROWSER", "off")
 	os.Setenv("MINIO_ROOT_USER", "gateway")
 	os.Setenv("MINIO_ROOT_PASSWORD", "gatewaysecret")
 
@@ -113,7 +125,7 @@ func (g *gatewayDataServer) Start(ctx context.Context) error {
 		})
 	})
 
-	params := []string{"minio", "gateway", "pydio"}
+	params := []string{"minio", "gateway", "pydio", "--address", fmt.Sprintf(":%d", g.port)}
 	minio.Main(params)
 	/*
 		console := &logger{ctx: g.ctx}

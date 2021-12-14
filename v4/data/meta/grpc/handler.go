@@ -166,6 +166,7 @@ func (s *MetaServer) ReadNode(ctx context.Context, req *tree.ReadNodeRequest) (r
 	if req.Node == nil || req.Node.Uuid == "" {
 		return resp, errors.BadRequest(common.ServiceMeta, "Please provide a Node with a Uuid")
 	}
+	resp = &tree.ReadNodeResponse{}
 
 	if s.cache != nil {
 		//s.cacheMutex.Lock(req.Node.Uuid)

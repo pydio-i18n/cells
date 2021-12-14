@@ -56,9 +56,8 @@ import (
 	//_ "github.com/pydio/cells/v4/broker/mailer/grpc"
 	//_ "github.com/pydio/cells/v4/broker/mailer/rest"
 	// Gateways
-	//_ "github.com/pydio/cells/v4/gateway/data"
+	_ "github.com/pydio/cells/v4/gateway/data"
 	//_ "github.com/pydio/cells/v4/gateway/dav"
-	//_ "github.com/pydio/cells/v4/gateway/proxy"
 	_ "github.com/pydio/cells/v4/gateway/websocket/api"
 	//_ "github.com/pydio/cells/v4/gateway/wopi"
 
@@ -86,14 +85,14 @@ import (
 	_ "github.com/pydio/cells/v4/scheduler/tasks/grpc"
 	_ "github.com/pydio/cells/v4/scheduler/timer/grpc"
 	// Scheduler Actions
-	//_ "github.com/pydio/cells/v4/broker/activity/actions"
-	//_ "github.com/pydio/cells/v4/scheduler/actions/archive"
-	//_ "github.com/pydio/cells/v4/scheduler/actions/cmd"
-	//_ "github.com/pydio/cells/v4/scheduler/actions/idm"
-	//_ "github.com/pydio/cells/v4/scheduler/actions/images"
-	//_ "github.com/pydio/cells/v4/scheduler/actions/scheduler"
-	//_ "github.com/pydio/cells/v4/scheduler/actions/tools"
-	//_ "github.com/pydio/cells/v4/scheduler/actions/tree"
+	_ "github.com/pydio/cells/v4/broker/activity/actions"
+	_ "github.com/pydio/cells/v4/scheduler/actions/archive"
+	_ "github.com/pydio/cells/v4/scheduler/actions/cmd"
+	_ "github.com/pydio/cells/v4/scheduler/actions/idm"
+	_ "github.com/pydio/cells/v4/scheduler/actions/images"
+	_ "github.com/pydio/cells/v4/scheduler/actions/scheduler"
+	_ "github.com/pydio/cells/v4/scheduler/actions/tools"
+	_ "github.com/pydio/cells/v4/scheduler/actions/tree"
 )
 
 func main() {

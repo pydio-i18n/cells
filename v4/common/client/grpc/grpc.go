@@ -7,13 +7,12 @@ import (
 	"sync"
 	"time"
 
-	metadata2 "github.com/pydio/cells/v4/common/service/context/metadata"
-
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/service/context/ckeys"
+	metadata2 "github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 var (

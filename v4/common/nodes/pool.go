@@ -23,8 +23,12 @@ package nodes
 import (
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
+
+	pb "github.com/pydio/cells/v4/common/proto/registry"
+	"github.com/pydio/cells/v4/common/registry"
 
 	microregistry "github.com/micro/micro/v3/service/registry"
 	"go.uber.org/zap"
@@ -236,7 +240,7 @@ func (p *ClientsPool) registerAlternativeClient(namespace string) error {
 	return nil
 }
 
-func (p *ClientsPool) watchRegistry() {
+func (p *ClientsPool) watchRegistry() error {
 	/* TODO v4
 	watcher, err := registry.Watch()
 	p.watcher = watcher
@@ -263,6 +267,39 @@ func (p *ClientsPool) watchRegistry() {
 	}
 
 	*/
+	reg, err := registry.OpenRegistry(context.Background(), fmt.Sprintf("grpc://%s%s", "", ":8001"))
+	if err != nil {
+		return err
+	}
+
+	w, err := reg.Watch(registry.WithType(pb.ItemType_SERVICE))
+	if err != nil {
+		return err
+	}
+	prefix := common.ServiceGrpcNamespace_ + common.ServiceDataSync_
+
+	for {
+		r, err := w.Next()
+		if err != nil {
+			return err
+		}
+
+		var s registry.Service
+		if !r.Item().As(&s) {
+			continue
+		}
+		if !strings.HasPrefix(s.Name(), prefix) {
+			continue
+		}
+		dsName := strings.TrimPrefix(s.Name(), prefix)
+		if _, ok := p.sources[dsName]; ok && r.Action() == "delete" {
+			p.Lock()
+			delete(p.sources, dsName)
+			p.Unlock()
+		}
+		p.LoadDataSources()
+	}
+
 }
 
 func (p *ClientsPool) watchConfigChanges() {

@@ -71,6 +71,7 @@ func (p *rrPicker) Pick(i balancer.PickInfo) (balancer.PickResult, error) {
 	}
 	pc, ok := p.subConns[serviceName]
 	if !ok {
+		fmt.Println("CANNOT FIND SUBCONN FOR SERVICE ", serviceName)
 		return balancer.PickResult{}, balancer.ErrNoSubConnAvailable
 	}
 	pc.mu.Lock()

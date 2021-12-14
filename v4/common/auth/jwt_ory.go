@@ -267,7 +267,8 @@ func (p *oryprovider) PasswordCredentialsToken(ctx context.Context, userName str
 
 		attempt++
 
-		loginctx, _ := context.WithTimeout(ctx, 5*time.Second)
+		loginctx, can := context.WithTimeout(ctx, 5*time.Second)
+		defer can()
 		identity, valid, err = cc.Login(loginctx, Scopes{}, userName, password)
 
 		// Error means the user is unknwown to the system, we continue to the next round
