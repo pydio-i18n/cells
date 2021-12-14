@@ -29,17 +29,16 @@ func init() {
 		log.Logger(ctx).Info(msg)
 		/*
 			// TODO V4
+			// Register custom interceptor ?
 			m.Init(micro.WrapHandler(jwtWrapper(m.Options().Context), httpMetaWrapper()))
 		*/
 		h := &TreeHandler{}
-		tree.RegisterNodeProviderServer(g, h)
-		/*
-			TODO V4
-			tree.RegisterNodeReceiverServer(g, h)
-			tree.RegisterNodeChangesStreamerServer(g, h)
-			tree.RegisterNodeProviderStreamerServer(g, h)
-			tree.RegisterNodeReceiverStreamServer(g, h)
-		*/
+		tree.RegisterNodeProviderEnhancedServer(g, h)
+		tree.RegisterNodeReceiverEnhancedServer(g, h)
+		tree.RegisterNodeChangesStreamerEnhancedServer(g, h)
+		tree.RegisterNodeProviderStreamerEnhancedServer(g, h)
+		tree.RegisterNodeReceiverStreamEnhancedServer(g, h)
+
 		return nil
 	}
 
@@ -48,20 +47,6 @@ func init() {
 		service.Tag(common.ServiceTagGateway),
 		service.Dependency(common.ServiceGrpcNamespace_+common.ServiceTree, []string{}),
 		service.Dependency(common.ServiceGatewayProxy, []string{}),
-		/*
-			service.WithMicro(func(m micro.Service) error {
-				m.Init(micro.WrapHandler(jwtWrapper(m.Options().Context), httpMetaWrapper()))
-				h := &TreeHandler{}
-				srv := m.Options().Server
-				tree.RegisterNodeProviderHandler(srv, h)
-				tree.RegisterNodeReceiverHandler(srv, h)
-				tree.RegisterNodeChangesStreamerHandler(srv, h)
-				tree.RegisterNodeProviderStreamerHandler(srv, h)
-				tree.RegisterNodeReceiverStreamHandler(srv, h)
-				return nil
-			}),
-
-		*/
 	}
 	tlsOpts := append(baseOpts,
 		service.Name(common.ServiceGatewayGrpc),
@@ -95,7 +80,6 @@ func init() {
 				service.WithGRPC(func(c context.Context, g *grpc.Server) error {
 					return grpcServerWithLog(logCtx, g, "Starting HTTP only gRPC gateway. Will be accessed directly through port "+p)
 				}),
-				//service.WithMicro(microServiceWithLog(logCtx, "Starting HTTP only gRPC gateway. Will be accessed directly through port "+p)),
 			)
 			service.NewService(clearOpts...)
 		}
@@ -116,30 +100,6 @@ func init() {
 			}
 			service.NewService(tlsOpts...)
 		}
-		/*
-			if len(ss) == 1 && !ss[0].HasTLS() {
-				// This is a simple config without TLS - Access will be direct not through proxy
-				//fmt.Println("[NO-TLS] " + common.ServiceGatewayGrpc + " served as HTTP and should be accessed directly (no TLS)")
-				if port := viper.Get("grpc_external"); port != nil {
-					log.Logger(ctx).Info("Using HTTP configuration for gRPC gateway. Should be accessed directly through port " + port.(string))
-					tlsOpts = append(tlsOpts, service.Port(port.(string)))
-				} else {
-					log.Logger(ctx).Info("Using HTTP configuration for gRPC gateway. Should be accessed directly on this service port")
-				}
-			} else {
-				log.Logger(ctx).Info("Activating self-signed configuration for gRPC gateway to allow full TLS chain.")
-				localConfig := &install.ProxyConfig{
-					Binds:     []string{common.ServiceGatewayGrpc},
-					TLSConfig: &install.ProxyConfig_SelfSigned{SelfSigned: &install.TLSSelfSigned{}},
-				}
-				if tls, e := providers.LoadTLSServerConfig(localConfig); e == nil {
-					//fmt.Println("[TLS] Activating self-signed TLS on " + common.ServiceGatewayGrpc)
-					tlsOpts = append(tlsOpts, service.WithTLSConfig(tls))
-				}
-			}
-			tlsOpts = append(tlsOpts, service.Context(ctx))
-			service.NewService(tlsOpts...)
-		*/
 	})
 
 }

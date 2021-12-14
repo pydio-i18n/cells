@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -22,6 +23,10 @@ type TreeHandler struct {
 	router nodes.Handler
 }
 
+func (t *TreeHandler) Name() string {
+	return common.ServiceGatewayGrpc
+}
+
 func (t *TreeHandler) fixMode(n *tree.Node) {
 	if n.IsLeaf() {
 		n.Mode = int32(os.ModePerm)
@@ -32,7 +37,7 @@ func (t *TreeHandler) fixMode(n *tree.Node) {
 	}
 }
 
-func (t *TreeHandler) ReadNodeStream(ctx context.Context, s tree.NodeProviderStreamer_ReadNodeStreamStream) error {
+func (t *TreeHandler) ReadNodeStream(s tree.NodeProviderStreamer_ReadNodeStreamServer) error {
 	router := t.getRouter()
 	var err error
 	for {
@@ -44,7 +49,7 @@ func (t *TreeHandler) ReadNodeStream(ctx context.Context, s tree.NodeProviderStr
 			}
 			break
 		}
-		resp, _ := router.ReadNode(ctx, r)
+		resp, _ := router.ReadNode(s.Context(), r)
 		if resp == nil {
 			resp = &tree.ReadNodeResponse{Success: false}
 		} else {
@@ -56,11 +61,10 @@ func (t *TreeHandler) ReadNodeStream(ctx context.Context, s tree.NodeProviderStr
 			break
 		}
 	}
-	s.Close()
 	return err
 }
 
-func (t *TreeHandler) CreateNodeStream(ctx context.Context, s tree.NodeReceiverStream_CreateNodeStreamStream) error {
+func (t *TreeHandler) CreateNodeStream(s tree.NodeReceiverStream_CreateNodeStreamServer) error {
 	router := t.getRouter()
 	var err error
 	for {
@@ -73,7 +77,7 @@ func (t *TreeHandler) CreateNodeStream(ctx context.Context, s tree.NodeReceiverS
 			break
 		}
 		t.fixMode(r.Node)
-		resp, er := router.CreateNode(ctx, r)
+		resp, er := router.CreateNode(s.Context(), r)
 		if er != nil {
 			s.SendMsg(er)
 			err = er
@@ -83,15 +87,14 @@ func (t *TreeHandler) CreateNodeStream(ctx context.Context, s tree.NodeReceiverS
 			break
 		}
 	}
-	s.Close()
 	return err //errors.BadRequest("not.implemented", "CreateNodeStream not implemented yet")
 }
 
-func (t *TreeHandler) UpdateNodeStream(context.Context, tree.NodeReceiverStream_UpdateNodeStreamServer) error {
+func (t *TreeHandler) UpdateNodeStream(tree.NodeReceiverStream_UpdateNodeStreamServer) error {
 	return errors.BadRequest("not.implemented", "UpdateNodeStream not implemented yet")
 }
 
-func (t *TreeHandler) DeleteNodeStream(context.Context, tree.NodeReceiverStream_DeleteNodeStreamServer) error {
+func (t *TreeHandler) DeleteNodeStream(tree.NodeReceiverStream_DeleteNodeStreamServer) error {
 	return errors.BadRequest("not.implemented", "DeleteNodeStream not implemented yet")
 }
 
@@ -133,9 +136,9 @@ func (t *TreeHandler) ListNodes(request *tree.ListNodesRequest, stream tree.Node
 }
 
 // StreamChanges sends events to the client
-func (t *TreeHandler) StreamChanges(ctx context.Context, req *tree.StreamChangesRequest, resp tree.NodeChangesStreamer_StreamChangesServer) error {
+func (t *TreeHandler) StreamChanges(req *tree.StreamChangesRequest, s tree.NodeChangesStreamer_StreamChangesServer) error {
 
-	streamer, err := t.getRouter().StreamChanges(ctx, req)
+	streamer, err := t.getRouter().StreamChanges(s.Context(), req)
 	if err != nil {
 		return err
 	}
@@ -145,46 +148,49 @@ func (t *TreeHandler) StreamChanges(ctx context.Context, req *tree.StreamChanges
 		if e != nil {
 			break
 		}
-		resp.Send(r)
+		s.Send(r)
 	}
 
 	return nil
 }
 
 // CreateNode is used for creating folders
-func (t *TreeHandler) CreateNode(ctx context.Context, req *tree.CreateNodeRequest, resp *tree.CreateNodeResponse) error {
+func (t *TreeHandler) CreateNode(ctx context.Context, req *tree.CreateNodeRequest) (*tree.CreateNodeResponse, error) {
+	resp := &tree.CreateNodeResponse{}
 	t.fixMode(req.Node)
 	r, e := t.getRouter().CreateNode(ctx, req)
 	if e != nil {
 		resp.Success = false
-		return e
+		return resp, e
 	}
 	resp.Node = r.Node
 	resp.Success = r.Success
-	return nil
+	return resp, nil
 }
 
 // UpdateNode is used for moving nodes paths
-func (t *TreeHandler) UpdateNode(ctx context.Context, req *tree.UpdateNodeRequest, resp *tree.UpdateNodeResponse) error {
+func (t *TreeHandler) UpdateNode(ctx context.Context, req *tree.UpdateNodeRequest) (*tree.UpdateNodeResponse, error) {
+	resp := &tree.UpdateNodeResponse{}
 	r, e := t.getRouter().UpdateNode(ctx, req)
 	if e != nil {
 		resp.Success = false
-		return e
+		return resp, e
 	}
 	resp.Success = r.Success
 	resp.Node = r.Node
-	return nil
+	return resp, nil
 }
 
 // DeleteNode is used to delete nodes
-func (t *TreeHandler) DeleteNode(ctx context.Context, req *tree.DeleteNodeRequest, resp *tree.DeleteNodeResponse) error {
+func (t *TreeHandler) DeleteNode(ctx context.Context, req *tree.DeleteNodeRequest) (*tree.DeleteNodeResponse, error) {
+	resp := &tree.DeleteNodeResponse{}
 	r, e := t.getRouter().DeleteNode(ctx, req)
 	if e != nil {
 		resp.Success = false
-		return e
+		return resp, e
 	}
 	resp.Success = r.Success
-	return nil
+	return resp, nil
 }
 
 func (t *TreeHandler) getRouter() nodes.Handler {
