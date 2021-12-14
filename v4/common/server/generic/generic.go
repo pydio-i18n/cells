@@ -2,13 +2,14 @@ package generic
 
 import (
 	"context"
-	"github.com/google/uuid"
+
 	"github.com/pydio/cells/v4/common/server"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 type Server struct {
-	name string
-	cancel      context.CancelFunc
+	name     string
+	cancel   context.CancelFunc
 	handlers []func() error
 }
 
@@ -20,7 +21,7 @@ type Handler interface {
 func New(ctx context.Context) server.Server {
 	ctx, cancel := context.WithCancel(ctx)
 	return server.NewServer(ctx, &Server{
-		name: "generic-" + uuid.NewString(),
+		name:   "generic-" + uuid.New(),
 		cancel: cancel,
 	})
 }
@@ -68,8 +69,8 @@ func (s *Server) Endpoints() []string {
 func (s *Server) As(i interface{}) bool {
 	p, ok := i.(**Server)
 	if !ok {
-			return false
-		}
+		return false
+	}
 
 	*p = s
 	return true

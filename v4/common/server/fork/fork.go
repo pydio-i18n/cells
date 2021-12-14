@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"github.com/google/uuid"
 	"os"
 	"os/exec"
 	"strings"
@@ -13,10 +12,11 @@ import (
 
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/server"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 type Server struct {
-	name string
+	name   string
 	ctx    context.Context
 	cancel context.CancelFunc
 
@@ -27,7 +27,7 @@ func NewServer(ctx context.Context) server.Server {
 	ctx, cancel := context.WithCancel(ctx)
 
 	return server.NewServer(ctx, &Server{
-		name: "fork-" + uuid.NewString(),
+		name:   "fork-" + uuid.New(),
 		ctx:    ctx,
 		cancel: cancel,
 		s:      &ForkServer{},

@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"github.com/google/uuid"
 	"net"
 
 	"github.com/spf13/viper"
@@ -10,10 +9,11 @@ import (
 
 	"github.com/pydio/cells/v4/common/server"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 type Server struct {
-	name string
+	name   string
 	cancel context.CancelFunc
 	net.Listener
 	*grpc.Server
@@ -36,7 +36,7 @@ func New(ctx context.Context) server.Server {
 	ctx, cancel := context.WithCancel(ctx)
 
 	return server.NewServer(ctx, &Server{
-		name: "grpc-" + uuid.NewString(),
+		name:   "grpc-" + uuid.New(),
 		cancel: cancel,
 		Server: s,
 	})

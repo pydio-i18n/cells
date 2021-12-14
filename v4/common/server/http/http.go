@@ -7,16 +7,16 @@ import (
 	"net/http/pprof"
 	"reflect"
 
-	"github.com/google/uuid"
 	"github.com/spf13/viper"
 
 	"github.com/pydio/cells/v4/common/server"
 	servercontext "github.com/pydio/cells/v4/common/server/context"
 	"github.com/pydio/cells/v4/common/server/http/registrymux"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 type Server struct {
-	name string
+	name   string
 	cancel context.CancelFunc
 	net.Listener
 	*http.ServeMux
@@ -37,10 +37,10 @@ func New(ctx context.Context) server.Server {
 	ctx, cancel := context.WithCancel(ctx)
 
 	return server.NewServer(ctx, &Server{
-		name: "http-" + uuid.NewString(),
-		cancel: cancel,
+		name:     "http-" + uuid.New(),
+		cancel:   cancel,
 		ServeMux: mux,
-		Server:     srv,
+		Server:   srv,
 	})
 }
 
@@ -68,7 +68,7 @@ func (s *Server) Stop() error {
 	return s.Server.Shutdown(context.TODO())
 }
 
-func (s *Server) Address() []string{
+func (s *Server) Address() []string {
 	if s.Listener == nil {
 		return []string{}
 	}

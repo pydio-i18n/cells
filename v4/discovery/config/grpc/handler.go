@@ -2,8 +2,9 @@ package grpc
 
 import (
 	"context"
-	"github.com/google/uuid"
+
 	pb "github.com/pydio/cells/v4/common/proto/config"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"github.com/pydio/cells/v4/x/configx"
 )
 
@@ -15,7 +16,7 @@ type Handler struct {
 }
 
 func (h *Handler) Id() string {
-	return uuid.NewString()
+	return uuid.New()
 }
 
 func (h *Handler) Name() string {
@@ -32,7 +33,7 @@ func (h *Handler) Get(ctx context.Context, req *pb.GetRequest) (*pb.GetResponse,
 	}, nil
 }
 
-func (h *Handler) Set(ctx context.Context, req *pb.SetRequest) (*pb.SetResponse,error) {
+func (h *Handler) Set(ctx context.Context, req *pb.SetRequest) (*pb.SetResponse, error) {
 	if err := config.Val(req.GetPath()).Set(req.GetValue()); err != nil {
 		return nil, err
 	}

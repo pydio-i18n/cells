@@ -8,8 +8,6 @@ import (
 	"net/http/pprof"
 	"reflect"
 
-	"github.com/google/uuid"
-
 	caddy "github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig"
 	_ "github.com/caddyserver/caddy/v2/modules/standard"
@@ -18,6 +16,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/install"
 	"github.com/pydio/cells/v4/common/server"
 	"github.com/pydio/cells/v4/common/server/caddy/mux"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 const (
@@ -130,7 +129,7 @@ func New(ctx context.Context, dir string) (server.Server, error) {
 	}
 
 	return server.NewServer(ctx, &Server{
-		name:     "caddy-" + uuid.NewString(),
+		name:     "caddy-" + uuid.New(),
 		ServeMux: srvMUX,
 		Confs:    confs,
 	}), nil
