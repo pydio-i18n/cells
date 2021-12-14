@@ -3,9 +3,9 @@ package server
 import (
 	"context"
 	"fmt"
-	"os"
-
 	servercontext "github.com/pydio/cells/v4/common/server/context"
+	"golang.org/x/sync/errgroup"
+	"os"
 )
 
 type Server interface {
@@ -117,13 +117,13 @@ func (s *server) RegisterBeforeServe(f func() error) {
 }
 
 func (s *server) BeforeServe() error {
+	var g errgroup.Group
+
 	for _, h := range s.opts.BeforeServe {
-		if err := h(); err != nil {
-			return err
-		}
+		g.Go(h)
 	}
 
-	return nil
+	return g.Wait()
 }
 
 func (s *server) RegisterAfterServe(f func() error) {
@@ -131,13 +131,13 @@ func (s *server) RegisterAfterServe(f func() error) {
 }
 
 func (s *server) AfterServe() error {
+	var g errgroup.Group
+
 	for _, h := range s.opts.AfterServe {
-		if err := h(); err != nil {
-			return err
-		}
+		g.Go(h)
 	}
 
-	return nil
+	return g.Wait()
 }
 
 func (s *server) RegisterBeforeStop(f func() error) {

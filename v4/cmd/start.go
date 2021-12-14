@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"fmt"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config/runtime"
@@ -250,12 +250,13 @@ to quickly create a Cobra application.`,
 			}
 		}
 
+		var g errgroup.Group
 		for _, srv := range srvs {
-			go func(srv server.Server) {
-				if err := srv.Serve(); err != nil {
-					fmt.Println(err)
-				}
-			}(srv)
+			g.Go(srv.Serve)
+		}
+
+		if err := g.Wait(); err != nil {
+			return err
 		}
 
 		select {
