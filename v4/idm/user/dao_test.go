@@ -190,14 +190,14 @@ func TestQueryBuilder(t *testing.T) {
 			u, e := mockDAO.Bind("usernameXX", "xxxxxxx")
 			So(u, ShouldBeNil)
 			So(e, ShouldNotBeNil)
-			So(errors.Parse(e.Error()).Code, ShouldEqual, 404)
+			So(errors.FromError(e).Code, ShouldEqual, 404)
 		}
 
 		{
 			u, e := mockDAO.Bind("username", "xxxxxxxYY")
 			So(u, ShouldBeNil)
 			So(e, ShouldNotBeNil)
-			So(errors.Parse(e.Error()).Code, ShouldEqual, 403)
+			So(errors.FromError(e).Code, ShouldEqual, 403)
 		}
 
 		{

@@ -36,8 +36,10 @@ func init() {
 			service.Tag(common.ServiceTagData),
 			service.Description("RESTful Gateway to tree service"),
 			//service.RouterDependencies(),
-			service.WithWeb(func() service.WebHandler {
-				return new(Handler)
+			service.WithWeb(func(c context.Context) service.WebHandler {
+				h := &Handler{}
+				h.Ctx = c
+				return h
 			}),
 		)
 	})

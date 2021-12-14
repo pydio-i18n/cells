@@ -135,7 +135,7 @@ func fromPydioNodeObjectInfo(bucket string, node *tree.Node) minio.ObjectInfo {
 }
 
 func pydioToMinioError(err error, bucket, key string) error {
-	mErr := cerrors.Parse(err.Error())
+	mErr := cerrors.FromError(err)
 	switch mErr.Code {
 	case 403:
 		err = minio.PrefixAccessDenied{
@@ -189,7 +189,7 @@ func (l *pydioObjects) ListPydioObjects(ctx context.Context, bucket string, pref
 		FilterType:   FilterType,
 	})
 	if err != nil {
-		if cerrors.Parse(err.Error()).Code == 404 {
+		if cerrors.FromError(err).Code == 404 {
 			return nil, nil, nil // Ignore and return empty list
 		}
 		return nil, nil, pydioToMinioError(err, bucket, prefix)

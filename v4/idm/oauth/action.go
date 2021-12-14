@@ -62,7 +62,7 @@ func InsertPruningJob(ctx context.Context) error {
 		// timeout := registry.ShortRequestTimeout()
 		if resp, e := cli.GetJob(ctx, &jobs.GetJobRequest{JobID: pruneTokensActionName} /*, timeout*/); e == nil && resp.Job != nil {
 			return nil // Already exists
-		} else if e != nil && errors.Parse(e.Error()).Id == "go.micro.client" {
+		} else if e != nil && errors.FromError(e).Id == "go.micro.client" {
 			return e // not ready yet, retry
 		}
 		log.Logger(ctx).Info("Inserting pruning job for revoked token and reset password tokens")

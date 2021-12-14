@@ -291,7 +291,7 @@ func (s *CacheHandler) MultipartComplete(ctx context.Context, target *tree.Node,
 
 func (s *CacheHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	resp, e := s.Next.ReadNode(ctx, in, opts...)
-	notFound := e != nil && (errors.Parse(e.Error()).Code == 404 || strings.Contains(e.Error(), " NotFound "))
+	notFound := e != nil && (errors.FromError(e).Code == 404 || strings.Contains(e.Error(), " NotFound "))
 	tempo := e == nil && resp.Node.GetEtag() == "temporary"
 	out, isCached := s.cacheGet(ctx, in.Node.GetPath())
 	if e == nil && resp.Node != nil {

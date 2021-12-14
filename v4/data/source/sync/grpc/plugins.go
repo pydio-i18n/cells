@@ -130,7 +130,7 @@ func newService(ctx context.Context, dsObject *object.DataSource) {
 								RunNow: true,
 							})
 						}
-					} else if errors.Parse(err.Error()).Code == 404 {
+					} else if errors.FromError(err).Code == 404 {
 						log.Logger(jobCtx).Info("Creating job in scheduler to trigger re-indexation")
 						job := getJobDefinition(datasource, serviceName, false, !dsObject.SkipSyncOnRestart)
 						_, e := jobsClient.PutJob(jobCtx, &jobs.PutJobRequest{
@@ -184,7 +184,7 @@ func newService(ctx context.Context, dsObject *object.DataSource) {
 				if !dsObject.IsInternal() {
 					e = std.Retry(jobCtx, func() error {
 						if _, err := jobsClient.GetJob(jobCtx, &jobs.GetJobRequest{JobID: "snapshot-" + datasource}); err != nil {
-							if errors.Parse(err.Error()).Code == 404 {
+							if errors.FromError(err).Code == 404 {
 								log.Logger(jobCtx).Info("Creating job in scheduler to dump snapshot for " + datasource)
 								job := getJobDefinition(datasource, serviceName, true, false)
 								_, e := jobsClient.PutJob(jobCtx, &jobs.PutJobRequest{

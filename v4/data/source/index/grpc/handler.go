@@ -54,9 +54,9 @@ type TreeServer struct {
 	// logger
 	logger *zap.Logger
 
-	handlerName        string
-	DataSourceName     string
-	DataSourceInternal bool
+	handlerName string
+	dsName      string
+	dsInternal  bool
 
 	tree.UnimplementedNodeReceiverServer
 	tree.UnimplementedNodeProviderServer
@@ -73,32 +73,31 @@ type TreeServer struct {
 
 func init() {}
 
-func getDAO(ctx context.Context, session string) index.DAO {
+// NewTreeServer factory.
+func NewTreeServer(ds *object.DataSource, handlerName string, dao index.DAO, logger *zap.Logger) *TreeServer {
 
-	dao := cindex.NewFolderSizeCacheDAO(
-		cindex.NewHiddenFileDuplicateRemoverDAO(servicecontext.GetDAO(ctx).(index.DAO)),
-	)
+	dao = cindex.NewFolderSizeCacheDAO(cindex.NewHiddenFileDuplicateRemoverDAO(dao))
+
+	return &TreeServer{
+		dsName:       ds.Name,
+		dsInternal:   ds.IsInternal(),
+		logger:       logger,
+		handlerName:  handlerName,
+		dao:          dao,
+		sessionStore: sessions.NewSessionMemoryStore(),
+	}
+}
+
+func (s *TreeServer) getDAO(session string) index.DAO {
 
 	if session != "" {
 		if dao := index.GetDAOCache(session); dao != nil {
 			return dao.(index.DAO)
 		}
-		return index.NewDAOCache(session, dao).(index.DAO)
+		return index.NewDAOCache(session, s.dao).(index.DAO)
 	}
 
-	return dao
-}
-
-// NewTreeServer factory.
-func NewTreeServer(ds *object.DataSource, handlerName string, dao index.DAO, logger *zap.Logger) *TreeServer {
-	return &TreeServer{
-		DataSourceName:     ds.Name,
-		DataSourceInternal: ds.IsInternal(),
-		sessionStore:       sessions.NewSessionMemoryStore(),
-		dao:                dao,
-		logger:             logger,
-		handlerName:        handlerName,
-	}
+	return s.dao
 }
 
 func (s *TreeServer) Name() string {
@@ -107,8 +106,8 @@ func (s *TreeServer) Name() string {
 
 // setDataSourceMeta adds the datasource name as metadata, and eventually the internal flag
 func (s *TreeServer) setDataSourceMeta(node *mtree.TreeNode) {
-	node.SetMeta(common.MetaNamespaceDatasourceName, s.DataSourceName)
-	if s.DataSourceInternal {
+	node.SetMeta(common.MetaNamespaceDatasourceName, s.dsName)
+	if s.dsInternal {
 		node.SetMeta(common.MetaNamespaceDatasourceInternal, true)
 	}
 }
@@ -143,8 +142,7 @@ func (s *TreeServer) CreateNode(ctx context.Context, req *tree.CreateNodeRequest
 		}
 	}()
 
-	// TODO v4, dao := getDAO(ctx, req.GetIndexationSession())
-	dao := s.dao
+	dao := s.getDAO(req.GetIndexationSession())
 	name := servicecontext.GetServiceName(ctx)
 
 	var node *mtree.TreeNode
@@ -271,16 +269,14 @@ func (s *TreeServer) ReadNode(ctx context.Context, req *tree.ReadNodeRequest) (r
 	defer track(s.logger, "ReadNode", time.Now(), req, resp)
 
 	// TODO v4
-	//var session = ""
-	//md, has := metadata.FromContext(ctx)
-	//if has {
-	//	if s, ok := md["x-indexation-session"]; ok {
-	//		session = s
-	//	}
-	//}
-
-	// dao := getDAO(ctx, session)
-	dao := s.dao
+	var session = ""
+	md, has := metadata.FromContext(ctx)
+	if has {
+		if s, ok := md["x-indexation-session"]; ok {
+			session = s
+		}
+	}
+	dao := s.getDAO(session)
 
 	name := servicecontext.GetServiceName(ctx)
 
@@ -355,9 +351,7 @@ func (s *TreeServer) ListNodes(req *tree.ListNodesRequest, resp tree.NodeProvide
 
 	defer track(s.logger, "ListNodes", time.Now(), req, resp)
 
-	// todo v4
-	//dao := getDAO(ctx, "")
-	dao := s.dao
+	dao := s.getDAO("")
 	name := servicecontext.GetServiceName(ctx)
 
 	if req.Ancestors && req.Recursive {
@@ -510,9 +504,7 @@ func (s *TreeServer) UpdateNode(ctx context.Context, req *tree.UpdateNodeRequest
 		s.logger.Debug("Finished UpdateNode")
 	}()
 
-	// dao := servicecontext.GetDAO(ctx).(index.DAO)
-	// TODO v4 dao := getDAO(ctx, req.GetIndexationSession())
-	dao := s.dao
+	dao := s.getDAO(req.GetIndexationSession())
 	name := servicecontext.GetServiceName(ctx)
 
 	reqFromPath := safePath(req.GetFrom().GetPath())
@@ -593,8 +585,7 @@ func (s *TreeServer) DeleteNode(ctx context.Context, req *tree.DeleteNodeRequest
 		}
 	}()
 
-	// todo v4 dao := getDAO(ctx, req.GetIndexationSession())
-	dao := s.dao
+	dao := s.getDAO(req.GetIndexationSession())
 	name := servicecontext.GetServiceName(ctx)
 
 	reqPath := safePath(req.GetNode().GetPath())
@@ -691,8 +682,7 @@ func (s *TreeServer) FlushSession(ctx context.Context, req *tree.FlushSessionReq
 	if session != nil {
 		s.logger.Info("Flushing Indexation Session " + req.GetSession().GetUuid())
 
-		// todo v4 dao := getDAO(ctx, session.GetUuid())
-		dao := s.dao
+		dao := s.getDAO(session.GetUuid())
 		err := dao.Flush(false)
 		if err != nil {
 			s.logger.Error("Error while flushing indexation Session "+req.GetSession().GetUuid(), zap.Error(err))
@@ -711,8 +701,7 @@ func (s *TreeServer) CloseSession(ctx context.Context, req *tree.CloseSessionReq
 	if session != nil {
 		s.logger.Info("Closing Indexation Session " + req.GetSession().GetUuid())
 
-		// todo v4 dao := getDAO(ctx, session.GetUuid())
-		dao := s.dao
+		dao := s.getDAO(session.GetUuid())
 
 		err := dao.Flush(true)
 		batcher.Flush(ctx, dao)

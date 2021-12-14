@@ -23,9 +23,10 @@ package encryption
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"strings"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 
@@ -232,7 +233,7 @@ func (e *Handler) PutObject(ctx context.Context, node *tree.Node, reader io.Read
 
 	info, err := e.getNodeInfoForWrite(ctx, clone)
 	if err != nil {
-		if errors.Parse(err.Error()).Code != 404 {
+		if errors.FromError(err).Code != 404 {
 			return 0, err
 		}
 
@@ -462,7 +463,7 @@ func (e *Handler) MultipartCreate(ctx context.Context, target *tree.Node, reques
 
 	_, err = e.getNodeInfoForWrite(ctx, clone)
 	if err != nil {
-		if errors.Parse(err.Error()).Code != 404 {
+		if errors.FromError(err).Code != 404 {
 			return "", err
 		}
 

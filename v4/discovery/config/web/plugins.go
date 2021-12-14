@@ -16,7 +16,7 @@ func init() {
 			service.Tag(common.ServiceTagDiscovery),
 			service.Description("Configuration"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceConfig, []string{}),
-			service.WithWeb(func() service.WebHandler {
+			service.WithWeb(func(c context.Context) service.WebHandler {
 				return new(Handler)
 			}),
 		)

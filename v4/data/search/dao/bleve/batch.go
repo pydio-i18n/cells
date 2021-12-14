@@ -61,14 +61,14 @@ type BatchOptions struct {
 	IndexContent bool
 }
 
-func NewBatch(nsProvider *meta.NsProvider, options BatchOptions) *Batch {
+func NewBatch(ctx context.Context, nsProvider *meta.NsProvider, options BatchOptions) *Batch {
 	b := &Batch{
 		options:    options,
 		inserts:    make(map[string]*tree.IndexableNode),
 		deletes:    make(map[string]struct{}),
 		nsProvider: nsProvider,
 	}
-	b.ctx = b.createBackgroundContext()
+	b.ctx = b.createBackgroundContext(ctx)
 	return b
 }
 
@@ -173,26 +173,27 @@ func (b *Batch) LoadIndexableNode(indexNode *tree.IndexableNode, excludes map[st
 	return nil
 }
 
-func (b *Batch) createBackgroundContext() context.Context {
+func (b *Batch) createBackgroundContext(parent context.Context) context.Context {
 	ctx := auth.ContextFromClaims(context.Background(), claim.Claims{
 		Name:      common.PydioSystemUsername,
 		Profile:   common.PydioProfileAdmin,
 		GroupPath: "/",
 	})
 	ctx = servicecontext.WithServiceName(ctx, common.ServiceGrpcNamespace_+common.ServiceSearch)
+	ctx = servicecontext.WithRegistry(ctx, servicecontext.GetRegistry(parent))
 	return ctx
 }
 
 func (b *Batch) getUuidRouter() nodes.Handler {
 	if b.uuidRouter == nil {
-		b.uuidRouter = compose.NewClient(compose.UuidComposer(nodes.AsAdmin(), nodes.WithRegistryWatch())...)
+		b.uuidRouter = compose.NewClient(compose.UuidComposer(nodes.AsAdmin(), nodes.WithRegistryWatch(servicecontext.GetRegistry(b.ctx)))...)
 	}
 	return b.uuidRouter
 }
 
 func (b *Batch) getStdRouter() nodes.Handler {
 	if b.stdRouter == nil {
-		b.stdRouter = compose.NewClient(compose.PathComposer(nodes.AsAdmin(), nodes.WithRegistryWatch())...)
+		b.stdRouter = compose.NewClient(compose.PathComposer(nodes.AsAdmin(), nodes.WithRegistryWatch(servicecontext.GetRegistry(b.ctx)))...)
 	}
 	return b.stdRouter
 }

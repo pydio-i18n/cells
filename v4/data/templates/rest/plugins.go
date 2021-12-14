@@ -37,7 +37,7 @@ func init() {
 			service.Tag(common.ServiceTagData),
 			service.Description("RESTful Gateway to list templates"),
 			//service.RouterDependencies(),
-			service.WithWeb(func() service.WebHandler {
+			service.WithWeb(func(c context.Context) service.WebHandler {
 				h := new(Handler)
 				h.dao = templates.GetProvider()
 				return h

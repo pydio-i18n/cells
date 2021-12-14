@@ -37,7 +37,7 @@ func init() {
 			service.Tag(common.ServiceTagBroker),
 			service.Description("RESTful Gateway to search in the log repositories"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceLog, []string{}),
-			service.WithWeb(func() service.WebHandler {
+			service.WithWeb(func(c context.Context) service.WebHandler {
 				return new(Handler)
 			}),
 		)

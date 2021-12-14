@@ -235,7 +235,7 @@ func (s *MetaServer) ReadNodeStream(streamer tree.NodeProviderStreamer_ReadNodeS
 		log.Logger(ctx).Debug("ReadNodeStream", zap.String("path", request.Node.Path))
 		response, e := s.ReadNode(ctx, &tree.ReadNodeRequest{Node: request.Node})
 		if e != nil {
-			if errors.Parse(e.Error()).Code == 404 {
+			if errors.FromError(e).Code == 404 {
 				// There is no metadata, simply return the original node
 				streamer.Send(&tree.ReadNodeResponse{Node: request.Node})
 			} else {

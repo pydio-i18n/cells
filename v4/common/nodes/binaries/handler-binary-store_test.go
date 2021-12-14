@@ -46,7 +46,7 @@ func getStoreTestMock() (nodes.Handler, *nodes.HandlerMock) {
 	handler.SetNextHandler(mock)
 
 	nodes.IsUnitTestEnv = true
-	cPool := nodes.NewClientsPool(false)
+	cPool := nodes.NewClientsPool(false, nil)
 	cPool.CreateClientsForDataSource(testBinaryStoreName, &object.DataSource{})
 	handler.SetClientsPool(cPool)
 	mock.Nodes["/test/file"] = &tree.Node{Path: "/test/file"}
@@ -130,7 +130,7 @@ func TestHandler_WriteOperations(t *testing.T) {
 	Convey("Test CreateNode in BinaryStore", t, func() {
 
 		_, e := handler.CreateNode(ctx, &tree.CreateNodeRequest{Node: &tree.Node{Path: testBinaryStoreName + "/thumb"}})
-		parsed := errors.Parse(e.Error())
+		parsed := errors.FromError(e)
 		So(parsed.Code, ShouldEqual, 403)
 
 	})
@@ -138,7 +138,7 @@ func TestHandler_WriteOperations(t *testing.T) {
 	Convey("Test PutObject in BinaryStore", t, func() {
 
 		_, e := handler.PutObject(ctx, &tree.Node{Path: testBinaryStoreName + "/thumb"}, strings.NewReader(""), &models.PutRequestData{})
-		parsed := errors.Parse(e.Error())
+		parsed := errors.FromError(e)
 		So(parsed.Code, ShouldEqual, 403)
 
 	})
@@ -146,7 +146,7 @@ func TestHandler_WriteOperations(t *testing.T) {
 	Convey("Test DeleteNode in BinaryStore", t, func() {
 
 		_, e := handler.DeleteNode(ctx, &tree.DeleteNodeRequest{Node: &tree.Node{Path: testBinaryStoreName + "/thumb"}})
-		parsed := errors.Parse(e.Error())
+		parsed := errors.FromError(e)
 		So(parsed.Code, ShouldEqual, 403)
 
 	})
@@ -157,7 +157,7 @@ func TestHandler_WriteOperations(t *testing.T) {
 			From: &tree.Node{Path: testBinaryStoreName + "/thumb"},
 			To:   &tree.Node{Path: testBinaryStoreName + "/thumb1"},
 		})
-		parsed := errors.Parse(e.Error())
+		parsed := errors.FromError(e)
 		So(parsed.Code, ShouldEqual, 403)
 
 	})
@@ -165,7 +165,7 @@ func TestHandler_WriteOperations(t *testing.T) {
 	Convey("Test CopyObject in BinaryStore", t, func() {
 
 		_, e := handler.CopyObject(ctx, &tree.Node{Path: testBinaryStoreName + "/thumb"}, &tree.Node{Path: testBinaryStoreName + "/thumb1"}, &models.CopyRequestData{})
-		parsed := errors.Parse(e.Error())
+		parsed := errors.FromError(e)
 		So(parsed.Code, ShouldEqual, 403)
 
 	})

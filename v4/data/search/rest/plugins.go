@@ -37,8 +37,10 @@ func init() {
 			service.Description("RESTful Gateway to search engine"),
 			//service.RouterDependencies(),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceSearch, []string{}),
-			service.WithWeb(func() service.WebHandler {
-				return new(Handler)
+			service.WithWeb(func(c context.Context) service.WebHandler {
+				return &Handler{
+					globalCtx: c,
+				}
 			}),
 		)
 	})

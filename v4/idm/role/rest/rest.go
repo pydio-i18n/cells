@@ -23,6 +23,7 @@ package rest
 import (
 	"context"
 	"fmt"
+
 	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/emicklei/go-restful"
@@ -208,7 +209,7 @@ func (s *RoleHandler) SetRole(req *restful.Request, rsp *restful.Response) {
 	cl := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
 	log.Logger(ctx).Debug("Received Role.Set", zap.Any("r", inputRole))
 
-	if checkError := s.IsAllowed(ctx, inputRole.Uuid, serviceproto.ResourcePolicyAction_WRITE, cl); checkError != nil && errors.Parse(checkError.Error()).Code != 404 {
+	if checkError := s.IsAllowed(ctx, inputRole.Uuid, serviceproto.ResourcePolicyAction_WRITE, cl); checkError != nil && errors.FromError(checkError).Code != 404 {
 		service.RestError403(req, rsp, checkError)
 		return
 	}

@@ -62,8 +62,7 @@ func init() {
 			service.WithHTTP(func(ctx context.Context, mux *http.ServeMux) error {
 				ws = websocket.NewWebSocketHandler(ctx)
 				chat = websocket.NewChatHandler(ctx)
-
-				ws.EventRouter = compose.ReverseClient(nodes.WithRegistryWatch())
+				ws.EventRouter = compose.ReverseClient(nodes.WithRegistryWatch(servicecontext.GetRegistry(ctx)))
 
 				mux.HandleFunc("/ws/event", func(w http.ResponseWriter, r *http.Request) {
 					ws.Websocket.HandleRequest(w, r)

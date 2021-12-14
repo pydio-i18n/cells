@@ -20,6 +20,8 @@
 
 package nodes
 
+import "github.com/pydio/cells/v4/common/registry"
+
 type Option func(options *RouterOptions)
 type Adapter interface {
 	Adapt(h Handler, options RouterOptions) Handler
@@ -29,8 +31,10 @@ type Adapter interface {
 type RouterOptions struct {
 	CoreClient func(pool SourcesPool) Handler
 
-	AdminView          bool
-	WatchRegistry      bool
+	AdminView     bool
+	WatchRegistry bool
+	Registry      registry.Registry
+
 	LogReadEvents      bool
 	BrowseVirtualNodes bool
 	// AuditEvent flag turns audit logger ON for the corresponding router.
@@ -54,9 +58,12 @@ func AsAdmin() Option {
 	}
 }
 
-func WithRegistryWatch() Option {
+func WithRegistryWatch(r ...registry.Registry) Option {
 	return func(o *RouterOptions) {
 		o.WatchRegistry = true
+		if len(r) > 0 && r[0] != nil {
+			o.Registry = r[0]
+		}
 	}
 }
 

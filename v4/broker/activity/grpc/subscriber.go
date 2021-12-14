@@ -22,11 +22,12 @@ package grpc
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"path"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -223,7 +224,7 @@ func (e *MicroEventsSubscriber) HandleNodeChange(ctx context.Context, msg *tree.
 }
 
 func (e *MicroEventsSubscriber) vNodeResolver(ctx context.Context, n *tree.Node) (*tree.Node, bool) {
-	pool := nodes.NewClientsPool(false)
+	pool := nodes.NewClientsPool(false, nil)
 	return abstract.GetVirtualNodesManager().GetResolver(pool, false)(ctx, n)
 }
 
@@ -280,7 +281,7 @@ func (e *MicroEventsSubscriber) parentsFromCache(ctx context.Context, node *tree
 				uuid := resp.Node.Uuid
 				e.parentsCache.Set(parentPath, uuid)
 				parentUuids = append(parentUuids, uuid)
-			} else if errors.Parse(err.Error()).Code == 404 {
+			} else if errors.FromError(err).Code == 404 {
 				e.parentsCache.Set(parentPath, "**DELETED**")
 			}
 		}

@@ -87,11 +87,11 @@ func (t *TreeHandler) CreateNodeStream(ctx context.Context, s tree.NodeReceiverS
 	return err //errors.BadRequest("not.implemented", "CreateNodeStream not implemented yet")
 }
 
-func (t *TreeHandler) UpdateNodeStream(context.Context, tree.NodeReceiverStream_UpdateNodeStreamStream) error {
+func (t *TreeHandler) UpdateNodeStream(context.Context, tree.NodeReceiverStream_UpdateNodeStreamServer) error {
 	return errors.BadRequest("not.implemented", "UpdateNodeStream not implemented yet")
 }
 
-func (t *TreeHandler) DeleteNodeStream(context.Context, tree.NodeReceiverStream_DeleteNodeStreamStream) error {
+func (t *TreeHandler) DeleteNodeStream(context.Context, tree.NodeReceiverStream_DeleteNodeStreamServer) error {
 	return errors.BadRequest("not.implemented", "DeleteNodeStream not implemented yet")
 }
 
@@ -133,7 +133,7 @@ func (t *TreeHandler) ListNodes(request *tree.ListNodesRequest, stream tree.Node
 }
 
 // StreamChanges sends events to the client
-func (t *TreeHandler) StreamChanges(ctx context.Context, req *tree.StreamChangesRequest, resp tree.NodeChangesStreamer_StreamChangesStream) error {
+func (t *TreeHandler) StreamChanges(ctx context.Context, req *tree.StreamChangesRequest, resp tree.NodeChangesStreamer_StreamChangesServer) error {
 
 	streamer, err := t.getRouter().StreamChanges(ctx, req)
 	if err != nil {

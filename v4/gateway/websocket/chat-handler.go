@@ -23,10 +23,11 @@ package websocket
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	lkauth "github.com/livekit/protocol/auth"
 	"github.com/pydio/melody"
@@ -57,7 +58,7 @@ type ChatHandler struct {
 // NewChatHandler creates a new ChatHandler
 func NewChatHandler(serviceCtx context.Context) *ChatHandler {
 	w := &ChatHandler{}
-	w.Pool = nodes.NewClientsPool(true)
+	w.Pool = nodes.NewClientsPool(true, nil)
 	w.initHandlers(serviceCtx)
 	return w
 }

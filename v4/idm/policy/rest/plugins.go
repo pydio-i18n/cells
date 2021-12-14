@@ -37,7 +37,7 @@ func init() {
 			service.Tag(common.ServiceTagIdm),
 			service.Description("RESTful service for managing policies"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServicePolicy, []string{}),
-			service.WithWeb(func() service.WebHandler {
+			service.WithWeb(func(c context.Context) service.WebHandler {
 				return new(PolicyHandler)
 			}),
 		)

@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/pydio/cells/v4/common/server"
 	"net/http"
 	"reflect"
 	"strings"
 	"sync"
+
+	"github.com/pydio/cells/v4/common/server"
 
 	"github.com/emicklei/go-restful"
 	"github.com/go-openapi/loads"
@@ -63,7 +64,7 @@ func getWebMiddlewares() []func(handler http.Handler) http.Handler {
 }
 
 // WithWeb returns a web handler
-func WithWeb(handler func() WebHandler) ServiceOption {
+func WithWeb(handler func(ctx context.Context) WebHandler) ServiceOption {
 	return func(o *ServiceOptions) {
 		o.serverType = server.ServerType_HTTP
 		o.serverStart = func() error {
@@ -94,7 +95,7 @@ func WithWeb(handler func() WebHandler) ServiceOption {
 			ws.Produces(restful.MIME_JSON, restful.MIME_OCTET, restful.MIME_XML)
 			ws.Path(rootPath)
 
-			h := handler()
+			h := handler(ctx)
 			swaggerTags := h.SwaggerTags()
 			filter := h.Filter()
 

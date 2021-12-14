@@ -76,7 +76,7 @@ func TestMeta(t *testing.T) {
 		})
 
 		// Should Be Not Found
-		So(errors.Parse(e.Error()).Code, ShouldEqual, 404)
+		So(errors.FromError(e).Code, ShouldEqual, 404)
 	})
 
 	Convey("Simple SET to stub implementation", t, func() {
@@ -140,7 +140,7 @@ func TestMeta(t *testing.T) {
 			},
 		})
 		So(e1, ShouldNotBeNil)
-		e2 := errors.Parse(e1.Error())
+		e2 := errors.FromError(e1)
 		So(e2.Code, ShouldEqual, 404)
 
 	})
@@ -263,7 +263,7 @@ func TestSubscriber(t *testing.T) {
 		})
 
 		So(readErr, ShouldNotBeNil)
-		e2 := errors.Parse(readErr.Error())
+		e2 := errors.FromError(readErr)
 		So(e2.Code, ShouldEqual, 404)
 
 	})

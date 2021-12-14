@@ -37,7 +37,7 @@ func init() {
 			service.Tag(common.ServiceTagDiscovery),
 			service.Description("Gateway to check for available updates"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceUpdate, []string{}),
-			service.WithWeb(func() service.WebHandler {
+			service.WithWeb(func(c context.Context) service.WebHandler {
 				return new(Handler)
 			}),
 		)

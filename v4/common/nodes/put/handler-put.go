@@ -144,7 +144,7 @@ func (m *Handler) createParentIfNotExist(ctx context.Context, node *tree.Node) e
 			return er
 		}
 		if r, er2 := m.Next.CreateNode(ctx, &tree.CreateNodeRequest{Node: parentNode}); er2 != nil {
-			parsedErr := errors.Parse(er2.Error())
+			parsedErr := errors.FromError(er2)
 			if parsedErr.Code == http.StatusConflict {
 				return nil
 			}
@@ -164,7 +164,7 @@ func (m *Handler) createParentIfNotExist(ctx context.Context, node *tree.Node) e
 			log.Logger(ctx).Debug("[PUT HANDLER] > Create Parent Node In Index", zap.String("UUID", tmpNode.Uuid), zap.String("Path", tmpNode.Path))
 			_, er := treeWriter.CreateNode(ctx, &tree.CreateNodeRequest{Node: tmpNode})
 			if er != nil {
-				parsedErr := errors.Parse(er.Error())
+				parsedErr := errors.FromError(er)
 				if parsedErr.Code == http.StatusConflict {
 					return nil
 				}

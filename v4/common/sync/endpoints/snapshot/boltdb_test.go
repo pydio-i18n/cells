@@ -147,7 +147,7 @@ func TestSnapshot(t *testing.T) {
 		t, e0 := snapshot.LoadNode(ctx, "a/a1")
 		So(t, ShouldBeNil)
 		So(e0, ShouldNotBeNil)
-		So(errors.Parse(e0.Error()).Code, ShouldEqual, 404)
+		So(errors.FromError(e0).Code, ShouldEqual, 404)
 
 		snapshot.MoveNode(ctx, "b", "b-renamed")
 		test, e := snapshot.LoadNode(ctx, "b/b/b/b/b/b/b/b/b/b/b/b/b/b/leaf")

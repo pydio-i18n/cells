@@ -188,7 +188,7 @@ func TestReader_StatChild(t *testing.T) {
 		{
 			_, e := archiveReader.StatChildZip(context.Background(), archiveNode, "actions/nonexistingfile.go")
 			So(e, ShouldNotBeNil)
-			So(errors.Parse(e.Error()).Code, ShouldEqual, 404)
+			So(errors.FromError(e).Code, ShouldEqual, 404)
 		}
 		{
 			stat, e := archiveReader.StatChildZip(context.Background(), archiveNode, "actions/interfaces.go")
@@ -243,7 +243,7 @@ func TestReader_StatChild(t *testing.T) {
 		{
 			_, e := archiveReader.StatChildTar(context.Background(), false, archiveNode, "actions/nonexistingfile.go")
 			So(e, ShouldNotBeNil)
-			So(errors.Parse(e.Error()).Code, ShouldEqual, 404)
+			So(errors.FromError(e).Code, ShouldEqual, 404)
 		}
 		{
 			stat, e := archiveReader.StatChildTar(context.Background(), false, archiveNode, "actions/interfaces.go")
@@ -279,7 +279,7 @@ func TestReader_StatChild(t *testing.T) {
 		{
 			_, e := archiveReader.StatChildTar(context.Background(), true, archiveNode, "actions/nonexistingfile.go")
 			So(e, ShouldNotBeNil)
-			So(errors.Parse(e.Error()).Code, ShouldEqual, 404)
+			So(errors.FromError(e).Code, ShouldEqual, 404)
 		}
 		{
 			stat, e := archiveReader.StatChildTar(context.Background(), true, archiveNode, "actions/interfaces.go")

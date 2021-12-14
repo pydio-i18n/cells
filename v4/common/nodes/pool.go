@@ -30,7 +30,6 @@ import (
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
 
-	microregistry "github.com/micro/micro/v3/service/registry"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/protobuf/proto"
@@ -78,12 +77,12 @@ type ClientsPool struct {
 	treeClient      tree.NodeProviderClient
 	treeClientWrite tree.NodeReceiverClient
 
-	watcher     microregistry.Watcher
+	regWatcher  registry.Watcher
 	confWatcher configx.Receiver
 }
 
 // NewClientsPool creates a client Pool and initialises it by calling the registry.
-func NewClientsPool(watchRegistry bool) *ClientsPool {
+func NewClientsPool(watchRegistry bool, registry registry.Registry) *ClientsPool {
 
 	pool := &ClientsPool{
 		sources: make(map[string]LoadedSource),
@@ -97,7 +96,12 @@ func NewClientsPool(watchRegistry bool) *ClientsPool {
 
 	pool.LoadDataSources()
 	if watchRegistry {
-		go pool.watchRegistry()
+		go func() {
+			e := pool.watchRegistry(registry)
+			if e != nil {
+				log.Logger(context.Background()).Warn("Cannot watch registry in client pool", zap.Error(e))
+			}
+		}()
 		go pool.watchConfigChanges()
 	}
 
@@ -106,8 +110,8 @@ func NewClientsPool(watchRegistry bool) *ClientsPool {
 
 // Close stops the underlying watcher if defined.
 func (p *ClientsPool) Close() {
-	if p.watcher != nil {
-		p.watcher.Stop()
+	if p.regWatcher != nil {
+		p.regWatcher.Stop()
 	}
 	if p.confWatcher != nil {
 		p.confWatcher.Stop()
@@ -240,42 +244,23 @@ func (p *ClientsPool) registerAlternativeClient(namespace string) error {
 	return nil
 }
 
-func (p *ClientsPool) watchRegistry() error {
-	/* TODO v4
-	watcher, err := registry.Watch()
-	p.watcher = watcher
-	if err != nil {
-		return
-	}
-	for {
-		result, err := watcher.Next()
-		if result != nil && err == nil {
-			srv := result.Service
-			if strings.Contains(srv.Name, common.ServiceGrpcNamespace_+common.ServiceDataSync_) {
-				dsName := strings.TrimPrefix(srv.Name, common.ServiceGrpcNamespace_+common.ServiceDataSync_)
-
-				log.Logger(context.Background()).Debug("[ClientsPool] Registry action", zap.String("action", result.Action), zap.Any("srv", srv.Name))
-				if _, ok := p.sources[dsName]; ok && result.Action == "delete" {
-					// Reset list
-					p.Lock()
-					delete(p.sources, dsName)
-					p.Unlock()
-				}
-				p.LoadDataSources()
-			}
+func (p *ClientsPool) watchRegistry(reg registry.Registry) error {
+	if reg == nil {
+		// Todo v4
+		defaultReg, err := registry.OpenRegistry(context.Background(), fmt.Sprintf("grpc://%s%s", "", ":8001"))
+		if err != nil {
+			return err
 		}
-	}
-
-	*/
-	reg, err := registry.OpenRegistry(context.Background(), fmt.Sprintf("grpc://%s%s", "", ":8001"))
-	if err != nil {
-		return err
+		reg = defaultReg
+		log.Logger(context.Background()).Warn("Starting clients pool registry watcher with empty registry, will use default")
 	}
 
 	w, err := reg.Watch(registry.WithType(pb.ItemType_SERVICE))
 	if err != nil {
 		return err
 	}
+	p.regWatcher = w
+
 	prefix := common.ServiceGrpcNamespace_ + common.ServiceDataSync_
 
 	for {
@@ -351,7 +336,7 @@ func (p *ClientsPool) CreateClientsForDataSource(dataSourceName string, dataSour
 
 func MakeFakeClientsPool(tc tree.NodeProviderClient, tw tree.NodeReceiverClient) *ClientsPool {
 	IsUnitTestEnv = true
-	c := NewClientsPool(false)
+	c := NewClientsPool(false, nil)
 
 	c.treeClient = tc
 	c.treeClientWrite = tw

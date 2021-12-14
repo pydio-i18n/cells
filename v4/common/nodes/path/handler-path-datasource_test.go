@@ -95,7 +95,7 @@ func TestBranchTranslator_ReadNode(t *testing.T) {
 		b, _ := newTestHandlerBranchTranslator(pool)
 		_, e := b.ReadNode(context.Background(), &tree.ReadNodeRequest{})
 		So(e, ShouldNotBeNil)
-		parsed := errors.Parse(e.Error())
+		parsed := errors.FromError(e)
 		So(parsed.Detail, ShouldContainSubstring, "Cannot find client for branch")
 
 	})
@@ -111,7 +111,7 @@ func TestBranchTranslator_ReadNode(t *testing.T) {
 		})
 		_, e := b.ReadNode(c, &tree.ReadNodeRequest{})
 		So(e, ShouldNotBeNil)
-		parsed := errors.Parse(e.Error())
+		parsed := errors.FromError(e)
 		So(parsed.Code, ShouldEqual, 500)
 
 	})

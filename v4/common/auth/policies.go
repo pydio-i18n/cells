@@ -123,7 +123,7 @@ func SubjectsForResourcePolicyQuery(ctx context.Context, q *rest.ResourcePolicyQ
 					subjects = append(subjects, "role:"+r.Uuid)
 				}
 			} else {
-				if errors.Parse(e.Error()).Code != 404 {
+				if errors.FromError(e).Code != 404 {
 					log.Logger(ctx).Warn("[policies] Cannot find user '"+uName+"' although in context", zap.Error(e))
 				}
 			}

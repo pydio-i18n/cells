@@ -23,10 +23,11 @@ package abstract
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"path"
 	"strings"
 	"time"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -171,7 +172,7 @@ func (m *VirtualNodesManager) ResolveInContext(ctx context.Context, vNode *tree.
 	if readResp, e := clientsPool.GetTreeClient().ReadNode(ctx, &tree.ReadNodeRequest{Node: resolved}); e == nil {
 		vManagerCache.Set(resolved.Path, readResp.Node)
 		return readResp.Node, nil
-	} else if errors.Parse(e.Error()).Code == 404 {
+	} else if errors.FromError(e).Code == 404 {
 		if len(retry) == 0 {
 			// Retry once
 			clientsPool.LoadDataSources()
@@ -188,7 +189,7 @@ func (m *VirtualNodesManager) ResolveInContext(ctx context.Context, vNode *tree.
 			return nil, err
 		} else {
 			if AdminClientProvider == nil {
-				log.Logger(ctx).Error("OUPS, VirtualNodesManager AdminClient is empty ! ")
+				log.Logger(ctx).Error("Oops, VirtualNodesManager AdminClient is empty ! ")
 				return nil, fmt.Errorf("cancel create")
 			}
 			resolved = createResp.GetNode()

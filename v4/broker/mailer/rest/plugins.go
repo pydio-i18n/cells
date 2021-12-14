@@ -37,7 +37,7 @@ func init() {
 			service.Tag(common.ServiceTagBroker),
 			service.Description("REST send email service"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceMailer, []string{}),
-			service.WithWeb(func() service.WebHandler {
+			service.WithWeb(func(c context.Context) service.WebHandler {
 				return new(MailerHandler)
 			}),
 		)

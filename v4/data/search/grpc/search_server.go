@@ -158,7 +158,7 @@ func (s *SearchServer) Search(req *tree.SearchRequest, streamer tree.Searcher_Se
 						}})
 						if e == nil && response.GetNode() != nil {
 							streamer.Send(&tree.SearchResponse{Node: response.Node})
-						} else if e != nil && errors.Parse(e.Error()).Code == 404 {
+						} else if e != nil && errors.FromError(e).Code == 404 {
 
 							log.Logger(ctx).Error("Found node that does not exists, send event to make sure all is sync'ed.", zap.String("uuid", node.Uuid))
 

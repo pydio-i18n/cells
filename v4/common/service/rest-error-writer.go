@@ -41,7 +41,7 @@ func RestError500(req *restful.Request, resp *restful.Response, err error) {
 		Title:  err.Error(),
 		Detail: err.Error(),
 	}
-	if parsed := errors.Parse(err.Error()); parsed.Status != "" && parsed.Detail != "" {
+	if parsed := errors.FromError(err); parsed.Status != "" && parsed.Detail != "" {
 		e.Title = parsed.Detail
 		e.Detail = parsed.Status + ": " + parsed.Detail
 	}
@@ -60,7 +60,7 @@ func RestError404(req *restful.Request, resp *restful.Response, err error) {
 		Title:  err.Error(),
 		Detail: err.Error(),
 	}
-	if parsed := errors.Parse(err.Error()); parsed.Status != "" && parsed.Detail != "" {
+	if parsed := errors.FromError(err); parsed.Status != "" && parsed.Detail != "" {
 		e.Title = parsed.Detail
 		e.Detail = parsed.Status + ": " + parsed.Detail
 	}
@@ -79,7 +79,7 @@ func RestError403(req *restful.Request, resp *restful.Response, err error) {
 		Title:  err.Error(),
 		Detail: err.Error(),
 	}
-	if parsed := errors.Parse(err.Error()); parsed.Status != "" && parsed.Detail != "" {
+	if parsed := errors.FromError(err); parsed.Status != "" && parsed.Detail != "" {
 		e.Title = parsed.Detail
 		e.Detail = parsed.Status + ": " + parsed.Detail
 	}
@@ -94,7 +94,7 @@ func RestError503(req *restful.Request, resp *restful.Response, err error) {
 		Title:  err.Error(),
 		Detail: err.Error(),
 	}
-	if parsed := errors.Parse(err.Error()); parsed.Code == 503 {
+	if parsed := errors.FromError(err); parsed.Code == 503 {
 		e.Title = "Service temporarily unavailable"
 		e.Detail = "Service temporarily unavailable"
 	}
@@ -109,7 +109,7 @@ func RestError423(req *restful.Request, resp *restful.Response, err error) {
 		Title:  err.Error(),
 		Detail: err.Error(),
 	}
-	if parsed := errors.Parse(err.Error()); parsed.Code == 423 {
+	if parsed := errors.FromError(err); parsed.Code == 423 {
 		e.Title = "This resource is currently locked, please retry later!"
 		e.Detail = "This resource is currently locked, please retry later!"
 	}
@@ -130,7 +130,7 @@ func RestError401(req *restful.Request, resp *restful.Response, err error) {
 		Title:  err.Error(),
 		Detail: err.Error(),
 	}
-	if parsed := errors.Parse(err.Error()); parsed.Status != "" && parsed.Detail != "" {
+	if parsed := errors.FromError(err); parsed.Status != "" && parsed.Detail != "" {
 		e.Title = parsed.Detail
 		e.Detail = parsed.Status + ": " + parsed.Detail
 	}
@@ -151,7 +151,7 @@ func RestErrorDetect(req *restful.Request, resp *restful.Response, err error, de
 		423: RestError423,
 		503: RestError503,
 	}
-	parsed := errors.Parse(err.Error())
+	parsed := errors.FromError(err)
 	// Special case for underlying service not available
 	if parsed.Id == "go.micro.client" && parsed.Detail == "none available" {
 		parsed.Code = 503

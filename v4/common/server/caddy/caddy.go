@@ -3,11 +3,12 @@ package caddy
 import (
 	"bytes"
 	"context"
-	"github.com/google/uuid"
 	"html/template"
 	"net/http"
 	"net/http/pprof"
 	"reflect"
+
+	"github.com/google/uuid"
 
 	caddy "github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig"
@@ -46,7 +47,7 @@ const (
 		rewrite @grpc-content /grpc{path}
 
 		# Special rewrite for s3 list buckets (always sent on root path)
-		rewrite @list_buckets /io{path}
+		# rewrite @list_buckets /io{path}
 
 		# Apply mux
 		mux
@@ -129,7 +130,7 @@ func New(ctx context.Context, dir string) (server.Server, error) {
 	}
 
 	return server.NewServer(ctx, &Server{
-		name:  "caddy-" + uuid.NewString(),
+		name:     "caddy-" + uuid.NewString(),
 		ServeMux: srvMUX,
 		Confs:    confs,
 	}), nil

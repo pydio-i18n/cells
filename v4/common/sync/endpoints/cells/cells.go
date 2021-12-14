@@ -96,7 +96,7 @@ func (c *Abstract) PatchUpdateSnapshot(ctx context.Context, patch interface{}) {
 
 // Convert micro errors to user readable errors
 func (c *Abstract) parseMicroErrors(e error) error {
-	er := errors.Parse(e.Error())
+	er := errors.FromError(e)
 	if er.Code == 408 {
 		return fmt.Errorf("cannot connect (408 Timeout): the gRPC port may not be correctly opened in the server")
 	} else if strings.Contains(er.Detail, "connection refused") {
@@ -420,7 +420,7 @@ func (c *Abstract) DeleteNode(ctx context.Context, name string) (err error) {
 	}
 	read, e := cliRead.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Path: c.rooted(name)}})
 	if e != nil {
-		if errors.Parse(e.Error()).Code == 404 {
+		if errors.FromError(e).Code == 404 {
 			return nil
 		} else {
 			return e

@@ -25,6 +25,8 @@ import (
 	"net/http"
 	"strings"
 
+	"google.golang.org/grpc/status"
+
 	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
@@ -57,6 +59,9 @@ func FromError(err error) *Error {
 	}
 	if verr, ok := err.(*Error); ok && verr != nil {
 		return verr
+	}
+	if serr, ok := status.FromError(err); ok {
+		return Parse(serr.Message())
 	}
 
 	return Parse(err.Error())
@@ -216,7 +221,7 @@ func Equal(err1 error, err2 error) bool {
 // IsNetworkError tries to detect if error is a network error.
 func IsNetworkError(err error) bool {
 	s := err.Error()
-	parsed := Parse(s)
+	parsed := FromError(err)
 	return strings.Contains(s, "context deadline exceeded") ||
 		strings.Contains(s, "unexpected EOF") ||
 		strings.Contains(s, "context canceled") ||

@@ -237,7 +237,7 @@ func (h *SharesHandler) GetCell(req *restful.Request, rsp *restful.Response) {
 
 	workspace, _, err := share.GetOrCreateWorkspace(ctx, ownerUser, id, idm.WorkspaceScope_ROOM, "", "", false)
 	if err != nil {
-		if errors.Parse(err.Error()).Code == 404 {
+		if errors.FromError(err).Code == 404 {
 			service.RestError404(req, rsp, err)
 		} else {
 			service.RestError500(req, rsp, err)
@@ -484,7 +484,7 @@ func (h *SharesHandler) GetShareLink(req *restful.Request, rsp *restful.Response
 
 	workspace, _, err := share.GetOrCreateWorkspace(ctx, ownerUser, id, idm.WorkspaceScope_LINK, "", "", false)
 	if err != nil {
-		if errors.Parse(err.Error()).Code == 404 {
+		if errors.FromError(err).Code == 404 {
 			service.RestError404(req, rsp, err)
 		} else {
 			service.RestErrorDetect(req, rsp, err)

@@ -41,8 +41,8 @@ func init() {
 			//service.RouterDependencies(),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceMeta, []string{}),
 			service.Description("RESTful Gateway to metadata storage"),
-			service.WithWeb(func() service.WebHandler {
-				return new(Handler)
+			service.WithWeb(func(c context.Context) service.WebHandler {
+				return &Handler{Ctx: c}
 			}),
 		)
 	})

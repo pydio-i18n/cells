@@ -178,13 +178,13 @@ func (j *JWTVerifier) loadClaims(ctx context.Context, token IDToken, claims *cla
 	if claims.Subject != "" {
 		if u, err := permissions.SearchUniqueUser(ctx, "", claims.Subject); err == nil {
 			user = u
-		} else if errors2.Parse(err.Error()).Code != 404 {
+		} else if errors2.FromError(err).Code != 404 {
 			return err
 		}
 	} else if claims.Name != "" {
 		if u, err := permissions.SearchUniqueUser(ctx, claims.Name, ""); err == nil {
 			user = u
-		} else if errors2.Parse(err.Error()).Code != 404 {
+		} else if errors2.FromError(err).Code != 404 {
 			return err
 		}
 	}

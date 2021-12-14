@@ -135,7 +135,7 @@ func TestBoltStore_CRUD(t *testing.T) {
 		So(e4, ShouldBeNil)
 		deleted, e5 := db.GetJob("unique-job-id", 0)
 		So(deleted, ShouldBeNil)
-		So(errors.Parse(e5.Error()).Code, ShouldEqual, 404)
+		So(errors.FromError(e5).Code, ShouldEqual, 404)
 	})
 }
 

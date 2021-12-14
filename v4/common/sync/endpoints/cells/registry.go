@@ -173,7 +173,7 @@ func (d *DynamicRegistry) parseNotFound(e error) error {
 	if e == nil {
 		return nil
 	}
-	er := muerrors.Parse(e.Error())
+	er := muerrors.FromError(e)
 	if er.Code == 500 && er.Id == "go.micro.client" && er.Detail == "not found" {
 		if d.detectionError != nil {
 			return d.detectionError
@@ -214,7 +214,7 @@ func (r *RegistryRefreshClient) Call(ctx context.Context, req client.Request, rs
 func (r *RegistryRefreshClient) Stream(ctx context.Context, req client.Request, opts ...client.CallOption) (client.Stream, error) {
 	s, e := r.w.Stream(ctx, req, opts...)
 	if e != nil && req.Method() == "NodeChangesStreamer.StreamChanges" {
-		mE := muerrors.Parse(e.Error())
+		mE := muerrors.FromError(e)
 		if strings.Contains(mE.Detail, "connect: connection refused") || (mE.Id == "go.micro.client" && mE.Detail == "not found") {
 			if er := r.r.Refresh(); er == nil {
 				// Retry call with refreshed registry

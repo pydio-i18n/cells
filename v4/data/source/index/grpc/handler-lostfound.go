@@ -23,6 +23,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+
 	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
@@ -42,7 +43,7 @@ var (
 
 // TriggerResync on index performs a Lost+Found request to auto-heal indexation errors, whenever possible
 func (s *TreeServer) TriggerResync(ctx context.Context, request *sync.ResyncRequest) (*sync.ResyncResponse, error) {
-	dao := getDAO(ctx, "")
+	dao := s.getDAO("")
 
 	resp := &sync.ResyncResponse{}
 	if request.GetPath() == "flatten" {

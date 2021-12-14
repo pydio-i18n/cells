@@ -41,7 +41,7 @@ func BenchmarkClientsPoolWithoutRegistryWatch(b *testing.B) {
 
 	// run the Benchmark function b.N times
 	for n := 0; n < b.N; n++ {
-		pools = append(pools, NewClientsPool(false))
+		pools = append(pools, NewClientsPool(false, nil))
 	}
 }
 
@@ -51,7 +51,7 @@ func BenchmarkClientsPoolWithRegistryWatch(b *testing.B) {
 
 	// run the Benchmark function b.N times
 	for n := 0; n < b.N; n++ {
-		pools = append(pools, NewClientsPool(true))
+		pools = append(pools, NewClientsPool(true, nil))
 	}
 }
 

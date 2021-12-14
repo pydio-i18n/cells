@@ -188,7 +188,7 @@ func InitDefaults(ctx context.Context) error {
 
 // CreateIfNotExists creates a user if DAO.Bind() call returns a 404 error.
 func CreateIfNotExists(ctx context.Context, dao user.DAO, user *idm.User) (*idm.User, error) {
-	if _, err := dao.Bind(user.Login, user.Password); err != nil && errors.Parse(err.Error()).Code != 404 {
+	if _, err := dao.Bind(user.Login, user.Password); err != nil && errors.FromError(err).Code != 404 {
 		return nil, err
 	} else if err == nil {
 		log.Logger(ctx).Info("Skipping user " + user.Login + ", already exists")

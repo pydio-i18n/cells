@@ -24,6 +24,10 @@ package rest
 import (
 	"context"
 
+	"github.com/pydio/cells/v4/common/nodes"
+	"github.com/pydio/cells/v4/common/nodes/compose"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/service"
@@ -38,7 +42,9 @@ func init() {
 			service.Description("REST gateway to the scheduler service"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceJobs, []string{}),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceTasks, []string{}),
-			service.WithWeb(func() service.WebHandler {
+			service.WithWeb(func(c context.Context) service.WebHandler {
+				// Init router with current registry
+				router = compose.PathClient(nodes.WithRegistryWatch(servicecontext.GetRegistry(c)))
 				return new(JobsHandler)
 			}),
 		)

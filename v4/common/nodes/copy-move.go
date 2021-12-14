@@ -99,7 +99,7 @@ func Is403(e error) bool {
 	if e == nil {
 		return false
 	}
-	return errors.Parse(e.Error()).Code == 403
+	return errors.FromError(e).Code == 403
 }
 
 // CopyMoveNodes performs a recursive copy or move operation of a node to a new location. It can be inter- or intra-datasources.

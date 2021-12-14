@@ -43,7 +43,7 @@ func init() {
 					},
 				}),
 			*/
-			service.WithWeb(func() service.WebHandler {
+			service.WithWeb(func(c context.Context) service.WebHandler {
 				return NewWorkspaceHandler()
 			}),
 		)

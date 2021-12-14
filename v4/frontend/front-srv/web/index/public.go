@@ -4,11 +4,12 @@ import (
 	"compress/gzip"
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"html/template"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
@@ -59,7 +60,7 @@ func (h *PublicHandler) computeTplConf(req *http.Request, linkId string) (status
 	// Load link data
 	linkData, e := h.loadLink(ctx, linkId)
 	if e != nil {
-		parsed := errors.Parse(e.Error())
+		parsed := errors.FromError(e)
 		if parsed.Code == 500 && parsed.Id == "go.micro.client" && parsed.Detail == "none available" {
 			tplConf.ErrorMessage = "Service is temporarily unavailable, please retry later."
 			return 503, tplConf

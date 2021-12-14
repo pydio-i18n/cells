@@ -32,13 +32,13 @@ import (
 )
 
 func init() {
-	plugins.Register("install",  func(ctx context.Context) {
+	plugins.Register("install", func(ctx context.Context) {
 		service.NewService(
 			service.Name(common.ServiceRestNamespace_+common.ServiceInstall),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagDiscovery),
 			service.Description("RESTful Installation server"),
-			service.WithWeb(func() service.WebHandler {
+			service.WithWeb(func(c context.Context) service.WebHandler {
 				eventManager, _ := golongpoll.StartLongpoll(golongpoll.Options{})
 				return &Handler{
 					eventManager,

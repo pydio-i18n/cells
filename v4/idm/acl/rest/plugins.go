@@ -38,7 +38,7 @@ func init() {
 			service.Description("RESTFul - Access Control List service"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceAcl, []string{}),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceTree, []string{}),
-			service.WithWeb(func() service.WebHandler {
+			service.WithWeb(func(c context.Context) service.WebHandler {
 				return new(Handler)
 			}),
 		)

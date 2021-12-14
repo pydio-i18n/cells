@@ -88,7 +88,7 @@ func TestRpcAction_Run(t *testing.T) {
 		output := outputMessage.GetLastOutput()
 		So(output.ErrorString, ShouldEqual, err.Error())
 		// It's a test, so normally there is no service available, or nats is even not started
-		So(errors.Parse(err.Error()).Code, ShouldEqual, 500)
+		So(errors.FromError(err).Code, ShouldEqual, 500)
 
 	})
 

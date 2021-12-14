@@ -24,8 +24,9 @@ package rest
 import (
 	"context"
 	"encoding/gob"
-	"github.com/pydio/cells/v4/common"
 	"os"
+
+	"github.com/pydio/cells/v4/common"
 
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/plugins"
@@ -108,7 +109,7 @@ func init() {
 			service.Tag(common.ServiceTagFrontend),
 			service.Description("REST service for serving specific requests directly to frontend"),
 			service.PluginBoxes(BasePluginsBox),
-			service.WithWeb(func() service.WebHandler {
+			service.WithWeb(func(c context.Context) service.WebHandler {
 				return NewFrontendHandler()
 			}),
 		)

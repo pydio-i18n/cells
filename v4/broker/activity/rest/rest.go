@@ -22,8 +22,10 @@ package rest
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"net/url"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 
 	"github.com/pydio/cells/v4/common/nodes/compose"
 
@@ -50,9 +52,9 @@ type ActivityHandler struct {
 	router *compose.Reverse
 }
 
-func NewActivityHandler() *ActivityHandler {
+func NewActivityHandler(ctx context.Context) *ActivityHandler {
 	return &ActivityHandler{
-		router: compose.ReverseClient(nodes.WithRegistryWatch()),
+		router: compose.ReverseClient(nodes.WithRegistryWatch(servicecontext.GetRegistry(ctx))),
 	}
 }
 

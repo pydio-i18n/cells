@@ -22,8 +22,9 @@ package auth
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"net/http"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"google.golang.org/protobuf/proto"
 
@@ -59,11 +60,9 @@ func (p *pydioconnector) Login(ctx context.Context, s Scopes, username, password
 	c := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
 	resp, err := c.BindUser(ctx, &idm.BindUserRequest{UserName: username, Password: password})
 	if err != nil {
-		errr := errors.Parse(err.Error())
-		if errr.Code == http.StatusForbidden {
+		if errors.FromError(err).Code == http.StatusForbidden {
 			return Identity{}, false, nil
 		}
-
 		return Identity{}, false, err
 	}
 

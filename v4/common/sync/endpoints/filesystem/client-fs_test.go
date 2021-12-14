@@ -99,7 +99,7 @@ func TestLoadNode(t *testing.T) {
 		s, e := c.LoadNode(fsTestCtx, "/test")
 		So(s, ShouldBeNil)
 		So(e, ShouldNotBeNil)
-		So(errors.Parse(e.Error()).Code, ShouldEqual, 404)
+		So(errors.FromError(e).Code, ShouldEqual, 404)
 
 	})
 

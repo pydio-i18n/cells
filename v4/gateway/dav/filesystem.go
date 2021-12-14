@@ -592,7 +592,7 @@ func (fs *FileSystem) stat(ctx context.Context, name string) (os.FileInfo, error
 		Path: name,
 	}})
 	if err != nil {
-		if errors.Parse(err.Error()).Code != 404 && !strings.Contains(err.Error(), " NotFound ") {
+		if errors.FromError(err).Code != 404 && !strings.Contains(err.Error(), " NotFound ") {
 			log.Logger(ctx).Error("ReadNode Error", zap.Error(err))
 		}
 		return nil, err

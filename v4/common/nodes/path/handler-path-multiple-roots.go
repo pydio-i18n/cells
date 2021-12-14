@@ -150,7 +150,7 @@ func (m *MultipleRootsHandler) ListNodes(ctx context.Context, in *tree.ListNodes
 
 	// First try, without modifying ctx & node
 	_, out, err := m.updateInputBranch(ctx, in.Node, "in")
-	if err != nil && errors.Parse(err.Error()).Status == "Not Found" {
+	if err != nil && errors.FromError(err).Status == "Not Found" {
 
 		branch, _ := nodes.GetBranchInfo(ctx, "in")
 		streamer := nodes.NewWrappingStreamer()
@@ -191,7 +191,7 @@ func (m *MultipleRootsHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRe
 
 	// First try, without modifying ctx & node
 	_, out, err := m.updateInputBranch(ctx, in.Node, "in")
-	if err != nil && errors.Parse(err.Error()).Status == "Not Found" && (in.Node.Path == "/" || in.Node.Path == "") {
+	if err != nil && errors.FromError(err).Status == "Not Found" && (in.Node.Path == "/" || in.Node.Path == "") {
 
 		// Load root nodes and
 		// return a fake root node

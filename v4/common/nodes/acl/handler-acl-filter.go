@@ -369,7 +369,7 @@ func (a *FilterHandler) checkPerm(c context.Context, node *tree.Node, identifier
 
 func (a *FilterHandler) recheckParents(c context.Context, originalError error, node *tree.Node, read, write bool) error {
 
-	if errors.Parse(originalError.Error()).Code != 404 {
+	if errors.FromError(originalError).Code != 404 {
 		return originalError
 	}
 

@@ -75,7 +75,7 @@ func TestCrud(t *testing.T) {
 				Label: "",
 			})
 			So(err, ShouldNotBeNil)
-			So(errors.Parse(err.Error()).Code, ShouldEqual, 400)
+			So(errors.FromError(err).Code, ShouldEqual, 400)
 		}
 		{
 			r, _, err := mockDAO.Add(&idm.Role{

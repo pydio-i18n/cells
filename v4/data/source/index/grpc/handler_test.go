@@ -177,7 +177,7 @@ func send(s *TreeServer, req string, args interface{}) (interface{}, error) {
 
 func TestIndex(t *testing.T) {
 
-	s := NewTreeServer(&object.DataSource{Name: ""}, dao, log.Logger(ctx))
+	s := NewTreeServer(&object.DataSource{Name: ""}, "", dao, log.Logger(ctx))
 
 	wg.Add(1)
 	defer wg.Done()
@@ -595,7 +595,7 @@ func TestIndex(t *testing.T) {
 
 func TestIndexLongNode(t *testing.T) {
 
-	s := NewTreeServer(&object.DataSource{Name: ""}, dao, log.Logger(ctx))
+	s := NewTreeServer(&object.DataSource{Name: ""}, "", dao, log.Logger(ctx))
 
 	wg.Add(1)
 	defer wg.Done()

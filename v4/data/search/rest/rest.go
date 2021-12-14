@@ -22,10 +22,13 @@
 package rest
 
 import (
-	"github.com/pydio/cells/v4/common/client/grpc"
+	"context"
 	"strings"
 
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+
 	"github.com/emicklei/go-restful"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -40,8 +43,9 @@ import (
 )
 
 type Handler struct {
-	router nodes.Client
-	client tree.SearcherClient
+	globalCtx context.Context
+	router    nodes.Client
+	client    tree.SearcherClient
 }
 
 // SwaggerTags list the names of the service tags declared in the swagger json implemented by this service
@@ -56,7 +60,7 @@ func (s *Handler) Filter() func(string) string {
 
 func (s *Handler) getRouter() nodes.Client {
 	if s.router == nil {
-		s.router = compose.PathClient(nodes.WithRegistryWatch())
+		s.router = compose.PathClient(nodes.WithRegistryWatch(servicecontext.GetRegistry(s.globalCtx)))
 	}
 	return s.router
 }

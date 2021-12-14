@@ -102,7 +102,7 @@ func (ukm *userKeyStore) AdminCreateKey(ctx context.Context, req *enc.AdminCreat
 	rsp := &enc.AdminCreateKeyResponse{}
 
 	if _, err := keyDao.GetKey(common.PydioSystemUsername, req.KeyID); err != nil {
-		if errors.Parse(err.Error()).Code == 404 {
+		if errors.FromError(err).Code == 404 {
 			return rsp, createSystemKey(keyDao, req.KeyID, req.Label)
 		} else {
 			return nil, err
@@ -126,7 +126,7 @@ func (ukm *userKeyStore) AdminImportKey(ctx context.Context, req *enc.AdminImpor
 	var k *enc.Key
 	k, err = ukm.dao.GetKey(common.PydioSystemUsername, req.Key.ID)
 	if err != nil {
-		if errors.Parse(err.Error()).Code != 404 {
+		if errors.FromError(err).Code != 404 {
 			return nil, err
 		}
 	} else if k != nil && !req.Override {
