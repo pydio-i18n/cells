@@ -144,6 +144,11 @@ func WithWeb(handler func(ctx context.Context) WebHandler) ServiceOption {
 			// Enable globally gzip,deflate encoding globally
 			wc.EnableContentEncoding(true)
 			wc.Add(ws)
+			wc.RecoverHandler(func(e interface{}, writer http.ResponseWriter) {
+				writer.WriteHeader(500)
+				log.Logger(ctx).Error("Recovered from panic")
+				writer.Write([]byte("Internal Server Error"))
+			})
 
 			// var e error
 			wrapped := http.Handler(wc)

@@ -79,7 +79,7 @@ func (v *WorkspaceRootResolver) updateInputBranch(ctx context.Context, node *tre
 func (v *WorkspaceRootResolver) updateOutputNode(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
 
 	branchInfo, _ := nodes.GetBranchInfo(ctx, identifier)
-	if branchInfo.Workspace.UUID == "ROOT" {
+	if branchInfo.Workspace != nil && branchInfo.Workspace.UUID == "ROOT" {
 		// Nothing to do
 		return ctx, node, nil
 	}
