@@ -31,6 +31,7 @@ import PropTypes from 'prop-types';
 
 import Pydio from 'pydio'
 import ShareHelper from '../main/ShareHelper'
+import PublicLinkSecureOptions from "./SecureOptions";
 const {ValidPassword} = Pydio.requireLib('form');
 
 class PublicLinkPanel extends React.Component {
@@ -94,7 +95,7 @@ class PublicLinkPanel extends React.Component {
 
     render() {
 
-        const {linkModel, pydio, compositeModel} = this.props;
+        const {linkModel, pydio, compositeModel, toggleOnly} = this.props;
         const {showTemporaryPassword, temporaryPassword, saving} = this.state;
         const authorizations = ShareHelper.getAuthorizations();
         const nodeLeaf = compositeModel.getNode().isLeaf();
@@ -122,6 +123,8 @@ class PublicLinkPanel extends React.Component {
                 publicLinkPanes.push(<Divider/>);
                 publicLinkPanes.push(<TargetedUsers linkModel={linkModel} pydio={pydio}/>);
             }
+            publicLinkPanes.push(<Divider/>)
+            publicLinkPanes.push(<PublicLinkSecureOptions pydio={pydio} linkModel={linkModel}/>)
 
         }else if(showTemporaryPassword) {
             publicLinkField = (
@@ -153,7 +156,7 @@ class PublicLinkPanel extends React.Component {
         }
         return (
             <div style={this.props.style}>
-                <div style={{padding:'15px 10px 11px', backgroundColor:'#f5f5f5', borderBottom:'1px solid #e0e0e0', fontSize: 15}}>
+                <div style={{padding:'15px 10px 11px', backgroundColor:'rgb(246,246,248)', borderBottom:'0px solid #e0e0e0', fontSize: 15}}>
                     <Toggle
                         disabled={this.props.isReadonly() || saving|| !linkModel.isEditable() || (!linkModel.getLinkUuid() && !canEnable)}
                         onToggle={this.toggleLink}
@@ -162,8 +165,8 @@ class PublicLinkPanel extends React.Component {
                     />
                 </div>
                 {saving && <div style={{width: '100%', height: 300, display:'flex', alignItems:'center', justifyContent:'center'}}><CircularProgress/></div>}
-                {!saving && <div style={{padding:20}}>{publicLinkField}</div>}
-                {!saving && publicLinkPanes}
+                {!toggleOnly && !saving && <div style={{padding:20}}>{publicLinkField}</div>}
+                {!toggleOnly && !saving && publicLinkPanes}
             </div>
         );
     }

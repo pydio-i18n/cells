@@ -30,7 +30,7 @@ class LabelPanel extends React.Component {
 
     render(){
 
-        const {pydio, linkModel} = this.props;
+        const {pydio, linkModel, style} = this.props;
         const m = (id) => pydio.MessageHash['share_center.' + id];
         const link = linkModel.getLink();
         const updateLabel = (e,v) => {
@@ -44,9 +44,9 @@ class LabelPanel extends React.Component {
         };
 
         return (
-            <div>
-                <ModernTextField floatingLabelText={m(265)} value={link.Label} onChange={updateLabel} fullWidth={true}/>
-                <ModernTextField floatingLabelText={m(266)} value={link.Description} onChange={updateDescription} fullWidth={true}/>
+            <div style={style}>
+                <ModernTextField variant={"v2"} floatingLabelText={m(265)} value={link.Label} onChange={updateLabel} fullWidth={true}/>
+                <ModernTextField variant={"v2"} floatingLabelText={m(266)} value={link.Description} onChange={updateDescription} fullWidth={true}/>
             </div>
         );
 

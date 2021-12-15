@@ -1,15 +1,3 @@
-import React from 'react';
-import ShareContextConsumer from '../ShareContextConsumer'
-import TargetedUsers from './TargetedUsers'
-import {TextField, Paper} from 'material-ui'
-import QRCode from 'qrcode.react'
-import Clipboard from 'clipboard'
-import ActionButton from '../main/ActionButton'
-import PathUtils from 'pydio/util/path'
-import LangUtils from 'pydio/util/lang'
-import {muiThemeable} from 'material-ui/styles'
-import ShareHelper from '../main/ShareHelper'
-
 /*
  * Copyright 2007-2017 Charles du Jeu - Abstrium SAS <team (at) pyd.io>
  * This file is part of Pydio.
@@ -29,9 +17,20 @@ import ShareHelper from '../main/ShareHelper'
  *
  * The latest code can be found at <https://pydio.com>.
  */
-import PropTypes from 'prop-types';
-
+import React from 'react';
 import Pydio from 'pydio'
+import PropTypes from 'prop-types';
+import ShareContextConsumer from '../ShareContextConsumer'
+import TargetedUsers from './TargetedUsers'
+import {TextField, Paper} from 'material-ui'
+import QRCode from 'qrcode.react'
+import Clipboard from 'clipboard'
+import ActionButton from '../main/ActionButton'
+import PathUtils from 'pydio/util/path'
+import LangUtils from 'pydio/util/lang'
+import {muiThemeable} from 'material-ui/styles'
+import ShareHelper from '../main/ShareHelper'
+const {ModernStyles} = Pydio.requireLib('hoc')
 const {Tooltip} = Pydio.requireLib("boot");
 
 import LinkModel from './LinkModel'
@@ -187,18 +186,17 @@ class PublicLinkField extends React.Component {
             }
             return (
                 <Paper zDepth={0} rounded={false} className="public-link-container">
-                    <div style={{display:'flex', alignItems:'center'}}>
+                    <div style={{marginTop:-8}}>
                         <TextField
+                            floatingLabelText={"Copy this link for public access"}
+                            floatingLabelFixed={true}
                             type="text"
                             name="Link"
                             ref="public-link-field"
                             value={publicLink}
                             onFocus={e => {e.target.select()}}
                             fullWidth={true}
-                            style={{height: 40}}
-                            inputStyle={{textAlign: 'center', backgroundColor:'#f5f5f5', borderRadius: 2, padding: '0 5px'}}
-                            underlineStyle={{borderColor: '#f5f5f5', textDecoration:linkModel.isExpired()?'line-through':null}}
-                            underlineFocusStyle={{bottom: 0}}
+                            {...ModernStyles.textFieldV2}
                         />
                     </div>
                     {false && this.props.linkData.target_users && <TargetedUsers {...this.props}/>}

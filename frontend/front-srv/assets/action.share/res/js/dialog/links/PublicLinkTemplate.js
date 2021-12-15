@@ -53,6 +53,7 @@ class PublicLinkTemplate extends React.Component{
             <div style={this.props.style}>
                 <div style={{fontSize:13, fontWeight:500, color:'rgba(0,0,0,0.43)'}}>{this.props.getMessage('151')}</div>
                 <ModernSelectField
+                    variant={"v2"}
                     fullWidth={true}
                     value={selected}
                     onChange={this.onDropDownChange.bind(this)}

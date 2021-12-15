@@ -26,7 +26,7 @@ import Panel from '../links/Panel'
 import SecureOptions from '../links/SecureOptions'
 import ShareHelper from '../main/ShareHelper'
 import Mailer from './Mailer'
-import CellsList from './CellsList'
+import NewCellsList from './NewCellsList'
 import Clipboard from 'clipboard'
 import PublicLinkTemplate from '../links/PublicLinkTemplate'
 import VisibilityPanel from '../links/VisibilityPanel'
@@ -173,29 +173,21 @@ class CompositeCard extends React.Component {
             if(model.getLinks().length){
                 publicLinkModel = model.getLinks()[0];
             }
-            let header;
-            if(publicLinkModel && publicLinkModel.getLinkUuid() && publicLinkModel.isEditable()) {
-                header = (
-                    <div>
-                        <Mailer {...mailerData} pydio={pydio} onDismiss={this.dismissMailer.bind(this)}/>
-                        <LabelPanel pydio={pydio} linkModel={publicLinkModel}/>
-                    </div>
-                )
-            } else {
-                header = (
-                    <div style={{fontSize: 24, padding: '26px 10px 0 ', lineHeight: '26px'}}>
-                        <Mailer {...mailerData} pydio={pydio} onDismiss={this.dismissMailer.bind(this)}/>
-                        {m(256).replace('%s', node.getLabel())}
-                    </div>
-                );
 
-            }
-            let tabs = {left:[], right:[], leftStyle:{padding:0}};
+            const header = (
+                <div style={{fontSize: 24, padding: 10}}>
+                    <Mailer {...mailerData} pydio={pydio} onDismiss={this.dismissMailer.bind(this)}/>
+                    {node && m(256).replace('%s', node.getLabel())}
+                </div>
+            );
+
+            let tabs = {left:[], right:[]};
             tabs.right.push({
                 Label:m(250),
                 Value:"cells",
+                Icon:'icomoon-cells',
                 Component:(
-                    <CellsList pydio={pydio} compositeModel={model} usersInvitations={this.usersInvitations.bind(this)} style={editorOneColumn?{padding:10}:{}}/>
+                    <NewCellsList pydio={pydio} compositeModel={model} usersInvitations={this.usersInvitations.bind(this)}/>
                 )
             });
             const links = model.getLinks();
@@ -203,6 +195,7 @@ class CompositeCard extends React.Component {
                 tabs.left.push({
                     Label:m(251),
                     Value:'public-link',
+                    Icon:'mdi mdi-link',
                     Component:(<Panel
                         pydio={pydio}
                         compositeModel={model}
@@ -224,12 +217,14 @@ class CompositeCard extends React.Component {
                         />;
                     }
                     tabs.left.push({
-                        Label:m(252),
+                        Label:m(151),
                         Value:'link-secure',
+                        Icon:'mdi mdi-link',
+                        AlwaysLast: true,
                         Component:(
                             <div>
-                                <SecureOptions pydio={pydio} linkModel={links[0]} />
-                                {templatePane && <Divider/>}
+                                <Panel pydio={pydio} compositeModel={model} linkModel={links[0]} toggleOnly={true}/>
+                                <LabelPanel pydio={pydio} linkModel={links[0]} style={{padding: 16}} />
                                 {templatePane}
                             </div>
                         )
@@ -238,8 +233,14 @@ class CompositeCard extends React.Component {
                         tabs.left.push({
                             Label:m(253),
                             Value:'link-visibility',
-                            Component:( <VisibilityPanel pydio={pydio} linkModel={links[0]}/> ),
-                            AlwaysLast: true
+                            Icon:'mdi mdi-link',
+                            AlwaysLast: true,
+                            Component:(
+                                <div>
+                                    <Panel pydio={pydio} compositeModel={model} linkModel={links[0]} toggleOnly={true}/>
+                                    <VisibilityPanel pydio={pydio} linkModel={links[0]}/>
+                                </div>
+                            )
                         })
                     }
                 }
@@ -255,7 +256,7 @@ class CompositeCard extends React.Component {
                     onCloseAction={() => this.confirmAndDismiss()}
                     onRevertAction={()=>{model.revertChanges()}}
                     editorOneColumn={editorOneColumn}
-                    style={{width:'100%', height: null, flex: 1, minHeight:550, color: 'rgba(0,0,0,.83)', fontSize: 13}}
+                    style={{width:'100%', height: null, flex: 1, minHeight:350, color: 'rgba(0,0,0,.83)', fontSize: 13}}
                 />
             );
 

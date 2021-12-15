@@ -180,7 +180,7 @@ class PublicLinkSecureOptions extends React.Component {
                     attributes={{label:this.props.getMessage('23')}}
                     value={this.state.invalidPassword? this.state.invalidPassword : linkModel.updatePassword}
                     onChange={this.updatePassword.bind(this)}
-                    onValidStatusChange={(v) => {console.log(v); this.setState({validPasswordStatus:v})}}
+                    onValidStatusChange={(v) => {this.setState({validPasswordStatus:v})}}
                 />
             );
         }
@@ -255,7 +255,7 @@ class PublicLinkSecureOptions extends React.Component {
             dlCounterString = <span className="dlCounterString">{dlCounter+ '/'+ dlLimitValue} {resetLink}</span>;
         }
         return (
-            <div style={{padding:10, ...this.props.style}}>
+            <div style={{padding:'10px 16px', ...this.props.style}}>
                 <div style={{fontSize:13, fontWeight:500, color:'rgba(0,0,0,0.43)'}}>{this.props.getMessage('24')}</div>
                 <div style={{paddingRight: 10}}>
                 {passContainer}
