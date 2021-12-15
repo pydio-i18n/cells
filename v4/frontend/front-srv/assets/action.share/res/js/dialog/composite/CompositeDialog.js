@@ -36,7 +36,7 @@ let CompositeDialog = createReactClass({
             dialogTitle: '',
             dialogIsModal: true,
             dialogPadding: false,
-            dialogSize:'lg'
+            dialogSize:'xl'
         };
     },
 
@@ -67,6 +67,14 @@ let CompositeDialog = createReactClass({
                 return this.props.readonly;
             }
         };
+    },
+
+    shouldComponentUpdate(props, state){
+        const {selection} = this.props;
+        if(!selection.getUniqueNode()){
+            return false;
+        }
+        return true;
     },
 
     render(){

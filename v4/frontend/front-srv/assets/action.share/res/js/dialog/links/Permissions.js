@@ -115,7 +115,7 @@ class PublicLinkPermissions extends React.Component {
         return (
             <div style={{padding:'10px 16px', ...this.props.style}}>
                 <div style={{fontSize:13, fontWeight:500, color:'rgba(0,0,0,0.43)'}}>{this.props.getMessage('70r')}</div>
-                <div style={{margin:'10px 0 20px'}}>
+                <div style={{margin:'10px 0'}}>
                     {perms.map(function(p){
                         return (
                             <Checkbox
