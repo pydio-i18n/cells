@@ -1,16 +1,22 @@
-// Copyright © 2021 NAME HERE <EMAIL ADDRESS>
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/*
+ * Copyright (c) 2019-2021. Abstrium SAS <team (at) pydio.com>
+ * This file is part of Pydio Cells.
+ *
+ * Pydio Cells is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Pydio Cells is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Pydio Cells.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * The latest code can be found at <https://pydio.com>.
+ */
 
 package cmd
 
@@ -30,9 +36,9 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
+	"github.com/pydio/cells/v4/common/config/migrations"
 	"github.com/pydio/cells/v4/common/log"
 	context_wrapper "github.com/pydio/cells/v4/common/log/context-wrapper"
-	"github.com/pydio/cells/v4/common/config/migrations"
 	// "github.com/pydio/cells/v4/common/config/remote"
 	"github.com/pydio/cells/v4/common/config/file"
 	"github.com/pydio/cells/v4/common/config/sql"
@@ -101,7 +107,6 @@ func skipCoreInit() bool {
 
 	return false
 }
-
 
 func initConfig() (new bool) {
 
@@ -177,18 +182,18 @@ func initConfig() (new bool) {
 
 		vaultConfig = config.New(file.New(filepath.Join(config.PydioConfigDir, "pydio-vault.json")))
 		/*vaultConfig = config.New(
-			micro.New(
-				microconfig.NewConfig(
-					microconfig.WithSource(
-						vault.NewVaultSource(
-							filepath.Join(config.PydioConfigDir, "pydio-vault.json"),
-							filepath.Join(config.PydioConfigDir, "cells-vault-key"),
-							true,
-						),
+		micro.New(
+			microconfig.NewConfig(
+				microconfig.WithSource(
+					vault.NewVaultSource(
+						filepath.Join(config.PydioConfigDir, "pydio-vault.json"),
+						filepath.Join(config.PydioConfigDir, "cells-vault-key"),
+						true,
 					),
-					microconfig.PollInterval(10*time.Second),
 				),
-			))*/
+				microconfig.PollInterval(10*time.Second),
+			),
+		))*/
 
 		defaultConfig = config.New(
 			source,
@@ -235,7 +240,6 @@ func initConfig() (new bool) {
 
 	return
 }
-
 
 func initLogLevel() {
 
