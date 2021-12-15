@@ -86,6 +86,7 @@ import (
 	_ "github.com/pydio/cells/v4/scheduler/timer/grpc"
 	// Scheduler Actions
 	_ "github.com/pydio/cells/v4/broker/activity/actions"
+	_ "github.com/pydio/cells/v4/common/etl/actions"
 	_ "github.com/pydio/cells/v4/scheduler/actions/archive"
 	_ "github.com/pydio/cells/v4/scheduler/actions/cmd"
 	_ "github.com/pydio/cells/v4/scheduler/actions/idm"

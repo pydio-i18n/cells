@@ -2700,6 +2700,8 @@ github.com/pydio/melody v0.0.0-20190928133520-4271c6513fb6 h1:R2xi5pGxvwcVUTRh8C
 github.com/pydio/melody v0.0.0-20190928133520-4271c6513fb6/go.mod h1:E3dNe7CwsJgzZjN2xiAVfAd8Spkxbviek8AZ9wjaZHk=
 github.com/pydio/minio v0.0.0-20211122154507-cf0bc00fb0b8 h1:FY7T9+0BWuBdgWhD/JBv6rTHTXO6ev/o2rqsF0ctqNM=
 github.com/pydio/minio v0.0.0-20211122154507-cf0bc00fb0b8/go.mod h1:a/pVqwaQ5ySpp3TkGMWD81W+OshDgIaYWvBBiPVNQSw=
+github.com/pydio/pydio-sdk-go v0.0.0-20190116153840-23ce5c39e65c h1:aC9RjBWAeYiyaXH60aHiEaSvYgpS9NyGbFvOl8xuIBg=
+github.com/pydio/pydio-sdk-go v0.0.0-20190116153840-23ce5c39e65c/go.mod h1:GqSiZ8UE5erTBYBBt9+mA4p9OdgVy24vgRLCEY85N7g=
 github.com/quasilyte/go-consistent v0.0.0-20190521200055-c6f3937de18c/go.mod h1:5STLWrekHfjyYwxBRVRXNOSewLJ3PWfDJd1VyTS21fI=
 github.com/quasilyte/go-ruleguard v0.1.2-0.20200318202121-b00d7a75d3d8/go.mod h1:CGFX09Ci3pq9QZdj86B+VGIdNj4VyCo2iPOGS9esB/k=
 github.com/rafaeljusto/redigomock v0.0.0-20170720131524-7ae0511314e9/go.mod h1:JaY6n2sDr+z2WTsXkOmNRUfDy6FN0L6Nk7x06ndm4tY=
@@ -3155,6 +3157,8 @@ github.com/yuin/goldmark-highlighting v0.0.0-20210516132338-9216f9c5aa01/go.mod 
 github.com/yvasiyarov/go-metrics v0.0.0-20140926110328-57bccd1ccd43/go.mod h1:aX5oPXxHm3bOH+xeAttToC8pqch2ScQN/JoXYupl6xs=
 github.com/yvasiyarov/gorelic v0.0.0-20141212073537-a9bba5b9ab50/go.mod h1:NUSPSUX/bi6SeDMUh6brw0nXpxHnc96TguQh0+r/ssA=
 github.com/yvasiyarov/newrelic_platform_go v0.0.0-20140908184405-b21fdbd4370f/go.mod h1:GlGEuHIJweS1mbCqG+7vt2nvWLzLLnRHbXz5JKd/Qbg=
+github.com/yvasiyarov/php_session_decoder v0.0.0-20180803065642-a065a3b0b7d1 h1:p/oCPaHILUSplKqfjFyvivh4UglLHDtzs6F/wfOzyJE=
+github.com/yvasiyarov/php_session_decoder v0.0.0-20180803065642-a065a3b0b7d1/go.mod h1:96w6piyt5Z2E86/J6EQPEn76UR4scqR9bS+Y9iJF/Og=
 github.com/zalando/go-keyring v0.1.1 h1:w2V9lcx/Uj4l+dzAf1m9s+DJ1O8ROkEHnynonHjTcYE=
 github.com/zalando/go-keyring v0.1.1/go.mod h1:OIC+OZ28XbmwFxU/Rp9V7eKzZjamBJwRzC8UFJH9+L8=
 github.com/zenazn/goji v0.9.0/go.mod h1:7S9M489iMyHBNxwZnk9/EHS098H4/F6TATF2mIxtB1Q=
