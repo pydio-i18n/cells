@@ -156,7 +156,7 @@ func (o *ObjectHandler) StartMinioServer(ctx context.Context, minioServiceName s
 			}
 		}
 	})
-	fmt.Println("MINIO PARAMS", params)
+
 	minio.Main(params)
 
 	return nil
