@@ -73,7 +73,7 @@ func updateServicesList(ctx context.Context, treeServer *TreeServer, retry int) 
 		}
 
 		dataSources[dataSourceName] = ds
-		log.Logger(ctx).Info("[Tree:updateServicesList] Add datasource " + dataSourceName)
+		log.Logger(ctx).Debug("[Tree:updateServicesList] Add datasource " + dataSourceName)
 	}
 
 	treeServer.Lock()

@@ -60,20 +60,10 @@ func init() {
 						return fmt.Errorf("cannot find minio config")
 					}
 					mc.RunningSecure = false
-					fmt.Println("Starting minio with config", mc)
 					engine := &ObjectHandler{
 						handlerName: common.ServiceGrpcNamespace_ + common.ServiceDataObjects_ + datasource,
 						Config:      mc,
-						/*
-							Config: &object.MinioConfig{
-								Name:        datasource,
-								ApiKey:      "mycustomapikey",
-								ApiSecret:   "mycustomapisecret",
-								StorageType: object.StorageType_LOCAL,
-								LocalFolder: "/Users/charles/Library/Application Support/Pydio/cells/data",
-							},
-						*/
-						MinioConsolePort: 8383,
+						//MinioConsolePort: 9393,
 					}
 					object.RegisterObjectsEndpointEnhancedServer(server, engine)
 					var startErr error

@@ -126,7 +126,7 @@ func (g *gatewayDataServer) Start(ctx context.Context) error {
 		})
 	})
 
-	params := []string{"minio", "gateway", "pydio", "--address", fmt.Sprintf(":%d", g.port)}
+	params := []string{"minio", "gateway", "pydio", "--address", fmt.Sprintf(":%d", g.port), "--quiet"}
 	minio.Main(params)
 	/*
 		console := &logger{ctx: g.ctx}
