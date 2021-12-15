@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/attributes"
 	"google.golang.org/grpc/resolver"
 	"regexp"
+	"time"
 )
 
 const (
@@ -36,6 +37,8 @@ type cellsResolver struct {
 	cc resolver.ClientConn
 	name string
 	m map[string][]string
+	updatedState chan struct{}
+	updatedStateTimer *time.Timer
 	disableServiceConfig bool
 }
 
@@ -71,9 +74,10 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 		cc: cc,
 		m: m,
 		disableServiceConfig: opts.DisableServiceConfig,
+		updatedStateTimer: time.NewTimer(100 * time.Millisecond),
 	}
 
-	cr.updateState()
+	go cr.updateState()
 	go cr.watch()
 
 	return cr, nil
@@ -92,34 +96,35 @@ func (cr *cellsResolver) watch() {
 		}
 
 		var s registry.Service
-		if r.Item().As(&s) && r.Action() == "create" {
+		if r.Item().As(&s) && (r.Action() == "create" || r.Action() == "update") {
 			for _, n := range s.Nodes() {
 				cr.m[n.Address()[0]] = append(cr.m[n.Address()[0]], s.Name())
 			}
 
-			cr.updateState()
+			cr.updatedStateTimer.Reset(100 * time.Millisecond)
 		}
 	}
 }
 
-func (cr *cellsResolver) updateState() error {
-	var addresses []resolver.Address
-	for k, v := range cr.m {
-		addresses = append(addresses, resolver.Address{
-			Addr: k,
-			ServerName: "main",
-			Attributes: attributes.New("services", v),
-		})
-	}
+func (cr *cellsResolver) updateState() {
+	for {
+		select {
+		case <-cr.updatedStateTimer.C:
+			var addresses []resolver.Address
+			for k, v := range cr.m {
+				addresses = append(addresses, resolver.Address{
+					Addr: k,
+					ServerName: "main",
+					Attributes: attributes.New("services", v),
+				})
+			}
 
-	if err := cr.cc.UpdateState(resolver.State{
-		Addresses: addresses,
-		ServiceConfig: cr.cc.ParseServiceConfig(`{"loadBalancingPolicy": "lb"}`),
-	}); err != nil {
-		return err
+			cr.cc.UpdateState(resolver.State{
+				Addresses: addresses,
+				ServiceConfig: cr.cc.ParseServiceConfig(`{"loadBalancingPolicy": "lb"}`),
+			})
+		}
 	}
-
-	return nil
 }
 
 func (b *cellsBuilder) Scheme() string {

@@ -3,6 +3,7 @@ package registrymux
 import (
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
+	"io"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -21,6 +22,32 @@ func NewMiddleware(r registry.Registry, s *http.ServeMux) http.Handler {
 		r: r,
 		s: s,
 	}
+}
+
+func (m Middleware) watch() error {
+	w, err := m.r.Watch(registry.WithType(pb.ItemType_NODE))
+	if err != nil {
+		return err
+	}
+
+	defer w.Stop()
+
+	for {
+		r, err := w.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			continue
+		}
+
+		if r.Action() == "create" {
+
+
+		}
+	}
+
+	return nil
 }
 
 // ServeHTTP.

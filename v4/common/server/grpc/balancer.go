@@ -17,7 +17,7 @@ const name = "lb"
 
 // newBuilder creates a new roundrobin balancer builder.
 func newBuilder() balancer.Builder {
-	return base.NewBalancerBuilder(name, &rrPickerBuilder{}, base.Config{HealthCheck: true})
+	return base.NewBalancerBuilder(name, &rrPickerBuilder{}, base.Config{HealthCheck: false})
 }
 
 func init() {
@@ -71,7 +71,6 @@ func (p *rrPicker) Pick(i balancer.PickInfo) (balancer.PickResult, error) {
 	}
 	pc, ok := p.subConns[serviceName]
 	if !ok {
-		fmt.Println("CANNOT FIND SUBCONN FOR SERVICE ", serviceName)
 		return balancer.PickResult{}, balancer.ErrNoSubConnAvailable
 	}
 	pc.mu.Lock()
