@@ -24,27 +24,25 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"sync"
 
-	"github.com/ory/x/errorsx"
-	"github.com/ory/x/logrusx"
-	"github.com/pydio/cells/v4/common/log"
-	"go.uber.org/zap"
-
 	"github.com/ory/fosite"
 	"github.com/ory/hydra/client"
 	"github.com/ory/hydra/driver"
+	"github.com/ory/x/logrusx"
 	"github.com/ory/x/sqlcon"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
+
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
+	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/install"
-	"github.com/pydio/cells/v4/common/sql"
-	"github.com/sirupsen/logrus"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 )
 
 var (
@@ -56,68 +54,71 @@ var (
 	onRegistryInits []func()
 )
 
-func InitRegistry(dao sql.DAO) {
-	once.Do(func() {
+func InitRegistry(dbServiceName string) (e error) {
 
+	logCtx := servicecontext.WithServiceName(context.Background(), dbServiceName)
+	logger := log.Logger(logCtx)
+
+	once.Do(func() {
 		testL := logrus.New()
 		testL.SetOutput(io.Discard)
 		lx := logrusx.New("test", "1", logrusx.UseLogger(testL))
 
-		var e error
 		cfg := defaultConf.GetProvider()
-		dbDriver, dbDSN := config.GetDatabase("default")
+		dbDriver, dbDSN := config.GetDatabase(dbServiceName)
 		_ = cfg.Set("dsn", fmt.Sprintf("%s://%s", dbDriver, dbDSN))
 		reg, e = driver.NewRegistryFromDSN(context.Background(), cfg, lx)
 		if e != nil {
-			fmt.Printf("Cannot init registryFromDSN", e)
-			os.Exit(1)
+			logger.Error("Cannot init registryFromDSN", zap.Error(e))
+			return
 		}
 		p := reg.WithConfig(defaultConf.GetProvider()).Persister()
 		conn := p.Connection(context.Background())
 
-		if err := conn.Open(); err != nil {
-			fmt.Printf("Could not open the database connection:\n%+v\n", err)
-			os.Exit(1)
+		if e = conn.Open(); e != nil {
+			logger.Error("Could not open the database connection", zap.Error(e))
 			return
 		}
 
 		// convert migration tables
-		if err := p.PrepareMigration(context.Background()); err != nil {
-			fmt.Printf("Could not convert the migration table:\n%+v\n", err)
-			os.Exit(1)
+		if e = p.PrepareMigration(context.Background()); e != nil {
+			logger.Error("Could not convert the migration table", zap.Error(e))
 			return
 		}
 
-		// print migration status
-		//fmt.Println("The following migration is planned:")
-		//fmt.Println("")
-
-		_, err := p.MigrationStatus(context.Background())
+		status, err := p.MigrationStatus(context.Background())
 		if err != nil {
-			fmt.Printf("Could not get the migration status:\n%+v\n", errorsx.WithStack(err))
-			os.Exit(1)
+			e = err
+			logger.Error("Could not get the migration status", zap.Error(err))
 			return
 		}
-		//_ = status.Write(os.Stdout)
-
-		// apply migrations
-		fmt.Println("Applying migrations for oauth if required")
-		if err := p.MigrateUp(context.Background()); err != nil {
-			fmt.Printf("Could not apply migrations:\n%+v\n", errorsx.WithStack(err))
+		if status.HasPending() {
+			// apply migrations
+			logger.Info("Applying migrations for oauth if required")
+			if err := p.MigrateUp(context.Background()); err != nil {
+				e = err
+				logger.Error("Could not apply migrations", zap.Error(err))
+				return
+			}
+			logger.Info("Finished")
 		}
-		fmt.Println("Finished")
-
 		RegisterOryProvider(reg.WithConfig(defaultConf.GetProvider()).OAuth2Provider())
 	})
 
-	if err := syncClients(context.Background(), reg.ClientManager(), defaultConf.Clients()); err != nil {
-		log.Warn("Failed to sync clients", zap.Error(err))
+	if e != nil {
+		return
+	}
+
+	if e = syncClients(context.Background(), reg.ClientManager(), defaultConf.Clients()); e != nil {
+		logger.Warn("Failed to sync clients", zap.Error(e))
 		return
 	}
 
 	for _, onRegistryInit := range onRegistryInits {
 		onRegistryInit()
 	}
+
+	return nil
 }
 
 func OnRegistryInit(f func()) {

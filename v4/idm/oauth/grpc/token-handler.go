@@ -16,7 +16,6 @@ import (
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/auth"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 	"github.com/pydio/cells/v4/common/utils/uuid"
@@ -31,6 +30,7 @@ type PatScopeClaims struct {
 }
 
 type PatHandler struct {
+	dao  oauth.DAO
 	name string
 	auth.UnimplementedAuthTokenPrunerServer
 	auth.UnimplementedAuthTokenVerifierServer
@@ -43,7 +43,7 @@ func (p *PatHandler) Name() string {
 }
 
 func (p *PatHandler) getDao(ctx context.Context) oauth.DAO {
-	return servicecontext.GetDAO(ctx).(oauth.DAO)
+	return p.dao
 }
 
 func (p *PatHandler) getStrategy() *hmac.HMACStrategy {

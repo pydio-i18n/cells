@@ -25,25 +25,27 @@ import (
 	"context"
 	"log"
 
-	"github.com/pydio/cells/v4/common/config"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
-	"github.com/pydio/cells/v4/common/sql"
-
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth"
+	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/plugins"
 	auth2 "github.com/pydio/cells/v4/common/proto/auth"
 	"github.com/pydio/cells/v4/common/service"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/idm/oauth"
+)
+
+var (
+	Name = common.ServiceGrpcNamespace_ + common.ServiceOAuth
 )
 
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
 
 		service.NewService(
-			service.Name(common.ServiceGrpcNamespace_+common.ServiceOAuth),
+			service.Name(Name),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagIdm),
 			service.Description("OAuth Provider"),
@@ -55,7 +57,7 @@ func init() {
 				},
 			}),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
-				h := &Handler{name: common.ServiceGrpcNamespace_ + common.ServiceOAuth}
+				h := &Handler{name: Name}
 
 				auth2.RegisterAuthTokenVerifierEnhancedServer(server, h)
 				auth2.RegisterLoginProviderEnhancedServer(server, h)
@@ -68,12 +70,8 @@ func init() {
 				auth2.RegisterAuthTokenPrunerEnhancedServer(server, h)
 				auth2.RegisterPasswordCredentialsTokenEnhancedServer(server, h)
 
-				dao := servicecontext.GetDAO(ctx).(sql.DAO)
-
 				// Registry
-				auth.InitRegistry(dao)
-
-				return nil
+				return auth.InitRegistry(Name)
 			}),
 			/*
 				// TODO V4
@@ -91,7 +89,10 @@ func init() {
 			service.Description("Personal Access Token Provider"),
 			service.WithStorage(oauth.NewDAO, "idm_oauth_"),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
-				pat := &PatHandler{name: common.ServiceGrpcNamespace_ + common.ServiceToken}
+				pat := &PatHandler{
+					name: common.ServiceGrpcNamespace_ + common.ServiceToken,
+					dao:  servicecontext.GetDAO(ctx).(oauth.DAO),
+				}
 				auth2.RegisterPersonalAccessTokenServiceEnhancedServer(server, pat)
 				auth2.RegisterAuthTokenVerifierEnhancedServer(server, pat)
 				auth2.RegisterAuthTokenPrunerEnhancedServer(server, pat)
