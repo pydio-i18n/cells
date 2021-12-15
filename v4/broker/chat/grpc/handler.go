@@ -35,7 +35,6 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/chat"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	"github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
@@ -52,6 +51,7 @@ func getMetaClient() tree.NodeReceiverClient {
 
 type ChatHandler struct {
 	chat.UnimplementedChatServiceServer
+	dao chat2.DAO
 }
 
 func (c *ChatHandler) Name() string {
@@ -61,8 +61,7 @@ func (c *ChatHandler) Name() string {
 func (c *ChatHandler) PutRoom(ctx context.Context, req *chat.PutRoomRequest) (*chat.PutRoomResponse, error) {
 
 	resp := &chat.PutRoomResponse{}
-	db := servicecontext.GetDAO(ctx).(chat2.DAO)
-	newRoom, err := db.PutRoom(req.Room)
+	newRoom, err := c.dao.PutRoom(req.Room)
 	if err != nil {
 		return resp, err
 	}
@@ -80,9 +79,8 @@ func (c *ChatHandler) DeleteRoom(ctx context.Context, req *chat.DeleteRoomReques
 	response := &chat.DeleteRoomResponse{}
 
 	log.Logger(ctx).Debug("Delete Room", req.Room.Zap())
-	db := servicecontext.GetDAO(ctx).(chat2.DAO)
 
-	ok, err := db.DeleteRoom(req.Room)
+	ok, err := c.dao.DeleteRoom(req.Room)
 	if err != nil {
 		return nil, err
 	} else if !ok {
@@ -102,8 +100,8 @@ func (c *ChatHandler) ListRooms(req *chat.ListRoomsRequest, streamer chat.ChatSe
 
 	ctx := streamer.Context()
 	log.Logger(ctx).Debug("List Rooms", zap.Any(common.KeyChatListRoomReq, req))
-	db := servicecontext.GetDAO(ctx).(chat2.DAO)
-	rooms, err := db.ListRooms(req)
+
+	rooms, err := c.dao.ListRooms(req)
 	if err != nil {
 		return err
 	}
@@ -119,8 +117,8 @@ func (c *ChatHandler) ListMessages(req *chat.ListMessagesRequest, streamer chat.
 
 	ctx := streamer.Context()
 	log.Logger(ctx).Debug("List Messages", zap.Any(common.KeyChatListMsgReq, req))
-	db := servicecontext.GetDAO(ctx).(chat2.DAO)
-	messages, err := db.ListMessages(req)
+
+	messages, err := c.dao.ListMessages(req)
 	if err != nil {
 		return err
 	}
@@ -136,10 +134,9 @@ func (c *ChatHandler) PostMessage(ctx context.Context, req *chat.PostMessageRequ
 
 	resp := &chat.PostMessageResponse{}
 	log.Logger(ctx).Debug("Post Messages", zap.Any(common.KeyChatPostMsgReq, req))
-	db := servicecontext.GetDAO(ctx).(chat2.DAO)
 
 	for _, m := range req.Messages {
-		newMessage, err := db.PostMessage(m)
+		newMessage, err := c.dao.PostMessage(m)
 		if err != nil {
 			return nil, err
 		}
@@ -153,14 +150,14 @@ func (c *ChatHandler) PostMessage(ctx context.Context, req *chat.PostMessageRequ
 				Message: m,
 			})
 			// For comments on nodes, publish an UPDATE_USER_META event
-			if room, err := db.RoomByUuid(chat.RoomType_NODE, m.RoomUuid); err == nil {
+			if room, err := c.dao.RoomByUuid(chat.RoomType_NODE, m.RoomUuid); err == nil {
 				broker.MustPublish(bgCtx, common.TopicMetaChanges, &tree.NodeChangeEvent{
 					Type: tree.NodeChangeEvent_UPDATE_USER_META,
 					Target: &tree.Node{Uuid: room.RoomTypeObject, MetaStore: map[string]string{
 						"comments": `"` + m.Message + `"`,
 					}},
 				})
-				if count, e := db.CountMessages(room); e == nil {
+				if count, e := c.dao.CountMessages(room); e == nil {
 					getMetaClient().UpdateNode(bgCtx, &tree.UpdateNodeRequest{To: &tree.Node{
 						Uuid: room.RoomTypeObject,
 						MetaStore: map[string]string{
@@ -177,10 +174,9 @@ func (c *ChatHandler) PostMessage(ctx context.Context, req *chat.PostMessageRequ
 func (c *ChatHandler) DeleteMessage(ctx context.Context, req *chat.DeleteMessageRequest) (*chat.DeleteMessageResponse, error) {
 
 	log.Logger(ctx).Debug("Delete Messages", zap.Any(common.KeyChatPostMsgReq, req))
-	db := servicecontext.GetDAO(ctx).(chat2.DAO)
 
 	for _, m := range req.Messages {
-		err := db.DeleteMessage(m)
+		err := c.dao.DeleteMessage(m)
 		if err != nil {
 			return nil, err
 		}
@@ -192,8 +188,8 @@ func (c *ChatHandler) DeleteMessage(ctx context.Context, req *chat.DeleteMessage
 	go func() {
 		for _, m := range req.Messages {
 			bgCtx := metadata.NewBackgroundWithUserKey(m.Author)
-			if room, err := db.RoomByUuid(chat.RoomType_NODE, m.RoomUuid); err == nil {
-				if count, e := db.CountMessages(room); e == nil {
+			if room, err := c.dao.RoomByUuid(chat.RoomType_NODE, m.RoomUuid); err == nil {
+				if count, e := c.dao.CountMessages(room); e == nil {
 					var meta = ""
 					if count > 0 {
 						meta = fmt.Sprintf("%d", count)

@@ -51,7 +51,7 @@ func initializedHandler() (context.Context, *ChatHandler, func(), error) {
 		os.Remove(tmpFile)
 	}
 	ctx := servicecontext.WithDAO(context.Background(), dao)
-	handler := &ChatHandler{}
+	handler := &ChatHandler{dao: dao}
 	return ctx, handler, closer, nil
 }
 

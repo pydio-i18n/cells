@@ -23,6 +23,7 @@ package grpc
 
 import (
 	"context"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 
 	"google.golang.org/grpc"
 
@@ -45,7 +46,7 @@ func init() {
 			service.WithStorage(chat.NewDAO, "broker_chat"),
 			service.Unique(true),
 			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
-				proto.RegisterChatServiceEnhancedServer(server, new(ChatHandler))
+				proto.RegisterChatServiceEnhancedServer(server, &ChatHandler{dao: servicecontext.GetDAO(c).(chat.DAO)})
 				return nil
 			}),
 		)
