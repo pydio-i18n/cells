@@ -51,6 +51,7 @@ func init() {
 		for _, source := range sources {
 
 			name := common.ServiceGrpcNamespace_ + common.ServiceDataIndex_ + source
+			sourceOpt := source
 
 			service.NewService(
 				service.Name(name),
@@ -67,8 +68,6 @@ func init() {
 					return strings.Replace(o.Name, ".", "_", -1)
 				}),
 				service.WithGRPC(func(ctx context.Context, srv *grpc.Server) error {
-					// sourceOpt := server.Options().Metadata["source"]
-					sourceOpt := source
 
 					dsObject, e := config.GetSourceInfoByName(sourceOpt)
 					if e != nil {

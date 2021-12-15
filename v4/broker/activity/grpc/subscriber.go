@@ -107,8 +107,6 @@ func (e *MicroEventsSubscriber) ignoreForInternal(node *tree.Node) bool {
 // HandleNodeChange processes the received events and sends them to the subscriber
 func (e *MicroEventsSubscriber) HandleNodeChange(ctx context.Context, msg *tree.NodeChangeEvent) error {
 
-	dao := servicecontext.GetDAO(ctx).(activity.DAO)
-
 	author := common.PydioSystemUsername
 	meta, ok := metadata.FromContext(ctx)
 	if ok {
@@ -153,22 +151,22 @@ func (e *MicroEventsSubscriber) HandleNodeChange(ctx context.Context, msg *tree.
 	//
 	log.Logger(ctx).Debug("Posting Activity to node outbox")
 	if msg.Type == tree.NodeChangeEvent_DELETE {
-		dao.Delete(activity2.OwnerType_NODE, node.Uuid)
+		e.dao.Delete(activity2.OwnerType_NODE, node.Uuid)
 	} else {
-		dao.PostActivity(activity2.OwnerType_NODE, node.Uuid, activity.BoxOutbox, ac, nil)
+		e.dao.PostActivity(activity2.OwnerType_NODE, node.Uuid, activity.BoxOutbox, ac, nil)
 	}
 
 	//
 	// Post to the author Outbox
 	//
 	log.Logger(ctx).Debug("Posting Activity to author outbox")
-	dao.PostActivity(activity2.OwnerType_USER, author, activity.BoxOutbox, ac, ctx)
+	e.dao.PostActivity(activity2.OwnerType_USER, author, activity.BoxOutbox, ac, ctx)
 
 	//
 	// Post to parents Outbox'es as well
 	//
 	for _, uuid := range parentUuids {
-		dao.PostActivity(activity2.OwnerType_NODE, uuid, activity.BoxOutbox, ac, nil)
+		e.dao.PostActivity(activity2.OwnerType_NODE, uuid, activity.BoxOutbox, ac, nil)
 	}
 
 	//
@@ -178,7 +176,7 @@ func (e *MicroEventsSubscriber) HandleNodeChange(ctx context.Context, msg *tree.
 	if msg.Type != tree.NodeChangeEvent_CREATE {
 		subUuids = append(subUuids, node.Uuid)
 	}
-	subscriptions, err := dao.ListSubscriptions(activity2.OwnerType_NODE, subUuids)
+	subscriptions, err := e.dao.ListSubscriptions(activity2.OwnerType_NODE, subUuids)
 	log.Logger(ctx).Debug("Listing followers on node and its parents", zap.Int("subs length", len(subscriptions)))
 	if err != nil {
 		return err
@@ -216,7 +214,7 @@ func (e *MicroEventsSubscriber) HandleNodeChange(ctx context.Context, msg *tree.
 			continue
 		}
 		if accessList.CanReadWithResolver(userCtx, e.vNodeResolver, ancestors...) {
-			dao.PostActivity(activity2.OwnerType_USER, subscription.UserId, activity.BoxInbox, ac, ctx)
+			e.dao.PostActivity(activity2.OwnerType_USER, subscription.UserId, activity.BoxInbox, ac, ctx)
 		}
 	}
 
