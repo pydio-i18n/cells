@@ -28,6 +28,8 @@ import (
 	"path"
 	"path/filepath"
 
+	"github.com/pydio/cells/v4/common/broker"
+
 	"github.com/pydio/cells/v4/common/proto/front"
 	"google.golang.org/grpc"
 
@@ -100,17 +102,12 @@ func init() {
 				//)
 
 				// Adding subscriber
-				/*if _, err := defaults.Broker().Subscribe(common.TopicReloadAssets, func(p broker.Publication) error {
-					// Reload FS
-					log.Logger(servicecontext.WithServiceName(ctx, common.ServiceGrpcNamespace_+common.ServiceFrontStatics)).Info("Reloading frontend plugins from file system")
+				_ = broker.SubscribeCancellable(ctx, common.TopicReloadAssets, func(message broker.Message) error {
+					log.Logger(ctx).Info("Reloading frontend plugins from file system")
 					frontend.HotReload()
 					httpFs = http.FS(frontend.GetPluginsFS())
 					return nil
-				}); err != nil {
-					return nil
-				}*/
-
-				// return routerWithTimeout
+				})
 
 				return nil
 			}),
