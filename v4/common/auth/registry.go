@@ -60,19 +60,25 @@ func InitRegistry(dbServiceName string) (e error) {
 	logger := log.Logger(logCtx)
 
 	once.Do(func() {
-		testL := logrus.New()
-		testL.SetOutput(io.Discard)
-		lx := logrusx.New("test", "1", logrusx.UseLogger(testL))
-
-		cfg := defaultConf.GetProvider()
-		dbDriver, dbDSN := config.GetDatabase(dbServiceName)
-		_ = cfg.Set("dsn", fmt.Sprintf("%s://%s", dbDriver, dbDSN))
-		reg, e = driver.NewRegistryFromDSN(context.Background(), cfg, lx)
+		/*
+			testL := logrus.New()
+			testL.SetOutput(io.Discard)
+			lx := logrusx.New("test", "1", logrusx.UseLogger(testL))
+			cfg := defaultConf.GetProvider()
+			dbDriver, dbDSN := config.GetDatabase(dbServiceName)
+			_ = cfg.Set("dsn", fmt.Sprintf("%s://%s", dbDriver, dbDSN))
+			reg, e = driver.NewRegistryFromDSN(context.Background(), cfg, lx)
+			if e != nil {
+				logger.Error("Cannot init registryFromDSN", zap.Error(e))
+				return
+			}
+			p := reg.WithConfig(defaultConf.GetProvider()).Persister()
+		*/
+		reg, e = createSqlRegistryForConf(dbServiceName, defaultConf)
 		if e != nil {
 			logger.Error("Cannot init registryFromDSN", zap.Error(e))
-			return
 		}
-		p := reg.WithConfig(defaultConf.GetProvider()).Persister()
+		p := reg.Persister()
 		conn := p.Connection(context.Background())
 
 		if e = conn.Open(); e != nil {
@@ -125,14 +131,26 @@ func OnRegistryInit(f func()) {
 	onRegistryInits = append(onRegistryInits, f)
 }
 
+func createSqlRegistryForConf(serviceName string, conf ConfigurationProvider) (driver.Registry, error) {
+	testL := logrus.New()
+	testL.SetOutput(io.Discard)
+	lx := logrusx.New("test", "1", logrusx.UseLogger(testL))
+	cfg := conf.GetProvider()
+	dbDriver, dbDSN := config.GetDatabase(serviceName)
+	_ = cfg.Set("dsn", fmt.Sprintf("%s://%s", dbDriver, dbDSN))
+	reg, e := driver.NewRegistryFromDSN(context.Background(), cfg, lx)
+	if e != nil {
+		return nil, e
+	}
+	return reg.WithConfig(conf.GetProvider()), nil
+}
+
 func GetRegistry() driver.Registry {
 	return reg
 }
 
-func DuplicateRegistryForConf(c ConfigurationProvider) driver.Registry {
-	l := logrus.New()
-	l.SetLevel(logrus.PanicLevel)
-	return driver.NewRegistrySQL() //TODO V4 .WithConfig(c).WithLogger(l)
+func DuplicateRegistryForConf(refService string, c ConfigurationProvider) (driver.Registry, error) {
+	return createSqlRegistryForConf(refService, c)
 }
 
 func GetRegistrySQL() *driver.RegistrySQL {

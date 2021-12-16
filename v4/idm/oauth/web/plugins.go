@@ -23,6 +23,17 @@ package web
 
 import (
 	"context"
+	"fmt"
+	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/ory/hydra/consent"
+	"github.com/ory/hydra/jwk"
+	"github.com/ory/hydra/oauth2"
+	"github.com/ory/hydra/x"
+	"github.com/pydio/cells/v4/common/auth"
+	"github.com/pydio/cells/v4/common/config"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
@@ -36,51 +47,64 @@ func init() {
 			service.Context(ctx),
 			service.Tag(common.ServiceTagIdm),
 			service.Description("OAuth Provider"),
-			/*
-				service.WithStorage(oauth.NewDAO, "idm_oauth_"),
-				service.WithHTTP(func() http.Handler {
-					router := mux.NewRouter()
+			service.WithHTTP(func(ctx context.Context, serveMux *http.ServeMux) error {
+				router := mux.NewRouter()
+				hh := config.GetSitesAllowedURLs()
+				for _, u := range hh {
+					fmt.Println("Registering router for host", u.Host)
+					// Two-level check : Host() is regexp based, fast, but only on Hostname, then custom check to take port into account
+					host := u.Host
+					hostname := u.Hostname()
+					subRouter := router.Host(hostname).MatcherFunc(func(request *http.Request, _ *mux.RouteMatch) bool {
+						// TODO V4 - Host should contain port, it's not ...
+						//return host == request.Host
+						return true
+					})
 
-					hh := config.GetSitesAllowedURLs()
-					for _, u := range hh {
-						// Two-level check : Host() is regexp based, fast, but only on Hostname, then custom check to take port into account
-						host := u.Host
-						hostname := u.Hostname()
-						r := router.Host(hostname).MatcherFunc(func(request *http.Request, _ *mux.RouteMatch) bool {
-							return host == request.Host
-						}).Subrouter()
-
-						conf := auth.GetConfigurationProvider(host)
-						reg := auth.DuplicateRegistryForConf(conf)
-
-						admin := x.NewRouterAdmin()
-						public := x.NewRouterPublic()
-
-						oauth2Handler := oauth2.NewHandler(reg, conf)
-						oauth2Handler.SetRoutes(admin, public, driver.OAuth2AwareCORSMiddleware("public", reg, conf))
-
-						consentHandler := consent.NewHandler(reg, conf)
-						consentHandler.SetRoutes(admin)
-
-						keyHandler := jwk.NewHandler(reg, conf)
-						keyHandler.SetRoutes(admin, public, driver.OAuth2AwareCORSMiddleware("public", reg, conf))
-
-						if conf.CORSEnabled("admin") {
-							r.PathPrefix("/oidc-admin/").Handler(http.StripPrefix("/oidc-admin", cors.New(conf.CORSOptions("admin")).Handler(servicecontext.HttpWrapperMeta(admin))))
-						} else {
-							r.PathPrefix("/oidc-admin/").Handler(http.StripPrefix("/oidc-admin", servicecontext.HttpWrapperMeta(admin)))
-						}
-
-						r.PathPrefix("/oidc/").Handler(http.StripPrefix("/oidc", servicecontext.HttpWrapperMeta(public)))
+					conf := auth.GetConfigurationProvider(host)
+					reg, e := auth.DuplicateRegistryForConf(common.ServiceGrpcNamespace_+common.ServiceOAuth, conf)
+					if e != nil {
+						return e
 					}
 
-					return router
-				}),
+					admin := x.NewRouterAdmin()
+					public := x.NewRouterPublic()
+
+					oauth2Handler := oauth2.NewHandler(reg, conf.GetProvider())
+					oauth2Handler.SetRoutes(admin, public, func(handler http.Handler) http.Handler {
+						return handler
+					})
+
+					consentHandler := consent.NewHandler(reg, conf.GetProvider())
+					consentHandler.SetRoutes(admin)
+
+					keyHandler := jwk.NewHandler(reg, conf.GetProvider())
+					keyHandler.SetRoutes(admin, public, func(handler http.Handler) http.Handler {
+						return handler
+					})
+
+					/*
+						//todo v4 - not clear :-)
+							if conf.GetProvider().CORSEnabled("admin") {
+								subRouter.PathPrefix("/oidc-admin/").Handler(http.StripPrefix("/oidc-admin", cors.New(conf.CORSOptions("admin")).Handler(servicecontext.HttpWrapperMeta(admin))))
+							} else {
+								subRouter.PathPrefix("/oidc-admin/").Handler(http.StripPrefix("/oidc-admin", servicecontext.HttpWrapperMeta(admin)))
+							}
+					*/
+
+					subRouter.Handler(servicecontext.HttpWrapperMeta(public))
+					//subRouter.PathPrefix("/oidc/").Handler(http.StripPrefix("/oidc", servicecontext.HttpWrapperMeta(public)))
+				}
+				fmt.Println("Attach router to /oidc/")
+
+				serveMux.Handle("/oidc/", http.StripPrefix("/oidc", router))
+				return nil
+			}),
+			/*
 				service.WatchPath("services/"+common.ServiceWebNamespace_+common.ServiceOAuth, func(_ service.Service, c configx.Values) {
 					auth.InitConfiguration(config.Get("services", common.ServiceWebNamespace_+common.ServiceOAuth))
 				}),
 				service.BeforeStart(initialize),
-
 			*/
 		)
 	})
