@@ -63,9 +63,6 @@ class ListEntry extends React.Component {
         if(className) {
             mainClasses.push(className);
         }
-        if(node.getMetadata().has('local:entry-classes')){
-            mainClasses.push(...node.getMetadata().get('local:entry-classes'))
-        }
 
         if(showSelector){
             selector = (
@@ -93,6 +90,9 @@ class ListEntry extends React.Component {
             mainClasses.push('ajxp_node_' + (node.isLeaf()?'leaf':'collection'));
             if(node.getAjxpMime()){
                 mainClasses.push('ajxp_mime_' + node.getAjxpMime())
+            }
+            if(node.getMetadata().has('local:entry-classes')){
+                mainClasses.push(...node.getMetadata().get('local:entry-classes'))
             }
         }
 
