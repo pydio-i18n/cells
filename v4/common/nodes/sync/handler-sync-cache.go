@@ -83,7 +83,8 @@ func newCacheHandler() *CacheHandler {
 
 	if syncCache == nil {
 		syncCache = cache.NewSharded(nodes.ViewsLibraryName, cache.WithEviction(30*time.Second), cache.WithCleanWindow(time.Minute))
-		_, _ = broker.Subscribe(common.TopicTreeChanges, func(publication broker.Message) error {
+		// TODO v4
+		_, _ = broker.Subscribe(context.TODO(), common.TopicTreeChanges, func(publication broker.Message) error {
 			var event tree.NodeChangeEvent
 			if ctx, e := publication.Unmarshal(&event); e == nil && !event.Optimistic {
 				if event.Type == tree.NodeChangeEvent_CREATE || event.Type == tree.NodeChangeEvent_UPDATE_PATH || event.Type == tree.NodeChangeEvent_DELETE {

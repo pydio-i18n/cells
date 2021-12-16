@@ -23,7 +23,6 @@ package cmd
 import (
 	"golang.org/x/sync/errgroup"
 
-	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/plugins"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
@@ -76,7 +75,7 @@ to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
 
-		broker.Connect()
+		// broker.Connect()
 
 		pluginsReg, err := registry.OpenRegistry(ctx, "memory:///")
 		if err != nil {

@@ -23,6 +23,7 @@ package sessions
 import (
 	"context"
 	"fmt"
+	"google.golang.org/protobuf/proto"
 	"sync"
 	"time"
 
@@ -40,7 +41,7 @@ func init() {
 
 type StoredEvent struct {
 	Topic     string
-	Msg       interface{}
+	Msg       proto.Message
 	EventTime time.Time
 }
 
@@ -96,7 +97,7 @@ type MemoryBatcher struct {
 	store *SessionMemoryStore
 }
 
-func (b *MemoryBatcher) Notify(topic string, msg interface{}) {
+func (b *MemoryBatcher) Notify(topic string, msg proto.Message) {
 	b.store.Lock()
 	defer b.store.Unlock()
 

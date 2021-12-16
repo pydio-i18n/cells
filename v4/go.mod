@@ -3,9 +3,33 @@ module github.com/pydio/cells/v4
 go 1.16
 
 require (
+	cloud.google.com/go/firestore v1.5.0 // indirect
 	cloud.google.com/go/kms v1.1.0 // indirect
+	cloud.google.com/go/monitoring v0.1.0 // indirect
+	cloud.google.com/go/pubsub v1.16.0 // indirect
+	cloud.google.com/go/secretmanager v0.1.0 // indirect
+	cloud.google.com/go/storage v1.15.0 // indirect
+	cloud.google.com/go/trace v0.1.0 // indirect
+	contrib.go.opencensus.io/exporter/aws v0.0.0-20200617204711-c478e41e60e9 // indirect
+	contrib.go.opencensus.io/exporter/stackdriver v0.13.8 // indirect
+	contrib.go.opencensus.io/integrations/ocsql v0.1.7 // indirect
+	github.com/Azure/azure-amqp-common-go/v3 v3.1.1 // indirect
+	github.com/Azure/azure-pipeline-go v0.2.3 // indirect
+	github.com/Azure/azure-sdk-for-go v57.0.0+incompatible // indirect
+	github.com/Azure/azure-service-bus-go v0.10.16 // indirect
+	github.com/Azure/azure-storage-blob-go v0.10.0 // indirect
+	github.com/Azure/go-amqp v0.13.12 // indirect
+	github.com/Azure/go-autorest/autorest v0.11.20 // indirect
+	github.com/Azure/go-autorest/autorest/adal v0.9.15 // indirect
+	github.com/Azure/go-autorest/autorest/azure/auth v0.5.8 // indirect
+	github.com/Azure/go-autorest/autorest/azure/cli v0.4.3 // indirect
+	github.com/GoogleCloudPlatform/cloudsql-proxy v1.24.0 // indirect
 	github.com/ajvb/kala v0.8.4
 	github.com/allegro/bigcache v1.2.1
+	github.com/aws/aws-sdk-go v1.40.34 // indirect
+	github.com/aws/aws-sdk-go-v2/service/kms v1.5.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.6.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssm v1.10.0 // indirect
 	github.com/beevik/ntp v0.3.0
 	github.com/blevesearch/bleve v1.0.14
 	github.com/c2fo/testify v0.0.0-20150827203832-fba96363964a // indirect
@@ -23,7 +47,10 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gobwas/glob v0.2.3
 	github.com/golang/protobuf v1.5.2
+	github.com/google/go-replayers/grpcreplay v1.1.0 // indirect
+	github.com/google/go-replayers/httpreplay v1.0.0 // indirect
 	github.com/google/uuid v1.3.0
+	github.com/google/wire v0.5.0 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.1
@@ -89,6 +116,7 @@ require (
 	go.etcd.io/bbolt v1.3.6
 	go.etcd.io/etcd/client/v3 v3.5.1 // indirect
 	go.uber.org/zap v1.19.1
+	gocloud.dev v0.20.0 // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
 	golang.org/x/net v0.0.0-20211020060615-d418f374d309
@@ -107,6 +135,7 @@ require (
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/klog/v2 v2.30.0 // indirect
+	nhooyr.io/websocket v1.8.7 // indirect
 )
 
 // replace github.com/minio/minio => /Users/charles/Sources/go/src/github.com/pydio/minio

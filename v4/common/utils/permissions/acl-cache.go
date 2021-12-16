@@ -21,6 +21,7 @@
 package permissions
 
 import (
+	"context"
 	"time"
 
 	"github.com/pydio/cells/v4/common"
@@ -35,7 +36,8 @@ var (
 
 func initAclCache() {
 	aclCache = cache.NewShort(cache.WithEviction(500*time.Millisecond), cache.WithCleanWindow(30*time.Second))
-	_, _ = broker.Subscribe(common.TopicIdmEvent, func(message broker.Message) error {
+	// TODO v4
+	_, _ = broker.Subscribe(context.TODO(), common.TopicIdmEvent, func(message broker.Message) error {
 		event := &idm.ChangeEvent{}
 		if _, e := message.Unmarshal(event); e != nil {
 			return e

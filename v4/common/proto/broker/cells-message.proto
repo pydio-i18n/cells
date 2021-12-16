@@ -6,14 +6,14 @@ option go_package="github.com/pydio/cells/v4/common/proto/broker";
 
 service Broker {
     rpc Publish(stream PublishRequest) returns (Empty) {};
-    rpc Subscribe(SubscribeRequest) returns (stream Message) {};
+    rpc Subscribe(SubscribeRequest) returns (stream Messages) {};
 }
 
 message Empty {}
 
 message PublishRequest {
     string topic = 1;
-    Message message = 2;
+    Messages messages = 2;
 }
 
 message SubscribeRequest {
@@ -21,6 +21,9 @@ message SubscribeRequest {
     string queue = 2;
 }
 
+message Messages {
+    repeated Message messages = 1;
+}
 message Message {
     map<string,string> header = 1;
     bytes body = 2;

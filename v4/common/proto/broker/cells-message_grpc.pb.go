@@ -80,7 +80,7 @@ func (c *brokerClient) Subscribe(ctx context.Context, in *SubscribeRequest, opts
 }
 
 type Broker_SubscribeClient interface {
-	Recv() (*Message, error)
+	Recv() (*Messages, error)
 	grpc.ClientStream
 }
 
@@ -88,8 +88,8 @@ type brokerSubscribeClient struct {
 	grpc.ClientStream
 }
 
-func (x *brokerSubscribeClient) Recv() (*Message, error) {
-	m := new(Message)
+func (x *brokerSubscribeClient) Recv() (*Messages, error) {
+	m := new(Messages)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -163,7 +163,7 @@ func _Broker_Subscribe_Handler(srv interface{}, stream grpc.ServerStream) error 
 }
 
 type Broker_SubscribeServer interface {
-	Send(*Message) error
+	Send(*Messages) error
 	grpc.ServerStream
 }
 
@@ -171,7 +171,7 @@ type brokerSubscribeServer struct {
 	grpc.ServerStream
 }
 
-func (x *brokerSubscribeServer) Send(m *Message) error {
+func (x *brokerSubscribeServer) Send(m *Messages) error {
 	return x.ServerStream.SendMsg(m)
 }
 
