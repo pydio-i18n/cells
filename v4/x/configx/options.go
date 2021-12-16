@@ -39,7 +39,7 @@ func (j *jsonReader) Unmarshal(data []byte, out interface{}) error {
 
 	switch v := out.(type) {
 	case proto.Message:
-		err = protojson.Unmarshal(data, v)
+		err = protojson.UnmarshalOptions{DiscardUnknown: true}.Unmarshal(data, v)
 	default:
 		err = json.Unmarshal(data, v)
 	}
@@ -66,7 +66,7 @@ func (j *yamlReader) Unmarshal(data []byte, out interface{}) error {
 	return yaml.Unmarshal(data, out)
 }
 
-type yamlWriter struct {}
+type yamlWriter struct{}
 
 func (j *yamlWriter) Marshal(in interface{}) ([]byte, error) {
 	return yaml.Marshal(in)
@@ -90,5 +90,3 @@ func WithDecrypt(d Decrypter) Option {
 		o.Decrypter = d
 	}
 }
-
-
