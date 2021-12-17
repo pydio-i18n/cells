@@ -23,6 +23,7 @@ package sessions
 import (
 	"context"
 	"fmt"
+	"google.golang.org/protobuf/proto"
 	"os"
 	"time"
 
@@ -47,9 +48,10 @@ func GetBenchSessionBatcher(b SessionBatcher) SessionBatcher {
 	return benchBatcher
 }
 
-func (bb *BenchBatcher) Notify(topic string, msg interface{}) {
+func (bb *BenchBatcher) Notify(topic string, msg proto.Message) {
 	if topic == "pydio:benchmark" {
-		benchMeasures = append(benchMeasures, msg.(map[string]time.Duration))
+		// TODO v4
+		// benchMeasures = append(benchMeasures, msg.(map[string]time.Duration))
 	} else {
 		bb.batcher.Notify(topic, msg)
 	}

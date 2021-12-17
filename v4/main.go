@@ -11,6 +11,7 @@ import (
 	_ "github.com/pydio/cells/v4/frontend/front-srv/web"
 
 	// Discovery
+	_ "github.com/pydio/cells/v4/discovery/broker"
 	_ "github.com/pydio/cells/v4/discovery/config/grpc"
 	_ "github.com/pydio/cells/v4/discovery/config/web"
 	_ "github.com/pydio/cells/v4/discovery/health/generic"
@@ -20,6 +21,7 @@ import (
 	_ "github.com/pydio/cells/v4/discovery/registry"
 	_ "github.com/pydio/cells/v4/discovery/update/grpc"
 	_ "github.com/pydio/cells/v4/discovery/update/rest"
+
 	// Data
 	_ "github.com/pydio/cells/v4/data/docstore/grpc"
 	_ "github.com/pydio/cells/v4/data/key/grpc"
@@ -55,6 +57,7 @@ import (
 	_ "github.com/pydio/cells/v4/broker/log/rest"
 	_ "github.com/pydio/cells/v4/broker/mailer/grpc"
 	_ "github.com/pydio/cells/v4/broker/mailer/rest"
+
 	// Gateways
 	_ "github.com/pydio/cells/v4/gateway/data"
 	//_ "github.com/pydio/cells/v4/gateway/dav"
@@ -80,11 +83,13 @@ import (
 	_ "github.com/pydio/cells/v4/idm/user/rest"
 	_ "github.com/pydio/cells/v4/idm/workspace/grpc"
 	_ "github.com/pydio/cells/v4/idm/workspace/rest"
+
 	// Scheduler
 	_ "github.com/pydio/cells/v4/scheduler/jobs/grpc"
 	_ "github.com/pydio/cells/v4/scheduler/jobs/rest"
 	_ "github.com/pydio/cells/v4/scheduler/tasks/grpc"
 	_ "github.com/pydio/cells/v4/scheduler/timer/grpc"
+
 	// Scheduler Actions
 	_ "github.com/pydio/cells/v4/broker/activity/actions"
 	_ "github.com/pydio/cells/v4/common/etl/actions"
@@ -95,6 +100,10 @@ import (
 	_ "github.com/pydio/cells/v4/scheduler/actions/scheduler"
 	_ "github.com/pydio/cells/v4/scheduler/actions/tools"
 	_ "github.com/pydio/cells/v4/scheduler/actions/tree"
+
+	// Brokers
+	_ "github.com/pydio/cells/v4/common/broker/service"
+	_ "gocloud.dev/pubsub/mempubsub"
 )
 
 func main() {

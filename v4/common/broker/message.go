@@ -22,32 +22,26 @@ package broker
 
 import (
 	"context"
-
-	"github.com/micro/micro/v3/service/broker"
-	"google.golang.org/protobuf/proto"
-
 	"github.com/pydio/cells/v4/common/service/context/metadata"
+	"google.golang.org/protobuf/proto"
 )
-
-type UnSubscriber func() error
-
-type SubscriberHandler func(Message) error
 
 type Message interface {
 	Unmarshal(target proto.Message) (context.Context, error)
 }
 
-type SubMessage struct {
-	*broker.Message
+type message struct {
+	header map[string]string
+	body []byte
 }
 
-func (m *SubMessage) Unmarshal(target proto.Message) (context.Context, error) {
-	if e := proto.Unmarshal(m.Body, target); e != nil {
+func (m *message) Unmarshal(target proto.Message) (context.Context, error) {
+	if e := proto.Unmarshal(m.body, target); e != nil {
 		return nil, e
 	}
 	ctx := context.Background()
-	if m.Header != nil {
-		ctx = metadata.NewContext(ctx, m.Header)
+	if m.header != nil {
+		ctx = metadata.NewContext(ctx, m.header)
 	}
 	return ctx, nil
 }

@@ -18,41 +18,21 @@
  * The latest code can be found at <https://pydio.com>.
  */
 
-package permissions
+package discoverytest
 
 import (
-	"context"
-	"time"
+	"google.golang.org/grpc"
 
-	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/broker"
-	"github.com/pydio/cells/v4/common/proto/idm"
-	"github.com/pydio/cells/v4/common/utils/cache"
+	cb "github.com/pydio/cells/v4/common/broker"
+	pb "github.com/pydio/cells/v4/common/proto/broker"
+	"github.com/pydio/cells/v4/discovery/broker"
+
+	_ "gocloud.dev/pubsub/mempubsub"
 )
 
-var (
-	aclCache cache.Short
-)
-
-func initAclCache() {
-	aclCache = cache.NewShort(cache.WithEviction(500*time.Millisecond), cache.WithCleanWindow(30*time.Second))
-	// TODO v4
-	_, _ = broker.Subscribe(context.TODO(), common.TopicIdmEvent, func(message broker.Message) error {
-		event := &idm.ChangeEvent{}
-		if _, e := message.Unmarshal(event); e != nil {
-			return e
-		}
-		switch event.Type {
-		case idm.ChangeEventType_CREATE, idm.ChangeEventType_UPDATE, idm.ChangeEventType_DELETE:
-			return aclCache.Reset()
-		}
-		return nil
-	})
-}
-
-func getAclCache() cache.Short {
-	if aclCache == nil {
-		initAclCache()
+func NewBrokerService() grpc.ClientConnInterface {
+	serv := &pb.BrokerStub{
+		BrokerServer: broker.NewHandler(cb.NewBroker("mem://")),
 	}
-	return aclCache
+	return serv
 }

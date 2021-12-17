@@ -79,11 +79,12 @@ func (cs *ClientServerStreamerCore) Trailer() metadata.MD {
 }
 
 func (cs *ClientServerStreamerCore) CloseSend() error {
-	if cs.closed {
-		return nil
-	}
-	close(cs.RespChan)
-	cs.closed = true
+	// TODO v4 - CloseSend only closes the request, not the response
+	//if cs.closed {
+	//	return nil
+	//}
+	//close(cs.RespChan)
+	//cs.closed = true
 	return nil
 }
 
@@ -106,6 +107,7 @@ func (cs *ClientServerStreamerCore) RecvMsg(m interface{}) error {
 type BidirServerStreamerCore struct {
 	ClientServerStreamerCore
 	ReqChan chan proto.Message
+	closed  bool
 }
 
 func (bd *BidirServerStreamerCore) Init(ctx context.Context) {
@@ -114,4 +116,13 @@ func (bd *BidirServerStreamerCore) Init(ctx context.Context) {
 		bd.ReqChan <- i.(proto.Message)
 		return nil
 	})
+}
+
+func (bd *BidirServerStreamerCore) CloseSend() error {
+	if bd.closed {
+		return nil
+	}
+	close(bd.ReqChan)
+	bd.closed = true
+	return nil
 }

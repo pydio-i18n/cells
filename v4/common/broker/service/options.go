@@ -23,19 +23,31 @@ package service
 import (
 	"context"
 	"google.golang.org/grpc"
-
-	"github.com/micro/micro/v3/service/broker"
 )
 
 type clientKey struct{}
 
-// WithClient sets the RPC client
-func WithClientConn(conn grpc.ClientConnInterface) broker.Option {
-	return func(o *broker.Options) {
+type Option func(*Options)
+
+type Options struct {
+	Context context.Context
+	Queue   string
+}
+
+// WithClientConn sets the RPC client
+func WithClientConn(conn grpc.ClientConnInterface) Option {
+	return func(o *Options) {
 		if o.Context == nil {
 			o.Context = context.Background()
 		}
 
 		o.Context = context.WithValue(o.Context, clientKey{}, conn)
+	}
+}
+
+// WithQueue defines the queue used by the subscriber
+func WithQueue(s string) Option {
+	return func(o *Options) {
+		o.Queue = s
 	}
 }

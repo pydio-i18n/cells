@@ -37,7 +37,6 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/install"
@@ -403,7 +402,7 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 		panic(err)
 	}
 
-	broker.Connect()
+	// broker.Connect()
 
 	ctx = servicecontext.WithServer(ctx, "http", srvHTTP)
 

@@ -19,14 +19,24 @@ func (this *Empty) Validate() error {
 	return nil
 }
 func (this *PublishRequest) Validate() error {
-	if this.Message != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Message); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Message", err)
+	if this.Messages != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Messages); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Messages", err)
 		}
 	}
 	return nil
 }
 func (this *SubscribeRequest) Validate() error {
+	return nil
+}
+func (this *Messages) Validate() error {
+	for _, item := range this.Messages {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Messages", err)
+			}
+		}
+	}
 	return nil
 }
 func (this *Message) Validate() error {

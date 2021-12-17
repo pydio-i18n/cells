@@ -24,50 +24,54 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/pydio/cells/v4/common/service/context/metadata"
-
+	"gocloud.dev/pubsub"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/micro/micro/v3/service/broker"
-	"github.com/micro/micro/v3/service/broker/memory"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 )
-
-type brokerwrap struct {
-	b    broker.Broker
-	opts Options
-}
 
 var (
-	std = NewBroker(memory.NewBroker())
+	std = NewBroker("mem://")
 )
 
+func Register(b Broker) {
+	std = b
+}
+
+func Default() Broker {
+	return std
+}
+
+type Broker interface {
+	Publish(context.Context, string, proto.Message, ...PublishOption) error
+	Subscribe(context.Context, string, SubscriberHandler, ...SubscribeOption) (UnSubscriber, error)
+}
+
+type UnSubscriber func() error
+
+type SubscriberHandler func(Message) error
+
 // NewBroker wraps a standard broker but prevents it from disconnecting while there still is a service running
-func NewBroker(b broker.Broker, opts ...Option) broker.Broker {
-	return &brokerwrap{b, newOptions(opts...)}
-}
-
-func Connect() error {
-	return std.Connect()
-}
-
-func Disconnect() error {
-	return std.Disconnect()
+func NewBroker(s string, opts ...Option) Broker {
+	return &broker{
+		publishOpener: func(ctx context.Context, topic string) (*pubsub.Topic, error) {
+			return pubsub.OpenTopic(ctx, s+"/"+topic)
+		},
+		subscribeOpener: func(ctx context.Context, topic string) (*pubsub.Subscription, error) {
+			return pubsub.OpenSubscription(ctx, s+"/"+topic)
+		},
+		publishers: make(map[string]*pubsub.Topic),
+		Options:    newOptions(opts...),
+	}
 }
 
 // Publish sends a message to standard broker. For the moment, forward message to client.Publish
-func Publish(ctx context.Context, topic string, message interface{}, opts ...PublishOption) error {
-	body, _ := proto.Marshal(message.(proto.Message))
-	header := make(map[string]string)
-	if hh, ok := metadata.FromContext(ctx); ok {
-		for k, v := range hh {
-			header[k] = v
-		}
-	}
-	return std.Publish(topic, &broker.Message{Body: body, Header: header}, broker.PublishContext(ctx))
+func Publish(ctx context.Context, topic string, message proto.Message, opts ...PublishOption) error {
+	return std.Publish(ctx, topic, message, opts...)
 }
 
 // MustPublish publishes a message ignoring the error
-func MustPublish(ctx context.Context, topic string, message interface{}, opts ...PublishOption) {
+func MustPublish(ctx context.Context, topic string, message proto.Message, opts ...PublishOption) {
 	err := Publish(ctx, topic, message)
 	if err != nil {
 		fmt.Printf("[Message Publication Error] Topic: %s, Error: %v\n", topic, err)
@@ -75,7 +79,7 @@ func MustPublish(ctx context.Context, topic string, message interface{}, opts ..
 }
 
 func SubscribeCancellable(ctx context.Context, topic string, handler SubscriberHandler, opts ...SubscribeOption) error {
-	unsub, e := Subscribe(topic, handler, opts...)
+	unsub, e := std.Subscribe(ctx, topic, handler, opts...)
 	if e != nil {
 		return e
 	}
@@ -83,87 +87,113 @@ func SubscribeCancellable(ctx context.Context, topic string, handler SubscriberH
 		<-ctx.Done()
 		_ = unsub()
 	}()
+
 	return nil
 }
 
-func Subscribe(topic string, handler SubscriberHandler, opts ...SubscribeOption) (UnSubscriber, error) {
+func Subscribe(ctx context.Context, topic string, handler SubscriberHandler, opts ...SubscribeOption) (UnSubscriber, error) {
+	return std.Subscribe(ctx, topic, handler, opts...)
+}
 
+type broker struct {
+	publishOpener   TopicOpener
+	subscribeOpener SubscribeOpener
+	publishers      map[string]*pubsub.Topic
+	Options
+}
+
+type TopicOpener func(context.Context, string) (*pubsub.Topic, error)
+type SubscribeOpener func(context.Context, string) (*pubsub.Subscription, error)
+
+func (b *broker) openTopic(ctx context.Context, topic string) (*pubsub.Topic, error) {
+	publisher, ok := b.publishers[topic]
+	if !ok {
+		var err error
+		publisher, err = b.publishOpener(ctx, topic)
+		if err != nil {
+			return nil, err
+		}
+		b.publishers[topic] = publisher
+	}
+
+	return publisher, nil
+}
+
+// Publish sends a message to standard broker. For the moment, forward message to client.Publish
+func (b *broker) Publish(ctx context.Context, topic string, message proto.Message, opts ...PublishOption) error {
+	body, err := proto.Marshal(message)
+	if err != nil {
+		return err
+	}
+
+	header := make(map[string]string)
+	if hh, ok := metadata.FromContext(ctx); ok {
+		for k, v := range hh {
+			header[k] = v
+		}
+	}
+
+	publisher, err := b.openTopic(ctx, topic)
+	if err != nil {
+		return err
+	}
+
+	if err := publisher.Send(ctx, &pubsub.Message{
+		Body:     body,
+		Metadata: header,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (b *broker) Subscribe(ctx context.Context, topic string, handler SubscriberHandler, opts ...SubscribeOption) (UnSubscriber, error) {
 	so := &SubscribeOptions{}
 	for _, o := range opts {
 		o(so)
 	}
-	var mopts []broker.SubscribeOption
+	var mopts []SubscribeOption
 	if so.Context != nil {
-		mopts = append(mopts, broker.SubscribeContext(so.Context))
+		mopts = append(mopts, SubscribeContext(so.Context))
 	}
 	if so.Queue != "" {
-		mopts = append(mopts, broker.Queue(so.Queue))
+		mopts = append(mopts, Queue(so.Queue))
 	}
 	if so.ErrorHandler != nil {
-		mopts = append(mopts, broker.HandleError(func(message *broker.Message, err error) {
+		mopts = append(mopts, HandleError(func(err error) {
 			so.ErrorHandler(err)
 		}))
 	}
 
-	sub, er := std.Subscribe(topic, func(message *broker.Message) error {
-		subMsg := &SubMessage{Message: message}
-		return handler(subMsg)
-	}, mopts...)
-	if er != nil {
-		return nil, er
+	// Making sure topic is opened
+	_, err := b.openTopic(ctx, topic)
+	if err != nil {
+		return nil, err
 	}
-	return sub.Unsubscribe, nil
 
-}
+	sub, err := b.subscribeOpener(ctx, topic)
+	if err != nil {
+		return nil, err
+	}
 
-/*
-func Subscribe(s string, h broker.Handler, opts ...broker.SubscribeOption) (broker.Subscriber, error) {
-	return std.Subscribe(s, h, opts...)
-}
-*/
+	go func() {
+		for {
+			msg, err := sub.Receive(ctx)
+			if err != nil {
+				break
+			}
 
-// Options wraps standard function
-func (b *brokerwrap) Options() broker.Options {
-	return b.b.Options()
-}
-
-// Address wraps standard function
-func (b *brokerwrap) Address() string {
-	return b.b.Address()
-}
-
-// Connect wraps standard function
-func (b *brokerwrap) Connect() error {
-	return b.b.Connect()
-}
-
-// Disconnect handles the disconnection to the broker. It prevents it if there is a service that is still active
-func (b *brokerwrap) Disconnect() error {
-	for _, o := range b.opts.beforeDisconnect {
-		if err := o(); err != nil {
-			return err
+			if err := handler(&message{
+				header: msg.Metadata,
+				body:   msg.Body,
+			}); err != nil {
+				fmt.Println("Could not handle message ? ", msg)
+			}
 		}
-	}
+	}()
 
-	return b.b.Disconnect()
-}
-
-// Init wraps standard function
-func (b *brokerwrap) Init(opts ...broker.Option) error {
-	return b.b.Init(opts...)
-}
-
-// Publish wraps standard function
-func (b *brokerwrap) Publish(s string, m *broker.Message, opts ...broker.PublishOption) error {
-	return b.b.Publish(s, m, opts...)
-}
-
-// Publish wraps standard function
-func (b *brokerwrap) Subscribe(s string, h broker.Handler, opts ...broker.SubscribeOption) (broker.Subscriber, error) {
-	return b.b.Subscribe(s, h, opts...)
-}
-
-// Publish wraps standard function
-func (b *brokerwrap) String() string {
-	return b.b.String()
+	return func() error {
+		return sub.Shutdown(ctx)
+	}, nil
 }
