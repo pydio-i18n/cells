@@ -18,24 +18,21 @@
  * The latest code can be found at <https://pydio.com>.
  */
 
-package cmd
+package discoverytest
 
 import (
-	"github.com/pydio/cells/v4/common/utils/net"
-	"github.com/spf13/pflag"
+	"google.golang.org/grpc"
+
+	cb "github.com/pydio/cells/v4/common/broker"
+	pb "github.com/pydio/cells/v4/common/proto/broker"
+	"github.com/pydio/cells/v4/discovery/broker"
+
+	_ "gocloud.dev/pubsub/mempubsub"
 )
 
-// addRegistryFlags registers necessary flags to connect to the registry
-func addRegistryFlags(flags *pflag.FlagSet, hideAll ...bool) {
-	flags.String("registry", "memory://?cache=shared", "Registry used to manage services (currently nats only)")
-	flags.String("broker", "mem://", "Pub/sub service for events between services (currently nats only)")
-	flags.String("transport", "grpc", "Transport protocol for RPC")
-	flags.Int("port_registry", net.GetAvailableRegistryAltPort(), "Port used to start a registry discovery service")
-	flags.Int("port_broker", net.GetAvailableBrokerAltPort(), "Port used to start a broker discovery service")
-
-	if len(hideAll) > 0 && hideAll[0] {
-		flags.MarkHidden("registry")
-		flags.MarkHidden("broker")
-		flags.MarkHidden("transport")
+func NewBrokerService() grpc.ClientConnInterface {
+	serv := &pb.BrokerStub{
+		BrokerServer: broker.NewHandler(cb.NewBroker("mem://")),
 	}
+	return serv
 }

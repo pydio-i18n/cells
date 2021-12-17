@@ -23,17 +23,24 @@ package broker
 import (
 	"context"
 	"fmt"
-	"gocloud.dev/pubsub"
 
-	"github.com/pydio/cells/v4/common/service/context/metadata"
+	"gocloud.dev/pubsub"
 	"google.golang.org/protobuf/proto"
 
-	_ "gocloud.dev/pubsub/mempubsub"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 var (
-	std = NewBroker("memory")
+	std = NewBroker("mem://")
 )
+
+func Register(b Broker) {
+	std = b
+}
+
+func Default() Broker {
+	return std
+}
 
 type Broker interface {
 	Publish(context.Context, string, proto.Message, ...PublishOption) error
@@ -48,13 +55,13 @@ type SubscriberHandler func(Message) error
 func NewBroker(s string, opts ...Option) Broker {
 	return &broker{
 		publishOpener: func(ctx context.Context, topic string) (*pubsub.Topic, error) {
-			return pubsub.OpenTopic(ctx, "mem://" + topic)
+			return pubsub.OpenTopic(ctx, s+"/"+topic)
 		},
 		subscribeOpener: func(ctx context.Context, topic string) (*pubsub.Subscription, error) {
-			return pubsub.OpenSubscription(ctx, "mem://" + topic)
+			return pubsub.OpenSubscription(ctx, s+"/"+topic)
 		},
 		publishers: make(map[string]*pubsub.Topic),
-		Options: newOptions(opts...),
+		Options:    newOptions(opts...),
 	}
 }
 
@@ -85,13 +92,13 @@ func SubscribeCancellable(ctx context.Context, topic string, handler SubscriberH
 }
 
 func Subscribe(ctx context.Context, topic string, handler SubscriberHandler, opts ...SubscribeOption) (UnSubscriber, error) {
-	return std.Subscribe(ctx,topic, handler, opts...)
+	return std.Subscribe(ctx, topic, handler, opts...)
 }
 
 type broker struct {
-	publishOpener TopicOpener
+	publishOpener   TopicOpener
 	subscribeOpener SubscribeOpener
-	publishers map[string]*pubsub.Topic
+	publishers      map[string]*pubsub.Topic
 	Options
 }
 
@@ -103,7 +110,7 @@ func (b *broker) openTopic(ctx context.Context, topic string) (*pubsub.Topic, er
 	if !ok {
 		var err error
 		publisher, err = b.publishOpener(ctx, topic)
-		if err != nil{
+		if err != nil {
 			return nil, err
 		}
 		b.publishers[topic] = publisher
@@ -132,7 +139,7 @@ func (b *broker) Publish(ctx context.Context, topic string, message proto.Messag
 	}
 
 	if err := publisher.Send(ctx, &pubsub.Message{
-		Body: body,
+		Body:     body,
 		Metadata: header,
 	}); err != nil {
 		return err
@@ -171,8 +178,6 @@ func (b *broker) Subscribe(ctx context.Context, topic string, handler Subscriber
 	}
 
 	go func() {
-		defer sub.Shutdown(ctx)
-
 		for {
 			msg, err := sub.Receive(ctx)
 			if err != nil {
@@ -181,7 +186,7 @@ func (b *broker) Subscribe(ctx context.Context, topic string, handler Subscriber
 
 			if err := handler(&message{
 				header: msg.Metadata,
-				body: msg.Body,
+				body:   msg.Body,
 			}); err != nil {
 				fmt.Println("Could not handle message ? ", msg)
 			}

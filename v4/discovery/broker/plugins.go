@@ -2,22 +2,28 @@ package broker
 
 import (
 	"context"
+
+	"github.com/pydio/cells/v4/common/broker"
+
+	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
+	pb "github.com/pydio/cells/v4/common/proto/broker"
+	"github.com/pydio/cells/v4/common/service"
+	"google.golang.org/grpc"
 )
 
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
-		/*
-			srv, ok := ctx.Value("grpcServerKey").(*grpc.Server)
-			if !ok {
-				log.Println("Context does not contain server key")
-				return
-			}
+		service.NewService(
+			service.Name(common.ServiceGrpcNamespace_+common.ServiceBroker),
+			service.Context(ctx),
+			service.Tag(common.ServiceTagDiscovery),
+			service.Description("Registry"),
+			service.WithGRPC(func(ctx context.Context, srv *grpc.Server) error {
+				pb.RegisterBrokerEnhancedServer(srv, NewHandler(broker.Default()))
 
-			registry.Register("broker", "discovery")
-
-			pbbroker.RegisterBrokerServer(srv, &Handler{})
-
-		*/
+				return nil
+			}),
+		)
 	})
 }

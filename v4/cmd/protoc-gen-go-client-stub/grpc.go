@@ -115,7 +115,8 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 			g.P("case ", "\"/", service.Desc.FullName(), "/", method.GoName, "\":")
 			g.P("st := &", stubServer, "_", method.GoName, "Streamer{}")
 			g.P("st.Init(ctx, func(i interface{}) error {")
-			g.P("return s.", server, ".", method.GoName, "(i.(*", method.Desc.Input().Name(), "), st)")
+			g.P("go s.", server, ".", method.GoName, "(i.(*", method.Desc.Input().Name(), "), st)")
+			g.P("return nil")
 			g.P("})")
 			g.P("return st, nil")
 		}

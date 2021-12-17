@@ -21,6 +21,7 @@
 package cmd
 
 import (
+	"github.com/pydio/cells/v4/common/broker"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/pydio/cells/v4/common/config/runtime"
@@ -86,6 +87,8 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			return err
 		}
+
+		broker.Register(broker.NewBroker(viper.GetString("broker")))
 
 		ctx = servercontext.WithRegistry(ctx, reg)
 		ctx = servicecontext.WithRegistry(ctx, pluginsReg)
