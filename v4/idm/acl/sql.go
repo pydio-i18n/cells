@@ -28,9 +28,9 @@ import (
 	"time"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/golang/protobuf/ptypes"
 	migrate "github.com/rubenv/sql-migrate"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 	"gopkg.in/doug-martin/goqu.v4"
 
@@ -446,7 +446,7 @@ func (c *queryConverter) Convert(val *anypb.Any, driver string) (goqu.Expression
 
 	q := new(idm.ACLSingleQuery)
 
-	if err := ptypes.UnmarshalAny(val, q); err != nil {
+	if err := anypb.UnmarshalTo(val, q, proto.UnmarshalOptions{}); err != nil {
 		return nil, false
 	}
 

@@ -23,20 +23,20 @@ package versions
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"path"
 
-	"github.com/pydio/cells/v4/common/nodes/compose"
-
-	"github.com/golang/protobuf/ptypes"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/forms"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes"
+	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -112,10 +112,10 @@ func (c *VersionAction) Run(ctx context.Context, channels *actions.RunnableChann
 
 	versionClient := tree.NewNodeVersionerClient(grpc.NewClientConn(common.ServiceVersions))
 	request := &tree.CreateVersionRequest{Node: node}
-	var ce tree.NodeChangeEvent
 	if input.Event != nil {
-		if err := ptypes.UnmarshalAny(input.Event, &ce); err == nil {
-			request.TriggerEvent = &ce
+		ce := &tree.NodeChangeEvent{}
+		if err := anypb.UnmarshalTo(input.Event, ce, proto.UnmarshalOptions{}); err == nil {
+			request.TriggerEvent = ce
 		}
 	}
 	resp, err := versionClient.CreateVersion(ctx, request)

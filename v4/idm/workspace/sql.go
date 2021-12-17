@@ -25,8 +25,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
 	migrate "github.com/rubenv/sql-migrate"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 	"gopkg.in/doug-martin/goqu.v4"
 
@@ -214,7 +214,7 @@ type queryBuilder idm.WorkspaceSingleQuery
 func (c *queryBuilder) Convert(val *anypb.Any, driver string) (goqu.Expression, bool) {
 
 	q := new(idm.WorkspaceSingleQuery)
-	if err := ptypes.UnmarshalAny(val, q); err != nil {
+	if err := anypb.UnmarshalTo(val, q, proto.UnmarshalOptions{}); err != nil {
 		return nil, false
 	}
 

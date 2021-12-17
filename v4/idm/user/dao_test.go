@@ -7,19 +7,17 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/golang/protobuf/ptypes"
-	"google.golang.org/protobuf/types/known/anypb"
-
-	"github.com/pydio/cells/v4/common/proto/idm"
-	service "github.com/pydio/cells/v4/common/proto/service"
-	"github.com/pydio/cells/v4/common/service/errors"
-	"github.com/pydio/cells/v4/common/sql"
-	"github.com/pydio/cells/v4/x/configx"
-
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/types/known/anypb"
 	// SQLite is used for the tests.
 	_ "github.com/mattn/go-sqlite3"
 	_ "gopkg.in/doug-martin/goqu.v4/adapters/sqlite3"
+
+	"github.com/pydio/cells/v4/common/proto/idm"
+	"github.com/pydio/cells/v4/common/proto/service"
+	"github.com/pydio/cells/v4/common/service/errors"
+	"github.com/pydio/cells/v4/common/sql"
+	"github.com/pydio/cells/v4/x/configx"
 )
 
 var (
@@ -593,7 +591,7 @@ func TestQueryBuilder(t *testing.T) {
 
 		subQuery1Any, err := anypb.New(subQuery1)
 		So(err, ShouldBeNil)
-		test := ptypes.Is(subQuery1Any, new(service.Query))
+		test := subQuery1Any.MessageIs(new(service.Query))
 		So(test, ShouldBeTrue)
 
 		subQuery2Any, err := anypb.New(subQuery2)

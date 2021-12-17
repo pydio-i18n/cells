@@ -23,17 +23,17 @@ package tasks
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/cskr/pubsub"
-	"github.com/golang/protobuf/ptypes"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/idm"
@@ -487,7 +487,7 @@ func createMessageFromEvent(event interface{}) jobs.ActionMessage {
 	initialInput := jobs.ActionMessage{}
 
 	if nodeChange, ok := event.(*tree.NodeChangeEvent); ok {
-		any, _ := ptypes.MarshalAny(nodeChange)
+		any, _ := anypb.New(nodeChange)
 		initialInput.Event = any
 		if nodeChange.Target != nil {
 
@@ -501,12 +501,12 @@ func createMessageFromEvent(event interface{}) jobs.ActionMessage {
 
 	} else if triggerEvent, ok := event.(*jobs.JobTriggerEvent); ok {
 
-		any, _ := ptypes.MarshalAny(triggerEvent)
+		any, _ := anypb.New(triggerEvent)
 		initialInput.Event = any
 
 	} else if idmEvent, ok := event.(*idm.ChangeEvent); ok {
 
-		any, _ := ptypes.MarshalAny(idmEvent)
+		any, _ := anypb.New(idmEvent)
 		initialInput.Event = any
 		if idmEvent.User != nil {
 			initialInput = initialInput.WithUser(idmEvent.User)

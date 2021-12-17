@@ -26,29 +26,25 @@ import (
 	"path"
 	"strings"
 
-	"github.com/pydio/cells/v4/common/client/grpc"
-
-	"github.com/go-openapi/errors"
-	"github.com/pydio/cells/v4/common/nodes/compose"
-
-	"github.com/pydio/cells/v4/common/nodes/acl"
-
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/any"
-	"github.com/pydio/cells/v4/common/config/source"
-	"github.com/pydio/cells/v4/common/nodes"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"
+	"github.com/pydio/cells/v4/common/config/source"
 	"github.com/pydio/cells/v4/common/etl/models"
 	"github.com/pydio/cells/v4/common/etl/stores"
 	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/nodes"
+	"github.com/pydio/cells/v4/common/nodes/acl"
+	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	"github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 	"github.com/pydio/cells/v4/idm/share"
 )
@@ -163,8 +159,8 @@ func (apiStore *ApiStore) UpdateUser(ctx context.Context, identity *idm.User) (*
 
 func (apiStore *ApiStore) DeleteUser(ctx context.Context, identity *idm.User) error {
 	userClient := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
-	singleQ, _ := ptypes.MarshalAny(&idm.UserSingleQuery{Uuid: identity.Uuid})
-	q := &service.Query{SubQueries: []*any.Any{singleQ}}
+	singleQ, _ := anypb.New(&idm.UserSingleQuery{Uuid: identity.Uuid})
+	q := &service.Query{SubQueries: []*anypb.Any{singleQ}}
 	_, e := userClient.DeleteUser(ctx, &idm.DeleteUserRequest{Query: q})
 	return e
 }
@@ -175,9 +171,9 @@ func (apiStore *ApiStore) GetUser(ctx context.Context, id string) (*idm.User, er
 
 	userClient := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
 
-	singleQ, _ := ptypes.MarshalAny(&idm.UserSingleQuery{Uuid: id})
+	singleQ, _ := anypb.New(&idm.UserSingleQuery{Uuid: id})
 	q := &service.Query{
-		SubQueries: []*any.Any{singleQ},
+		SubQueries: []*anypb.Any{singleQ},
 		Offset:     0,
 		Limit:      1}
 	streamer, err := userClient.SearchUser(ctx, &idm.SearchUserRequest{Query: q})
@@ -191,7 +187,7 @@ func (apiStore *ApiStore) GetUser(ctx context.Context, id string) (*idm.User, er
 		}
 		return resp.User, nil
 	}
-	return nil, errors.NotFound(common.ServiceUser, "User "+id+" not found")
+	return nil, errors.NotFound("user.not.found", "User "+id+" not found")
 }
 
 func (apiStore *ApiStore) ListUsers(ctx context.Context, params map[string]interface{}, progress chan float32) (map[string]*idm.User, error) {
@@ -204,7 +200,7 @@ func (apiStore *ApiStore) ListUsers(ctx context.Context, params map[string]inter
 
 	var crt, total float32
 	if progress != nil {
-		rsp, e := userClient.CountUser(ctx, &idm.SearchUserRequest{Query: &service.Query{SubQueries: []*any.Any{}}})
+		rsp, e := userClient.CountUser(ctx, &idm.SearchUserRequest{Query: &service.Query{SubQueries: []*anypb.Any{}}})
 		if e != nil {
 			return nil, e
 		}
@@ -214,7 +210,7 @@ func (apiStore *ApiStore) ListUsers(ctx context.Context, params map[string]inter
 	// List user with pagination
 	for {
 		q := &service.Query{
-			SubQueries: []*any.Any{},
+			SubQueries: []*anypb.Any{},
 			Offset:     offset,
 			Limit:      limit,
 		}
@@ -286,8 +282,8 @@ func (apiStore *ApiStore) PutGroup(ctx context.Context, identity *idm.User) erro
 
 func (apiStore *ApiStore) DeleteGroup(ctx context.Context, identity *idm.User) error {
 	userClient := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
-	singleQ, _ := ptypes.MarshalAny(&idm.UserSingleQuery{Uuid: identity.Uuid})
-	q := &service.Query{SubQueries: []*any.Any{singleQ}}
+	singleQ, _ := anypb.New(&idm.UserSingleQuery{Uuid: identity.Uuid})
+	q := &service.Query{SubQueries: []*anypb.Any{singleQ}}
 	_, e := userClient.DeleteUser(ctx, &idm.DeleteUserRequest{Query: q})
 	return e
 }
@@ -302,9 +298,9 @@ func (apiStore *ApiStore) ListGroups(ctx context.Context, params map[string]inte
 
 	// List user with pagination
 	for {
-		singleQ, _ := ptypes.MarshalAny(&idm.UserSingleQuery{NodeType: idm.NodeType_GROUP})
+		singleQ, _ := anypb.New(&idm.UserSingleQuery{NodeType: idm.NodeType_GROUP})
 		q := &service.Query{
-			SubQueries: []*any.Any{singleQ},
+			SubQueries: []*anypb.Any{singleQ},
 			Offset:     offset,
 			Limit:      limit,
 		}
@@ -347,8 +343,8 @@ func (apiStore *ApiStore) PutACL(ctx context.Context, acl *idm.ACL) error {
 func (apiStore *ApiStore) DeleteACL(ctx context.Context, acl *idm.ACL) error {
 
 	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
-	singleQ, _ := ptypes.MarshalAny(&idm.ACLSingleQuery{RoleIDs: []string{acl.RoleID}, WorkspaceIDs: []string{acl.WorkspaceID}, NodeIDs: []string{acl.NodeID}})
-	q := &service.Query{SubQueries: []*any.Any{singleQ}}
+	singleQ, _ := anypb.New(&idm.ACLSingleQuery{RoleIDs: []string{acl.RoleID}, WorkspaceIDs: []string{acl.WorkspaceID}, NodeIDs: []string{acl.NodeID}})
+	q := &service.Query{SubQueries: []*anypb.Any{singleQ}}
 	_, e := aclClient.DeleteACL(ctx, &idm.DeleteACLRequest{Query: q})
 	return e
 }
@@ -360,7 +356,7 @@ func (apiStore *ApiStore) ListACLs(ctx context.Context, params map[string]interf
 
 	// List user with pagination
 	q := &service.Query{
-		SubQueries: []*any.Any{},
+		SubQueries: []*anypb.Any{},
 	}
 	streamer, err := aclClient.SearchACL(ctx, &idm.SearchACLRequest{Query: q})
 	if err != nil {
@@ -396,8 +392,8 @@ func (apiStore *ApiStore) PutRole(ctx context.Context, identity *idm.Role) (*idm
 
 func (apiStore *ApiStore) DeleteRole(ctx context.Context, identity *idm.Role) error {
 	roleClient := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
-	singleQ, _ := ptypes.MarshalAny(&idm.RoleSingleQuery{Uuid: []string{identity.Uuid}})
-	q := &service.Query{SubQueries: []*any.Any{singleQ}}
+	singleQ, _ := anypb.New(&idm.RoleSingleQuery{Uuid: []string{identity.Uuid}})
+	q := &service.Query{SubQueries: []*anypb.Any{singleQ}}
 	_, e := roleClient.DeleteRole(ctx, &idm.DeleteRoleRequest{Query: q})
 	return e
 }
@@ -408,28 +404,28 @@ func (apiStore *ApiStore) ListRoles(ctx context.Context, userStore models.Readab
 	roleClient := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
 
 	// Skip Users & Groups Roles
-	var queries []*any.Any
+	var queries []*anypb.Any
 	if v, o := params["teams"]; o && v.(bool) {
 		// List only Teams
-		s, _ := ptypes.MarshalAny(&idm.RoleSingleQuery{
+		s, _ := anypb.New(&idm.RoleSingleQuery{
 			IsTeam: true,
 		})
-		queries = []*any.Any{s}
+		queries = []*anypb.Any{s}
 	} else {
 		// Exclude Teams, Users and Groups - only admin "manually defined" roles should be left.
-		s1, _ := ptypes.MarshalAny(&idm.RoleSingleQuery{
+		s1, _ := anypb.New(&idm.RoleSingleQuery{
 			IsTeam: true,
 			Not:    true,
 		})
-		s2, _ := ptypes.MarshalAny(&idm.RoleSingleQuery{
+		s2, _ := anypb.New(&idm.RoleSingleQuery{
 			IsUserRole: true,
 			Not:        true,
 		})
-		s3, _ := ptypes.MarshalAny(&idm.RoleSingleQuery{
+		s3, _ := anypb.New(&idm.RoleSingleQuery{
 			IsGroupRole: true,
 			Not:         true,
 		})
-		queries = []*any.Any{s1, s2, s3}
+		queries = []*anypb.Any{s1, s2, s3}
 	}
 	// List user with pagination
 	q := &service.Query{
@@ -503,10 +499,10 @@ func (apiStore *ApiStore) GetUserInfo(ctx context.Context, userName string, para
 func (apiStore *ApiStore) GetGroupInfo(ctx context.Context, groupPath string, params map[string]interface{}) (u *idm.User, e error) {
 
 	cl := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
-	q, _ := ptypes.MarshalAny(&idm.UserSingleQuery{
+	q, _ := anypb.New(&idm.UserSingleQuery{
 		FullPath: groupPath,
 	})
-	st, e := cl.SearchUser(ctx, &idm.SearchUserRequest{Query: &service.Query{SubQueries: []*any.Any{q}}})
+	st, e := cl.SearchUser(ctx, &idm.SearchUserRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}})
 	if e != nil {
 		return nil, e
 	}
@@ -668,8 +664,8 @@ func (apiStore *ApiStore) loadWorkspacesSlugs(ctx context.Context) (map[string]s
 	}
 
 	cl := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
-	var queries []*any.Any
-	query, _ := ptypes.MarshalAny(&idm.WorkspaceSingleQuery{
+	var queries []*anypb.Any
+	query, _ := anypb.New(&idm.WorkspaceSingleQuery{
 		Scope: idm.WorkspaceScope_ADMIN,
 	})
 	queries = append(queries, query)
