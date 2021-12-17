@@ -43,6 +43,7 @@ func Default() Broker {
 }
 
 type Broker interface {
+	PublishRaw(context.Context, string, []byte, map[string]string, ...PublishOption) error
 	Publish(context.Context, string, proto.Message, ...PublishOption) error
 	Subscribe(context.Context, string, SubscriberHandler, ...SubscribeOption) (UnSubscriber, error)
 }
@@ -63,6 +64,11 @@ func NewBroker(s string, opts ...Option) Broker {
 		publishers: make(map[string]*pubsub.Topic),
 		Options:    newOptions(opts...),
 	}
+}
+
+// PublishRaw sends a message to standard broker. For the moment, forward message to client.Publish
+func PublishRaw(ctx context.Context, topic string, body []byte, header map[string]string, opts ...PublishOption) error {
+	return std.PublishRaw(ctx, topic, body, header, opts...)
 }
 
 // Publish sends a message to standard broker. For the moment, forward message to client.Publish
@@ -117,6 +123,22 @@ func (b *broker) openTopic(ctx context.Context, topic string) (*pubsub.Topic, er
 	}
 
 	return publisher, nil
+}
+
+func (b *broker) PublishRaw(ctx context.Context, topic string, body []byte, header map[string]string, opts ...PublishOption) error {
+	publisher, err := b.openTopic(ctx, topic)
+	if err != nil {
+		return err
+	}
+
+	if err := publisher.Send(ctx, &pubsub.Message{
+		Body:     body,
+		Metadata: header,
+	}); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Publish sends a message to standard broker. For the moment, forward message to client.Publish
@@ -188,7 +210,9 @@ func (b *broker) Subscribe(ctx context.Context, topic string, handler Subscriber
 				header: msg.Metadata,
 				body:   msg.Body,
 			}); err != nil {
-				fmt.Println("Could not handle message ? ", msg)
+				if so.ErrorHandler != nil {
+					so.ErrorHandler(err)
+				}
 			}
 		}
 	}()

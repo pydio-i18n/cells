@@ -93,6 +93,20 @@ to quickly create a Cobra application.`,
 		ctx = servercontext.WithRegistry(ctx, reg)
 		ctx = servicecontext.WithRegistry(ctx, pluginsReg)
 
+		//localEndpointURI := "192.168.1.5:5454"
+		//reporterURI := "http://localhost:9411/api/v2/spans"
+		//serviceName := "server"
+		//localEndpoint, err := openzipkin.NewEndpoint(serviceName, localEndpointURI)
+		//if err != nil {
+		//	log.Fatalf("Failed to create Zipkin localEndpoint with URI %q error: %v", localEndpointURI, err)
+		//}
+		//
+		//reporter := zipkinHTTP.NewReporter(reporterURI)
+		//ze := zipkin.NewExporter(reporter, localEndpoint)
+		//
+		//// And now finally register it as a Trace Exporter
+		//trace.RegisterExporter(ze)
+
 		/*
 			watcher, err := reg.Watch()
 			if err != nil {

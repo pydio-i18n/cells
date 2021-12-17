@@ -31,10 +31,10 @@ func (h *Handler) Publish(stream pb.Broker_PublishServer) error {
 			return err
 		}
 
-		fmt.Println("Publishing ", req)
-
-		if err := h.broker.Publish(stream.Context(), req.Topic, req.Messages); err != nil {
-			return err
+		for _, message := range req.Messages.Messages {
+			if err := h.broker.PublishRaw(stream.Context(), req.Topic, message.Body, message.Header); err != nil {
+				return err
+			}
 		}
 	}
 }
@@ -58,6 +58,7 @@ func (h *Handler) Subscribe(req *pb.SubscribeRequest, stream pb.Broker_Subscribe
 		return err
 	}
 
+	// TODO v4 - plug that to context
 	select {}
 
 	return nil
