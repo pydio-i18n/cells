@@ -22,16 +22,23 @@ package cmd
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
-
-	"github.com/pydio/cells/v4/common/service/errors"
+	"go.uber.org/zap"
+	grpc2 "google.golang.org/grpc"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/reflect/protoregistry"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/forms"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/jobs"
+	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/scheduler/actions"
+	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 var (
@@ -137,31 +144,112 @@ func (c *RpcAction) Run(ctx context.Context, channels *actions.RunnableChannels,
 	serviceName := jobs.EvaluateFieldStr(ctx, input, c.ServiceName)
 	methodName := jobs.EvaluateFieldStr(ctx, input, c.MethodName)
 	log.TasksLogger(ctx).Info("Sending json+grpc request to " + serviceName + "." + methodName)
-	return input, nil
-	// TODO V4 : HOW DO WE DO THIS WITHOUT MICRO ?
-	/*
-		req := c.Client.NewJsonRequest(serviceName, methodName, &jsonParams)
-		var response json.RawMessage
-		var opts []client.CallOption
-		if c.Timeout != "" {
-			timeout := jobs.EvaluateFieldStr(ctx, input, c.Timeout)
-			if dur, er := time.ParseDuration(timeout); er == nil {
-				opts = append(opts, client.WithRequestTimeout(dur))
-			} else {
-				log.TasksLogger(ctx).Error("Cannot parse duration " + timeout + ": " + er.Error())
-			}
-		}
-		e := c.Client.Call(ctx, req, &response, opts...)
+
+	var methodDescriptor protoreflect.MethodDescriptor
+	var methodSendName string
+
+	parts := strings.Split(methodName, ".")
+
+	if len(parts) == 3 { // example : mailer.MailerService.ConsumeQueue
+
+		srvDescName := strings.Join(parts[:2], ".") // mailer.MailerService
+		methodSendName = "/" + srvDescName + "/" + parts[2]
+
+		g, e := protoregistry.GlobalFiles.FindDescriptorByName(protoreflect.FullName(srvDescName))
 		if e != nil {
 			return input.WithError(e), e
 		}
-		output := input
-		jsonData, _ := response.MarshalJSON()
-		log.TasksLogger(ctx).Info("Request Success, appending data to action output (JsonBody)")
+		serviceDescriptor := g.(protoreflect.ServiceDescriptor)
+		methodDescriptor = serviceDescriptor.Methods().ByName(protoreflect.Name(parts[2])) // ConsumeQueue
+
+	} else if len(parts) == 2 { // legacy, we don't have the package name : MailerService.ConsumeQueue
+
+		srvName := parts[0]
+		protoregistry.GlobalFiles.RangeFiles(func(file protoreflect.FileDescriptor) bool {
+			if strings.HasPrefix(file.Path(), "cells") {
+				ss := file.Services()
+				for i := 0; i < ss.Len(); i++ {
+					serv := ss.Get(i)
+					if srvName == string(serv.Name()) {
+						methodDescriptor = serv.Methods().ByName(protoreflect.Name(parts[1]))
+						if methodDescriptor != nil {
+							methodSendName = "/" + string(serv.FullName()) + "/" + string(methodDescriptor.Name())
+							//fmt.Println("Found target method ! ", methodSendName)
+							// Break range
+							return false
+						}
+					}
+				}
+			}
+			return true
+		})
+
+	}
+	if methodDescriptor == nil {
+		er := fmt.Errorf("cannot find corresponding service/method for " + methodName)
+		return input.WithError(er), er
+	}
+	if methodDescriptor.IsStreamingClient() {
+		er := fmt.Errorf("StreamingClient is not supported in this action")
+		return input.WithError(er), er
+	}
+
+	// Create Request & Response objects, unmarshall Request from JSON input
+	reqType, _ := protoregistry.GlobalTypes.FindMessageByName(methodDescriptor.Input().FullName())
+	respType, _ := protoregistry.GlobalTypes.FindMessageByName(methodDescriptor.Output().FullName())
+
+	request := reqType.New().Interface()
+	_ = protojson.Unmarshal([]byte(c.JsonRequest), request)
+
+	output := input
+	conn := grpc.NewClientConn(serviceName)
+	if methodDescriptor.IsStreamingServer() {
+
+		cStream, e := conn.NewStream(ctx, &grpc2.StreamDesc{ServerStreams: true}, methodSendName)
+		if e != nil {
+			return input.WithError(e), e
+		}
+		done := make(chan struct{}, 1)
+		var marshaledResponses []string
+		go func() {
+			defer close(done)
+			for {
+				response := respType.New().Interface()
+				se := cStream.RecvMsg(response)
+				if se != nil {
+					return
+				}
+				marshaled, _ := protojson.Marshal(response)
+				marshaledResponses = append(marshaledResponses, string(marshaled))
+			}
+		}()
+		cStream.SendMsg(request)
+		cStream.CloseSend()
+		<-done
+		jsonData := []byte("[" + strings.Join(marshaledResponses, ",") + "]")
 		output.AppendOutput(&jobs.ActionOutput{
 			Success:  true,
 			JsonBody: jsonData,
 		})
-		return output, nil
-	*/
+
+	} else {
+		// Unary call - Create a response
+		response := respType.New().Interface()
+
+		if e := conn.Invoke(ctx, methodSendName, request, response); e != nil {
+			log.TasksLogger(ctx).Error("Failed calling Invoke", zap.String("serviceName", serviceName), zap.String("methodName", methodSendName), zap.Any("request", request))
+			return input.WithError(e), e
+		}
+
+		log.TasksLogger(ctx).Info("Successfully called Invoke", zap.Any("request", request), zap.Any("response", response))
+		jsonData, _ := protojson.Marshal(response)
+		output.AppendOutput(&jobs.ActionOutput{
+			Success:  true,
+			JsonBody: jsonData,
+		})
+
+	}
+
+	return output, nil
+
 }
