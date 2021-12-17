@@ -23,17 +23,22 @@ package api
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/log"
+	"go.uber.org/zap"
 	"net/http"
 
-	"github.com/micro/micro/v3/service/broker"
-
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/proto/activity"
+	chat2 "github.com/pydio/cells/v4/common/proto/chat"
+	"github.com/pydio/cells/v4/common/proto/idm"
+	"github.com/pydio/cells/v4/common/proto/jobs"
+	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
-	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/gateway/websocket"
 )
 
@@ -43,10 +48,8 @@ var (
 	name = common.ServiceGatewayNamespace_ + common.ServiceWebSocket
 )
 
-func publicationContext(publication *broker.Message) context.Context {
-	c := metadata.NewContext(context.Background(), publication.Header)
-	c = servicecontext.WithServiceName(c, name)
-	return c
+func wrap(ctx context.Context) context.Context {
+	return servicecontext.WithServiceName(ctx, name)
 }
 
 func init() {
@@ -71,64 +74,75 @@ func init() {
 					chat.Websocket.HandleRequest(w, r)
 				})
 
+				_ = broker.SubscribeCancellable(ctx, common.TopicTreeChanges, func(message broker.Message) error {
+					event := &tree.NodeChangeEvent{}
+					if c, e := message.Unmarshal(event); e == nil {
+						if er := ws.HandleNodeChangeEvent(wrap(c), event); er != nil {
+							log.Logger(ctx).Error("Cannot handle event", zap.Any("event", event), zap.Error(er))
+						}
+						return nil
+					} else {
+						return e
+					}
+				})
+				_ = broker.SubscribeCancellable(ctx, common.TopicMetaChanges, func(message broker.Message) error {
+					event := &tree.NodeChangeEvent{}
+					if c, e := message.Unmarshal(event); e == nil {
+						if er := ws.HandleNodeChangeEvent(wrap(c), event); er != nil {
+							log.Logger(ctx).Error("Cannot handle event", zap.Any("event", event), zap.Error(er))
+						}
+						return nil
+					} else {
+						return e
+					}
+				})
+				_ = broker.SubscribeCancellable(ctx, common.TopicJobTaskEvent, func(message broker.Message) error {
+					event := &jobs.TaskChangeEvent{}
+					if c, e := message.Unmarshal(event); e == nil {
+						if er := ws.BroadcastTaskChangeEvent(wrap(c), event); er != nil {
+							log.Logger(ctx).Error("Cannot handle event", zap.Any("event", event), zap.Error(er))
+						}
+						return nil
+					} else {
+						return e
+					}
+				})
+				_ = broker.SubscribeCancellable(ctx, common.TopicIdmEvent, func(message broker.Message) error {
+					event := &idm.ChangeEvent{}
+					if c, e := message.Unmarshal(event); e == nil {
+						if er := ws.BroadcastIDMChangeEvent(wrap(c), event); er != nil {
+							log.Logger(ctx).Error("Cannot handle event", zap.Any("event", event), zap.Error(er))
+						}
+						return nil
+					} else {
+						return e
+					}
+				})
+				_ = broker.SubscribeCancellable(ctx, common.TopicActivityEvent, func(message broker.Message) error {
+					event := &activity.PostActivityEvent{}
+					if c, e := message.Unmarshal(event); e == nil {
+						if er := ws.BroadcastActivityEvent(wrap(c), event); er != nil {
+							log.Logger(ctx).Error("Cannot handle event", zap.Any("event", event), zap.Error(er))
+						}
+						return nil
+					} else {
+						return e
+					}
+				})
+				_ = broker.SubscribeCancellable(ctx, common.TopicChatEvent, func(message broker.Message) error {
+					event := &chat2.ChatEvent{}
+					if c, e := message.Unmarshal(event); e == nil {
+						if er := chat.BroadcastChatMessage(wrap(c), event); er != nil {
+							log.Logger(ctx).Error("Cannot handle event", zap.Any("event", event), zap.Error(er))
+						}
+						return nil
+					} else {
+						return e
+					}
+				})
+
 				return nil
 			}),
-
-			/*
-				service.AfterStart(func(_ service.Service) error {
-					brok := defaults.Broker()
-
-					brok.Subscribe(common.TopicTreeChanges, func(publication *broker.Message) error {
-						var event tree.NodeChangeEvent
-						if e := proto.Unmarshal(publication.Body, &event); e == nil {
-							return ws.HandleNodeChangeEvent(publicationContext(publication), &event)
-						}
-						return nil
-					})
-
-					brok.Subscribe(common.TopicMetaChanges, func(publication *broker.Message) error {
-						var event tree.NodeChangeEvent
-						if e := proto.Unmarshal(publication.Body, &event); e == nil {
-							return ws.HandleNodeChangeEvent(publicationContext(publication), &event)
-						}
-						return nil
-					})
-
-					brok.Subscribe(common.TopicJobTaskEvent, func(publication *broker.Message) error {
-						var event jobs.TaskChangeEvent
-						if e := proto.Unmarshal(publication.Body, &event); e == nil {
-							return ws.BroadcastTaskChangeEvent(publicationContext(publication), &event)
-						}
-						return nil
-					})
-
-					brok.Subscribe(common.TopicIdmEvent, func(publication *broker.Message) error {
-						var event idm.ChangeEvent
-						if e := proto.Unmarshal(publication.Body, &event); e == nil {
-							return ws.BroadcastIDMChangeEvent(publicationContext(publication), &event)
-						}
-						return nil
-					})
-
-					brok.Subscribe(common.TopicActivityEvent, func(publication *broker.Message) error {
-						var event activity.PostActivityEvent
-						if e := proto.Unmarshal(publication.Body, &event); e == nil {
-							return ws.BroadcastActivityEvent(publicationContext(publication), &event)
-						}
-						return nil
-					})
-
-					brok.Subscribe(common.TopicChatEvent, func(publication *broker.Message) error {
-						var event chat2.ChatEvent
-						if e := proto.Unmarshal(publication.Body, &event); e == nil {
-							return chat.BroadcastChatMessage(publicationContext(publication), &event)
-						}
-						return nil
-					})
-
-					return nil
-				}),
-			*/
 		)
 
 	})
