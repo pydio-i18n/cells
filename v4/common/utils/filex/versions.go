@@ -5,10 +5,9 @@ import (
 	"time"
 
 	"encoding/binary"
-
-	json "github.com/pydio/cells/v4/x/jsonx"
-
 	bolt "go.etcd.io/bbolt"
+
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 var (

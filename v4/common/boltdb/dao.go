@@ -31,7 +31,7 @@ import (
 	bolt "go.etcd.io/bbolt"
 
 	"github.com/pydio/cells/v4/common/dao"
-	"github.com/pydio/cells/v4/x/configx"
+	"github.com/pydio/cells/v4/common/utils/configx"
 )
 
 // DAO defines the functions specific to the boltdb dao

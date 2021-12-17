@@ -31,9 +31,9 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/common/utils/std"
 	"github.com/pydio/cells/v4/common/utils/uuid"
-	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 /* This file provides helpers and shortcuts to ease development of tree.node related features.

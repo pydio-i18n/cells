@@ -32,7 +32,7 @@ import (
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/mailer"
-	"github.com/pydio/cells/v4/x/configx"
+	"github.com/pydio/cells/v4/common/utils/configx"
 )
 
 type Smtp struct {

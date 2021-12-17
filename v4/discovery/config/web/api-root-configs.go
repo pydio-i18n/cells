@@ -25,8 +25,6 @@ import (
 	"errors"
 	"strings"
 
-
-
 	"github.com/emicklei/go-restful"
 	"go.uber.org/zap"
 
@@ -34,8 +32,8 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	"github.com/pydio/cells/v4/common/service"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/common/utils/permissions"
-	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 /*********************

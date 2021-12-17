@@ -30,9 +30,9 @@ import (
 	"github.com/pydio/cells/v4/common/boltdb"
 	"github.com/pydio/cells/v4/common/proto/chat"
 	"github.com/pydio/cells/v4/common/service/errors"
+	"github.com/pydio/cells/v4/common/utils/configx"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/common/utils/uuid"
-	"github.com/pydio/cells/v4/x/configx"
-	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 type boltdbimpl struct {

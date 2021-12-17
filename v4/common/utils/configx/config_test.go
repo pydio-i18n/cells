@@ -3,13 +3,12 @@ package configx
 import (
 	"fmt"
 	"github.com/pydio/cells/v4/common/proto/docstore"
+	"github.com/pydio/cells/v4/common/utils/filex"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"strings"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-
-	"github.com/pydio/cells/v4/x/filex"
-	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 var (
@@ -65,7 +64,7 @@ pointer:
     key1:
         $ref: "#/defaults/key2"
 `)
-	)
+)
 
 func TestStd(t *testing.T) {
 	Convey("Testing map get", t, func() {
@@ -343,6 +342,7 @@ func TestYAML(t *testing.T) {
 
 type encrypter struct {
 }
+
 func (encrypter) Encrypt(b []byte) (string, error) {
 	return "encrypted : " + string(b), nil
 }
@@ -356,8 +356,8 @@ func TestEncrypt(t *testing.T) {
 		m := New(WithYAML(), WithEncrypt(e), WithDecrypt(e))
 		err := m.Set(dataYAML)
 		So(err, ShouldBeNil)
-		So(m.Val("secrets/test").Set("test"), ShouldBeNil
+		So(m.Val("secrets/test").Set("test"), ShouldBeNil)
 
-		m.Val("secrets/test").Scan(&s)
+		//m.Val("secrets/test").Scan(&s)
 	})
 }

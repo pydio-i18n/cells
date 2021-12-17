@@ -30,7 +30,7 @@ import (
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/server"
-	"github.com/pydio/cells/v4/x/configx"
+	"github.com/pydio/cells/v4/common/utils/configx"
 )
 
 type contextType int

@@ -31,7 +31,7 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/proto/log"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
-	json "github.com/pydio/cells/v4/x/jsonx"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 // IndexableLog extends default log.LogMessage struct to add index specific methods

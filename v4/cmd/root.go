@@ -24,7 +24,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/pydio/cells/v4/common/config/service"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -37,12 +36,13 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/config/migrations"
+	"github.com/pydio/cells/v4/common/config/service"
 	"github.com/pydio/cells/v4/common/log"
 	context_wrapper "github.com/pydio/cells/v4/common/log/context-wrapper"
+	"github.com/pydio/cells/v4/common/utils/filex"
 	// "github.com/pydio/cells/v4/common/config/remote"
 	"github.com/pydio/cells/v4/common/config/file"
 	"github.com/pydio/cells/v4/common/config/sql"
-	"github.com/pydio/cells/v4/x/filex"
 )
 
 var (

@@ -21,8 +21,8 @@
 package config
 
 import (
+	"github.com/pydio/cells/v4/common/utils/configx"
 	"github.com/pydio/cells/v4/common/utils/uuid"
-	"github.com/pydio/cells/v4/x/configx"
 )
 
 var (

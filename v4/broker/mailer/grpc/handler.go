@@ -36,8 +36,8 @@ import (
 	proto "github.com/pydio/cells/v4/common/proto/mailer"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/errors"
-	"github.com/pydio/cells/v4/x/configx"
-	json "github.com/pydio/cells/v4/x/jsonx"
+	"github.com/pydio/cells/v4/common/utils/configx"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 type Handler struct {

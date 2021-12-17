@@ -34,8 +34,8 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/utils/cache"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/idm/meta"
-	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 // Handler definition.

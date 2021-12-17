@@ -22,9 +22,8 @@ package config
 
 import (
 	"fmt"
+	configx2 "github.com/pydio/cells/v4/common/utils/configx"
 	"time"
-
-	"github.com/pydio/cells/v4/x/configx"
 )
 
 var (
@@ -44,16 +43,16 @@ func RegisterLocal(store Store) {
 
 // Store defines the functionality a config must provide
 type Store interface {
-	configx.Entrypoint
+	configx2.Entrypoint
 
-	configx.Watcher
+	configx2.Watcher
 
 	// Save with context
 	Save(string, string) error // Should we not do it in a function ?
 }
 
 // New creates a configuration provider with in-memory access
-func New(store configx.Entrypoint) Store {
+func New(store configx2.Entrypoint) Store {
 	ret := &cacheconfig{
 		store: store,
 	}
@@ -62,16 +61,16 @@ func New(store configx.Entrypoint) Store {
 
 	// we initialise the store and save it in memory for easy access
 	if v != nil {
-		im := configx.New(configx.WithJSON())
+		im := configx2.New(configx2.WithJSON())
 		im.Set(v)
 		ret.im = im
 	} else {
-		im := configx.New(configx.WithJSON())
+		im := configx2.New(configx2.WithJSON())
 		ret.im = im
 	}
 
 	go func() {
-		watcher, ok := store.(configx.Watcher)
+		watcher, ok := store.(configx2.Watcher)
 		if !ok {
 			return
 		}
@@ -107,12 +106,12 @@ func Save(ctxUser string, ctxMessage string) error {
 }
 
 // Watch for config changes for a specific path or underneath
-func Watch(path ...string) (configx.Receiver, error) {
+func Watch(path ...string) (configx2.Receiver, error) {
 	return std.Watch(path...)
 }
 
 // Get access to the underlying structure at a certain path
-func Get(path ...string) configx.Values {
+func Get(path ...string) configx2.Values {
 	return std.Val(path...)
 }
 
@@ -128,8 +127,8 @@ func Del(path ...string) {
 
 // Config holds the main structure of a configuration
 type cacheconfig struct {
-	im    configx.Values     // in-memory data
-	store configx.Entrypoint // underlying storage
+	im    configx2.Values     // in-memory data
+	store configx2.Entrypoint // underlying storage
 }
 
 // Save the config in the underlying storage
@@ -138,8 +137,8 @@ func (c *cacheconfig) Save(ctxUser string, ctxMessage string) error {
 }
 
 // Watch for config changes for a specific path or underneath
-func (c *cacheconfig) Watch(path ...string) (configx.Receiver, error) {
-	watcher, ok := c.store.(configx.Watcher)
+func (c *cacheconfig) Watch(path ...string) (configx2.Receiver, error) {
+	watcher, ok := c.store.(configx2.Watcher)
 	if !ok {
 		return nil, fmt.Errorf("no watchers")
 	}
@@ -148,7 +147,7 @@ func (c *cacheconfig) Watch(path ...string) (configx.Receiver, error) {
 }
 
 // Get access to the underlying structure at a certain path
-func (c *cacheconfig) Get() configx.Value {
+func (c *cacheconfig) Get() configx2.Value {
 	if c.im == nil {
 		return nil
 	}
@@ -165,22 +164,22 @@ func (c *cacheconfig) Del() error {
 	return c.store.Del()
 }
 
-func (c *cacheconfig) Val(k ...string) configx.Values {
+func (c *cacheconfig) Val(k ...string) configx2.Values {
 	return &cacheValues{c.im, c.store, k}
 }
 
 type cacheValues struct {
-	configx.Values
-	store configx.Entrypoint
+	configx2.Values
+	store configx2.Entrypoint
 	path  []string
 }
 
-func (c *cacheValues) Val(s ...string) configx.Values {
-	path := configx.StringToKeys(append(c.path, s...)...)
+func (c *cacheValues) Val(s ...string) configx2.Values {
+	path := configx2.StringToKeys(append(c.path, s...)...)
 	return &cacheValues{c.Values, c.store, path}
 }
 
-func (c *cacheValues) Get() configx.Value {
+func (c *cacheValues) Get() configx2.Value {
 	return c.Values.Val(c.path...).Get()
 }
 
@@ -203,7 +202,7 @@ func (c *cacheValues) Del() error {
 	return c.store.Val(c.path...).Del()
 }
 
-func (c *cacheValues) Default(i interface{}) configx.Value {
+func (c *cacheValues) Default(i interface{}) configx2.Value {
 	return c.Values.Val(c.path...).Default(i)
 }
 

@@ -28,16 +28,15 @@ import (
 	"path"
 	"strings"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
-
 	"github.com/jinzhu/copier"
 	"github.com/philopon/go-toposort"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/utils/configx"
 	"github.com/pydio/cells/v4/common/utils/i18n"
-	"github.com/pydio/cells/v4/x/configx"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 type PluginsPool struct {

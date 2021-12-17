@@ -40,7 +40,7 @@ import (
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/cache"
-	json "github.com/pydio/cells/v4/x/jsonx"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 var (

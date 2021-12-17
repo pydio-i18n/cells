@@ -22,19 +22,18 @@ package auth
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
-
-	"github.com/pydio/cells/v4/common"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/ory/fosite/token/jwt"
 	"golang.org/x/oauth2"
 
+	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth/claim"
 	"github.com/pydio/cells/v4/common/auth/hydra"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/proto/auth"
-	json "github.com/pydio/cells/v4/x/jsonx"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 type grpcVerifier struct {

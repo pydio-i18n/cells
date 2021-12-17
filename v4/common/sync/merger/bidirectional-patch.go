@@ -27,8 +27,6 @@ import (
 	"path"
 	"strings"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
-
 	"github.com/gobwas/glob"
 	"go.uber.org/zap"
 
@@ -36,6 +34,7 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/sync/model"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 const OpNone OperationType = 100

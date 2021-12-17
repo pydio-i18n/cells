@@ -23,21 +23,21 @@ package datatest
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common"
 
 	_ "github.com/mattn/go-sqlite3"
 	"google.golang.org/grpc"
 	_ "gopkg.in/doug-martin/goqu.v4/adapters/sqlite3"
 
+	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/server/stubs"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/sql"
+	"github.com/pydio/cells/v4/common/utils/configx"
 	"github.com/pydio/cells/v4/data/source/index"
 	srv "github.com/pydio/cells/v4/data/source/index/grpc"
-	"github.com/pydio/cells/v4/x/configx"
 )
 
 func NewIndexService(dsName string, nodes ...*tree.Node) (grpc.ClientConnInterface, error) {

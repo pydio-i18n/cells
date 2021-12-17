@@ -36,8 +36,8 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/proto/install"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/discovery/install/lib"
-	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 type NiInstallConfig struct {

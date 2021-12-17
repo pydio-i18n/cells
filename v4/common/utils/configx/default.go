@@ -3,11 +3,11 @@ package configx
 import (
 	"time"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
-
 	"github.com/spf13/cast"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 type def struct {

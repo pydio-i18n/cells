@@ -1,10 +1,11 @@
 package configx
 
 import (
-	json "github.com/pydio/cells/v4/x/jsonx"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"gopkg.in/yaml.v2"
+
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 type Unmarshaler interface {

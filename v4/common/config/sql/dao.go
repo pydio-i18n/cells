@@ -23,11 +23,12 @@ package sql
 import (
 	"embed"
 
+	migrate "github.com/rubenv/sql-migrate"
+
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/sql"
+	"github.com/pydio/cells/v4/common/utils/configx"
 	"github.com/pydio/cells/v4/common/utils/statics"
-	"github.com/pydio/cells/v4/x/configx"
-	migrate "github.com/rubenv/sql-migrate"
 )
 
 func NewDAO(o dao.DAO) dao.DAO {

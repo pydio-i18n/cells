@@ -22,7 +22,6 @@ package permissions
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"sort"
 	"strings"
 	"sync"
@@ -31,11 +30,12 @@ import (
 	"go.uber.org/zap/zapcore"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	"github.com/pydio/cells/v4/x/configx"
-	json "github.com/pydio/cells/v4/x/jsonx"
+	"github.com/pydio/cells/v4/common/utils/configx"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 // PolicyResolver implements the check of an object against a set of ACL policies

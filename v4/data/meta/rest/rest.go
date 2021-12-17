@@ -28,8 +28,6 @@ import (
 	"strings"
 	"time"
 
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
-
 	"github.com/emicklei/go-restful"
 	"go.uber.org/zap"
 
@@ -43,7 +41,8 @@ import (
 	"github.com/pydio/cells/v4/common/proto/rest"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service"
-	json "github.com/pydio/cells/v4/x/jsonx"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 type Handler struct {

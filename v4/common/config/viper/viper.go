@@ -21,11 +21,12 @@
 package viper
 
 import (
-	"github.com/spf13/viper"
 	"strings"
 	"time"
 
-	"github.com/pydio/cells/v4/x/configx"
+	"github.com/spf13/viper"
+
+	"github.com/pydio/cells/v4/common/utils/configx"
 )
 
 type mem struct {
@@ -70,7 +71,7 @@ func (m *mem) Watch(path ...string) (configx.Receiver, error) {
 
 type values struct {
 	viper *viper.Viper
-	path   []string
+	path  []string
 }
 
 func (v *values) Get() configx.Value {

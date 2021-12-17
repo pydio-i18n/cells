@@ -22,22 +22,22 @@ package versions
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"path"
 	"time"
 
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/proto/docstore"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/utils/cache"
+	"github.com/pydio/cells/v4/common/utils/configx"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/scheduler/actions"
-	"github.com/pydio/cells/v4/x/configx"
-	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 var policiesCache cache.Short

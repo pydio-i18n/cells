@@ -26,10 +26,10 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/pydio/cells/v4/common/client/grpc"
+	"github.com/pydio/cells/v4/common/utils/configx"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/proto/storage"
-	"github.com/pydio/cells/v4/x/configx"
 )
 
 type conf struct {

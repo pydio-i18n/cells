@@ -22,7 +22,6 @@ package meta
 
 import (
 	"fmt"
-	"sync"
 	"testing"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -31,12 +30,11 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/sql"
-	"github.com/pydio/cells/v4/x/configx"
+	"github.com/pydio/cells/v4/common/utils/configx"
 )
 
 var (
 	mockDAO DAO
-	wg      sync.WaitGroup
 )
 
 func TestMain(m *testing.M) {

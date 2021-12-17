@@ -25,10 +25,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/pydio/cells/v4/x/configx"
-
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/nodes/objects/mock"
+	"github.com/pydio/cells/v4/common/utils/configx"
 )
 
 type StorageClientProvider func(cfg configx.Values) (StorageClient, error)

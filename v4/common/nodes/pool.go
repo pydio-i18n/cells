@@ -28,10 +28,6 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
-
-	pb "github.com/pydio/cells/v4/common/proto/registry"
-	"github.com/pydio/cells/v4/common/registry"
-
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/protobuf/proto"
@@ -41,8 +37,10 @@ import (
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/object"
+	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/proto/tree"
-	"github.com/pydio/cells/v4/x/configx"
+	"github.com/pydio/cells/v4/common/registry"
+	"github.com/pydio/cells/v4/common/utils/configx"
 )
 
 type sourceAlias struct {

@@ -22,7 +22,6 @@ package events
 
 import (
 	"context"
-	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 
 	"go.uber.org/zap"
@@ -30,6 +29,7 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/abstract"
@@ -39,8 +39,8 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/service/errors"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/common/utils/permissions"
-	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 func WithRead() nodes.Option {

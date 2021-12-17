@@ -27,8 +27,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pydio/cells/v4/common/client/grpc"
-
 	lkauth "github.com/livekit/protocol/auth"
 	"github.com/pydio/melody"
 	"go.uber.org/zap"
@@ -36,6 +34,7 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes"
@@ -43,7 +42,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/chat"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
-	json "github.com/pydio/cells/v4/x/jsonx"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 const (

@@ -29,9 +29,8 @@ import (
 
 	"google.golang.org/grpc/metadata"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
-
 	"github.com/pydio/cells/v4/common/proto/tree"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 type ListNodeStreamer struct {

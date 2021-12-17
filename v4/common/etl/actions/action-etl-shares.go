@@ -28,8 +28,8 @@ import (
 	"github.com/pydio/cells/v4/common/forms"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/jobs"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/scheduler/actions"
-	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 type syncShareLoadedUser struct{}

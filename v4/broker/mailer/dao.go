@@ -36,7 +36,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/mailer"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/errors"
-	"github.com/pydio/cells/v4/x/configx"
+	"github.com/pydio/cells/v4/common/utils/configx"
 )
 
 type Queue interface {

@@ -29,9 +29,9 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/sql"
+	"github.com/pydio/cells/v4/common/utils/configx"
 	"github.com/pydio/cells/v4/idm/role"
 	srv "github.com/pydio/cells/v4/idm/role/grpc"
-	"github.com/pydio/cells/v4/x/configx"
 )
 
 func NewRolesService(roles ...*idm.Role) (grpc.ClientConnInterface, error) {

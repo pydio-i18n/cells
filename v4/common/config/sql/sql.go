@@ -26,12 +26,11 @@ import (
 
 	migrate "github.com/rubenv/sql-migrate"
 
-	"github.com/pydio/cells/v4/common/utils/statics"
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/sql"
-	"github.com/pydio/cells/v4/x/configx"
-	json "github.com/pydio/cells/v4/x/jsonx"
-
+	"github.com/pydio/cells/v4/common/utils/configx"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
+	"github.com/pydio/cells/v4/common/utils/statics"
 )
 
 type SQL struct {

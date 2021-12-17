@@ -23,6 +23,7 @@ package actions
 import (
 	"context"
 	"fmt"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 
 	"go.uber.org/zap"
 
@@ -35,7 +36,6 @@ import (
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 	"github.com/pydio/cells/v4/scheduler/actions"
-	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 type SyncWorkspacesAction struct {

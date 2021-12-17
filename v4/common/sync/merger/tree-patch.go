@@ -31,9 +31,9 @@ import (
 
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/sync/model"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/common/utils/mtree"
 	"github.com/pydio/cells/v4/common/utils/uuid"
-	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 // TreePatch is an implement of the Patch interface representing a sequence of operations as a tree structure.

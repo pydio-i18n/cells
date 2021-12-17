@@ -3,16 +3,15 @@ package file
 import (
 	"bytes"
 	"fmt"
-	"github.com/pydio/cells/v4/x/filex"
-
 	"github.com/fsnotify/fsnotify"
 
-	"github.com/pydio/cells/v4/x/configx"
+	"github.com/pydio/cells/v4/common/utils/configx"
+	"github.com/pydio/cells/v4/common/utils/filex"
 )
 
 type file struct {
-	v configx.Values
-	path string
+	v       configx.Values
+	path    string
 	watcher *fsnotify.Watcher
 
 	updates []chan struct{}
@@ -35,14 +34,14 @@ func New(path string) configx.Entrypoint {
 		return nil
 	}
 
-	if err := watcher.Add(path);err != nil {
+	if err := watcher.Add(path); err != nil {
 		// TODO v4 this should not return nil
 		return nil
 	}
 
 	return &file{
-		v: v,
-		path: path,
+		v:       v,
+		path:    path,
 		watcher: watcher,
 	}
 }
@@ -81,7 +80,7 @@ func (f *file) Set(data interface{}) error {
 }
 
 func (f *file) Val(path ...string) configx.Values {
-	return &values{Values:f.v.Val(path...), path: f.path}
+	return &values{Values: f.v.Val(path...), path: f.path}
 }
 
 func (f *file) Del() error {
@@ -96,25 +95,25 @@ func (f *file) Watch(path ...string) (configx.Receiver, error) {
 	// For the moment do nothing
 	return &receiver{
 		ch: ch,
-		p: path,
-		v: f.v.Val(path...),
+		p:  path,
+		v:  f.v.Val(path...),
 	}, nil
 }
 
-type receiver struct{
+type receiver struct {
 	ch chan struct{}
-	p []string
-	v configx.Values
+	p  []string
+	v  configx.Values
 }
 
 func (r *receiver) Next() (configx.Values, error) {
 	select {
-		case <-r.ch:
-			v := r.v.Val(r.p...)
-			if bytes.Compare(v.Bytes(), r.v.Bytes()) != 0 {
-				r.v = v
-				return v, nil
-			}
+	case <-r.ch:
+		v := r.v.Val(r.p...)
+		if bytes.Compare(v.Bytes(), r.v.Bytes()) != 0 {
+			r.v = v
+			return v, nil
+		}
 	}
 
 	return nil, fmt.Errorf("could not retrieve data")

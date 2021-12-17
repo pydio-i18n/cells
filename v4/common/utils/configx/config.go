@@ -6,13 +6,13 @@ import (
 	"strconv"
 	"time"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
-
 	"github.com/spf13/cast"
+
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 var (
-	ErrNoMarshallerDefined = errors.New("no marshaller defined")
+	ErrNoMarshallerDefined  = errors.New("no marshaller defined")
 	ErrNoUnmarshalerDefined = errors.New("no unmarshaler defined")
 )
 

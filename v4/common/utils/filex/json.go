@@ -5,18 +5,18 @@ import (
 	"os"
 	"path/filepath"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 // Read reads the content of a file
 func Read(filename string) ([]byte, error) {
 
-	fh, err := os.OpenFile(filename, os.O_RDWR | os.O_CREATE, 0644)
+	fh, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		if err == os.ErrNotExist {
 			fh, err = os.Create(filename)
 			if err != nil {
-				return nil,err
+				return nil, err
 			}
 		} else {
 			return nil, err

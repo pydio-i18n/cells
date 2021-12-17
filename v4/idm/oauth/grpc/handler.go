@@ -43,8 +43,8 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	pauth "github.com/pydio/cells/v4/common/proto/auth"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/common/utils/uuid"
-	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 // Handler for the plugin

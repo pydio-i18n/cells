@@ -22,6 +22,7 @@ package mc
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/utils/configx"
 	"io"
 	"strings"
 
@@ -32,7 +33,6 @@ import (
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
-	"github.com/pydio/cells/v4/x/configx"
 )
 
 // Client wraps a minio.Core client in the nodes.StorageClient interface

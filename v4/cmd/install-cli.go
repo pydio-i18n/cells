@@ -30,13 +30,12 @@ import (
 	"strings"
 
 	p "github.com/manifoldco/promptui"
-	// _ "github.com/caddyserver/caddy/caddyhttp"
 	"github.com/spf13/cobra"
 
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/proto/install"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/discovery/install/lib"
-	json "github.com/pydio/cells/v4/x/jsonx"
 )
 
 type CellsCliPromptStep struct {

@@ -27,20 +27,19 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/pydio/cells/v4/common/log"
+	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/metadata"
+	// SQLite Driver
+	_ "github.com/mattn/go-sqlite3"
 
+	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/sql"
+	"github.com/pydio/cells/v4/common/utils/configx"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/data/source/index"
-	"github.com/pydio/cells/v4/x/configx"
-	json "github.com/pydio/cells/v4/x/jsonx"
-
-	. "github.com/smartystreets/goconvey/convey"
-	// SQLite Driver
-	_ "github.com/mattn/go-sqlite3"
 )
 
 var (

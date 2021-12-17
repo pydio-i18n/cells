@@ -30,9 +30,9 @@ import (
 	"github.com/pydio/cells/v4/common/server/stubs"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/sql"
+	"github.com/pydio/cells/v4/common/utils/configx"
 	"github.com/pydio/cells/v4/data/meta"
 	srv "github.com/pydio/cells/v4/data/meta/grpc"
-	"github.com/pydio/cells/v4/x/configx"
 )
 
 func NewMetaService(nodes ...*tree.Node) (grpc.ClientConnInterface, error) {

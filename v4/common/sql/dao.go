@@ -32,7 +32,7 @@ import (
 	"time"
 
 	"github.com/pydio/cells/v4/common/dao"
-	"github.com/pydio/cells/v4/x/configx"
+	"github.com/pydio/cells/v4/common/utils/configx"
 )
 
 var (

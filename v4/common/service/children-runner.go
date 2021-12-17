@@ -24,7 +24,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"os"
 	"os/exec"
 	"strings"
@@ -34,13 +33,14 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/server/generic"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/utils/configx"
 	"github.com/pydio/cells/v4/common/utils/net"
-	"github.com/pydio/cells/v4/x/configx"
 )
 
 // WithChildrenRunner option to define a micro server that runs children services
@@ -236,7 +236,7 @@ func (c *ChildrenRunner) Watch(ctx context.Context) error {
 					all.Scan(&conf)
 					_, exists := conf[c.childPrefix+name]
 					if !exists && c.beforeDeleteClean {
-						caller := object.NewResourceCleanerEndpointClient(grpc.NewClientConn(c.childPrefix+name))
+						caller := object.NewResourceCleanerEndpointClient(grpc.NewClientConn(c.childPrefix + name))
 						if resp, err := caller.CleanResourcesBeforeDelete(ctx, &object.CleanResourcesRequest{}); err == nil {
 							log.Logger(ctx).Info("Successfully cleaned resources before stopping service", zap.String("msg", resp.Message))
 						} else {

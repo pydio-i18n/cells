@@ -26,14 +26,13 @@ import (
 	"os"
 	"strings"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
-
 	"github.com/emicklei/go-restful"
 
 	"github.com/pydio/cells/v4/common/auth/claim"
 	"github.com/pydio/cells/v4/common/proto/idm"
+	"github.com/pydio/cells/v4/common/utils/configx"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/common/utils/permissions"
-	"github.com/pydio/cells/v4/x/configx"
 )
 
 var (

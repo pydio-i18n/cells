@@ -30,9 +30,9 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/service/errors"
+	"github.com/pydio/cells/v4/common/utils/configx"
 	"github.com/pydio/cells/v4/common/utils/net"
 	standard "github.com/pydio/cells/v4/common/utils/std"
-	"github.com/pydio/cells/v4/x/configx"
 )
 
 var (

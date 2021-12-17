@@ -3,7 +3,7 @@ package memory
 import (
 	"fmt"
 
-	"github.com/pydio/cells/v4/x/configx"
+	"github.com/pydio/cells/v4/common/utils/configx"
 )
 
 type memory struct {

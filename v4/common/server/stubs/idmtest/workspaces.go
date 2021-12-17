@@ -29,9 +29,9 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/sql"
+	"github.com/pydio/cells/v4/common/utils/configx"
 	"github.com/pydio/cells/v4/idm/workspace"
 	srv "github.com/pydio/cells/v4/idm/workspace/grpc"
-	"github.com/pydio/cells/v4/x/configx"
 )
 
 func NewWorkspacesService(ww ...*idm.Workspace) (grpc.ClientConnInterface, error) {

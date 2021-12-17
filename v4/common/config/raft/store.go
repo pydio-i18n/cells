@@ -29,10 +29,10 @@ import (
 	"log"
 	"sync"
 
-	"github.com/pydio/cells/v4/x/configx"
-
 	"go.etcd.io/etcd/raft/v3/raftpb"
 	"go.etcd.io/etcd/server/v3/etcdserver/api/snap"
+
+	"github.com/pydio/cells/v4/common/utils/configx"
 )
 
 // a key-value store backed by raft

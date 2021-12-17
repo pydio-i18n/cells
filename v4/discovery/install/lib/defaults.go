@@ -23,9 +23,9 @@ package lib
 import (
 	"fmt"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/proto/install"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/common/utils/net"
 )
 

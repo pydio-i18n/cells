@@ -25,8 +25,6 @@ import (
 	"net/url"
 	"time"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
-
 	"github.com/ory/fosite"
 	"github.com/ory/fosite/token/jwt"
 	"github.com/ory/hydra/oauth2"
@@ -38,6 +36,7 @@ import (
 	"github.com/pydio/cells/v4/common/auth/hydra"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 type oryprovider struct {

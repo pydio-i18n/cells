@@ -25,13 +25,12 @@ import (
 	"fmt"
 	"testing"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
-
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/sync/endpoints/memory"
 	"github.com/pydio/cells/v4/common/sync/model"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 var (

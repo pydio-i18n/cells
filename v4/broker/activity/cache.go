@@ -27,8 +27,8 @@ import (
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/proto/activity"
 	"github.com/pydio/cells/v4/common/utils/cache"
-	"github.com/pydio/cells/v4/x/configx"
-	"github.com/pydio/cells/v4/x/jsonx"
+	"github.com/pydio/cells/v4/common/utils/configx"
+	"github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 func WithCache(dao DAO) DAO {

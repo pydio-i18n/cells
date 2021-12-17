@@ -34,9 +34,9 @@ import (
 
 	"github.com/pydio/cells/v4/common/boltdb"
 	"github.com/pydio/cells/v4/common/proto/activity"
+	"github.com/pydio/cells/v4/common/utils/configx"
+	"github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/common/utils/uuid"
-	"github.com/pydio/cells/v4/x/configx"
-	"github.com/pydio/cells/v4/x/jsonx"
 )
 
 var (

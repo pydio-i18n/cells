@@ -21,14 +21,14 @@
 package tree
 
 import (
-	"github.com/pydio/cells/v4/common"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
+	"github.com/pydio/cells/v4/common"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 const (

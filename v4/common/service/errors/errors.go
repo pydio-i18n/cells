@@ -27,7 +27,7 @@ import (
 
 	"google.golang.org/grpc/status"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 type Error struct {

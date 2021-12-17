@@ -32,7 +32,7 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
-	json "github.com/pydio/cells/v4/x/jsonx"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/pydio-sdk-go/client"
 	"github.com/pydio/pydio-sdk-go/client/provisioning"
 	"github.com/pydio/pydio-sdk-go/models"

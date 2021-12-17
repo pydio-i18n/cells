@@ -25,8 +25,8 @@ package etcd
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/utils/configx"
 
-	"github.com/pydio/cells/v4/x/configx"
 	"go.etcd.io/etcd/clientv3"
 )
 

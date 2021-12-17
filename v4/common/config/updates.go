@@ -22,10 +22,10 @@ package config
 
 import (
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/x/configx"
+	configx2 "github.com/pydio/cells/v4/common/utils/configx"
 )
 
 // GetUpdatesConfigs gather update configs from correct location
-func GetUpdatesConfigs() configx.Values {
-	return Get(configx.FormatPath("services", common.ServiceGrpcNamespace_+common.ServiceUpdate))
+func GetUpdatesConfigs() configx2.Values {
+	return Get(configx2.FormatPath("services", common.ServiceGrpcNamespace_+common.ServiceUpdate))
 }

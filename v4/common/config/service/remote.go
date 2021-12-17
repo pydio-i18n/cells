@@ -32,21 +32,21 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/x/configx"
-	pb "github.com/pydio/cells/v4/common/proto/config"
 	"github.com/pydio/cells/v4/common/client/grpc"
+	"github.com/pydio/cells/v4/common/log"
+	pb "github.com/pydio/cells/v4/common/proto/config"
+	configx2 "github.com/pydio/cells/v4/common/utils/configx"
 )
 
 type remote struct {
 	id      string
 	service string
-	config  configx.Values
+	config  configx2.Values
 
 	watchers []*receiver
 }
 
-func New(service, id string) configx.Entrypoint {
+func New(service, id string) configx2.Entrypoint {
 
 	r := &remote{
 		id:      id,
@@ -59,7 +59,7 @@ func New(service, id string) configx.Entrypoint {
 
 			stream, err := cli.Watch(context.Background(), &pb.WatchRequest{
 				Namespace: id,
-				Path: "/",
+				Path:      "/",
 			})
 
 			if err != nil {
@@ -79,7 +79,7 @@ func New(service, id string) configx.Entrypoint {
 					break
 				}
 
-				c := configx.New(configx.WithJSON())
+				c := configx2.New(configx2.WithJSON())
 				c.Set(rsp.GetValue().GetData())
 
 				for _, w := range r.watchers {
@@ -100,7 +100,7 @@ func New(service, id string) configx.Entrypoint {
 	return r
 }
 
-func (r *remote) Val(path ...string) configx.Values {
+func (r *remote) Val(path ...string) configx2.Values {
 	if r.config == nil {
 		r.Get()
 	}
@@ -108,13 +108,13 @@ func (r *remote) Val(path ...string) configx.Values {
 	return &wrappedConfig{r.config.Val(path...), r}
 }
 
-func (r *remote) Get() configx.Value {
-	v := configx.New(configx.WithJSON())
+func (r *remote) Get() configx2.Value {
+	v := configx2.New(configx2.WithJSON())
 
 	cli := pb.NewConfigClient(grpc.NewClientConn(r.service))
 	rsp, err := cli.Get(context.TODO(), &pb.GetRequest{
-		Namespace:   r.id,
-		Path: "",
+		Namespace: r.id,
+		Path:      "",
 	})
 
 	r.config = v
@@ -142,8 +142,8 @@ func (r *remote) Set(data interface{}) error {
 
 	if _, err := cli.Set(context.TODO(), &pb.SetRequest{
 		Namespace: r.id,
-		Path: "",
-		Value: &pb.Value{Data: string(b)},
+		Path:      "",
+		Value:     &pb.Value{Data: string(b)},
 	}); err != nil {
 		return err
 	}
@@ -155,7 +155,7 @@ func (r *remote) Del() error {
 	return nil
 }
 
-func (r *remote) Watch(path ...string) (configx.Receiver, error) {
+func (r *remote) Watch(path ...string) (configx2.Receiver, error) {
 	rcvr := &receiver{
 		exit:    make(chan bool),
 		path:    path,
@@ -175,7 +175,7 @@ type receiver struct {
 	updates chan []byte
 }
 
-func (r *receiver) Next() (configx.Values, error) {
+func (r *receiver) Next() (configx2.Values, error) {
 	for {
 		select {
 		case <-r.exit:
@@ -191,7 +191,7 @@ func (r *receiver) Next() (configx.Values, error) {
 
 			r.value = v
 
-			ret := configx.New(configx.WithJSON())
+			ret := configx2.New(configx2.WithJSON())
 			if err := ret.Set(v); err != nil {
 				return nil, err
 			}
@@ -209,7 +209,7 @@ func (r *receiver) Stop() {
 }
 
 type wrappedConfig struct {
-	configx.Values
+	configx2.Values
 	r *remote
 }
 
