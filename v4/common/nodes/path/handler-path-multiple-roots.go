@@ -78,7 +78,7 @@ func (m *MultipleRootsHandler) updateInputBranch(ctx context.Context, node *tree
 
 	branch, set := nodes.GetBranchInfo(ctx, identifier)
 	//log.Logger(ctx).Info("updateInput", zap.Any("branch", branch), zap.Bool("set", set), node.Zap())
-	if !set || branch.UUID == "ROOT" || branch.Client != nil {
+	if !set || (branch.Workspace != nil && branch.UUID == "ROOT") || branch.Client != nil {
 		return ctx, node, nil
 	}
 	if len(branch.RootUUIDs) == 1 {
