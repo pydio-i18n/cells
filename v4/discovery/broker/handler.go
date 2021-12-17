@@ -42,12 +42,11 @@ func (h *Handler) Publish(stream pb.Broker_PublishServer) error {
 func (h *Handler) Subscribe(req *pb.SubscribeRequest, stream pb.Broker_SubscribeServer) error {
 	// TODO v4 - manage unsubscription
 	_, err := h.broker.Subscribe(stream.Context(), req.Topic, func(msg broker.Message) error {
-		var target = &pb.Messages{}
-		_, err := msg.Unmarshal(target)
-		if err != nil {
-			return err
-		}
-		if err := stream.Send(target); err != nil {
+		mm := &pb.Messages{}
+		var target = &pb.Message{}
+		target.Header, target.Body = msg.RawData()
+		mm.Messages = append(mm.Messages, target)
+		if err := stream.Send(mm); err != nil {
 			return err
 		}
 

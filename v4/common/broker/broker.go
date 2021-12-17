@@ -212,6 +212,8 @@ func (b *broker) Subscribe(ctx context.Context, topic string, handler Subscriber
 			}); err != nil {
 				if so.ErrorHandler != nil {
 					so.ErrorHandler(err)
+				} else {
+					fmt.Println("Cannot handle, no error handler set", topic, err.Error())
 				}
 			}
 		}

@@ -29,6 +29,7 @@ import (
 
 type Message interface {
 	Unmarshal(target proto.Message) (context.Context, error)
+	RawData() (map[string]string, []byte)
 }
 
 type message struct {
@@ -45,4 +46,8 @@ func (m *message) Unmarshal(target proto.Message) (context.Context, error) {
 		ctx = metadata.NewContext(ctx, m.header)
 	}
 	return ctx, nil
+}
+
+func (m *message) RawData() (map[string]string, []byte) {
+	return m.header, m.body
 }
