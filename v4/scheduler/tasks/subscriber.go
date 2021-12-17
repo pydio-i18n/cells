@@ -91,7 +91,7 @@ func NewSubscriber(parentContext context.Context) *Subscriber {
 	opt := broker.Queue("tasks")
 
 	// srv.Subscribe(srv.NewSubscriber(common.TopicJobConfigEvent, s.jobsChangeEvent, opts))
-	_ = broker.SubscribeCancellable(parentContext, common.TopicJobTaskEvent, func(message broker.Message) error {
+	_ = broker.SubscribeCancellable(parentContext, common.TopicJobConfigEvent, func(message broker.Message) error {
 		js := &jobs.JobChangeEvent{}
 		if ctx, e := message.Unmarshal(js); e == nil {
 			return s.jobsChangeEvent(ctx, js)
@@ -99,7 +99,6 @@ func NewSubscriber(parentContext context.Context) *Subscriber {
 		return nil
 	}, opt)
 
-	//srv.Subscribe(srv.NewSubscriber(common.TopicTreeChanges, s.nodeEvent, opts))
 	_ = broker.SubscribeCancellable(parentContext, common.TopicTreeChanges, func(message broker.Message) error {
 		target := &tree.NodeChangeEvent{}
 		if ctx, e := message.Unmarshal(target); e == nil {
@@ -108,13 +107,6 @@ func NewSubscriber(parentContext context.Context) *Subscriber {
 		return nil
 	}, opt)
 
-	//	srv.Subscribe(srv.NewSubscriber(common.TopicMetaChanges, func(ctx context.Context, e *tree.NodeChangeEvent) error {
-	//		if e.Type == tree.NodeChangeEvent_UPDATE_META || e.Type == tree.NodeChangeEvent_UPDATE_USER_META {
-	//			return s.nodeEvent(ctx, e)
-	//		} else {
-	//			return nil
-	//		}
-	//	}, opts))
 	_ = broker.SubscribeCancellable(parentContext, common.TopicMetaChanges, func(message broker.Message) error {
 		target := &tree.NodeChangeEvent{}
 		if ctx, e := message.Unmarshal(target); e == nil && (target.Type == tree.NodeChangeEvent_UPDATE_META || target.Type == tree.NodeChangeEvent_UPDATE_USER_META) {
@@ -123,7 +115,6 @@ func NewSubscriber(parentContext context.Context) *Subscriber {
 		return nil
 	}, opt)
 
-	//srv.Subscribe(srv.NewSubscriber(common.TopicTimerEvent, s.timerEvent, opts))
 	_ = broker.SubscribeCancellable(parentContext, common.TopicTimerEvent, func(message broker.Message) error {
 		target := &jobs.JobTriggerEvent{}
 		if ctx, e := message.Unmarshal(target); e == nil {
@@ -132,8 +123,7 @@ func NewSubscriber(parentContext context.Context) *Subscriber {
 		return nil
 	}, opt)
 
-	// srv.Subscribe(srv.NewSubscriber(common.TopicIdmEvent, s.idmEvent, opts))
-	_ = broker.SubscribeCancellable(parentContext, common.TopicTreeChanges, func(message broker.Message) error {
+	_ = broker.SubscribeCancellable(parentContext, common.TopicIdmEvent, func(message broker.Message) error {
 		target := &idm.ChangeEvent{}
 		if ctx, e := message.Unmarshal(target); e == nil {
 			return s.idmEvent(ctx, target)

@@ -26,7 +26,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/pydio/cells/v4/common/micro/registry/nats"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

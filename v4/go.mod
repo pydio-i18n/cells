@@ -3,33 +3,14 @@ module github.com/pydio/cells/v4
 go 1.16
 
 require (
-	cloud.google.com/go/firestore v1.5.0 // indirect
 	cloud.google.com/go/kms v1.1.0 // indirect
-	cloud.google.com/go/monitoring v0.1.0 // indirect
 	cloud.google.com/go/pubsub v1.16.0 // indirect
-	cloud.google.com/go/secretmanager v0.1.0 // indirect
 	cloud.google.com/go/storage v1.15.0 // indirect
-	cloud.google.com/go/trace v0.1.0 // indirect
-	contrib.go.opencensus.io/exporter/aws v0.0.0-20200617204711-c478e41e60e9 // indirect
-	contrib.go.opencensus.io/exporter/stackdriver v0.13.8 // indirect
-	contrib.go.opencensus.io/integrations/ocsql v0.1.7 // indirect
-	github.com/Azure/azure-amqp-common-go/v3 v3.1.1 // indirect
 	github.com/Azure/azure-pipeline-go v0.2.3 // indirect
-	github.com/Azure/azure-sdk-for-go v57.0.0+incompatible // indirect
-	github.com/Azure/azure-service-bus-go v0.10.16 // indirect
-	github.com/Azure/azure-storage-blob-go v0.10.0 // indirect
-	github.com/Azure/go-amqp v0.13.12 // indirect
-	github.com/Azure/go-autorest/autorest v0.11.20 // indirect
 	github.com/Azure/go-autorest/autorest/adal v0.9.15 // indirect
-	github.com/Azure/go-autorest/autorest/azure/auth v0.5.8 // indirect
-	github.com/Azure/go-autorest/autorest/azure/cli v0.4.3 // indirect
-	github.com/GoogleCloudPlatform/cloudsql-proxy v1.24.0 // indirect
 	github.com/ajvb/kala v0.8.4
 	github.com/allegro/bigcache v1.2.1
 	github.com/aws/aws-sdk-go v1.40.34 // indirect
-	github.com/aws/aws-sdk-go-v2/service/kms v1.5.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.6.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssm v1.10.0 // indirect
 	github.com/beevik/ntp v0.3.0
 	github.com/blevesearch/bleve v1.0.14
 	github.com/c2fo/testify v0.0.0-20150827203832-fba96363964a // indirect
@@ -43,17 +24,14 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-openapi/errors v0.20.1
 	github.com/go-openapi/loads v0.21.0
-	github.com/go-openapi/runtime v0.20.0 // indirect
+	github.com/go-openapi/runtime v0.20.0
 	github.com/go-openapi/spec v0.20.4
-	github.com/go-openapi/strfmt v0.21.0 // indirect
-	github.com/go-openapi/swag v0.19.15 // indirect
+	github.com/go-openapi/strfmt v0.21.0
+	github.com/go-openapi/swag v0.19.15
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gobwas/glob v0.2.3
 	github.com/golang/protobuf v1.5.2
-	github.com/google/go-replayers/grpcreplay v1.1.0 // indirect
-	github.com/google/go-replayers/httpreplay v1.0.0 // indirect
 	github.com/google/uuid v1.3.0
-	github.com/google/wire v0.5.0 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.1
@@ -62,7 +40,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.6.0
 	github.com/h2non/filetype v1.1.1
 	github.com/hashicorp/go-version v1.3.0
-	github.com/imdario/mergo v0.3.12 // indirect
+	github.com/imdario/mergo v0.3.12
 	github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf
 	github.com/jaytaylor/go-hostsfile v0.0.0-20201026230151-f581673a59cf
 	github.com/jcuga/golongpoll v1.3.0
@@ -74,7 +52,7 @@ require (
 	github.com/krolaw/zipstream v0.0.0-20180621105154-0a2661891f94
 	github.com/kylelemons/godebug v1.1.0
 	github.com/livekit/protocol v0.10.0
-	github.com/lpar/gzipped v1.1.0 // indirect
+	github.com/lpar/gzipped v1.1.0
 	github.com/lucas-clemente/quic-go v0.24.0 // indirect
 	github.com/manifoldco/promptui v0.8.0
 	github.com/matcornic/hermes/v2 v2.1.0
@@ -96,7 +74,7 @@ require (
 	github.com/philopon/go-toposort v0.0.0-20170620085441-9be86dbd762f
 	github.com/pkg/errors v0.9.1
 	github.com/pydio/melody v0.0.0-20190928133520-4271c6513fb6
-	github.com/pydio/pydio-sdk-go v0.0.0-20190116153840-23ce5c39e65c // indirect
+	github.com/pydio/pydio-sdk-go v0.0.0-20190116153840-23ce5c39e65c
 	github.com/rjeczalik/notify v0.9.2
 	github.com/robertkrimen/otto v0.0.0-20211024170158-b87d35c0b86f
 	github.com/rs/cors v1.8.0
@@ -117,17 +95,17 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/twmb/murmur3 v1.1.6 // indirect
 	github.com/uber-go/tally v3.4.2+incompatible
-	github.com/yvasiyarov/php_session_decoder v0.0.0-20180803065642-a065a3b0b7d1 // indirect
+	github.com/yvasiyarov/php_session_decoder v0.0.0-20180803065642-a065a3b0b7d1
 	github.com/zalando/go-keyring v0.1.1
 	go.etcd.io/bbolt v1.3.6
 	go.etcd.io/etcd/client/v3 v3.5.1 // indirect
 	go.uber.org/zap v1.19.1
-	gocloud.dev v0.20.0 // indirect
+	gocloud.dev v0.20.0
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
 	golang.org/x/net v0.0.0-20211020060615-d418f374d309
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/text v0.3.7
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac
 	google.golang.org/genproto v0.0.0-20211020151524-b7c3a969101a
@@ -141,7 +119,6 @@ require (
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/klog/v2 v2.30.0 // indirect
-	nhooyr.io/websocket v1.8.7 // indirect
 )
 
 // replace github.com/minio/minio => /Users/charles/Sources/go/src/github.com/pydio/minio
