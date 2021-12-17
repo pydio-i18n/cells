@@ -21,9 +21,14 @@
 package cmd
 
 import (
+	"log"
+
 	"github.com/pydio/cells/v4/common/broker"
 	"golang.org/x/sync/errgroup"
 
+	"contrib.go.opencensus.io/exporter/zipkin"
+	openzipkin "github.com/openzipkin/zipkin-go"
+	zipkinHTTP "github.com/openzipkin/zipkin-go/reporter/http"
 	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/plugins"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
@@ -39,6 +44,7 @@ import (
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"go.opencensus.io/trace"
 )
 
 var (
@@ -92,6 +98,20 @@ to quickly create a Cobra application.`,
 
 		ctx = servercontext.WithRegistry(ctx, reg)
 		ctx = servicecontext.WithRegistry(ctx, pluginsReg)
+
+		localEndpointURI := "192.168.1.5:5454"
+		reporterURI := "http://localhost:9411/api/v2/spans"
+		serviceName := "server"
+		localEndpoint, err := openzipkin.NewEndpoint(serviceName, localEndpointURI)
+		if err != nil {
+			log.Fatalf("Failed to create Zipkin localEndpoint with URI %q error: %v", localEndpointURI, err)
+		}
+
+		reporter := zipkinHTTP.NewReporter(reporterURI)
+		ze := zipkin.NewExporter(reporter, localEndpoint)
+
+		// And now finally register it as a Trace Exporter
+		trace.RegisterExporter(ze)
 
 		/*
 			watcher, err := reg.Watch()

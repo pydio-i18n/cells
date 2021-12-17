@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go/kms v1.1.0 // indirect
 	cloud.google.com/go/pubsub v1.16.0 // indirect
 	cloud.google.com/go/storage v1.15.0 // indirect
+	contrib.go.opencensus.io/exporter/zipkin v0.1.2
 	github.com/Azure/azure-pipeline-go v0.2.3 // indirect
 	github.com/Azure/go-autorest/autorest/adal v0.9.15 // indirect
 	github.com/ajvb/kala v0.8.4
@@ -66,6 +67,7 @@ require (
 	github.com/mssola/user_agent v0.5.3
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/nicksnyder/go-i18n v1.10.0
+	github.com/openzipkin/zipkin-go v0.2.5
 	github.com/ory/fosite v0.40.3-0.20211101181407-30e8cb92e53c
 	github.com/ory/hydra v1.10.7
 	github.com/ory/ladon v1.2.0
@@ -99,6 +101,7 @@ require (
 	github.com/zalando/go-keyring v0.1.1
 	go.etcd.io/bbolt v1.3.6
 	go.etcd.io/etcd/client/v3 v3.5.1 // indirect
+	go.opencensus.io v0.23.0
 	go.uber.org/zap v1.19.1
 	gocloud.dev v0.20.0
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
