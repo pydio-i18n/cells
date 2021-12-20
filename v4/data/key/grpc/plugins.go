@@ -32,6 +32,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/encryption"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/data/key"
 )
 
@@ -47,7 +48,7 @@ func init() {
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceMeta, []string{}),
 			service.WithStorage(key.NewDAO, "data_key"),
 			service.WithGRPC(func(c context.Context, srv *grpc.Server) error {
-				h := &NodeKeyManagerHandler{}
+				h := &NodeKeyManagerHandler{dao: servicecontext.GetDAO(c).(key.DAO)}
 				encryption.RegisterNodeKeyManagerEnhancedServer(srv, h)
 				if e := broker.SubscribeCancellable(c, common.TopicTreeChanges, func(message broker.Message) error {
 					msg := &tree.NodeChangeEvent{}

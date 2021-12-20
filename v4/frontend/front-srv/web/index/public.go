@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -159,7 +158,8 @@ func (h *PublicHandler) computeTplConf(req *http.Request, linkId string) (status
 // ServeHTTP serve Public link
 func (h *PublicHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-	link := mux.Vars(r)["link"]
+	link := strings.TrimSpace(strings.TrimPrefix(r.RequestURI, config.GetPublicBaseUri()+"/"))
+	link = strings.Trim(link, "/")
 	status, tplConf := h.computeTplConf(r, link)
 	if status != 200 {
 		w.WriteHeader(status)

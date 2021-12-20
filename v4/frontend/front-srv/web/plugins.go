@@ -25,21 +25,18 @@ import (
 	"context"
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
-
-	"github.com/pydio/cells/v4/common/broker"
-
-	"github.com/pydio/cells/v4/common/proto/front"
-	"google.golang.org/grpc"
 
 	"github.com/lpar/gzipped"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/proto/front"
 	"github.com/pydio/cells/v4/common/service"
 	"github.com/pydio/cells/v4/common/service/frontend"
 	"github.com/pydio/cells/v4/frontend/front-srv/web/index"
@@ -92,7 +89,10 @@ func init() {
 				mux.Handle("/", indexHandler)
 				mux.Handle("/gui", indexHandler)
 				mux.Handle("/user/reset-password/{resetPasswordKey}", indexHandler)
-				mux.Handle(path.Join(config.GetPublicBaseUri(), "{link}"), index.NewPublicHandler())
+
+				// /public endpoint : special handler for index, redirect to /plug/ for the rest
+				mux.Handle(config.GetPublicBaseUri()+"/", index.NewPublicHandler())
+				mux.Handle(config.GetPublicBaseUri()+"/plug/", http.StripPrefix(config.GetPublicBaseUri()+"/plug/", fs))
 
 				// TODO v4
 				//routerWithTimeout := http.TimeoutHandler(

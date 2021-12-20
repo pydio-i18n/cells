@@ -27,6 +27,7 @@ const (
 
 {{range .Sites}}
 {{$SiteWebRoot := .WebRoot}}
+{{$ExternalHost := .ExternalHost}}
 {{range .Binds}}{{.}} {{end}} {
 	root * "{{if $SiteWebRoot}}{{$SiteWebRoot}}{{else}}{{$.WebRoot}}{{end}}"
 
@@ -39,7 +40,7 @@ const (
 	}
 
 	route /* {
-		request_header Host {host}
+		# request_header Host {{if $ExternalHost}}{{$ExternalHost}}{{else}}{host}{{end}}
 		request_header X-Real-IP {remote}
 
 		# Special rewrite for grpc requests (always sent on root path)
