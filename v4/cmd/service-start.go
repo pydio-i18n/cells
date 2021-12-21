@@ -21,10 +21,11 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/pydio/cells/v4/common/registry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"os"
 )
 
 // serviceStartCmd represents the stop command
@@ -90,6 +91,10 @@ func (s mockService) Nodes() []registry.Node {
 
 func (s mockService) Tags() []string {
 	return []string{}
+}
+
+func (s mockService) Metadata() map[string]string {
+	return map[string]string{}
 }
 
 func (s mockService) Start() error {

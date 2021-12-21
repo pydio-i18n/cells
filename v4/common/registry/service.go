@@ -1,7 +1,8 @@
 package registry
 
-type Service interface{
-	Name() string
+type Service interface {
+	Item
+
 	Version() string
 	Nodes() []Node
 	Tags() []string
@@ -12,6 +13,4 @@ type Service interface{
 	IsGeneric() bool
 	IsGRPC() bool
 	IsREST() bool
-	
-	As(interface{}) bool
 }

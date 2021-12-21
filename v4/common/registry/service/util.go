@@ -40,7 +40,10 @@ func (s *service) Version() string {
 	return s.s.Version
 }
 
-func (s *service) Metadata() map[string] string {
+func (s *service) Metadata() map[string]string {
+	if s.s.Metadata == nil {
+		return map[string]string{}
+	}
 	return s.s.Metadata
 }
 
@@ -132,7 +135,7 @@ func ToProtoItem(i registry.Item) *pb.Item {
 
 	switch v := i.(type) {
 	case registry.Service:
-		item.Item = &pb.Item_Service{Service:ToProtoService(v)}
+		item.Item = &pb.Item_Service{Service: ToProtoService(v)}
 	case registry.Node:
 		item.Item = &pb.Item_Node{Node: ToProtoNode(v)}
 	}
@@ -152,12 +155,12 @@ func ToProtoService(s registry.Service) *pb.Service {
 	}
 
 	return &pb.Service{
-		Name:      s.Name(),
-		Version:   s.Version(),
-		// Metadata:  s.Metadata(),
+		Name:     s.Name(),
+		Version:  s.Version(),
+		Metadata: s.Metadata(),
 		// Endpoints: endpoints,
-		Nodes:     nodes,
-		Options:   new(pb.Options),
+		Nodes:   nodes,
+		Options: new(pb.Options),
 	}
 }
 

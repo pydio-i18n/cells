@@ -1,15 +1,37 @@
 package meta
 
-import "github.com/pydio/cells/v4/common/registry"
+import (
+	"context"
 
-func servicesWithMeta(metaName string, metaValue string) ([]registry.Service, error) {
-	/*
-			TODO V4
-		// List services with micro meta
-			services, err := registry.ListServicesWithMicroMeta(ServiceMetaNsProvider, "list")
-			if err != nil {
-				return
-			}
-	*/
-	return nil, nil
+	"github.com/spf13/viper"
+
+	"github.com/pydio/cells/v4/common/log"
+	pb "github.com/pydio/cells/v4/common/proto/registry"
+	"github.com/pydio/cells/v4/common/registry"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+)
+
+func servicesWithMeta(ctx context.Context, metaName string, metaValue string) ([]registry.Service, error) {
+
+	reg := servicecontext.GetRegistry(ctx)
+	if reg == nil {
+		defaultReg, err := registry.OpenRegistry(context.Background(), viper.GetString("registry"))
+		if err != nil {
+			return nil, err
+		}
+		reg = defaultReg
+		log.Logger(context.Background()).Warn("servicesWithMeta called empty registry, will use default, this is not recommended")
+	}
+
+	items, e := reg.List(registry.WithType(pb.ItemType_SERVICE), registry.WithMeta(metaName, metaValue))
+	if e != nil {
+		return nil, e
+	}
+	var res []registry.Service
+	for _, item := range items {
+		res = append(res, item.(registry.Service))
+	}
+
+	return res, nil
+
 }

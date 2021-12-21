@@ -185,7 +185,11 @@ func (s *serviceRegistry) List(opts ...registry.Option) ([]registry.Item, error)
 
 	items := make([]registry.Item, 0, len(rsp.Items))
 	for _, item := range rsp.Items {
-		items = append(items, ToItem(item))
+		casted := ToItem(item)
+		if options.Filter != nil && !options.Filter(casted) {
+			continue
+		}
+		items = append(items, casted)
 	}
 
 	return items, nil

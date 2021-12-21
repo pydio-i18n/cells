@@ -126,10 +126,16 @@ func (m *memory) List(opts ...registry.Option) ([]registry.Item, error) {
 		switch o.Type {
 		case pb.ItemType_SERVICE:
 			if service, ok := item.(registry.Service); ok {
+				if o.Filter != nil && !o.Filter(service) {
+					continue
+				}
 				items = append(items, service)
 			}
 		case pb.ItemType_NODE:
 			if node, ok := item.(registry.Node); ok {
+				if o.Filter != nil && !o.Filter(node) {
+					continue
+				}
 				items = append(items, node)
 			}
 		}

@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+
 	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/server"
 
@@ -30,6 +31,7 @@ var (
 type Service interface {
 	Init(opts ...ServiceOption)
 	Options() *ServiceOptions
+	Metadata() map[string]string
 	Name() string
 	Start() error
 	Stop() error
@@ -69,6 +71,10 @@ func (s *service) Init(opts ...ServiceOption) {
 
 func (s *service) Options() *ServiceOptions {
 	return s.opts
+}
+
+func (s *service) Metadata() map[string]string {
+	return s.opts.Metadata
 }
 
 func (s *service) As(i interface{}) bool {

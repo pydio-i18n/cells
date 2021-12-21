@@ -47,6 +47,7 @@ func init() {
 
 				treeServer := &TreeServer{
 					name:        ServiceName,
+					MainCtx:     ctx,
 					DataSources: map[string]DataSource{},
 				}
 				eventSubscriber := NewEventSubscriber(treeServer)

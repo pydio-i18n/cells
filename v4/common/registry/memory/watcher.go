@@ -28,13 +28,13 @@ func (m *watcher) Next() (registry.Result, error) {
 			switch m.wo.Type {
 			case pb.ItemType_SERVICE:
 				var service registry.Service
-				if r.Item().As(&service) {
+				if r.Item().As(&service) && (m.wo.Filter == nil || m.wo.Filter(r.Item())) {
 					return r, nil
 				}
 				continue
 			case pb.ItemType_NODE:
 				var node registry.Node
-				if r.Item().As(&node) {
+				if r.Item().As(&node) && (m.wo.Filter == nil || m.wo.Filter(r.Item())) {
 					return r, nil
 				}
 				continue
@@ -58,7 +58,7 @@ func (m *watcher) Stop() {
 
 type result struct {
 	action string
-	item registry.Item
+	item   registry.Item
 }
 
 func (r *result) Action() string {

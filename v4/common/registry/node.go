@@ -1,16 +1,14 @@
 package registry
 
-type Node interface{
-	Name() string
+type Node interface {
+	Item
+
 	Address() []string
 	Endpoints() []string
-	Metadata() map[string]string
-
-	As(interface{}) bool
 }
 
 type Endpoint interface {
-	Name()     string
+	Name() string
 	Metadata() map[string]string
 }
 

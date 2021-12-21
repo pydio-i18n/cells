@@ -23,6 +23,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"io"
 	"strings"
 	"sync"
@@ -97,9 +98,11 @@ type TreeServer struct {
 
 	sync.Mutex
 
-	name        string
+	name      string
+	listeners []*changesListener
+
 	DataSources map[string]DataSource
-	listeners   []*changesListener
+	MainCtx     context.Context
 }
 
 func (s *TreeServer) Name() string {
@@ -109,11 +112,12 @@ func (s *TreeServer) Name() string {
 // ReadNodeStream Implement stream for readNode method
 func (s *TreeServer) ReadNodeStream(streamer tree.NodeProviderStreamer_ReadNodeStreamServer) error {
 
-	ctx := streamer.Context()
 	// In some cases, initial ctx could be canceled _before_ this function is called
 	// We must make sure that metaStreamers are using a proper context at creation
 	// otherwise it can create a goroutine leak on linux.
-	metaStreamer := meta.NewStreamLoader(metadata.NewBackgroundWithMetaCopy(ctx))
+	ctx := metadata.NewBackgroundWithMetaCopy(streamer.Context())
+	ctx = servicecontext.WithRegistry(ctx, servicecontext.GetRegistry(s.MainCtx))
+	metaStreamer := meta.NewStreamLoader(ctx)
 	defer metaStreamer.Close()
 
 	msCtx := context.WithValue(ctx, "MetaStreamer", metaStreamer)
@@ -216,7 +220,7 @@ func (s *TreeServer) ReadNode(ctx context.Context, req *tree.ReadNodeRequest) (*
 	if ms := ctx.Value("MetaStreamer"); ms != nil {
 		metaStreamer = ms.(meta.Loader)
 	} else {
-		metaStreamer = meta.NewStreamLoader(ctx)
+		metaStreamer = meta.NewStreamLoader(servicecontext.WithRegistry(ctx, servicecontext.GetRegistry(s.MainCtx)))
 		defer metaStreamer.Close()
 	}
 	resp := &tree.ReadNodeResponse{}
@@ -266,7 +270,7 @@ func (s *TreeServer) ListNodes(req *tree.ListNodesRequest, resp tree.NodeProvide
 
 	ctx := resp.Context()
 	defer track("ListNodes", ctx, time.Now(), req, resp)
-	metaStreamer := meta.NewStreamLoader(ctx)
+	metaStreamer := meta.NewStreamLoader(servicecontext.WithRegistry(ctx, servicecontext.GetRegistry(s.MainCtx)))
 	defer metaStreamer.Close()
 
 	// Special case to get ancestors

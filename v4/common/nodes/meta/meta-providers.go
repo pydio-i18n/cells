@@ -23,10 +23,11 @@ package meta
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"strings"
 	"time"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 
@@ -154,7 +155,7 @@ func getMetaProviderStreamers(ctx context.Context) ([]tree.NodeProviderStreamerC
 		return result, names
 	}
 
-	ss, e := servicesWithMeta(ServiceMetaProvider, "stream")
+	ss, e := servicesWithMeta(ctx, ServiceMetaProvider, "stream")
 	if e != nil {
 		return result, names
 	}

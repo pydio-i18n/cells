@@ -22,9 +22,10 @@ package meta
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
 	"sync"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
@@ -36,6 +37,7 @@ import (
 // It watches events to maintain the list
 type NsProvider struct {
 	sync.RWMutex // this handles a lock for the namespaces field
+	Ctx          context.Context
 	namespaces   []*idm.UserMetaNamespace
 	loaded       bool
 	streamers    []tree.NodeProviderStreamer_ReadNodeStreamClient
@@ -43,7 +45,9 @@ type NsProvider struct {
 
 // NewNsProvider creates a new namespace provider
 func NewNsProvider(ctx context.Context) *NsProvider {
-	ns := &NsProvider{}
+	ns := &NsProvider{
+		Ctx: ctx,
+	}
 	ns.Watch(ctx)
 	return ns
 }
@@ -97,7 +101,7 @@ func (p *NsProvider) IncludedIndexes() map[string]struct{} {
 // Load finds all services declared as ServiceMetaNsProvider and call them to list the namespaces they declare
 func (p *NsProvider) Load() {
 	// Other Meta Providers (running services only)
-	services, err := servicesWithMeta(ServiceMetaNsProvider, "list")
+	services, err := servicesWithMeta(p.Ctx, ServiceMetaNsProvider, "list")
 	if err != nil {
 		return
 	}
@@ -126,7 +130,7 @@ func (p *NsProvider) Load() {
 
 // InitStreamers prepares a set of NodeProviderStreamerClients ready to be requested
 func (p *NsProvider) InitStreamers(ctx context.Context) error {
-	services, err := servicesWithMeta(ServiceMetaNsProvider, "list")
+	services, err := servicesWithMeta(p.Ctx, ServiceMetaNsProvider, "list")
 	if err != nil {
 		return err
 	}

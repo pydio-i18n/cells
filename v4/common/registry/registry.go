@@ -4,7 +4,7 @@ import (
 	"context"
 )
 
-type Registry interface{
+type Registry interface {
 	Start(Item) error
 	Stop(Item) error
 	Register(Item) error
@@ -16,8 +16,9 @@ type Registry interface{
 	As(interface{}) bool
 }
 
-type Item interface{
+type Item interface {
 	Name() string
+	Metadata() map[string]string
 	As(interface{}) bool
 }
 
@@ -70,7 +71,6 @@ func (r *registry) List(opts ...Option) ([]Item, error) {
 func (r *registry) Watch(option ...Option) (Watcher, error) {
 	return r.r.Watch(option...)
 }
-
 
 func (r *registry) As(i interface{}) bool {
 	return r.r.As(i)

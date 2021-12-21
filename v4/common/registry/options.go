@@ -8,10 +8,11 @@ import (
 
 type Option func(*Options) error
 
-type Options struct{
+type Options struct {
 	Context context.Context
-	Name string
-	Type pb.ItemType
+	Name    string
+	Type    pb.ItemType
+	Filter  func(item Item) bool
 }
 
 func WithName(n string) Option {
@@ -22,8 +23,25 @@ func WithName(n string) Option {
 }
 
 func WithType(t pb.ItemType) Option {
-	return func (o *Options) error {
+	return func(o *Options) error {
 		o.Type = t
+		return nil
+	}
+}
+
+func WithMeta(name, value string) Option {
+	return func(options *Options) error {
+		options.Filter = func(item Item) bool {
+			mm := item.Metadata()
+			val, has := mm[name]
+			if !has {
+				return false
+			}
+			if len(value) > 0 && val != value {
+				return false
+			}
+			return true
+		}
 		return nil
 	}
 }
