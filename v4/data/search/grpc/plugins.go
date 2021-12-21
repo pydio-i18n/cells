@@ -27,9 +27,6 @@ import (
 	"context"
 	"path/filepath"
 
-	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
-
-	"github.com/pydio/cells/v4/common/nodes/meta"
 
 	"google.golang.org/grpc"
 
@@ -37,11 +34,11 @@ import (
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/nodes/meta"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/sync"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/data/search/dao/bleve"
 )
 
@@ -59,15 +56,14 @@ func init() {
 			service.Context(ctx),
 			service.Tag(common.ServiceTagData),
 			service.Description("Search Engine"),
-			service.Fork(true),
+			// service.Fork(true),
 			/*
 				service.RouterDependencies(),
 				service.AutoRestart(true),
 			*/
 			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
 
-				cfg := servicecontext.GetConfig(c)
-
+				cfg := config.Get("services", Name)
 				indexContent := cfg.Val("indexContent").Bool()
 				if indexContent {
 					log.Logger(c).Info("Enabling content indexation in search engine")
@@ -91,7 +87,6 @@ func init() {
 				searcher := &SearchServer{
 					Engine:           bleveEngine,
 					NsProvider:       nsProvider,
-					TreeClient:       tree.NewNodeProviderClient(grpc2.NewClientConn(common.ServiceTree)),
 					ReIndexThrottler: make(chan struct{}, 5),
 				}
 

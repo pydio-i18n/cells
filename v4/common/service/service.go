@@ -3,13 +3,15 @@ package service
 import (
 	"fmt"
 
-	"github.com/pydio/cells/v4/common/registry"
-	"github.com/pydio/cells/v4/common/server"
+	"go.uber.org/zap"
+	"github.com/spf13/viper"
+
 
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/registry"
+	"github.com/pydio/cells/v4/common/server"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
-	"github.com/spf13/viper"
 )
 
 // Service for the pydio app
@@ -86,7 +88,15 @@ func (s *service) As(i interface{}) bool {
 	return false
 }
 
-func (s *service) Start() error {
+func (s *service) Start() (er error) {
+
+	defer func() {
+		if e := recover(); e != nil {
+			log.Logger(s.opts.Context).Error("panic while starting service", zap.Any("p", e))
+			er = fmt.Errorf("panic while starting service %v", e)
+		}
+	}()
+
 	for _, before := range s.opts.BeforeStart {
 		if err := before(s.opts.Context); err != nil {
 			return err

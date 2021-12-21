@@ -112,17 +112,18 @@ func (s *Handler) Nodes(req *restful.Request, rsp *restful.Response) {
 	err := router.WrapCallback(func(inputFilter nodes.FilterFunc, outputFilter nodes.FilterFunc) error {
 
 		var userWorkspaces map[string]*idm.Workspace
+		// Fill a context with current user info
+		// (Let inputFilter apply the various necessary middlewares).
+		loaderCtx, _, _ := inputFilter(ctx, &tree.Node{Path: ""}, "tmp")
+		if accessList, ok := acl.FromContext(loaderCtx); ok {
+			userWorkspaces = accessList.Workspaces
+		}
+
 		if len(passedPrefix) > 0 {
 			// Passed prefix
 			prefixes = append(prefixes, passedPrefix)
 
 		} else {
-			// Fill a context with current user info
-			// (Let inputFilter apply the various necessary middlewares).
-			loaderCtx, _, _ := inputFilter(ctx, &tree.Node{Path: ""}, "tmp")
-			if accessList, ok := acl.FromContext(loaderCtx); ok {
-				userWorkspaces = accessList.Workspaces
-			}
 			for _, w := range userWorkspaces {
 				if len(passedWorkspaceSlug) > 0 && w.Slug != passedWorkspaceSlug {
 					continue
@@ -139,7 +140,7 @@ func (s *Handler) Nodes(req *restful.Request, rsp *restful.Response) {
 		query.PathPrefix = []string{}
 
 		var e error
-		ctx = acl.WithPresetACL(ctx, nil) // Just set the key, acl is already set
+		ctx = acl.WithPresetACL(loaderCtx, nil) // Just set the key, acl is already set
 		for _, p := range prefixes {
 			rootNode := &tree.Node{Path: p}
 			ctx, rootNode, e = inputFilter(ctx, rootNode, "search-"+p)

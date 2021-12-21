@@ -30,6 +30,7 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes/meta"
 	protosync "github.com/pydio/cells/v4/common/proto/sync"
@@ -252,4 +253,11 @@ func (s *SearchServer) ReindexFolder(c context.Context, node *tree.Node, exclude
 	}
 	log.Logger(c).Info(fmt.Sprintf("Search Server re-indexed %d folders", count))
 
+}
+
+func (s *SearchServer) getTreeClient() tree.NodeProviderClient {
+	if s.TreeClient == nil {
+		s.TreeClient = tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceTree))
+	}
+	return s.TreeClient
 }

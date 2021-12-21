@@ -52,7 +52,7 @@ import (
 
 func TestMain(m *testing.M) {
 
-	_ = broker.Connect()
+	//_ = broker.Connect()
 	nodes.UseMockStorageClientType()
 
 	testData, er := idmtest.GetStartData()
