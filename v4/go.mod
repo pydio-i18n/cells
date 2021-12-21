@@ -121,5 +121,5 @@ require (
 	k8s.io/klog/v2 v2.30.0 // indirect
 )
 
-replace github.com/minio/minio => /Users/charles/Sources/go/src/github.com/pydio/minio
-//replace github.com/minio/minio => github.com/pydio/minio v0.0.0-20211122154507-cf0bc00fb0b8
+//replace github.com/minio/minio => /Users/charles/Sources/go/src/github.com/pydio/minio
+replace github.com/minio/minio => github.com/pydio/minio v0.0.0-20211122154507-cf0bc00fb0b8
