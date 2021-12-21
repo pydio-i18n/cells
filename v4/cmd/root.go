@@ -251,7 +251,7 @@ func initLogLevel() {
 	logLevel := viper.GetString("log")
 	// TODO V4
 	//logLevel = "debug"
-	log.SetSkipServerSync()
+	//log.SetSkipServerSync()
 
 	logJson := viper.GetBool("log_json")
 	common.LogToFile = viper.GetBool("log_to_file")

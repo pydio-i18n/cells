@@ -23,11 +23,12 @@ package acl
 import (
 	"context"
 	"fmt"
-	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"strconv"
 	"strings"
 	"time"
+
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -75,7 +76,7 @@ func (a *QuotaFilter) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, op
 	}
 
 	branch, set := nodes.GetBranchInfo(ctx, "in")
-	if !set || branch.UUID == "ROOT" || branch.Workspace.UUID == "" || branch.Root == nil || branch.Root.Uuid != resp.Node.Uuid {
+	if !set || branch.Workspace == nil || branch.UUID == "ROOT" || branch.Workspace.UUID == "" || branch.Root == nil || branch.Root.Uuid != resp.Node.Uuid {
 		return resp, err
 	}
 	type qCache struct {

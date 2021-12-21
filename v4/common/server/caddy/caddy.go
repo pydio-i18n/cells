@@ -40,7 +40,7 @@ const (
 	}
 
 	route /* {
-		# request_header Host {{if $ExternalHost}}{{$ExternalHost}}{{else}}{host}{{end}}
+		{{if $ExternalHost}}request_header Host {{$ExternalHost}}{{end}}
 		request_header X-Real-IP {remote}
 
 		# Special rewrite for grpc requests (always sent on root path)

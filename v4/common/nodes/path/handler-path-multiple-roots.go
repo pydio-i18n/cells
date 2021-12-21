@@ -78,7 +78,7 @@ func (m *MultipleRootsHandler) updateInputBranch(ctx context.Context, node *tree
 
 	branch, set := nodes.GetBranchInfo(ctx, identifier)
 	//log.Logger(ctx).Info("updateInput", zap.Any("branch", branch), zap.Bool("set", set), node.Zap())
-	if !set || (branch.Workspace != nil && branch.UUID == "ROOT") || branch.Client != nil {
+	if !set || branch.Workspace == nil || branch.UUID == "ROOT" || branch.Client != nil {
 		return ctx, node, nil
 	}
 	if len(branch.RootUUIDs) == 1 {
@@ -120,7 +120,7 @@ func (m *MultipleRootsHandler) updateOutputBranch(ctx context.Context, node *tre
 
 	branch, set := nodes.GetBranchInfo(ctx, identifier)
 	out := node.Clone()
-	if set && branch.UUID != "ROOT" {
+	if set && branch.DataSource != nil && branch.Workspace != nil && branch.UUID != "ROOT" {
 		if branch.EncryptionMode != object.EncryptionMode_CLEAR {
 			out.MustSetMeta(common.MetaFlagEncrypted, "true")
 		}
@@ -128,7 +128,7 @@ func (m *MultipleRootsHandler) updateOutputBranch(ctx context.Context, node *tre
 			out.MustSetMeta(common.MetaFlagVersioning, "true")
 		}
 	}
-	if !set || branch.UUID == "ROOT" || len(branch.RootUUIDs) < 2 {
+	if !set || branch.Workspace == nil || branch.UUID == "ROOT" || len(branch.RootUUIDs) < 2 {
 		return ctx, m.setWorkspaceRootFlag(branch.Workspace, out), nil
 	}
 	if len(branch.RootUUIDs) == 1 {

@@ -117,7 +117,11 @@ func prepareRemoteContext(session *melody.Session) (context.Context, error) {
 	metaCtx := auth.ContextFromClaims(context.Background(), claims.(claim.Claims))
 	metaCtx = servicecontext.WithServiceName(metaCtx, common.ServiceGatewayNamespace_+common.ServiceWebSocket)
 	if md, o := session.Get(SessionMetaContext); o {
-		metaCtx = metadata.WithAdditionalMetadata(metaCtx, md.(map[string]string))
+		if meta, ok := md.(metadata.Metadata); ok {
+			metaCtx = metadata.WithAdditionalMetadata(metaCtx, meta)
+		} else {
+			log.Logger(metaCtx).Error("Cannot cast meta to metadata.Metadata")
+		}
 	}
 	return metaCtx, nil
 }

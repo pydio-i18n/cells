@@ -49,7 +49,7 @@ func FromContext(ctx context.Context) (Metadata, bool) {
 }
 
 func NewContext(ctx context.Context, md map[string]string) context.Context {
-	return context.WithValue(ctx, metadataKey{}, md)
+	return context.WithValue(ctx, metadataKey{}, Metadata(md))
 }
 
 // MinioMetaFromContext prepares metadata for minio client, merging context medata
