@@ -154,7 +154,7 @@ func (s *SearchServer) Search(req *tree.SearchRequest, streamer tree.Searcher_Se
 					log.Logger(ctx).Debug("Search", zap.String("uuid", node.Uuid))
 
 					if req.Details {
-						response, e := s.TreeClient.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{
+						response, e := s.getTreeClient().ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{
 							Uuid: node.Uuid,
 						}})
 						if e == nil && response.GetNode() != nil {
@@ -196,7 +196,7 @@ func (s *SearchServer) TriggerResync(c context.Context, req *protosync.ResyncReq
 		s.Engine.ClearIndex(bg)
 		excludes := s.NsProvider.ExcludeIndexes()
 
-		dsStream, err := s.TreeClient.ListNodes(bg, &tree.ListNodesRequest{
+		dsStream, err := s.getTreeClient().ListNodes(bg, &tree.ListNodesRequest{
 			Node:      &tree.Node{Path: ""},
 			Recursive: true,
 		})
@@ -231,7 +231,7 @@ func (s *SearchServer) ReindexFolder(c context.Context, node *tree.Node, exclude
 		<-s.ReIndexThrottler
 	}()
 	bg := context.Background()
-	dsStream, err := s.TreeClient.ListNodes(bg, &tree.ListNodesRequest{
+	dsStream, err := s.getTreeClient().ListNodes(bg, &tree.ListNodesRequest{
 		Node:      node,
 		Recursive: true,
 	})
