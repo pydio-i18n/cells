@@ -70,6 +70,7 @@ func NewJobsHandler(store jobs.DAO, messageRepository log3.MessageRepository) *J
 		stop:         make(chan bool),
 	}
 	j.Handler.Repo = messageRepository
+	j.Handler.HandlerName = ServiceName
 	go j.watchPutTaskChan()
 	return j
 }

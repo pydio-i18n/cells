@@ -77,7 +77,7 @@ func Init(logDir string, ww ...LogContextWrapper) {
 			// Format is always JSON + ProductionEncoderConfig
 			srvConfig := zap.NewProductionEncoderConfig()
 			srvConfig.EncodeTime = RFC3369TimeEncoder
-			serverSync := zapcore.AddSync(NewLogSyncer(context.Background(), common.ServiceGrpcNamespace_+common.ServiceLog))
+			serverSync := zapcore.AddSync(NewLogSyncer(context.Background(), common.ServiceLog))
 			serverCore = zapcore.NewCore(
 				zapcore.NewJSONEncoder(srvConfig),
 				serverSync,
@@ -134,7 +134,7 @@ func Init(logDir string, ww ...LogContextWrapper) {
 		//nop := zap.NewNop()
 		_, _ = zap.RedirectStdLogAt(logger, zap.DebugLevel)
 
-//		micro.SetLogger(micrologger{nop})
+		//		micro.SetLogger(micrologger{nop})
 
 		// Catch StdOut
 		if !common.LogCaptureStdOut {

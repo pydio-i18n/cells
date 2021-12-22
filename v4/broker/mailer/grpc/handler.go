@@ -34,7 +34,6 @@ import (
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	proto "github.com/pydio/cells/v4/common/proto/mailer"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/configx"
 	json "github.com/pydio/cells/v4/common/utils/jsonx"
@@ -266,7 +265,7 @@ func (h *Handler) initFromConf(ctx context.Context, conf configx.Values, check b
 
 func (h *Handler) checkConfigChange(ctx context.Context, check bool) error {
 
-	cfg := config.Get("services", servicecontext.GetServiceName(ctx))
+	cfg := config.Get("services", Name)
 	queueName, _, senderName, senderConfig := h.parseConf(cfg)
 	m1, _ := json.Marshal(senderConfig)
 	m2, _ := json.Marshal(h.senderConfig)

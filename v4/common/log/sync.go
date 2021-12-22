@@ -22,11 +22,11 @@ package log
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"sync/atomic"
 	"time"
 
-	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/client/grpc"
+
 	"github.com/pydio/cells/v4/common/proto/log"
 )
 
@@ -56,7 +56,7 @@ func NewLogSyncer(ctx context.Context, serviceName string) *LogSyncer {
 func (syncer *LogSyncer) logSyncerClientReconnect() {
 	atomic.StoreInt32(&syncer.reconnecting, 1)
 
-	c := log.NewLogRecorderClient(grpc.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceLog))
+	c := log.NewLogRecorderClient(grpc.NewClientConn(syncer.serverServiceName))
 
 	cli, err := c.PutLog(syncer.ctx)
 	if err != nil {

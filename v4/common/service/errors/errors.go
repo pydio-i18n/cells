@@ -230,3 +230,11 @@ func IsNetworkError(err error) bool {
 		parsed.Id == "go.micro.client" && parsed.Code == 500 && parsed.Detail == "not found"
 
 }
+
+// IsContextCanceled interprets error as a "context canceled"
+func IsContextCanceled(err error) bool {
+	if err == nil {
+		return false
+	}
+	return strings.Contains(err.Error(), "context canceled")
+}

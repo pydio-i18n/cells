@@ -46,9 +46,6 @@ import (
 	_ "github.com/pydio/cells/v4/common/registry/memory"
 	_ "github.com/pydio/cells/v4/common/registry/service"
 
-	// Gateways
-	// _ "github.com/pydio/cells/v4/gateway/proxy"
-	//
 	// Broker
 	_ "github.com/pydio/cells/v4/broker/activity/grpc"
 	_ "github.com/pydio/cells/v4/broker/activity/rest"
@@ -60,9 +57,9 @@ import (
 
 	// Gateways
 	_ "github.com/pydio/cells/v4/gateway/data"
-	//_ "github.com/pydio/cells/v4/gateway/dav"
+	_ "github.com/pydio/cells/v4/gateway/dav"
 	_ "github.com/pydio/cells/v4/gateway/websocket/api"
-	//_ "github.com/pydio/cells/v4/gateway/wopi"
+	_ "github.com/pydio/cells/v4/gateway/wopi"
 
 	// IDM
 	_ "github.com/pydio/cells/v4/idm/acl/grpc"

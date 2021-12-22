@@ -23,6 +23,9 @@ package wopi
 
 import (
 	"context"
+	"net/http"
+
+	"github.com/pydio/cells/v4/common/nodes/compose"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/nodes"
@@ -41,13 +44,13 @@ func init() {
 			service.Context(ctx),
 			service.Tag(common.ServiceTagGateway),
 			service.Description("WOPI REST Gateway to tree service"),
-			/*
-				service.RouterDependencies(),
-				service.WithHTTP(func() http.Handler {
-					client = compose.NewClient(compose.UuidComposer(nodes.WithRegistryWatch(), nodes.WithAuditEventsLogging())...)
-					return NewRouter()
-				}),
-			*/
+			//service.RouterDependencies(),
+			service.WithHTTP(func(ctx context.Context, mux *http.ServeMux) error {
+				client = compose.NewClient(compose.UuidComposer(nodes.WithRegistryWatch(), nodes.WithAuditEventsLogging())...)
+				wopiRouter := NewRouter()
+				mux.Handle("/wopi/", wopiRouter)
+				return nil
+			}),
 		)
 	})
 }

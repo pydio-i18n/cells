@@ -23,6 +23,10 @@ package dav
 
 import (
 	"context"
+	"net/http"
+
+	"github.com/pydio/cells/v4/common/nodes/compose"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/nodes"
@@ -41,22 +45,18 @@ func init() {
 			service.Context(ctx),
 			service.Tag(common.ServiceTagGateway),
 			service.Description("DAV Gateway to tree service"),
-			/*
-				service.RouterDependencies(),
-				service.WithHTTP(func() http.Handler {
-					davRouter = compose.PathClient(
-						nodes.WithRegistryWatch(),
-						nodes.WithAuditEventsLogging(),
-						nodes.WithSynchronousCaching(),
-						nodes.WithSynchronousTasks(),
-					)
-					// handler := newHandler(s.Options().Context, davRouter)
-					handler := newHandler(context.TODO(), davRouter)
-					handler = servicecontext.HttpWrapperMeta(handler)
-
-					return handler
-				}),
-			*/
+			service.WithHTTP(func(ctx context.Context, mux *http.ServeMux) error {
+				davRouter = compose.PathClient(
+					nodes.WithRegistryWatch(),
+					nodes.WithAuditEventsLogging(),
+					nodes.WithSynchronousCaching(),
+					nodes.WithSynchronousTasks(),
+				)
+				handler := newHandler(ctx, davRouter)
+				handler = servicecontext.HttpWrapperMeta(handler)
+				mux.Handle("/dav/", handler)
+				return nil
+			}),
 		)
 	})
 }

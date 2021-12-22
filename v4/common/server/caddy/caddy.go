@@ -6,6 +6,8 @@ import (
 	"html/template"
 	"net/http"
 	"net/http/pprof"
+	"os"
+	"path/filepath"
 	"reflect"
 
 	caddy "github.com/caddyserver/caddy/v2"
@@ -92,6 +94,13 @@ func New(ctx context.Context, dir string) (server.Server, error) {
 	srvMUX.HandleFunc("/debug/pprof/trace", pprof.Trace)
 
 	mux.RegisterServerMux(ctx, srvMUX)
+
+	caddyStorePath := filepath.Join(config.ApplicationWorkingDir(), "caddy")
+	_ = os.MkdirAll(caddyStorePath, 0755)
+	if _, e := os.Stat(caddyStorePath); e == nil {
+		caddy.DefaultStorage.Path = caddyStorePath
+		caddy.ConfigAutosavePath = filepath.Join(caddyStorePath, "autosave.json")
+	}
 
 	// Creating temporary caddy file
 	sites, err := config.LoadSites()

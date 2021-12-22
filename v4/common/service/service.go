@@ -3,9 +3,8 @@ package service
 import (
 	"fmt"
 
-	"go.uber.org/zap"
 	"github.com/spf13/viper"
-
+	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"

@@ -27,7 +27,6 @@ import (
 	"context"
 	"path/filepath"
 
-
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"

@@ -24,6 +24,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/pydio/cells/v4/common/service/errors"
+
 	"gocloud.dev/pubsub"
 	"google.golang.org/protobuf/proto"
 
@@ -87,6 +89,9 @@ func MustPublish(ctx context.Context, topic string, message proto.Message, opts 
 func SubscribeCancellable(ctx context.Context, topic string, handler SubscriberHandler, opts ...SubscribeOption) error {
 	unsub, e := std.Subscribe(ctx, topic, handler, opts...)
 	if e != nil {
+		if errors.IsContextCanceled(e) {
+			return nil
+		}
 		return e
 	}
 	go func() {
