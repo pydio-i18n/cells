@@ -154,6 +154,9 @@ func InitDefaults(ctx context.Context) error {
 
 	return std.Retry(ctx, func() error {
 
+		ctx, can := context.WithTimeout(ctx, grpc2.CallTimeoutShort)
+		defer can()
+
 		dc := docstore.NewDocStoreClient(grpc2.NewClientConn(common.ServiceDocStore))
 		_, e := dc.PutDocument(ctx, &docstore.PutDocumentRequest{
 			StoreID:    common.DocStoreIdVersioningPolicies,

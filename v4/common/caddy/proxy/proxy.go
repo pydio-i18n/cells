@@ -1,3 +1,5 @@
+// +build ignore
+
 /*
  * Copyright (c) 2019-2021. Abstrium SAS <team (at) pydio.com>
  * This file is part of Pydio Cells.
@@ -142,43 +144,43 @@ func NewRegistryUpstreams(c caddyfile.Dispenser, host string) ([]proxy.Upstream,
 		}
 
 		/*
-		go func() {
-			w, err := registry.Watch()
-			if err != nil {
-				return
-			}
-			for {
-				res, err := w.Next()
+			go func() {
+				w, err := registry.Watch()
 				if err != nil {
 					return
 				}
+				for {
+					res, err := w.Next()
+					if err != nil {
+						return
+					}
 
-				if res.Service.Name != upstream.name {
-					continue
-				}
+					if res.Service.Name != upstream.name {
+						continue
+					}
 
-				switch res.Action {
-				case "create", "update":
-					for _, node := range res.Service.Nodes {
-						host, err := upstream.newHost(res.Service.Name, res.Service.Version, node)
-						if err != nil {
-							continue
+					switch res.Action {
+					case "create", "update":
+						for _, node := range res.Service.Nodes {
+							host, err := upstream.newHost(res.Service.Name, res.Service.Version, node)
+							if err != nil {
+								continue
+							}
+							upstream.lock.Lock()
+							upstream.hosts[node.Id] = host
+							upstream.lock.Unlock()
 						}
-						upstream.lock.Lock()
-						upstream.hosts[node.Id] = host
-						upstream.lock.Unlock()
-					}
-				case "delete":
-					for _, node := range res.Service.Nodes {
-						upstream.lock.Lock()
-						delete(upstream.hosts, node.Id)
-						upstream.lock.Unlock()
+					case "delete":
+						for _, node := range res.Service.Nodes {
+							upstream.lock.Lock()
+							delete(upstream.hosts, node.Id)
+							upstream.lock.Unlock()
+						}
 					}
 				}
-			}
-		}()
+			}()
 
-		 */
+		*/
 
 		upstreams = append(upstreams, upstream)
 	}
@@ -236,7 +238,6 @@ func (r *registryUpstream) GetFallbackDelay() time.Duration {
 func (r *registryUpstream) GetTimeout() time.Duration {
 	return 0
 }
-
 
 // Stops the upstream from proxying requests to shutdown goroutines cleanly.
 func (r *registryUpstream) Stop() error {

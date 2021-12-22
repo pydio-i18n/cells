@@ -50,7 +50,7 @@ type WebHandler interface {
 	Filter() func(string) string
 }
 
-func getWebMiddlewares() []func(handler http.Handler) http.Handler {
+func getWebMiddlewares(serviceName string) []func(handler http.Handler) http.Handler {
 	wmOnce.Do(func() {
 		wm = append(wm,
 			servicecontext.HttpWrapperMetrics,
@@ -60,7 +60,14 @@ func getWebMiddlewares() []func(handler http.Handler) http.Handler {
 			servicecontext.HttpWrapperMeta,
 		)
 	})
-	return wm
+	// Append dynamic wrapper to append service name to context
+	sw := func(handler http.Handler) http.Handler {
+		return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+			c := servicecontext.WithServiceName(request.Context(), serviceName)
+			handler.ServeHTTP(writer, request.WithContext(c))
+		})
+	}
+	return append(wm, sw)
 }
 
 // WithWeb returns a web handler
@@ -154,10 +161,11 @@ func WithWeb(handler func(ctx context.Context) WebHandler) ServiceOption {
 			wrapped := http.Handler(wc)
 
 			if o.Name != common.ServiceRestNamespace_+common.ServiceInstall {
-				for _, wrap := range getWebMiddlewares() {
+				for _, wrap := range getWebMiddlewares(o.Name) {
 					wrapped = wrap(wrapped)
 				}
 			}
+			// Add context
 
 			//if wrapped, e = NewConfigHTTPHandlerWrapper(wrapped, name); e != nil {
 			//	return e

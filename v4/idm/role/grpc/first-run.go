@@ -25,6 +25,8 @@ import (
 	"fmt"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"
@@ -162,21 +164,25 @@ func InitRoles(ctx context.Context) error {
 		} else {
 			break
 		}
+		rolesAcls := insert.Acls
+		roleName := insert.Role.Label
 		go func() {
-			<-time.After(20 * time.Second)
-			log.Logger(ctx).Info("Trying to insert ACLs now ?")
-			e = std.Retry(ctx, func() error {
+			<-time.After(10 * time.Second)
+			er := std.Retry(ctx, func() error {
 				aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
-				for _, acl := range insert.Acls {
+				for _, acl := range rolesAcls {
 					_, e := aclClient.CreateACL(ctx, &idm.CreateACLRequest{ACL: acl})
 					if e != nil {
 						return e
 					}
 				}
-				log.Logger(ctx).Info(fmt.Sprintf(" - ACLS set for role %s", insert.Role.Label))
 				return nil
-			}, 8*time.Second, 50*time.Second)
-			log.Logger(ctx).Info("Done inserting ACLs")
+			}, 15*time.Second, 3*time.Minute)
+			if er != nil {
+				log.Logger(ctx).Error("Failed inserting ACLs for role "+roleName, zap.Error(er))
+			} else {
+				log.Logger(ctx).Info("Inserted ACLs for role " + roleName)
+			}
 		}()
 	}
 

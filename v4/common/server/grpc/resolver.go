@@ -4,16 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	pb "github.com/pydio/cells/v4/common/proto/registry"
-	"github.com/pydio/cells/v4/common/registry"
-	"google.golang.org/grpc/attributes"
-	"google.golang.org/grpc/resolver"
 	"regexp"
 	"time"
+
+	"google.golang.org/grpc/attributes"
+	"google.golang.org/grpc/resolver"
+
+	pb "github.com/pydio/cells/v4/common/proto/registry"
+	"github.com/pydio/cells/v4/common/registry"
 )
 
 const (
-	defaultPort ="8001"
+	defaultPort = "8001"
 )
 
 var (
@@ -24,7 +26,7 @@ var (
 	regex, _ = regexp.Compile("^([A-z0-9.]*?)(:[0-9]{1,5})?\\/([A-z_]*)$")
 )
 
-func init(){
+func init() {
 	resolver.Register(NewBuilder())
 }
 
@@ -32,13 +34,13 @@ type cellsBuilder struct {
 }
 
 type cellsResolver struct {
-	reg registry.Registry
-	address string
-	cc resolver.ClientConn
-	name string
-	m map[string][]string
-	updatedState chan struct{}
-	updatedStateTimer *time.Timer
+	reg                  registry.Registry
+	address              string
+	cc                   resolver.ClientConn
+	name                 string
+	m                    map[string][]string
+	updatedState         chan struct{}
+	updatedStateTimer    *time.Timer
 	disableServiceConfig bool
 }
 
@@ -52,7 +54,7 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 		return nil, err
 	}
 
-	reg, err  := registry.OpenRegistry(context.Background(), fmt.Sprintf("grpc://%s%s", host, port))
+	reg, err := registry.OpenRegistry(context.Background(), fmt.Sprintf("grpc://%s%s", host, port))
 	if err != nil {
 		return nil, err
 	}
@@ -69,12 +71,12 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 	}
 
 	cr := &cellsResolver{
-		reg: reg,
-		name: name,
-		cc: cc,
-		m: m,
+		reg:                  reg,
+		name:                 name,
+		cc:                   cc,
+		m:                    m,
 		disableServiceConfig: opts.DisableServiceConfig,
-		updatedStateTimer: time.NewTimer(100 * time.Millisecond),
+		updatedStateTimer:    time.NewTimer(100 * time.Millisecond),
 	}
 
 	go cr.updateState()
@@ -110,21 +112,25 @@ func (cr *cellsResolver) updateState() {
 	for {
 		select {
 		case <-cr.updatedStateTimer.C:
-			var addresses []resolver.Address
-			for k, v := range cr.m {
-				addresses = append(addresses, resolver.Address{
-					Addr: k,
-					ServerName: "main",
-					Attributes: attributes.New("services", v),
-				})
-			}
-
-			cr.cc.UpdateState(resolver.State{
-				Addresses: addresses,
-				ServiceConfig: cr.cc.ParseServiceConfig(`{"loadBalancingPolicy": "lb"}`),
-			})
+			cr.sendState()
 		}
 	}
+}
+
+func (cr *cellsResolver) sendState() {
+	var addresses []resolver.Address
+	for k, v := range cr.m {
+		addresses = append(addresses, resolver.Address{
+			Addr:       k,
+			ServerName: "main",
+			Attributes: attributes.New("services", v),
+		})
+	}
+	//fmt.Printf("Update State with %d addresses\n", len(addresses))
+	cr.cc.UpdateState(resolver.State{
+		Addresses:     addresses,
+		ServiceConfig: cr.cc.ParseServiceConfig(`{"loadBalancingPolicy": "lb"}`),
+	})
 }
 
 func (b *cellsBuilder) Scheme() string {

@@ -21,9 +21,10 @@
 package auth
 
 import (
+	"bufio"
 	"context"
 	"fmt"
-	"io"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -43,6 +44,7 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/install"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 var (
@@ -50,6 +52,9 @@ var (
 	once = &sync.Once{}
 
 	syncLock = &sync.Mutex{}
+
+	logrusLogger *logrus.Logger
+	logrusOnce   = &sync.Once{}
 
 	onRegistryInits []func()
 )
@@ -60,20 +65,6 @@ func InitRegistry(dbServiceName string) (e error) {
 	logger := log.Logger(logCtx)
 
 	once.Do(func() {
-		/*
-			testL := logrus.New()
-			testL.SetOutput(io.Discard)
-			lx := logrusx.New("test", "1", logrusx.UseLogger(testL))
-			cfg := defaultConf.GetProvider()
-			dbDriver, dbDSN := config.GetDatabase(dbServiceName)
-			_ = cfg.Set("dsn", fmt.Sprintf("%s://%s", dbDriver, dbDSN))
-			reg, e = driver.NewRegistryFromDSN(context.Background(), cfg, lx)
-			if e != nil {
-				logger.Error("Cannot init registryFromDSN", zap.Error(e))
-				return
-			}
-			p := reg.WithConfig(defaultConf.GetProvider()).Persister()
-		*/
 		reg, e = createSqlRegistryForConf(dbServiceName, defaultConf)
 		if e != nil {
 			logger.Error("Cannot init registryFromDSN", zap.Error(e))
@@ -131,10 +122,52 @@ func OnRegistryInit(f func()) {
 	onRegistryInits = append(onRegistryInits, f)
 }
 
+func getLogrusLogger(serviceName string) *logrus.Logger {
+	logrusOnce.Do(func() {
+		logCtx := servicecontext.WithServiceName(context.Background(), serviceName)
+		r, w, _ := os.Pipe()
+		go func() {
+			scanner := bufio.NewScanner(r)
+			for scanner.Scan() {
+				line := scanner.Text()
+				var logged map[string]interface{}
+				level := "info"
+				message := line
+				if e := json.Unmarshal([]byte(line), &logged); e == nil {
+					if l, o := logged["level"]; o {
+						level = l.(string)
+					}
+					if m, o := logged["msg"]; o {
+						message = m.(string)
+					}
+				}
+				switch level {
+				case "debug":
+					log.Logger(logCtx).Debug(message)
+				case "warn":
+					log.Logger(logCtx).Warn(message)
+				case "info":
+					log.Logger(logCtx).Info(message)
+				default:
+					log.Logger(logCtx).Info(message)
+				}
+			}
+		}()
+		logrusLogger = logrus.New()
+		logrusLogger.SetOutput(w)
+	})
+	return logrusLogger
+}
+
 func createSqlRegistryForConf(serviceName string, conf ConfigurationProvider) (driver.Registry, error) {
-	testL := logrus.New()
-	testL.SetOutput(io.Discard)
-	lx := logrusx.New("test", "1", logrusx.UseLogger(testL))
+
+	lx := logrusx.New(
+		serviceName,
+		"1",
+		logrusx.UseLogger(getLogrusLogger(serviceName)),
+		logrusx.ForceLevel(logrus.DebugLevel),
+		logrusx.ForceFormat("json"),
+	)
 	cfg := conf.GetProvider()
 	dbDriver, dbDSN := config.GetDatabase(serviceName)
 	_ = cfg.Set("dsn", fmt.Sprintf("%s://%s", dbDriver, dbDSN))

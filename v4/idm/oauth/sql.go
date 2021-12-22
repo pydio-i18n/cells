@@ -29,8 +29,10 @@ import (
 
 	migrate "github.com/rubenv/sql-migrate"
 
+	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/auth"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/common/utils/configx"
 	json "github.com/pydio/cells/v4/common/utils/jsonx"
@@ -76,16 +78,17 @@ func (s *sqlImpl) Init(options configx.Values) error {
 	}
 
 	var isRetry bool
-	err := std.Retry(context.Background(), func() error {
+	sC := servicecontext.WithServiceName(context.Background(), common.ServiceGrpcNamespace_+common.ServiceOAuth)
+	err := std.Retry(sC, func() error {
 		_, err := sql.ExecMigration(s.DB(), s.Driver(), migrations, migrate.Up, "idm_oauth_")
 		if err != nil {
-			log.Logger(context.Background()).Warn("Could not apply idm_oauth_ migration, maybe because of concurrent access, retrying...")
+			log.Logger(sC).Warn("Could not apply idm_oauth_ migration, maybe because of concurrent access, retrying...")
 			isRetry = true
 		} else if isRetry {
-			log.Logger(context.Background()).Warn("Migration now applied successfully")
+			log.Logger(sC).Info("Migration now applied successfully")
 		}
 		return err
-	}, 100*time.Millisecond, 250*time.Millisecond)
+	}, 1*time.Second, 10*time.Second)
 	if err != nil {
 		return err
 	}

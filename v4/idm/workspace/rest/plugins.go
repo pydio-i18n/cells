@@ -35,14 +35,12 @@ func init() {
 			service.Context(ctx),
 			service.Tag(common.ServiceTagIdm),
 			service.Description("RESTful Gateway to workspaces service"),
-			/*
-				service.Migrations([]*service.Migration{
-					{
-						TargetVersion: service.FirstRun(),
-						Up:            FirstRun,
-					},
-				}),
-			*/
+			service.Migrations([]*service.Migration{
+				{
+					TargetVersion: service.FirstRun(),
+					Up:            FirstRun,
+				},
+			}),
 			service.WithWeb(func(c context.Context) service.WebHandler {
 				return NewWorkspaceHandler()
 			}),

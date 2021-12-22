@@ -22,14 +22,16 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"net/url"
 	"time"
 
-	"github.com/pydio/cells/v4/common/registry"
+	"google.golang.org/grpc"
 
 	mregistry "github.com/micro/micro/v3/service/registry"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
-	"google.golang.org/grpc"
+	"github.com/pydio/cells/v4/common/registry"
+	"github.com/pydio/cells/v4/common/utils/std"
 )
 
 var scheme = "grpc"
@@ -44,10 +46,27 @@ func init() {
 }
 
 func (o *URLOpener) OpenURL(ctx context.Context, u *url.URL) (registry.Registry, error) {
-	conn, err := grpc.Dial(u.Hostname()+":"+u.Port(), grpc.WithInsecure(), grpc.WithBlock())
+	// We use WithBlock, shall we timeout and retry here ?
+	var conn *grpc.ClientConn
+	err := std.Retry(ctx, func() error {
+		c, can := context.WithTimeout(ctx, 1*time.Minute)
+		defer can()
+		var e error
+		conn, e = grpc.DialContext(c, u.Hostname()+":"+u.Port(), grpc.WithInsecure(), grpc.WithBlock())
+		if e != nil {
+			fmt.Println("Cannot open registry yet, will retry")
+		}
+		return e
+	}, 30*time.Second, 5*time.Minute)
 	if err != nil {
 		return nil, err
 	}
+	/*
+		conn, err := grpc.Dial(u.Hostname()+":"+u.Port(), grpc.WithInsecure(), grpc.WithBlock())
+		if err != nil {
+			return nil, err
+		}
+	*/
 
 	return registry.NewRegistry(NewRegistry(
 		WithConn(conn),

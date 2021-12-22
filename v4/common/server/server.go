@@ -3,9 +3,11 @@ package server
 import (
 	"context"
 	"fmt"
-	servercontext "github.com/pydio/cells/v4/common/server/context"
-	"golang.org/x/sync/errgroup"
 	"os"
+
+	"golang.org/x/sync/errgroup"
+
+	servercontext "github.com/pydio/cells/v4/common/server/context"
 )
 
 type Server interface {
@@ -131,13 +133,18 @@ func (s *server) RegisterAfterServe(f func() error) {
 }
 
 func (s *server) AfterServe() error {
-	var g errgroup.Group
+	// DO NOT USE ERRGROUP, OR ANY FAILING MIGRATION
+	// WILL STOP THE Serve PROCESS
+	//var g errgroup.Group
 
 	for _, h := range s.opts.AfterServe {
-		g.Go(h)
+		//g.Go(h)
+		if er := h(); er != nil {
+			fmt.Println("There was an error while applying an AfterServe", er)
+		}
 	}
 
-	return g.Wait()
+	return nil //g.Wait()
 }
 
 func (s *server) RegisterBeforeStop(f func() error) {

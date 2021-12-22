@@ -114,10 +114,11 @@ func (s *service) Start() (er error) {
 		}
 	}
 
-	//log.Logger(s.opts.Context).Info("update service version")
-	//if er := UpdateServiceVersion(s.opts); er != nil {
-	//	return er
-	//}
+	if bs, ok := s.opts.Server.(server.WrappedServer); ok {
+		bs.RegisterAfterServe(func() error {
+			return UpdateServiceVersion(s.opts)
+		})
+	}
 
 	log.Logger(s.opts.Context).Info("started")
 

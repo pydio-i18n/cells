@@ -27,6 +27,7 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/service"
+	"github.com/pydio/cells/v4/idm/share"
 )
 
 func init() {
@@ -43,16 +44,14 @@ func init() {
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceWorkspace, []string{}),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceMeta, []string{}),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceDocStore, []string{}),
-			/*
-				service.Migrations([]*service.Migration{
-					{
-						TargetVersion: service.ValidVersion("1.6.2"),
-						Up: func(ctx context.Context) error {
-							return share.ClearLostHiddenUsers(ctx)
-						},
+			service.Migrations([]*service.Migration{
+				{
+					TargetVersion: service.ValidVersion("1.6.2"),
+					Up: func(ctx context.Context) error {
+						return share.ClearLostHiddenUsers(ctx)
 					},
-				}),
-			*/
+				},
+			}),
 			service.WithWeb(func(c context.Context) service.WebHandler {
 				return NewSharesHandler()
 			}),
