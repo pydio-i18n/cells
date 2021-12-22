@@ -132,7 +132,7 @@ func (a *UploadLimitFilter) getUploadLimits(ctx context.Context) (limit int64, e
 		}
 	}
 
-	if i, ok := nodes.GetBranchInfo(ctx, "in"); ok {
+	if i, ok := nodes.GetBranchInfo(ctx, "in"); ok && i.Workspace != nil {
 		acl, e := permissions.AccessListFromContextClaims(ctx)
 		if e != nil {
 			err = e

@@ -677,7 +677,7 @@ var file_cellsapi_rest_proto_rawDesc = []byte{
 	0x61, 0x74, 0x65, 0x2e, 0x41, 0x70, 0x70, 0x6c, 0x79, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52,
 	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x22, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1c, 0x32,
 	0x17, 0x2f, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x2f, 0x7b, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74,
-	0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x7d, 0x3a, 0x01, 0x2a, 0x32, 0xda, 0x06, 0x0a, 0x0f,
+	0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x7d, 0x3a, 0x01, 0x2a, 0x32, 0xd4, 0x07, 0x0a, 0x0f,
 	0x46, 0x72, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x64, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12,
 	0x58, 0x0a, 0x0a, 0x46, 0x72, 0x6f, 0x6e, 0x74, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x17, 0x2e,
 	0x72, 0x65, 0x73, 0x74, 0x2e, 0x46, 0x72, 0x6f, 0x6e, 0x74, 0x53, 0x74, 0x61, 0x74, 0x65, 0x52,
@@ -725,26 +725,34 @@ var file_cellsapi_rest_proto_rawDesc = []byte{
 	0x22, 0x2e, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x28, 0x12, 0x26, 0x2f, 0x66, 0x72, 0x6f, 0x6e, 0x74,
 	0x65, 0x6e, 0x64, 0x2f, 0x62, 0x69, 0x6e, 0x61, 0x72, 0x69, 0x65, 0x73, 0x2f, 0x7b, 0x42, 0x69,
 	0x6e, 0x61, 0x72, 0x79, 0x54, 0x79, 0x70, 0x65, 0x7d, 0x2f, 0x7b, 0x55, 0x75, 0x69, 0x64, 0x7d,
-	0x12, 0x66, 0x0a, 0x0c, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x4d, 0x65, 0x6e, 0x75,
-	0x12, 0x19, 0x2e, 0x72, 0x65, 0x73, 0x74, 0x2e, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73,
-	0x4d, 0x65, 0x6e, 0x75, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1a, 0x2e, 0x72, 0x65,
-	0x73, 0x74, 0x2e, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x4d, 0x65, 0x6e, 0x75, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1f, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x19, 0x12,
-	0x17, 0x2f, 0x66, 0x72, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x64, 0x2f, 0x73, 0x65, 0x74, 0x74, 0x69,
-	0x6e, 0x67, 0x73, 0x2d, 0x6d, 0x65, 0x6e, 0x75, 0x42, 0xc5, 0x01, 0x5a, 0x2b, 0x67, 0x69, 0x74,
-	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x70, 0x79, 0x64, 0x69, 0x6f, 0x2f, 0x63, 0x65,
-	0x6c, 0x6c, 0x73, 0x2f, 0x76, 0x34, 0x2f, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2f, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x2f, 0x72, 0x65, 0x73, 0x74, 0x92, 0x41, 0x94, 0x01, 0x12, 0x37, 0x0a, 0x14,
-	0x50, 0x79, 0x64, 0x69, 0x6f, 0x20, 0x43, 0x65, 0x6c, 0x6c, 0x73, 0x20, 0x52, 0x65, 0x73, 0x74,
-	0x20, 0x41, 0x50, 0x49, 0x22, 0x1a, 0x0a, 0x05, 0x50, 0x79, 0x64, 0x69, 0x6f, 0x12, 0x11, 0x68,
-	0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x70, 0x79, 0x64, 0x69, 0x6f, 0x2e, 0x63, 0x6f, 0x6d,
-	0x32, 0x03, 0x34, 0x2e, 0x30, 0x2a, 0x03, 0x01, 0x02, 0x04, 0x32, 0x10, 0x61, 0x70, 0x70, 0x6c,
-	0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2f, 0x6a, 0x73, 0x6f, 0x6e, 0x3a, 0x10, 0x61, 0x70,
-	0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2f, 0x6a, 0x73, 0x6f, 0x6e, 0x72, 0x30,
-	0x0a, 0x1b, 0x4d, 0x6f, 0x72, 0x65, 0x20, 0x61, 0x62, 0x6f, 0x75, 0x74, 0x20, 0x50, 0x79, 0x64,
-	0x69, 0x6f, 0x20, 0x43, 0x65, 0x6c, 0x6c, 0x73, 0x20, 0x41, 0x70, 0x69, 0x73, 0x12, 0x11, 0x68,
-	0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x70, 0x79, 0x64, 0x69, 0x6f, 0x2e, 0x63, 0x6f, 0x6d,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x12, 0x78, 0x0a, 0x0e, 0x46, 0x72, 0x6f, 0x6e, 0x74, 0x50, 0x75, 0x74, 0x42, 0x69, 0x6e, 0x61,
+	0x72, 0x79, 0x12, 0x18, 0x2e, 0x72, 0x65, 0x73, 0x74, 0x2e, 0x46, 0x72, 0x6f, 0x6e, 0x74, 0x42,
+	0x69, 0x6e, 0x61, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x19, 0x2e, 0x72,
+	0x65, 0x73, 0x74, 0x2e, 0x46, 0x72, 0x6f, 0x6e, 0x74, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x31, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x2b, 0x22,
+	0x26, 0x2f, 0x66, 0x72, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x64, 0x2f, 0x62, 0x69, 0x6e, 0x61, 0x72,
+	0x69, 0x65, 0x73, 0x2f, 0x7b, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x54, 0x79, 0x70, 0x65, 0x7d,
+	0x2f, 0x7b, 0x55, 0x75, 0x69, 0x64, 0x7d, 0x3a, 0x01, 0x2a, 0x12, 0x66, 0x0a, 0x0c, 0x53, 0x65,
+	0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x4d, 0x65, 0x6e, 0x75, 0x12, 0x19, 0x2e, 0x72, 0x65, 0x73,
+	0x74, 0x2e, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x4d, 0x65, 0x6e, 0x75, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1a, 0x2e, 0x72, 0x65, 0x73, 0x74, 0x2e, 0x53, 0x65, 0x74,
+	0x74, 0x69, 0x6e, 0x67, 0x73, 0x4d, 0x65, 0x6e, 0x75, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x1f, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x19, 0x12, 0x17, 0x2f, 0x66, 0x72, 0x6f, 0x6e,
+	0x74, 0x65, 0x6e, 0x64, 0x2f, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x2d, 0x6d, 0x65,
+	0x6e, 0x75, 0x42, 0xc5, 0x01, 0x5a, 0x2b, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x70, 0x79, 0x64, 0x69, 0x6f, 0x2f, 0x63, 0x65, 0x6c, 0x6c, 0x73, 0x2f, 0x76, 0x34,
+	0x2f, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x72, 0x65,
+	0x73, 0x74, 0x92, 0x41, 0x94, 0x01, 0x12, 0x37, 0x0a, 0x14, 0x50, 0x79, 0x64, 0x69, 0x6f, 0x20,
+	0x43, 0x65, 0x6c, 0x6c, 0x73, 0x20, 0x52, 0x65, 0x73, 0x74, 0x20, 0x41, 0x50, 0x49, 0x22, 0x1a,
+	0x0a, 0x05, 0x50, 0x79, 0x64, 0x69, 0x6f, 0x12, 0x11, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f,
+	0x2f, 0x70, 0x79, 0x64, 0x69, 0x6f, 0x2e, 0x63, 0x6f, 0x6d, 0x32, 0x03, 0x34, 0x2e, 0x30, 0x2a,
+	0x03, 0x01, 0x02, 0x04, 0x32, 0x10, 0x61, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x2f, 0x6a, 0x73, 0x6f, 0x6e, 0x3a, 0x10, 0x61, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x2f, 0x6a, 0x73, 0x6f, 0x6e, 0x72, 0x30, 0x0a, 0x1b, 0x4d, 0x6f, 0x72, 0x65,
+	0x20, 0x61, 0x62, 0x6f, 0x75, 0x74, 0x20, 0x50, 0x79, 0x64, 0x69, 0x6f, 0x20, 0x43, 0x65, 0x6c,
+	0x6c, 0x73, 0x20, 0x41, 0x70, 0x69, 0x73, 0x12, 0x11, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f,
+	0x2f, 0x70, 0x79, 0x64, 0x69, 0x6f, 0x2e, 0x63, 0x6f, 0x6d, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var file_cellsapi_rest_proto_goTypes = []interface{}{
@@ -1019,113 +1027,115 @@ var file_cellsapi_rest_proto_depIdxs = []int32{
 	86,  // 100: rest.FrontendService.FrontSession:input_type -> rest.FrontSessionRequest
 	87,  // 101: rest.FrontendService.FrontEnrollAuth:input_type -> rest.FrontEnrollAuthRequest
 	88,  // 102: rest.FrontendService.FrontServeBinary:input_type -> rest.FrontBinaryRequest
-	89,  // 103: rest.FrontendService.SettingsMenu:input_type -> rest.SettingsMenuRequest
-	0,   // 104: rest.ConfigService.PutConfig:output_type -> rest.Configuration
-	0,   // 105: rest.ConfigService.GetConfig:output_type -> rest.Configuration
-	1,   // 106: rest.ConfigService.PutDataSource:output_type -> object.DataSource
-	1,   // 107: rest.ConfigService.GetDataSource:output_type -> object.DataSource
-	90,  // 108: rest.ConfigService.DeleteDataSource:output_type -> rest.DeleteDataSourceResponse
-	91,  // 109: rest.ConfigService.ListDataSources:output_type -> rest.DataSourceCollection
-	92,  // 110: rest.ConfigService.ListVersioningPolicies:output_type -> rest.VersioningPolicyCollection
-	4,   // 111: rest.ConfigService.GetVersioningPolicy:output_type -> tree.VersioningPolicy
-	93,  // 112: rest.ConfigService.ListVirtualNodes:output_type -> rest.NodesCollection
-	94,  // 113: rest.ConfigService.ListServices:output_type -> rest.ServiceCollection
-	95,  // 114: rest.ConfigService.ControlService:output_type -> ctl.Service
-	96,  // 115: rest.ConfigService.ListPeersAddresses:output_type -> rest.ListPeersAddressesResponse
-	93,  // 116: rest.ConfigService.ListPeerFolders:output_type -> rest.NodesCollection
-	97,  // 117: rest.ConfigService.CreatePeerFolder:output_type -> rest.CreatePeerFolderResponse
-	93,  // 118: rest.ConfigService.ListStorageBuckets:output_type -> rest.NodesCollection
-	98,  // 119: rest.ConfigService.ListProcesses:output_type -> rest.ListProcessesResponse
-	99,  // 120: rest.ConfigService.ListEncryptionKeys:output_type -> encryption.AdminListKeysResponse
-	100, // 121: rest.ConfigService.CreateEncryptionKey:output_type -> encryption.AdminCreateKeyResponse
-	101, // 122: rest.ConfigService.DeleteEncryptionKey:output_type -> encryption.AdminDeleteKeyResponse
-	102, // 123: rest.ConfigService.ExportEncryptionKey:output_type -> encryption.AdminExportKeyResponse
-	103, // 124: rest.ConfigService.ImportEncryptionKey:output_type -> encryption.AdminImportKeyResponse
-	104, // 125: rest.ConfigService.EndpointsDiscovery:output_type -> rest.DiscoveryResponse
-	105, // 126: rest.ConfigService.OpenApiDiscovery:output_type -> rest.OpenApiResponse
-	104, // 127: rest.ConfigService.ConfigFormsDiscovery:output_type -> rest.DiscoveryResponse
-	106, // 128: rest.ConfigService.SchedulerActionsDiscovery:output_type -> rest.SchedulerActionsResponse
-	107, // 129: rest.ConfigService.SchedulerActionFormDiscovery:output_type -> rest.SchedulerActionFormResponse
-	108, // 130: rest.ConfigService.ListSites:output_type -> rest.ListSitesResponse
-	23,  // 131: rest.RoleService.SetRole:output_type -> idm.Role
-	23,  // 132: rest.RoleService.DeleteRole:output_type -> idm.Role
-	23,  // 133: rest.RoleService.GetRole:output_type -> idm.Role
-	109, // 134: rest.RoleService.SearchRoles:output_type -> rest.RolesCollection
-	25,  // 135: rest.UserService.PutUser:output_type -> idm.User
-	110, // 136: rest.UserService.DeleteUser:output_type -> rest.DeleteResponse
-	25,  // 137: rest.UserService.GetUser:output_type -> idm.User
-	111, // 138: rest.UserService.SearchUsers:output_type -> rest.UsersCollection
-	25,  // 139: rest.UserService.PutRoles:output_type -> idm.User
-	27,  // 140: rest.ACLService.PutAcl:output_type -> idm.ACL
-	110, // 141: rest.ACLService.DeleteAcl:output_type -> rest.DeleteResponse
-	112, // 142: rest.ACLService.SearchAcls:output_type -> rest.ACLCollection
-	113, // 143: rest.PolicyService.ListPolicies:output_type -> idm.ListPolicyGroupsResponse
-	30,  // 144: rest.WorkspaceService.PutWorkspace:output_type -> idm.Workspace
-	110, // 145: rest.WorkspaceService.DeleteWorkspace:output_type -> rest.DeleteResponse
-	114, // 146: rest.WorkspaceService.SearchWorkspaces:output_type -> rest.WorkspaceCollection
-	115, // 147: rest.ActivityService.Stream:output_type -> activity.Object
-	33,  // 148: rest.ActivityService.Subscribe:output_type -> activity.Subscription
-	116, // 149: rest.ActivityService.SearchSubscriptions:output_type -> rest.SubscriptionsCollection
-	117, // 150: rest.LogService.Syslog:output_type -> rest.LogMessageCollection
-	118, // 151: rest.TokenService.Revoke:output_type -> rest.RevokeResponse
-	119, // 152: rest.TokenService.ResetPasswordToken:output_type -> rest.ResetPasswordTokenResponse
-	120, // 153: rest.TokenService.ResetPassword:output_type -> rest.ResetPasswordResponse
-	121, // 154: rest.TokenService.GenerateDocumentAccessToken:output_type -> rest.DocumentAccessTokenResponse
-	122, // 155: rest.MailerService.Send:output_type -> mailer.SendMailResponse
-	123, // 156: rest.SearchService.Nodes:output_type -> rest.SearchResults
-	124, // 157: rest.TreeService.BulkStatNodes:output_type -> rest.BulkMetaResponse
-	93,  // 158: rest.TreeService.CreateNodes:output_type -> rest.NodesCollection
-	125, // 159: rest.TreeService.HeadNode:output_type -> rest.HeadNodeResponse
-	126, // 160: rest.TreeService.DeleteNodes:output_type -> rest.DeleteNodesResponse
-	127, // 161: rest.TreeService.RestoreNodes:output_type -> rest.RestoreNodesResponse
-	128, // 162: rest.TreeService.CreateSelection:output_type -> rest.CreateSelectionResponse
-	129, // 163: rest.TemplatesService.ListTemplates:output_type -> rest.ListTemplatesResponse
-	130, // 164: rest.MetaService.GetMeta:output_type -> tree.Node
-	130, // 165: rest.MetaService.SetMeta:output_type -> tree.Node
-	130, // 166: rest.MetaService.DeleteMeta:output_type -> tree.Node
-	124, // 167: rest.MetaService.GetBulkMeta:output_type -> rest.BulkMetaResponse
-	131, // 168: rest.UserMetaService.UpdateUserMeta:output_type -> idm.UpdateUserMetaResponse
-	132, // 169: rest.UserMetaService.SearchUserMeta:output_type -> rest.UserMetaCollection
-	124, // 170: rest.UserMetaService.UserBookmarks:output_type -> rest.BulkMetaResponse
-	133, // 171: rest.UserMetaService.UpdateUserMetaNamespace:output_type -> idm.UpdateUserMetaNamespaceResponse
-	134, // 172: rest.UserMetaService.ListUserMetaNamespace:output_type -> rest.UserMetaNamespaceCollection
-	135, // 173: rest.UserMetaService.ListUserMetaTags:output_type -> rest.ListUserMetaTagsResponse
-	136, // 174: rest.UserMetaService.PutUserMetaTag:output_type -> rest.PutUserMetaTagResponse
-	137, // 175: rest.UserMetaService.DeleteUserMetaTags:output_type -> rest.DeleteUserMetaTagsResponse
-	138, // 176: rest.JobsService.UserCreateJob:output_type -> rest.UserJobResponse
-	139, // 177: rest.JobsService.UserListJobs:output_type -> rest.UserJobsCollection
-	140, // 178: rest.JobsService.UserControlJob:output_type -> jobs.CtrlCommandResponse
-	141, // 179: rest.JobsService.UserDeleteTasks:output_type -> jobs.DeleteTasksResponse
-	117, // 180: rest.JobsService.ListTasksLogs:output_type -> rest.LogMessageCollection
-	93,  // 181: rest.AdminTreeService.ListAdminTree:output_type -> rest.NodesCollection
-	142, // 182: rest.AdminTreeService.StatAdminTree:output_type -> tree.ReadNodeResponse
-	143, // 183: rest.GraphService.UserState:output_type -> rest.UserStateResponse
-	144, // 184: rest.GraphService.Relation:output_type -> rest.RelationResponse
-	145, // 185: rest.ShareService.PutCell:output_type -> rest.Cell
-	145, // 186: rest.ShareService.GetCell:output_type -> rest.Cell
-	146, // 187: rest.ShareService.DeleteCell:output_type -> rest.DeleteCellResponse
-	147, // 188: rest.ShareService.PutShareLink:output_type -> rest.ShareLink
-	147, // 189: rest.ShareService.GetShareLink:output_type -> rest.ShareLink
-	148, // 190: rest.ShareService.DeleteShareLink:output_type -> rest.DeleteShareLinkResponse
-	149, // 191: rest.ShareService.ListSharedResources:output_type -> rest.ListSharedResourcesResponse
-	150, // 192: rest.ShareService.UpdateSharePolicies:output_type -> rest.UpdateSharePoliciesResponse
-	151, // 193: rest.InstallService.GetInstall:output_type -> install.GetDefaultsResponse
-	152, // 194: rest.InstallService.PostInstall:output_type -> install.InstallResponse
-	153, // 195: rest.InstallService.PerformInstallCheck:output_type -> install.PerformCheckResponse
-	154, // 196: rest.InstallService.GetAgreement:output_type -> install.GetAgreementResponse
-	155, // 197: rest.InstallService.InstallEvents:output_type -> install.InstallEventsResponse
-	156, // 198: rest.UpdateService.UpdateRequired:output_type -> update.UpdateResponse
-	157, // 199: rest.UpdateService.ApplyUpdate:output_type -> update.ApplyUpdateResponse
-	158, // 200: rest.FrontendService.FrontState:output_type -> rest.FrontStateResponse
-	159, // 201: rest.FrontendService.FrontBootConf:output_type -> rest.FrontBootConfResponse
-	160, // 202: rest.FrontendService.FrontMessages:output_type -> rest.FrontMessagesResponse
-	161, // 203: rest.FrontendService.FrontPlugins:output_type -> rest.FrontPluginsResponse
-	162, // 204: rest.FrontendService.FrontSession:output_type -> rest.FrontSessionResponse
-	163, // 205: rest.FrontendService.FrontEnrollAuth:output_type -> rest.FrontEnrollAuthResponse
-	164, // 206: rest.FrontendService.FrontServeBinary:output_type -> rest.FrontBinaryResponse
-	165, // 207: rest.FrontendService.SettingsMenu:output_type -> rest.SettingsMenuResponse
-	104, // [104:208] is the sub-list for method output_type
-	0,   // [0:104] is the sub-list for method input_type
+	88,  // 103: rest.FrontendService.FrontPutBinary:input_type -> rest.FrontBinaryRequest
+	89,  // 104: rest.FrontendService.SettingsMenu:input_type -> rest.SettingsMenuRequest
+	0,   // 105: rest.ConfigService.PutConfig:output_type -> rest.Configuration
+	0,   // 106: rest.ConfigService.GetConfig:output_type -> rest.Configuration
+	1,   // 107: rest.ConfigService.PutDataSource:output_type -> object.DataSource
+	1,   // 108: rest.ConfigService.GetDataSource:output_type -> object.DataSource
+	90,  // 109: rest.ConfigService.DeleteDataSource:output_type -> rest.DeleteDataSourceResponse
+	91,  // 110: rest.ConfigService.ListDataSources:output_type -> rest.DataSourceCollection
+	92,  // 111: rest.ConfigService.ListVersioningPolicies:output_type -> rest.VersioningPolicyCollection
+	4,   // 112: rest.ConfigService.GetVersioningPolicy:output_type -> tree.VersioningPolicy
+	93,  // 113: rest.ConfigService.ListVirtualNodes:output_type -> rest.NodesCollection
+	94,  // 114: rest.ConfigService.ListServices:output_type -> rest.ServiceCollection
+	95,  // 115: rest.ConfigService.ControlService:output_type -> ctl.Service
+	96,  // 116: rest.ConfigService.ListPeersAddresses:output_type -> rest.ListPeersAddressesResponse
+	93,  // 117: rest.ConfigService.ListPeerFolders:output_type -> rest.NodesCollection
+	97,  // 118: rest.ConfigService.CreatePeerFolder:output_type -> rest.CreatePeerFolderResponse
+	93,  // 119: rest.ConfigService.ListStorageBuckets:output_type -> rest.NodesCollection
+	98,  // 120: rest.ConfigService.ListProcesses:output_type -> rest.ListProcessesResponse
+	99,  // 121: rest.ConfigService.ListEncryptionKeys:output_type -> encryption.AdminListKeysResponse
+	100, // 122: rest.ConfigService.CreateEncryptionKey:output_type -> encryption.AdminCreateKeyResponse
+	101, // 123: rest.ConfigService.DeleteEncryptionKey:output_type -> encryption.AdminDeleteKeyResponse
+	102, // 124: rest.ConfigService.ExportEncryptionKey:output_type -> encryption.AdminExportKeyResponse
+	103, // 125: rest.ConfigService.ImportEncryptionKey:output_type -> encryption.AdminImportKeyResponse
+	104, // 126: rest.ConfigService.EndpointsDiscovery:output_type -> rest.DiscoveryResponse
+	105, // 127: rest.ConfigService.OpenApiDiscovery:output_type -> rest.OpenApiResponse
+	104, // 128: rest.ConfigService.ConfigFormsDiscovery:output_type -> rest.DiscoveryResponse
+	106, // 129: rest.ConfigService.SchedulerActionsDiscovery:output_type -> rest.SchedulerActionsResponse
+	107, // 130: rest.ConfigService.SchedulerActionFormDiscovery:output_type -> rest.SchedulerActionFormResponse
+	108, // 131: rest.ConfigService.ListSites:output_type -> rest.ListSitesResponse
+	23,  // 132: rest.RoleService.SetRole:output_type -> idm.Role
+	23,  // 133: rest.RoleService.DeleteRole:output_type -> idm.Role
+	23,  // 134: rest.RoleService.GetRole:output_type -> idm.Role
+	109, // 135: rest.RoleService.SearchRoles:output_type -> rest.RolesCollection
+	25,  // 136: rest.UserService.PutUser:output_type -> idm.User
+	110, // 137: rest.UserService.DeleteUser:output_type -> rest.DeleteResponse
+	25,  // 138: rest.UserService.GetUser:output_type -> idm.User
+	111, // 139: rest.UserService.SearchUsers:output_type -> rest.UsersCollection
+	25,  // 140: rest.UserService.PutRoles:output_type -> idm.User
+	27,  // 141: rest.ACLService.PutAcl:output_type -> idm.ACL
+	110, // 142: rest.ACLService.DeleteAcl:output_type -> rest.DeleteResponse
+	112, // 143: rest.ACLService.SearchAcls:output_type -> rest.ACLCollection
+	113, // 144: rest.PolicyService.ListPolicies:output_type -> idm.ListPolicyGroupsResponse
+	30,  // 145: rest.WorkspaceService.PutWorkspace:output_type -> idm.Workspace
+	110, // 146: rest.WorkspaceService.DeleteWorkspace:output_type -> rest.DeleteResponse
+	114, // 147: rest.WorkspaceService.SearchWorkspaces:output_type -> rest.WorkspaceCollection
+	115, // 148: rest.ActivityService.Stream:output_type -> activity.Object
+	33,  // 149: rest.ActivityService.Subscribe:output_type -> activity.Subscription
+	116, // 150: rest.ActivityService.SearchSubscriptions:output_type -> rest.SubscriptionsCollection
+	117, // 151: rest.LogService.Syslog:output_type -> rest.LogMessageCollection
+	118, // 152: rest.TokenService.Revoke:output_type -> rest.RevokeResponse
+	119, // 153: rest.TokenService.ResetPasswordToken:output_type -> rest.ResetPasswordTokenResponse
+	120, // 154: rest.TokenService.ResetPassword:output_type -> rest.ResetPasswordResponse
+	121, // 155: rest.TokenService.GenerateDocumentAccessToken:output_type -> rest.DocumentAccessTokenResponse
+	122, // 156: rest.MailerService.Send:output_type -> mailer.SendMailResponse
+	123, // 157: rest.SearchService.Nodes:output_type -> rest.SearchResults
+	124, // 158: rest.TreeService.BulkStatNodes:output_type -> rest.BulkMetaResponse
+	93,  // 159: rest.TreeService.CreateNodes:output_type -> rest.NodesCollection
+	125, // 160: rest.TreeService.HeadNode:output_type -> rest.HeadNodeResponse
+	126, // 161: rest.TreeService.DeleteNodes:output_type -> rest.DeleteNodesResponse
+	127, // 162: rest.TreeService.RestoreNodes:output_type -> rest.RestoreNodesResponse
+	128, // 163: rest.TreeService.CreateSelection:output_type -> rest.CreateSelectionResponse
+	129, // 164: rest.TemplatesService.ListTemplates:output_type -> rest.ListTemplatesResponse
+	130, // 165: rest.MetaService.GetMeta:output_type -> tree.Node
+	130, // 166: rest.MetaService.SetMeta:output_type -> tree.Node
+	130, // 167: rest.MetaService.DeleteMeta:output_type -> tree.Node
+	124, // 168: rest.MetaService.GetBulkMeta:output_type -> rest.BulkMetaResponse
+	131, // 169: rest.UserMetaService.UpdateUserMeta:output_type -> idm.UpdateUserMetaResponse
+	132, // 170: rest.UserMetaService.SearchUserMeta:output_type -> rest.UserMetaCollection
+	124, // 171: rest.UserMetaService.UserBookmarks:output_type -> rest.BulkMetaResponse
+	133, // 172: rest.UserMetaService.UpdateUserMetaNamespace:output_type -> idm.UpdateUserMetaNamespaceResponse
+	134, // 173: rest.UserMetaService.ListUserMetaNamespace:output_type -> rest.UserMetaNamespaceCollection
+	135, // 174: rest.UserMetaService.ListUserMetaTags:output_type -> rest.ListUserMetaTagsResponse
+	136, // 175: rest.UserMetaService.PutUserMetaTag:output_type -> rest.PutUserMetaTagResponse
+	137, // 176: rest.UserMetaService.DeleteUserMetaTags:output_type -> rest.DeleteUserMetaTagsResponse
+	138, // 177: rest.JobsService.UserCreateJob:output_type -> rest.UserJobResponse
+	139, // 178: rest.JobsService.UserListJobs:output_type -> rest.UserJobsCollection
+	140, // 179: rest.JobsService.UserControlJob:output_type -> jobs.CtrlCommandResponse
+	141, // 180: rest.JobsService.UserDeleteTasks:output_type -> jobs.DeleteTasksResponse
+	117, // 181: rest.JobsService.ListTasksLogs:output_type -> rest.LogMessageCollection
+	93,  // 182: rest.AdminTreeService.ListAdminTree:output_type -> rest.NodesCollection
+	142, // 183: rest.AdminTreeService.StatAdminTree:output_type -> tree.ReadNodeResponse
+	143, // 184: rest.GraphService.UserState:output_type -> rest.UserStateResponse
+	144, // 185: rest.GraphService.Relation:output_type -> rest.RelationResponse
+	145, // 186: rest.ShareService.PutCell:output_type -> rest.Cell
+	145, // 187: rest.ShareService.GetCell:output_type -> rest.Cell
+	146, // 188: rest.ShareService.DeleteCell:output_type -> rest.DeleteCellResponse
+	147, // 189: rest.ShareService.PutShareLink:output_type -> rest.ShareLink
+	147, // 190: rest.ShareService.GetShareLink:output_type -> rest.ShareLink
+	148, // 191: rest.ShareService.DeleteShareLink:output_type -> rest.DeleteShareLinkResponse
+	149, // 192: rest.ShareService.ListSharedResources:output_type -> rest.ListSharedResourcesResponse
+	150, // 193: rest.ShareService.UpdateSharePolicies:output_type -> rest.UpdateSharePoliciesResponse
+	151, // 194: rest.InstallService.GetInstall:output_type -> install.GetDefaultsResponse
+	152, // 195: rest.InstallService.PostInstall:output_type -> install.InstallResponse
+	153, // 196: rest.InstallService.PerformInstallCheck:output_type -> install.PerformCheckResponse
+	154, // 197: rest.InstallService.GetAgreement:output_type -> install.GetAgreementResponse
+	155, // 198: rest.InstallService.InstallEvents:output_type -> install.InstallEventsResponse
+	156, // 199: rest.UpdateService.UpdateRequired:output_type -> update.UpdateResponse
+	157, // 200: rest.UpdateService.ApplyUpdate:output_type -> update.ApplyUpdateResponse
+	158, // 201: rest.FrontendService.FrontState:output_type -> rest.FrontStateResponse
+	159, // 202: rest.FrontendService.FrontBootConf:output_type -> rest.FrontBootConfResponse
+	160, // 203: rest.FrontendService.FrontMessages:output_type -> rest.FrontMessagesResponse
+	161, // 204: rest.FrontendService.FrontPlugins:output_type -> rest.FrontPluginsResponse
+	162, // 205: rest.FrontendService.FrontSession:output_type -> rest.FrontSessionResponse
+	163, // 206: rest.FrontendService.FrontEnrollAuth:output_type -> rest.FrontEnrollAuthResponse
+	164, // 207: rest.FrontendService.FrontServeBinary:output_type -> rest.FrontBinaryResponse
+	164, // 208: rest.FrontendService.FrontPutBinary:output_type -> rest.FrontBinaryResponse
+	165, // 209: rest.FrontendService.SettingsMenu:output_type -> rest.SettingsMenuResponse
+	105, // [105:210] is the sub-list for method output_type
+	0,   // [0:105] is the sub-list for method input_type
 	0,   // [0:0] is the sub-list for extension type_name
 	0,   // [0:0] is the sub-list for extension extendee
 	0,   // [0:0] is the sub-list for field type_name

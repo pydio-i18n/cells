@@ -54,6 +54,9 @@ type ServiceOptions struct {
 
 	BeforeStop []func(context.Context) error
 	AfterStop  []func(context.Context) error
+
+	UseWebSession      bool
+	WebSessionExcludes []string
 }
 
 type dependency struct {
@@ -165,6 +168,13 @@ func PluginBoxes(boxes ...frontend.PluginBox) ServiceOption {
 	return func(o *ServiceOptions) {
 		o.Dependencies = append(o.Dependencies, &dependency{common.ServiceWebNamespace_ + common.ServiceFrontStatics, []string{}})
 		frontend.RegisterPluginBoxes(boxes...)
+	}
+}
+
+func WithWebSession(excludes ...string) ServiceOption {
+	return func(o *ServiceOptions) {
+		o.UseWebSession = true
+		o.WebSessionExcludes = excludes
 	}
 }
 

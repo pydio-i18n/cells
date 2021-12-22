@@ -9,6 +9,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/pydio/cells/v4/common/service/frontend"
+
 	"github.com/pydio/cells/v4/common/server"
 
 	"github.com/emicklei/go-restful"
@@ -164,6 +166,9 @@ func WithWeb(handler func(ctx context.Context) WebHandler) ServiceOption {
 				for _, wrap := range getWebMiddlewares(o.Name) {
 					wrapped = wrap(wrapped)
 				}
+			}
+			if o.UseWebSession {
+				wrapped = frontend.NewSessionWrapper(wrapped, o.WebSessionExcludes...)
 			}
 			// Add context
 

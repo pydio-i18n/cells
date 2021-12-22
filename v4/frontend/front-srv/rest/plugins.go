@@ -108,13 +108,11 @@ func init() {
 			service.Tag(common.ServiceTagFrontend),
 			service.Description("REST service for serving specific requests directly to frontend"),
 			service.PluginBoxes(BasePluginsBox),
+			service.WithWebSession("POST:/frontend/binaries"),
 			service.WithWeb(func(c context.Context) service.WebHandler {
 				return NewFrontendHandler()
 			}),
 		)
-		// Make sure to have the WebSession wrapper happen before the policies
-		// Exclude POST binaries for using Cookies as it's the only one subject to possible CSRF
-		// TODO v4 s.Init(service.WithWebSession("POST:/frontend/binaries"))
 	})
 
 	if os.Getenv("CELLS_ENABLE_FORMS_DEVEL") == "1" {

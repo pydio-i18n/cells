@@ -835,12 +835,12 @@ service FrontendService {
         };
     }
     // Upload frontend binaries (avatars / logos / bg images)
-    //rpc FrontPutBinary(FrontBinaryRequest) returns (FrontBinaryResponse) {
-    //    option (google.api.http) =  {
-    //        post: "/frontend/binaries/{BinaryType}/{Uuid}"
-    //        body: "*"
-    //    };
-    //}
+    rpc FrontPutBinary(FrontBinaryRequest) returns (FrontBinaryResponse) {
+        option (google.api.http) =  {
+            post: "/frontend/binaries/{BinaryType}/{Uuid}"
+            body: "*"
+        };
+    }
     // Sends a tree of nodes to be used a menu in the Settings panel
     rpc SettingsMenu(SettingsMenuRequest) returns (SettingsMenuResponse) {
         option (google.api.http) =  {

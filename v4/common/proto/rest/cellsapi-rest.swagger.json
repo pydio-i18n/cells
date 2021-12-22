@@ -2473,6 +2473,70 @@
         "tags": [
           "FrontendService"
         ]
+      },
+      "post": {
+        "summary": "Upload frontend binaries (avatars / logos / bg images)",
+        "operationId": "FrontPutBinary",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/restFrontBinaryResponse"
+            }
+          },
+		  "401":{
+		    "description":"User is not authenticated",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "403":{
+		    "description":"User has no permission to access this particular resource",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "404":{
+		    "description":"Resource does not exist in the system",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  },
+		  "500":{
+		    "description":"An internal error occurred in the backend",
+		    "schema":{
+			  "$ref": "#/definitions/restError"
+		    }
+		  }
+        },
+        "parameters": [
+          {
+            "name": "BinaryType",
+            "description": "Currently supported values are USER and GLOBAL",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "Uuid",
+            "description": "Id of the binary",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "title": "Download binary"
+            }
+          }
+        ],
+        "tags": [
+          "FrontendService"
+        ]
       }
     },
     "/frontend/bootconf": {
@@ -2718,7 +2782,7 @@
     },
     "/frontend/settings-menu": {
       "get": {
-        "summary": "Upload frontend binaries (avatars / logos / bg images)\nrpc FrontPutBinary(FrontBinaryRequest) returns (FrontBinaryResponse) {\n   option (google.api.http) =  {\n       post: \"/frontend/binaries/{BinaryType}/{Uuid}\"\n       body: \"*\"\n   };\n}\nSends a tree of nodes to be used a menu in the Settings panel",
+        "summary": "Sends a tree of nodes to be used a menu in the Settings panel",
         "operationId": "SettingsMenu",
         "responses": {
           "200": {
