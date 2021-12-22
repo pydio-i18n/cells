@@ -515,6 +515,14 @@ func (l *pydioObjects) NewMultipartUpload(ctx context.Context, bucket string, ob
 
 }
 
+// GetMultipartInfo returns multipart info of the uploadId of the object
+func (l *pydioObjects) GetMultipartInfo(ctx context.Context, bucket, object, uploadID string, opts minio.ObjectOptions) (info minio.MultipartInfo, err error) {
+	info.Bucket = bucket
+	info.Object = object
+	info.UploadID = uploadID
+	return info, nil
+}
+
 // PutObjectPart puts a part of object in bucket
 func (l *pydioObjects) PutObjectPart(ctx context.Context, bucket, object, uploadID string, partID int, data *minio.PutObjReader, opts minio.ObjectOptions) (info minio.PartInfo, err error) {
 
