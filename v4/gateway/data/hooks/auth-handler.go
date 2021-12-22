@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+	"github.com/minio/minio-go/v7/pkg/signer"
 	"github.com/minio/minio/cmd"
 
 	"github.com/pydio/cells/v4/common"
@@ -44,7 +45,7 @@ func (a pydioAuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx = servicecontext.HttpRequestInfoToMetadata(ctx, r)
 	ctx = servicecontext.WithServiceName(ctx, common.ServiceGatewayData)
 
-	storeJwtInGlobalIAM := false
+	resignRequestV4 := false
 	jwt := r.URL.Query().Get("pydio_jwt")
 
 	if len(jwt) > 0 {
@@ -62,7 +63,7 @@ func (a pydioAuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			if signedKey != a.globalAccessKey {
 				log.Logger(ctx).Info("Use AWS Api Key as JWT: " + signedKey)
-				storeJwtInGlobalIAM = true
+				resignRequestV4 = true
 				r.Header.Set("X-Pydio-Bearer", signedKey)
 			}
 		}
@@ -79,8 +80,9 @@ func (a pydioAuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		userName = claims.Name
-		if storeJwtInGlobalIAM {
-			_ = cmd.ExposedStoreTmpUserToIAMSys(rawIDToken)
+		if resignRequestV4 {
+			// User is OK, override signature with service account ID/Secret
+			r = signer.SignV4(*r, common.S3GatewayRootUser, common.S3GatewayRootPassword, "", common.S3GatewayDefaultRegion)
 		}
 
 	} else if agent, aOk := r.Header["User-Agent"]; aOk && strings.Contains(strings.Join(agent, ""), "pydio.sync.client.s3") {

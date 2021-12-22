@@ -112,8 +112,8 @@ type gatewayDataServer struct {
 
 func (g *gatewayDataServer) Start(ctx context.Context) error {
 	os.Setenv("MINIO_BROWSER", "off")
-	os.Setenv("MINIO_ROOT_USER", "gateway")
-	os.Setenv("MINIO_ROOT_PASSWORD", "gatewaysecret")
+	os.Setenv("MINIO_ROOT_USER", common.S3GatewayRootUser)
+	os.Setenv("MINIO_ROOT_PASSWORD", common.S3GatewayRootPassword)
 
 	minio.HookRegisterGlobalHandler(hooks.GetPydioAuthHandlerFunc("gateway"))
 	minio.HookRegisterGlobalHandler(func(handler http.Handler) http.Handler {

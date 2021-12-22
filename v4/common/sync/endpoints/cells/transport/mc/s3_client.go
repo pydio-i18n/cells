@@ -27,6 +27,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/pydio/cells/v4/common"
+
 	"github.com/minio/minio-go/v7/pkg/credentials"
 
 	minio "github.com/minio/minio-go/v7"
@@ -47,11 +49,11 @@ func NewS3Client(config *transport.SdkConfig) *S3Client {
 		config: config,
 		s3config: &transport.S3Config{
 			Bucket:                 "data",
-			ApiKey:                 "gateway",
-			ApiSecret:              "gatewaysecret",
+			ApiKey:                 common.S3GatewayRootUser,
+			ApiSecret:              common.S3GatewayRootPassword,
+			Region:                 common.S3GatewayDefaultRegion,
 			UsePydioSpecificHeader: false,
 			IsDebug:                false,
-			Region:                 "us-east-1",
 			Endpoint:               config.Url,
 		},
 	}

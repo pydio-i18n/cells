@@ -219,6 +219,10 @@ const (
 )
 
 var (
+	S3GatewayRootUser      = "gateway"
+	S3GatewayRootPassword  = "gatewaysecret"
+	S3GatewayDefaultRegion = "us-east-1"
+
 	XSpecialPydioHeaders = []string{
 		XPydioClientUuid,
 		XPydioSessionUuid,
