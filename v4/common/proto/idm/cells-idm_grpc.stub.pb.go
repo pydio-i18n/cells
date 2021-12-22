@@ -59,6 +59,9 @@ func (s *RoleServiceStub) NewStream(ctx context.Context, desc *grpc.StreamDesc, 
 	case "/idm.RoleService/SearchRole":
 		st := &RoleServiceStub_SearchRoleStreamer{}
 		st.Init(ctx, func(i interface{}) error {
+			defer func() {
+				close(st.RespChan)
+			}()
 			return s.RoleServiceServer.SearchRole(i.(*SearchRoleRequest), st)
 		})
 		return st, nil
@@ -143,6 +146,9 @@ func (s *UserServiceStub) NewStream(ctx context.Context, desc *grpc.StreamDesc, 
 	case "/idm.UserService/SearchUser":
 		st := &UserServiceStub_SearchUserStreamer{}
 		st.Init(ctx, func(i interface{}) error {
+			defer func() {
+				close(st.RespChan)
+			}()
 			return s.UserServiceServer.SearchUser(i.(*SearchUserRequest), st)
 		})
 		return st, nil
@@ -213,6 +219,9 @@ func (s *WorkspaceServiceStub) NewStream(ctx context.Context, desc *grpc.StreamD
 	case "/idm.WorkspaceService/SearchWorkspace":
 		st := &WorkspaceServiceStub_SearchWorkspaceStreamer{}
 		st.Init(ctx, func(i interface{}) error {
+			defer func() {
+				close(st.RespChan)
+			}()
 			return s.WorkspaceServiceServer.SearchWorkspace(i.(*SearchWorkspaceRequest), st)
 		})
 		return st, nil
@@ -290,6 +299,9 @@ func (s *ACLServiceStub) NewStream(ctx context.Context, desc *grpc.StreamDesc, m
 	case "/idm.ACLService/SearchACL":
 		st := &ACLServiceStub_SearchACLStreamer{}
 		st.Init(ctx, func(i interface{}) error {
+			defer func() {
+				close(st.RespChan)
+			}()
 			return s.ACLServiceServer.SearchACL(i.(*SearchACLRequest), st)
 		})
 		return st, nil
@@ -360,12 +372,18 @@ func (s *UserMetaServiceStub) NewStream(ctx context.Context, desc *grpc.StreamDe
 	case "/idm.UserMetaService/SearchUserMeta":
 		st := &UserMetaServiceStub_SearchUserMetaStreamer{}
 		st.Init(ctx, func(i interface{}) error {
+			defer func() {
+				close(st.RespChan)
+			}()
 			return s.UserMetaServiceServer.SearchUserMeta(i.(*SearchUserMetaRequest), st)
 		})
 		return st, nil
 	case "/idm.UserMetaService/ListUserMetaNamespace":
 		st := &UserMetaServiceStub_ListUserMetaNamespaceStreamer{}
 		st.Init(ctx, func(i interface{}) error {
+			defer func() {
+				close(st.RespChan)
+			}()
 			return s.UserMetaServiceServer.ListUserMetaNamespace(i.(*ListUserMetaNamespaceRequest), st)
 		})
 		return st, nil

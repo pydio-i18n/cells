@@ -36,7 +36,9 @@ import (
 
 func NewTreeService(dss []string, nodes ...*tree.Node) (grpc.ClientConnInterface, error) {
 
-	server := &srv.TreeServer{}
+	server := &srv.TreeServer{
+		MainCtx: context.Background(),
+	}
 	server.DataSources = map[string]srv.DataSource{}
 	for _, ds := range dss {
 		conn := grpc2.NewClientConn(common.ServiceDataIndex_ + ds)

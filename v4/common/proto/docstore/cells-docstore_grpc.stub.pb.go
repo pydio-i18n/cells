@@ -65,6 +65,9 @@ func (s *DocStoreStub) NewStream(ctx context.Context, desc *grpc.StreamDesc, met
 	case "/docstore.DocStore/ListDocuments":
 		st := &DocStoreStub_ListDocumentsStreamer{}
 		st.Init(ctx, func(i interface{}) error {
+			defer func() {
+				close(st.RespChan)
+			}()
 			return s.DocStoreServer.ListDocuments(i.(*ListDocumentsRequest), st)
 		})
 		return st, nil

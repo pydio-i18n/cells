@@ -45,6 +45,9 @@ func (s *NodeProviderStub) NewStream(ctx context.Context, desc *grpc.StreamDesc,
 	case "/tree.NodeProvider/ListNodes":
 		st := &NodeProviderStub_ListNodesStreamer{}
 		st.Init(ctx, func(i interface{}) error {
+			defer func() {
+				close(st.RespChan)
+			}()
 			return s.NodeProviderServer.ListNodes(i.(*ListNodesRequest), st)
 		})
 		return st, nil
@@ -121,6 +124,9 @@ func (s *NodeChangesStreamerStub) NewStream(ctx context.Context, desc *grpc.Stre
 	case "/tree.NodeChangesStreamer/StreamChanges":
 		st := &NodeChangesStreamerStub_StreamChangesStreamer{}
 		st.Init(ctx, func(i interface{}) error {
+			defer func() {
+				close(st.RespChan)
+			}()
 			return s.NodeChangesStreamerServer.StreamChanges(i.(*StreamChangesRequest), st)
 		})
 		return st, nil
@@ -321,6 +327,9 @@ func (s *NodeEventsProviderStub) NewStream(ctx context.Context, desc *grpc.Strea
 	case "/tree.NodeEventsProvider/WatchNode":
 		st := &NodeEventsProviderStub_WatchNodeStreamer{}
 		st.Init(ctx, func(i interface{}) error {
+			defer func() {
+				close(st.RespChan)
+			}()
 			return s.NodeEventsProviderServer.WatchNode(i.(*WatchNodeRequest), st)
 		})
 		return st, nil
@@ -356,6 +365,9 @@ func (s *SearcherStub) NewStream(ctx context.Context, desc *grpc.StreamDesc, met
 	case "/tree.Searcher/Search":
 		st := &SearcherStub_SearchStreamer{}
 		st.Init(ctx, func(i interface{}) error {
+			defer func() {
+				close(st.RespChan)
+			}()
 			return s.SearcherServer.Search(i.(*SearchRequest), st)
 		})
 		return st, nil
@@ -459,6 +471,9 @@ func (s *NodeVersionerStub) NewStream(ctx context.Context, desc *grpc.StreamDesc
 	case "/tree.NodeVersioner/ListVersions":
 		st := &NodeVersionerStub_ListVersionsStreamer{}
 		st.Init(ctx, func(i interface{}) error {
+			defer func() {
+				close(st.RespChan)
+			}()
 			return s.NodeVersionerServer.ListVersions(i.(*ListVersionsRequest), st)
 		})
 		return st, nil
@@ -526,6 +541,9 @@ func (s *SyncChangesStub) NewStream(ctx context.Context, desc *grpc.StreamDesc, 
 	case "/tree.SyncChanges/Search":
 		st := &SyncChangesStub_SearchStreamer{}
 		st.Init(ctx, func(i interface{}) error {
+			defer func() {
+				close(st.RespChan)
+			}()
 			return s.SyncChangesServer.Search(i.(*SearchSyncChangeRequest), st)
 		})
 		return st, nil

@@ -26,27 +26,38 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/pydio/cells/v4/common/nodes/models"
-
-	"github.com/pydio/cells/v4/common/auth"
-	"github.com/pydio/cells/v4/common/nodes/compose"
-	"github.com/pydio/cells/v4/common/proto/tree"
-
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/broker"
+	"github.com/pydio/cells/v4/common/auth"
 	"github.com/pydio/cells/v4/common/client/grpc"
+	"github.com/pydio/cells/v4/common/config/mock"
 	"github.com/pydio/cells/v4/common/nodes"
+	"github.com/pydio/cells/v4/common/nodes/compose"
+	"github.com/pydio/cells/v4/common/nodes/models"
+	omock "github.com/pydio/cells/v4/common/nodes/objects/mock"
+	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/server/stubs/datatest"
 	"github.com/pydio/cells/v4/common/server/stubs/idmtest"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/utils/configx"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 
 	. "github.com/smartystreets/goconvey/convey"
+	_ "gocloud.dev/pubsub/mempubsub"
 )
 
 func TestMain(m *testing.M) {
 
-	_ = broker.Connect()
 	nodes.UseMockStorageClientType()
+
+	// Override default
+	nodes.RegisterStorageClient("mock", func(cfg configx.Values) (nodes.StorageClient, error) {
+		return omock.New("pydiods1", "personal", "cellsdata", "thumbnails", "versions"), nil
+	})
+
+	if e := mock.RegisterMockConfig(); e != nil {
+		log.Fatal(e)
+	}
 
 	testData, er := idmtest.GetStartData()
 	if er != nil {
@@ -72,7 +83,10 @@ func TestMain(m *testing.M) {
 func TestPersonalResolution(t *testing.T) {
 
 	ctx := context.Background()
+	reg, _ := registry.OpenRegistry(ctx, "memory:///")
+	ctx = servicecontext.WithRegistry(ctx, reg)
 	client := compose.PathClient()
+
 	Convey("Test personal file", t, func() {
 		user, e := permissions.SearchUniqueUser(ctx, "admin", "")
 		So(e, ShouldBeNil)

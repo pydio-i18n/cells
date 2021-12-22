@@ -63,7 +63,7 @@ func (c *Client) MakeBucket(ctx context.Context, bucketName string, location str
 
 func (c *Client) RemoveBucket(ctx context.Context, bucketName string) error {
 	if _, ok := c.Buckets[bucketName]; !ok {
-		return fmt.Errorf("bucket not found")
+		return fmt.Errorf("bucket not found %s", bucketName)
 	}
 	delete(c.Buckets, bucketName)
 	return nil
@@ -72,7 +72,7 @@ func (c *Client) RemoveBucket(ctx context.Context, bucketName string) error {
 func (c *Client) GetObject(ctx context.Context, bucketName, objectName string, opts models.ReadMeta) (io.ReadCloser, models.ObjectInfo, error) {
 	bucket, ok := c.Buckets[bucketName]
 	if !ok {
-		return nil, models.ObjectInfo{}, fmt.Errorf("bucket not found")
+		return nil, models.ObjectInfo{}, fmt.Errorf("bucket not found %s", bucketName)
 	}
 	if object, ok := bucket[objectName]; ok {
 		return newReadCloser(object), models.ObjectInfo{Size: int64(len(object))}, nil
@@ -84,7 +84,7 @@ func (c *Client) GetObject(ctx context.Context, bucketName, objectName string, o
 func (c *Client) StatObject(ctx context.Context, bucketName, objectName string, opts models.ReadMeta) (models.ObjectInfo, error) {
 	bucket, ok := c.Buckets[bucketName]
 	if !ok {
-		return models.ObjectInfo{}, fmt.Errorf("bucket not found")
+		return models.ObjectInfo{}, fmt.Errorf("bucket not found %s", bucketName)
 	}
 	if object, ok := bucket[objectName]; ok {
 		return models.ObjectInfo{Size: int64(len(object))}, nil
@@ -96,16 +96,16 @@ func (c *Client) StatObject(ctx context.Context, bucketName, objectName string, 
 func (c *Client) PutObject(ctx context.Context, bucketName, objectName string, reader io.Reader, objectSize int64, opts models.PutMeta) (n int64, err error) {
 	bucket, ok := c.Buckets[bucketName]
 	if !ok {
-		return 0, fmt.Errorf("bucket not found")
+		return 0, fmt.Errorf("bucket not found %s", bucketName)
 	}
 	bucket[objectName], _ = io.ReadAll(reader)
-	return int64(len(bucket[objectName])), fmt.Errorf("not.implemented")
+	return int64(len(bucket[objectName])), nil
 }
 
 func (c *Client) RemoveObject(ctx context.Context, bucketName, objectName string) error {
 	bucket, ok := c.Buckets[bucketName]
 	if !ok {
-		return fmt.Errorf("bucket not found")
+		return fmt.Errorf("bucket not found %s", bucketName)
 	}
 	if _, ok := bucket[objectName]; !ok {
 		return fmt.Errorf("object not found")
@@ -117,7 +117,7 @@ func (c *Client) RemoveObject(ctx context.Context, bucketName, objectName string
 func (c *Client) ListObjects(ctx context.Context, bucketName, prefix, marker, delimiter string, maxKeys int) (result models.ListBucketResult, err error) {
 	bucket, ok := c.Buckets[bucketName]
 	if !ok {
-		return result, fmt.Errorf("bucket not found")
+		return result, fmt.Errorf("bucket not found %s", bucketName)
 	}
 	for objName, data := range bucket {
 		result.Contents = append(result.Contents, models.ObjectInfo{
