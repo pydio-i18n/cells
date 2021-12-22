@@ -25,7 +25,7 @@ func init() {
 			service.Description("Configuration"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceConfig, []string{}),
 			service.WithWeb(func(c context.Context) service.WebHandler {
-				return new(Handler)
+				return &Handler{MainCtx: c}
 			}),
 		)
 	}
