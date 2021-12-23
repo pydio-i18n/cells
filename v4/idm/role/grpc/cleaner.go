@@ -36,6 +36,7 @@ import (
 func NewCleaner(ctx context.Context, handler idm.RoleServiceServer) *Cleaner {
 	c := &Cleaner{}
 	c.Dao = servicecontext.GetDAO(ctx)
+	c.LogCtx = ctx
 	c.handler = handler
 	c.Options = resources.PoliciesCleanerOptions{SubscribeUsers: true}
 	return c
