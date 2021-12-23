@@ -94,7 +94,7 @@ func init() {
 				mux.Handle(config.GetPublicBaseUri()+"/", index.NewPublicHandler())
 				mux.Handle(config.GetPublicBaseUri()+"/plug/", http.StripPrefix(config.GetPublicBaseUri()+"/plug/", fs))
 
-				// TODO v4
+				// TODO v4 ?
 				//routerWithTimeout := http.TimeoutHandler(
 				//	mux,
 				//	15*time.Second,

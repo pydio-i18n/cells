@@ -37,11 +37,8 @@ func (s *ReconnectingClient) Stop() {
 func (s *ReconnectingClient) chanToStream(ch chan interface{}, requeue ...*jobs.Task) {
 
 	go func() {
-		taskClient := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
-		ctx, cancel := context.WithTimeout(s.parentCtx, 5*time.Minute)
-		defer cancel()
-		// TODO v4 : how do we replace client.WithTimeout (=> something with DialContext)
-		streamer, e := taskClient.PutTaskStream(ctx /*, client.WithTimeout(5*time.Minute)*/)
+		taskClient := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs, 5*time.Minute))
+		streamer, e := taskClient.PutTaskStream(s.parentCtx)
 		if e != nil {
 			log.Logger(s.parentCtx).Error("Streamer PutTaskStream", zap.Error(e))
 			<-time.After(10 * time.Second)

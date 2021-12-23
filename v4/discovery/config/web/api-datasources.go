@@ -100,13 +100,10 @@ func (s *Handler) PutDataSource(req *restful.Request, resp *restful.Response) {
 
 	// Handle / and \ for OS
 	if ds.StorageType == object.StorageType_LOCAL {
-		/*
-			// TODO v4 - To be re-enabled in api-services.go
-			if err := s.ValidateLocalDSFolderOnPeer(ctx, &ds); err != nil {
-				service.RestError500(req, resp, err)
-				return
-			}
-		*/
+		if err := s.ValidateLocalDSFolderOnPeer(ctx, &ds); err != nil {
+			service.RestError500(req, resp, err)
+			return
+		}
 		osFolder := filesystem.ToFilePath(ds.StorageConfiguration[object.StorageKeyFolder])
 		rootPrefix := config.Get("services", common.ServiceGrpcNamespace_+common.ServiceDataObjects, "allowedLocalDsFolder").String()
 		if rootPrefix != "" && !strings.HasPrefix(osFolder, rootPrefix) {

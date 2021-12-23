@@ -31,6 +31,7 @@ import (
 
 	"github.com/emicklei/go-restful"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
@@ -622,10 +623,8 @@ func (h *SharesHandler) UpdateSharePolicies(req *restful.Request, rsp *restful.R
 
 func (h *SharesHandler) docStoreStatus() error {
 	return nil
-	// TODO V4
-	/*
-		s := service2.NewServiceClient(grpc.NewClientConn(common.ServiceDocStore))
-		_, err := s.Status(context.Background(), &emptypb.Empty{})
-		return err
-	*/
+	// TODO V4 - Not implemented by server yet
+	cli := grpc_health_v1.NewHealthClient(grpc.NewClientConn(common.ServiceDocStore))
+	_, er := cli.Check(context.Background(), &grpc_health_v1.HealthCheckRequest{})
+	return er
 }

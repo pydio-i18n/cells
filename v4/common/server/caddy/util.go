@@ -1,15 +1,18 @@
 package caddy
 
 import (
+	"net/url"
+	"path/filepath"
+
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/proto"
+
+	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/caddy/maintenance"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/crypto/providers"
 	"github.com/pydio/cells/v4/common/proto/install"
 	"github.com/pydio/cells/v4/common/utils/statics"
-	"google.golang.org/protobuf/proto"
-	"net/url"
-	"path/filepath"
 )
 
 var maintenanceDir string
@@ -20,20 +23,6 @@ func SitesToCaddyConfigs(sites []*install.ProxyConfig) (caddySites []SiteConf, e
 	for _, proxyConfig := range sites {
 		if bc, er := computeSiteConf(proxyConfig); er == nil {
 			caddySites = append(caddySites, bc)
-			/*
-				// TODO V4 Enable these in caddy generated config
-				if proxyConfig.HasTLS() && proxyConfig.GetLetsEncrypt() != nil {
-					le := proxyConfig.GetLetsEncrypt()
-					if le.AcceptEULA {
-						caddytls.Agreed = true
-					}
-					if le.StagingCA {
-						caddytls.DefaultCAUrl = common.DefaultCaStagingUrl
-					} else {
-						caddytls.DefaultCAUrl = common.DefaultCaUrl
-					}
-				}
-			*/
 		} else {
 			return caddySites, er
 		}
@@ -80,7 +69,14 @@ func computeSiteConf(pc *install.ProxyConfig) (SiteConf, error) {
 			bc.TLSCert = certFile
 			bc.TLSKey = keyFile
 		case *install.ProxyConfig_LetsEncrypt:
-			bc.TLS = v.LetsEncrypt.Email
+			// todo v4 : is there something to do with AcceptEULA flag ? Was caddytls.Agreed = true
+			caUrl := common.DefaultCaUrl
+			if v.LetsEncrypt.StagingCA {
+				caUrl = common.DefaultCaStagingUrl
+			}
+			bc.TLS = v.LetsEncrypt.Email + ` {
+				ca ` + caUrl + `
+			}`
 		}
 	}
 	if bc.Maintenance {

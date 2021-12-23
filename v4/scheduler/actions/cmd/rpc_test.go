@@ -24,7 +24,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/pydio/cells/v4/common/service/errors"
 	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/pydio/cells/v4/common/proto/jobs"
@@ -82,13 +81,11 @@ func TestRpcAction_Run(t *testing.T) {
 		outputMessage, err := action.Run(context.Background(), &actions.RunnableChannels{StatusMsg: status, Progress: progress}, jobs.ActionMessage{})
 		close(status)
 		close(progress)
-		// TODO V4 - RENABLE
-		return
 		So(err, ShouldNotBeNil)
 		output := outputMessage.GetLastOutput()
 		So(output.ErrorString, ShouldEqual, err.Error())
 		// It's a test, so normally there is no service available, or nats is even not started
-		So(errors.FromError(err).Code, ShouldEqual, 500)
+		So(output.ErrorString, ShouldEqual, "cannot find corresponding service/method for MethodName")
 
 	})
 

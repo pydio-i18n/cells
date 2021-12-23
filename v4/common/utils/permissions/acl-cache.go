@@ -36,7 +36,6 @@ var (
 
 func initAclCache() {
 	aclCache = cache.NewShort(cache.WithEviction(500*time.Millisecond), cache.WithCleanWindow(30*time.Second))
-	// TODO v4
 	_, _ = broker.Subscribe(context.TODO(), common.TopicIdmEvent, func(message broker.Message) error {
 		event := &idm.ChangeEvent{}
 		if _, e := message.Unmarshal(event); e != nil {

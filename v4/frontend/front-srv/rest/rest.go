@@ -25,7 +25,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"io/ioutil"
 	"os"
@@ -36,8 +35,11 @@ import (
 	"github.com/emicklei/go-restful"
 	exifremove "github.com/scottleedavis/go-exif-remove"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/broker"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes/compose"
@@ -146,9 +148,7 @@ func (a *FrontendHandler) FrontPlugins(req *restful.Request, rsp *restful.Respon
 
 	if req.Request.Header.Get("x-pydio-plugins-reload") != "" {
 		frontend.HotReload()
-		// TODO v4
-		// broker.MustPublish(context.Background(), common.TopicReloadAssets, "reload")
-		//defaults.Broker().Publish(common.TopicReloadAssets, &broker.Message{Body: []byte("reload")})
+		broker.MustPublish(context.Background(), common.TopicReloadAssets, &emptypb.Empty{})
 	}
 
 	pool, e := frontend.GetPluginsPool()

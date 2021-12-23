@@ -118,6 +118,11 @@ func (s *service) Start() (er error) {
 		bs.RegisterAfterServe(func() error {
 			return UpdateServiceVersion(s.opts)
 		})
+		for _, after := range s.opts.AfterServe {
+			bs.RegisterAfterServe(func() error {
+				return after(s.opts.Context)
+			})
+		}
 	}
 
 	log.Logger(s.opts.Context).Info("started")

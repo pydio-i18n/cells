@@ -21,9 +21,7 @@ type ServiceOptions struct {
 	Version     string
 	Description string
 	Source      string
-
-	// TODO V4 - MUST BE FOUND IN REGISTRY
-	Metadata map[string]string
+	Metadata    map[string]string
 
 	Context context.Context
 	Cancel  context.CancelFunc
@@ -51,6 +49,7 @@ type ServiceOptions struct {
 	// Before and After funcs
 	BeforeStart []func(context.Context) error
 	AfterStart  []func(context.Context) error
+	AfterServe  []func(context.Context) error
 
 	BeforeStop []func(context.Context) error
 	AfterStop  []func(context.Context) error
@@ -129,12 +128,26 @@ func AutoStart(b bool) ServiceOption {
 	}
 }
 
+// AfterStart registers a callback to be run after service.Start (blocking)
+func AfterStart(f func(ctx context.Context) error) ServiceOption {
+	return func(o *ServiceOptions) {
+		o.AfterStart = append(o.AfterStart, f)
+	}
+}
+
+// AfterServe registers a callback that is run after Server is finally started (non-blocking)
+func AfterServe(f func(ctx context.Context) error) ServiceOption {
+	return func(o *ServiceOptions) {
+		o.AfterServe = append(o.AfterServe, f)
+	}
+}
+
 // Fork option for a service
-//func Fork(b bool) ServiceOption {
-//	return func(o *ServiceOptions) {
-//		o.Fork = b
-//	}
-//}
+func Fork(f bool) ServiceOption {
+	return func(o *ServiceOptions) {
+		o.Fork = f
+	}
+}
 
 // Unique option for a service
 func Unique(b bool) ServiceOption {

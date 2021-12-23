@@ -34,6 +34,7 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/docstore"
+	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service"
 	json "github.com/pydio/cells/v4/common/utils/jsonx"
@@ -65,6 +66,26 @@ func init() {
 				},
 			}),
 			//service.Unique(true),
+			service.AfterServe(func(ctx context.Context) error {
+				return std.Retry(ctx, func() error {
+					jobsClient := jobs.NewJobServiceClient(grpc2.NewClientConn(common.ServiceJobs))
+					to, cancel := context.WithTimeout(ctx, grpc2.CallTimeoutShort)
+					defer cancel()
+					// Migration from old prune-versions-job : delete if exists, replaced by composed job
+					var reinsert bool
+					if _, e := jobsClient.GetJob(to, &jobs.GetJobRequest{JobID: "prune-versions-job"}); e == nil {
+						_, _ = jobsClient.DeleteJob(to, &jobs.DeleteJobRequest{JobID: "prune-versions-job"})
+						reinsert = true
+					}
+					vJob := getVersioningJob()
+					if _, err := jobsClient.GetJob(to, &jobs.GetJobRequest{JobID: vJob.ID}); err != nil || reinsert {
+						log.Logger(ctx).Info("Inserting versioning job")
+						_, er := jobsClient.PutJob(to, &jobs.PutJobRequest{Job: vJob})
+						return er
+					}
+					return nil
+				}, 5*time.Second, 20*time.Second)
+			}),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 
 				serviceDir, e := config.ServiceDataDir(common.ServiceGrpcNamespace_ + common.ServiceVersions)
@@ -82,25 +103,6 @@ func init() {
 				}
 
 				tree.RegisterNodeVersionerEnhancedServer(server, engine)
-
-				/*
-					// TODO V4 - This blocks the start ...
-					jobsClient := jobs.NewJobServiceClient(grpc2.NewClientConn(common.ServiceJobs))
-
-					to, cancel := context.WithTimeout(ctx, grpc2.CallTimeoutShort)
-					defer cancel()
-					// Migration from old prune-versions-job : delete if exists, replaced by composed job
-					var reinsert bool
-					if _, e := jobsClient.GetJob(to, &jobs.GetJobRequest{JobID: "prune-versions-job"}); e == nil {
-						jobsClient.DeleteJob(to, &jobs.DeleteJobRequest{JobID: "prune-versions-job"})
-						reinsert = true
-					}
-					vJob := getVersioningJob()
-					if _, err := jobsClient.GetJob(to, &jobs.GetJobRequest{JobID: vJob.ID}); err != nil || reinsert {
-						log.Logger(ctx).Info("Inserting versioning job")
-						jobsClient.PutJob(to, &jobs.PutJobRequest{Job: vJob})
-					}
-				*/
 
 				return nil
 			}),

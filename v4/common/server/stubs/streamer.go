@@ -79,12 +79,9 @@ func (cs *ClientServerStreamerCore) Trailer() metadata.MD {
 }
 
 func (cs *ClientServerStreamerCore) CloseSend() error {
-	// TODO v4 - CloseSend only closes the request, not the response
-	//if cs.closed {
-	//	return nil
-	//}
-	//close(cs.RespChan)
-	//cs.closed = true
+	// CloseSend only closes the request, not the response
+	//  - For ClientStreamer only, close(st.RespChan) is called in defer
+	//  - For ServerStreamer, CloseSend() is overridden
 	return nil
 }
 

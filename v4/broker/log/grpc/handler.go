@@ -60,7 +60,7 @@ func (h *Handler) PutLog(stream proto.LogRecorder_PutLogServer) error {
 	for {
 		line, err := stream.Recv()
 		if err == io.EOF {
-			return nil //stream.SendAndClose() = TODO V4 ?
+			return nil
 		}
 
 		if err != nil {

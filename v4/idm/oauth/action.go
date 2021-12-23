@@ -25,16 +25,14 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/pydio/cells/v4/common/client/grpc"
-
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/forms"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/auth"
 	"github.com/pydio/cells/v4/common/proto/docstore"
 	"github.com/pydio/cells/v4/common/proto/jobs"
-	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/i18n"
 	"github.com/pydio/cells/v4/common/utils/std"
 	"github.com/pydio/cells/v4/idm/oauth/lang"
@@ -52,17 +50,12 @@ func InsertPruningJob(ctx context.Context) error {
 
 	T := lang.Bundle().GetTranslationFunc(i18n.GetDefaultLanguage(config.Get()))
 
-	// todo v4 // Jobs must be active
-	return nil
-
 	return std.Retry(ctx, func() error {
 
-		cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
-		// TODO V4 - Used twice below
-		// timeout := registry.ShortRequestTimeout()
-		if resp, e := cli.GetJob(ctx, &jobs.GetJobRequest{JobID: pruneTokensActionName} /*, timeout*/); e == nil && resp.Job != nil {
+		cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs, grpc.CallTimeoutShort))
+		if resp, e := cli.GetJob(ctx, &jobs.GetJobRequest{JobID: pruneTokensActionName}); e == nil && resp.Job != nil {
 			return nil // Already exists
-		} else if e != nil && errors.FromError(e).Id == "go.micro.client" {
+		} else if e != nil {
 			return e // not ready yet, retry
 		}
 		log.Logger(ctx).Info("Inserting pruning job for revoked token and reset password tokens")
@@ -78,7 +71,7 @@ func InsertPruningJob(ctx context.Context) error {
 			Actions: []*jobs.Action{{
 				ID: pruneTokensActionName,
 			}},
-		}} /*, timeout*/)
+		}})
 
 		return e
 	}, 5*time.Second)

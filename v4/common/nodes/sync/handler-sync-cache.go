@@ -83,7 +83,6 @@ func newCacheHandler() *CacheHandler {
 
 	if syncCache == nil {
 		syncCache = cache.NewSharded(nodes.ViewsLibraryName, cache.WithEviction(30*time.Second), cache.WithCleanWindow(time.Minute))
-		// TODO v4
 		_, _ = broker.Subscribe(context.TODO(), common.TopicTreeChanges, func(publication broker.Message) error {
 			var event tree.NodeChangeEvent
 			if ctx, e := publication.Unmarshal(&event); e == nil && !event.Optimistic {

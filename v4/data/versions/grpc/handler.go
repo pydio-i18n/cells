@@ -26,13 +26,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pydio/cells/v4/common/client/grpc"
-
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/broker/activity"
 	"github.com/pydio/cells/v4/broker/activity/render"
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	activity2 "github.com/pydio/cells/v4/common/proto/activity"

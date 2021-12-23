@@ -23,13 +23,13 @@ package broker
 import (
 	"context"
 	"fmt"
-
-	"github.com/pydio/cells/v4/common/service/errors"
+	"sync"
 
 	"gocloud.dev/pubsub"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common/service/context/metadata"
+	"github.com/pydio/cells/v4/common/service/errors"
 )
 
 var (
@@ -107,6 +107,7 @@ func Subscribe(ctx context.Context, topic string, handler SubscriberHandler, opt
 }
 
 type broker struct {
+	sync.Mutex
 	publishOpener   TopicOpener
 	subscribeOpener SubscribeOpener
 	publishers      map[string]*pubsub.Topic
@@ -117,6 +118,8 @@ type TopicOpener func(context.Context, string) (*pubsub.Topic, error)
 type SubscribeOpener func(context.Context, string) (*pubsub.Subscription, error)
 
 func (b *broker) openTopic(ctx context.Context, topic string) (*pubsub.Topic, error) {
+	b.Lock()
+	defer b.Unlock()
 	publisher, ok := b.publishers[topic]
 	if !ok {
 		var err error

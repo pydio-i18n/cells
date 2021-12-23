@@ -90,9 +90,6 @@ func init() {
 					return e
 				}
 
-				// TODO V4 : Should be applied in Migrations()
-				// InitDefaults(ctx)
-
 				return nil
 			}),
 		)
