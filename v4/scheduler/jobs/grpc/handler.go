@@ -95,11 +95,11 @@ func (j *JobsHandler) PutJob(ctx context.Context, request *proto.PutJobRequest) 
 	}
 	response := &proto.PutJobResponse{}
 	response.Job = request.Job
-	broker.MustPublish(ctx, common.TopicJobConfigEvent, &proto.JobChangeEvent{
+	broker.MustPublish(bgContext, common.TopicJobConfigEvent, &proto.JobChangeEvent{
 		JobUpdated: request.Job,
 	})
 	if request.Job.AutoStart && !request.Job.Inactive {
-		broker.MustPublish(ctx, common.TopicTimerEvent, &proto.JobTriggerEvent{
+		broker.MustPublish(bgContext, common.TopicTimerEvent, &proto.JobTriggerEvent{
 			JobID:  response.Job.ID,
 			RunNow: true,
 		})
@@ -129,7 +129,7 @@ func (j *JobsHandler) DeleteJob(ctx context.Context, request *proto.DeleteJobReq
 			response.Success = false
 			return nil, err
 		}
-		broker.MustPublish(ctx, common.TopicJobConfigEvent, &proto.JobChangeEvent{
+		broker.MustPublish(bgContext, common.TopicJobConfigEvent, &proto.JobChangeEvent{
 			JobRemoved: request.JobID,
 		})
 		go func() {
@@ -181,7 +181,7 @@ func (j *JobsHandler) DeleteJob(ctx context.Context, request *proto.DeleteJobReq
 			if e := j.store.DeleteJob(id); e == nil {
 				deleted++
 				log.Logger(ctx).Info("Deleting AutoClean Job " + id)
-				broker.MustPublish(ctx, common.TopicJobConfigEvent, &proto.JobChangeEvent{
+				broker.MustPublish(bgContext, common.TopicJobConfigEvent, &proto.JobChangeEvent{
 					JobRemoved: id,
 				})
 				go func() {
@@ -240,7 +240,7 @@ func (j *JobsHandler) PutTask(ctx context.Context, request *proto.PutTaskRequest
 	T := lang.Bundle().GetTranslationFunc()
 	job.Label = T(job.Label)
 	if !job.TasksSilentUpdate {
-		broker.MustPublish(ctx, common.TopicJobTaskEvent, &proto.TaskChangeEvent{
+		broker.MustPublish(bgContext, common.TopicJobTaskEvent, &proto.TaskChangeEvent{
 			TaskUpdated: request.Task,
 			Job:         job,
 		})
@@ -329,7 +329,7 @@ func (j *JobsHandler) PutTaskStream(streamer proto.JobService_PutTaskStreamServe
 		T := lang.Bundle().GetTranslationFunc()
 		tJob.Label = T(tJob.Label)
 		if !tJob.TasksSilentUpdate {
-			broker.MustPublish(ctx, common.TopicJobTaskEvent, &proto.TaskChangeEvent{
+			broker.MustPublish(bgContext, common.TopicJobTaskEvent, &proto.TaskChangeEvent{
 				TaskUpdated: request.Task,
 				Job:         tJob,
 			})
