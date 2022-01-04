@@ -65,6 +65,9 @@ func (cc *clientConn) Invoke(ctx context.Context, method string, args interface{
 	md := metadata.MD{}
 	if lmd, ok := metadata2.FromContext(ctx); ok {
 		for k, v := range lmd {
+			if strings.HasPrefix(k, ":") {
+				continue
+			}
 			md.Set(ckeys.CellsMetaPrefix+k, v)
 		}
 	}
@@ -83,6 +86,9 @@ func (cc *clientConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, meth
 	md := metadata.MD{}
 	if lmd, ok := metadata2.FromContext(ctx); ok {
 		for k, v := range lmd {
+			if strings.HasPrefix(k, ":") {
+				continue
+			}
 			md.Set(ckeys.CellsMetaPrefix+k, v)
 		}
 	}
