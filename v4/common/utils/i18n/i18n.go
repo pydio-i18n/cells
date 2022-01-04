@@ -177,7 +177,7 @@ func UserLanguage(ctx context.Context, user *idm.User, conf configx.Values) stri
 		return defaultLanguage
 	}
 	// from last to first, try to find the "parameter:core.conf:lang" action
-	langActions := permissions.GetACLsForRoles(ctx, user.Roles, &idm.ACLAction{Name: "parameter:core.conf:lang"})
+	langActions, _ := permissions.GetACLsForRoles(ctx, user.Roles, &idm.ACLAction{Name: "parameter:core.conf:lang"})
 	if len(langActions) == 0 {
 		return defaultLanguage
 	}

@@ -7,15 +7,14 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"regexp"
 	"strings"
-
-	pb "github.com/pydio/cells/v4/common/proto/registry"
 
 	caddy "github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
+	"github.com/pydio/cells/v4/common"
+	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
 	servercontext "github.com/pydio/cells/v4/common/server/context"
 )
@@ -48,6 +47,32 @@ func (m Middleware) Provision(ctx caddy.Context) error {
 
 // ServeHTTP implements caddyhttp.MiddlewareHandler.
 func (m Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
+
+	// Special case for application/grpc
+	if strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
+		gserv, e := m.r.Get(common.ServiceGatewayGrpc, registry.WithType(pb.ItemType_SERVICE))
+		if e != nil || gserv == nil {
+			http.NotFound(w, r)
+			return nil
+		}
+		gs := gserv.(registry.Service)
+		if len(gs.Nodes()) == 0 {
+			http.NotFound(w, r)
+			return nil
+		}
+		node := gs.Nodes()[0]
+		u, err := url.Parse("https://localhost" + strings.Replace(node.Address()[0], "[::]", "", -1))
+		if err != nil {
+			return err
+		}
+		proxy := httputil.NewSingleHostReverseProxy(u)
+		proxy.ErrorHandler = func(writer http.ResponseWriter, request *http.Request, err error) {
+			fmt.Println("Got Error in Grpc Reverse Proxy:", err.Error())
+		}
+		proxy.ServeHTTP(w, r)
+		return nil
+	}
+
 	// try to find it in the current mux
 	_, pattern := m.s.Handler(r)
 	if len(pattern) > 0 && (pattern != "/" || r.URL.Path == "/") {
@@ -70,12 +95,7 @@ func (m Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 			if endpoint == "/" {
 				continue
 			}
-			ok, err := regexp.Match(endpoint, []byte(r.URL.Path))
-			if err != nil {
-				return err
-			}
-
-			if ok {
+			if strings.HasPrefix(r.URL.Path, endpoint) {
 				// TODO v4 - proxy should be set once when watching the node
 				u, err := url.Parse("http://" + strings.Replace(node.Address()[0], "[::]", "", -1))
 				if err != nil {

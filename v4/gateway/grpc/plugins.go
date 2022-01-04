@@ -2,12 +2,13 @@ package grpc
 
 import (
 	"context"
-	"fmt"
+	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/server"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	metadata2 "google.golang.org/grpc/metadata"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth"
@@ -17,29 +18,28 @@ import (
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/install"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/server"
+	grpc2 "github.com/pydio/cells/v4/common/server/grpc"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
-	"github.com/pydio/cells/v4/common/utils/net"
 )
 
 func init() {
 
-	grpcServerWithLog := func(ctx context.Context, g *grpc.Server, msg string) error {
-		log.Logger(ctx).Info(msg)
-		/*
-			// TODO V4
-			// Register custom interceptor ?
-			m.Init(micro.WrapHandler(jwtWrapper(m.Options().Context), httpMetaWrapper()))
-		*/
+	handlersRegister := func(g *grpc.Server, clear bool) {
 		h := &TreeHandler{}
-		tree.RegisterNodeProviderEnhancedServer(g, h)
-		tree.RegisterNodeReceiverEnhancedServer(g, h)
-		tree.RegisterNodeChangesStreamerEnhancedServer(g, h)
-		tree.RegisterNodeProviderStreamerEnhancedServer(g, h)
-		tree.RegisterNodeReceiverStreamEnhancedServer(g, h)
-
-		return nil
+		if clear {
+			h.name = common.ServiceGatewayGrpcClear
+		} else {
+			h.name = common.ServiceGatewayGrpc
+		}
+		// Do not use Enhanced here
+		tree.RegisterNodeProviderServer(g, h)
+		tree.RegisterNodeReceiverServer(g, h)
+		tree.RegisterNodeChangesStreamerServer(g, h)
+		tree.RegisterNodeProviderStreamerServer(g, h)
+		tree.RegisterNodeReceiverStreamServer(g, h)
 	}
 
 	// Build options - optionally force port
@@ -57,6 +57,7 @@ func init() {
 		service.Description("External gRPC Access (clear)"),
 	)
 	plugins.Register("main", func(ctx context.Context) {
+
 		ss, _ := config.LoadSites()
 		var hasClear, hasTls bool
 		for _, s := range ss {
@@ -67,96 +68,105 @@ func init() {
 			}
 		}
 		if hasClear {
-			var p string
-			if port := viper.GetString("grpc_external"); port != "" {
-				p = port
-			} else {
-				p = fmt.Sprintf("%d", net.GetAvailablePort())
-			}
-			logCtx := servicecontext.WithServiceName(ctx, common.ServiceGatewayGrpcClear)
 			clearOpts = append(clearOpts,
-				// service.Port(p), TODO V4
 				service.Context(ctx),
+				service.WithServerProvider(createServerProvider(false)),
 				service.WithGRPC(func(c context.Context, g *grpc.Server) error {
-					return grpcServerWithLog(logCtx, g, "Starting HTTP only gRPC gateway. Will be accessed directly through port "+p)
+					handlersRegister(g, true)
+					return nil
 				}),
 			)
 			service.NewService(clearOpts...)
 		}
 		if hasTls {
-			logCtx := servicecontext.WithServiceName(ctx, common.ServiceGatewayGrpc)
 			tlsOpts = append(tlsOpts,
 				service.Context(ctx),
+				service.WithServerProvider(createServerProvider(true)),
 				service.WithGRPC(func(c context.Context, g *grpc.Server) error {
-					return grpcServerWithLog(logCtx, g, "Activating self-signed configuration for gRPC gateway to allow full TLS chain.")
+					handlersRegister(g, false)
+					return nil
 				}),
 			)
-			localConfig := &install.ProxyConfig{
-				Binds:     []string{common.ServiceGatewayGrpc},
-				TLSConfig: &install.ProxyConfig_SelfSigned{SelfSigned: &install.TLSSelfSigned{}},
-			}
-			if tls, e := providers.LoadTLSServerConfig(localConfig); e == nil {
-				tlsOpts = append(tlsOpts, service.WithTLSConfig(tls))
-			}
 			service.NewService(tlsOpts...)
 		}
 	})
 
 }
 
-// jwtWrapper extracts x-pydio-bearer metadata to validate authentication
-func jwtWrapper(serviceCtx context.Context) func(handlerFunc server.HandlerFunc) server.HandlerFunc {
+func createServerProvider(tls bool) service.ServerProvider {
+	return func(ctx context.Context) (server.Server, error) {
+		grpcOptions := []grpc.ServerOption{
+			grpc.ChainUnaryInterceptor(
+				servicecontext.ContextUnaryServerInterceptor(servicecontext.SpanIncomingContext),
+				servicecontext.MetricsUnaryServerInterceptor(),
+				servicecontext.ContextUnaryServerInterceptor(servicecontext.MetaIncomingContext),
+				servicecontext.ContextUnaryServerInterceptor(jwtCtxModifier),
+				servicecontext.ContextUnaryServerInterceptor(grpcMetaCtxModifier),
+			),
+			grpc.ChainStreamInterceptor(
+				servicecontext.ContextStreamServerInterceptor(servicecontext.SpanIncomingContext),
+				servicecontext.MetricsStreamServerInterceptor(),
+				servicecontext.ContextStreamServerInterceptor(servicecontext.MetaIncomingContext),
+				servicecontext.ContextStreamServerInterceptor(jwtCtxModifier),
+				servicecontext.ContextStreamServerInterceptor(grpcMetaCtxModifier),
+			),
+		}
+		if tls {
+			localConfig := &install.ProxyConfig{
+				Binds:     []string{"localhost"},
+				TLSConfig: &install.ProxyConfig_SelfSigned{SelfSigned: &install.TLSSelfSigned{}},
+			}
+			tlsConfig, e := providers.LoadTLSServerConfig(localConfig)
+			if e != nil {
+				return nil, e
+			}
+			grpcOptions = append(grpcOptions, grpc.Creds(credentials.NewTLS(tlsConfig)))
+		}
+
+		srv := grpc.NewServer(grpcOptions...)
+		addr := ":0" // Will pick a random port
+		if !tls {
+			if port := viper.GetString("grpc_external"); port != "" {
+				addr = ":" + port
+			}
+			logCtx := servicecontext.WithServiceName(ctx, common.ServiceGatewayGrpcClear)
+			log.Logger(logCtx).Info("Starting HTTP only gRPC gateway. Will be accessed directly through " + addr)
+		} else {
+			logCtx := servicecontext.WithServiceName(ctx, common.ServiceGatewayGrpc)
+			log.Logger(logCtx).Info("Activating self-signed configuration for gRPC gateway to allow full TLS chain.")
+		}
+		return grpc2.NewWithServer(ctx, srv, addr), nil
+	}
+}
+
+// jwtCtxModifier extracts x-pydio-bearer metadata to validate authentication
+func jwtCtxModifier(ctx context.Context) (context.Context, bool, error) {
 
 	jwtVerifier := auth.DefaultJWTVerifier()
+	meta, ok := metadata2.FromIncomingContext(ctx)
+	if !ok {
+		return ctx, false, nil
+	}
+	bearer := strings.Join(meta.Get("x-pydio-bearer"), "")
+	if bearer == "" {
+		return ctx, false, nil
+	}
 
-	return func(handlerFunc server.HandlerFunc) server.HandlerFunc {
-
-		return func(ctx context.Context, req server.Request, rsp interface{}) error {
-
-			if meta, ok := metadata.FromContext(ctx); ok {
-
-				bearer, o := meta["x-pydio-bearer"] //strings.Join(meta.Get("x-pydio-bearer"), "")
-				if o {
-					var err error
-					ctx, _, err = jwtVerifier.Verify(ctx, bearer)
-					if err != nil {
-						log.Auditer(serviceCtx).Error(
-							"Blocked invalid JWT",
-							log.GetAuditId(common.AuditInvalidJwt),
-						)
-						return err
-					} else {
-						log.Logger(serviceCtx).Debug("Got valid Claims from Bearer!")
-					}
-				}
-			}
-
-			return handlerFunc(ctx, req, rsp)
-
-		}
+	if ct, _, err := jwtVerifier.Verify(ctx, bearer); err != nil {
+		log.Auditer(ctx).Error("Blocked invalid JWT", log.GetAuditId(common.AuditInvalidJwt))
+		return ctx, false, err
+	} else {
+		log.Logger(ctx).Debug("Got valid Claims from Bearer!")
+		return ct, true, nil
 	}
 
 }
 
-// httpMetaWrapper translates gRPC meta headers (lowercase x-header-name) to standard cells metadata
-func httpMetaWrapper() func(handlerFunc server.HandlerFunc) server.HandlerFunc {
-
-	return func(handlerFunc server.HandlerFunc) server.HandlerFunc {
-		return func(ctx context.Context, req server.Request, rsp interface{}) error {
-
-			return handlerFunc(ctxRequestInfoToMetadata(ctx), req, rsp)
-
-		}
-	}
-}
-
-func ctxRequestInfoToMetadata(ctx context.Context) context.Context {
+// grpcMetaCtxModifier extracts specific meta from IncomingContext
+func grpcMetaCtxModifier(ctx context.Context) (context.Context, bool, error) {
 
 	meta := map[string]string{}
-	if existing, ok := metadata.FromContext(ctx); ok {
-		if _, already := existing[servicecontext.HttpMetaExtracted]; already {
-			return ctx
-		}
+	if existing, ok := metadata2.FromIncomingContext(ctx); ok {
 		translate := map[string]string{
 			"user-agent":      servicecontext.HttpMetaUserAgent,
 			"content-type":    servicecontext.HttpMetaContentType,
@@ -164,15 +174,18 @@ func ctxRequestInfoToMetadata(ctx context.Context) context.Context {
 			"x-pydio-span-id": servicecontext.SpanMetadataId,
 		}
 		for k, v := range existing {
+			if k == ":authority" { // Ignore grpc-specific meta
+				continue
+			}
 			if newK, ok := translate[k]; ok {
-				meta[newK] = v
+				meta[newK] = strings.Join(v, "")
 			} else {
-				meta[k] = v
+				meta[k] = strings.Join(v, "")
 			}
 		}
 		// Override with specific header
 		if ua, ok := existing["x-pydio-grpc-user-agent"]; ok {
-			meta[servicecontext.HttpMetaUserAgent] = ua
+			meta[servicecontext.HttpMetaUserAgent] = strings.Join(ua, "")
 		}
 	}
 	meta[servicecontext.HttpMetaExtracted] = servicecontext.HttpMetaExtracted
@@ -182,5 +195,5 @@ func ctxRequestInfoToMetadata(ctx context.Context) context.Context {
 	// We currently use server time instead of client time. TODO: Retrieve client time and locale and set it here.
 	meta[servicecontext.ClientTime] = t.Format(layout)
 
-	return metadata.NewContext(ctx, meta)
+	return metadata.NewContext(ctx, meta), true, nil
 }

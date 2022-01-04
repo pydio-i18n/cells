@@ -15,21 +15,23 @@ import (
 type Server struct {
 	name   string
 	cancel context.CancelFunc
+	addr   string
 	net.Listener
 	*grpc.Server
 }
 
+// New creates the generic grpc.Server
 func New(ctx context.Context) server.Server {
 	s := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
-			servicecontext.SpanUnaryServerInterceptor(),
+			servicecontext.ContextUnaryServerInterceptor(servicecontext.SpanIncomingContext),
 			servicecontext.MetricsUnaryServerInterceptor(),
-			servicecontext.MetaUnaryServerInterceptor(),
+			servicecontext.ContextUnaryServerInterceptor(servicecontext.MetaIncomingContext),
 		),
 		grpc.ChainStreamInterceptor(
-			servicecontext.SpanStreamServerInterceptor(),
+			servicecontext.ContextStreamServerInterceptor(servicecontext.SpanIncomingContext),
 			servicecontext.MetricsStreamServerInterceptor(),
-			servicecontext.MetaStreamServerInterceptor(),
+			servicecontext.ContextStreamServerInterceptor(servicecontext.MetaIncomingContext),
 		),
 	)
 
@@ -38,12 +40,26 @@ func New(ctx context.Context) server.Server {
 	return server.NewServer(ctx, &Server{
 		name:   "grpc-" + uuid.New(),
 		cancel: cancel,
+		addr:   viper.GetString("grpc.address"),
 		Server: s,
 	})
 }
 
+// NewWithServer can pass preset grpc.Server with custom listen address
+func NewWithServer(ctx context.Context, s *grpc.Server, listen string) server.Server {
+	ctx, cancel := context.WithCancel(ctx)
+	return server.NewServer(ctx, &Server{
+		name:   "grpc-" + uuid.New(),
+		cancel: cancel,
+		addr:   listen,
+		Server: s,
+	})
+
+}
+
 func (s *Server) Serve() error {
-	lis, err := net.Listen("tcp", viper.GetString("grpc.address"))
+	//fmt.Println("Serving Grpc on " + s.addr)
+	lis, err := net.Listen("tcp", s.addr)
 	if err != nil {
 		return err
 	}

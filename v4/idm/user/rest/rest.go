@@ -23,7 +23,6 @@ package rest
 import (
 	"context"
 	"fmt"
-	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"strings"
 	"time"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/front"
@@ -55,7 +55,7 @@ var profilesLevel = map[string]int{
 	common.PydioProfileShared:   1,
 	common.PydioProfileStandard: 2,
 	common.PydioProfileAdmin:    3,
-	"":                          4,
+	"": 4,
 }
 
 type UserHandler struct {
@@ -394,7 +394,12 @@ func (s *UserHandler) PutUser(req *restful.Request, rsp *restful.Response) {
 		// Load current ACLs for personal role
 		for _, r := range update.Roles {
 			if r.UserRole {
-				existingAcls = permissions.GetACLsForRoles(ctx, []*idm.Role{r}, &idm.ACLAction{Name: "parameter:*"})
+				var er error
+				existingAcls, er = permissions.GetACLsForRoles(ctx, []*idm.Role{r}, &idm.ACLAction{Name: "parameter:*"})
+				if er != nil {
+					service.RestError500(req, rsp, er)
+					return
+				}
 			}
 		}
 		// Put back the pydio: attributes
@@ -836,7 +841,8 @@ func paramsAclsToAttributes(ctx context.Context, users []*idm.User) {
 	if len(roles) == 0 {
 		return
 	}
-	for _, acl := range permissions.GetACLsForRoles(ctx, roles, &idm.ACLAction{Name: "parameter:*"}) {
+	aa, _ := permissions.GetACLsForRoles(ctx, roles, &idm.ACLAction{Name: "parameter:*"})
+	for _, acl := range aa {
 		for _, user := range users {
 			if allowedAclKey(acl.Action.Name, user.PoliciesContextEditable) && user.Uuid == acl.RoleID {
 				user.Attributes[acl.Action.Name] = acl.Action.Value

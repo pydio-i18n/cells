@@ -21,9 +21,13 @@
 package cmd
 
 import (
-	"github.com/pydio/cells/v4/common/broker"
+	"log"
+
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"golang.org/x/sync/errgroup"
 
+	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/plugins"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
@@ -37,8 +41,6 @@ import (
 	"github.com/pydio/cells/v4/common/server/http"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -225,35 +227,51 @@ to quickly create a Cobra application.`,
 					continue
 				}
 
-				if s.IsGRPC() {
-					if srvGRPC == nil {
-						srvGRPC = grpc.New(ctx)
-						srvs = append(srvs, srvGRPC)
+				if opts.Server != nil {
+
+					srvs = append(srvs, opts.Server)
+
+				} else if opts.ServerProvider != nil {
+
+					serv, er := opts.ServerProvider(ctx)
+					if er != nil {
+						log.Fatal(er)
 					}
+					opts.Server = serv
+					srvs = append(srvs, opts.Server)
 
-					opts.Server = srvGRPC
-				}
+				} else {
+					if s.IsGRPC() {
 
-				if s.IsREST() {
-					if srvHTTP == nil {
-						if runtime.IsFork() {
-							srvHTTP = http.New(ctx)
-						} else {
-							srvHTTP, _ = caddy.New(opts.Context, "")
+						if srvGRPC == nil {
+							srvGRPC = grpc.New(ctx)
+							srvs = append(srvs, srvGRPC)
 						}
-						srvs = append(srvs, srvHTTP)
+						opts.Server = srvGRPC
+
 					}
+					if s.IsREST() {
 
-					opts.Server = srvHTTP
-				}
+						if srvHTTP == nil {
+							if runtime.IsFork() {
+								srvHTTP = http.New(ctx)
+							} else {
+								srvHTTP, _ = caddy.New(opts.Context, "")
+							}
+							srvs = append(srvs, srvHTTP)
+						}
+						opts.Server = srvHTTP
 
-				if s.IsGeneric() {
-					if srvGeneric == nil {
-						srvGeneric = generic.New(ctx)
-						srvs = append(srvs, srvGeneric)
 					}
+					if s.IsGeneric() {
 
-					opts.Server = srvGeneric
+						if srvGeneric == nil {
+							srvGeneric = generic.New(ctx)
+							srvs = append(srvs, srvGeneric)
+						}
+						opts.Server = srvGeneric
+
+					}
 				}
 
 				// Checking which service is needed

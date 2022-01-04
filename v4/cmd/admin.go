@@ -18,32 +18,38 @@
  * The latest code can be found at <https://pydio.com>.
  */
 
-package servicecontext
+package cmd
 
 import (
-	"context"
-	"strings"
-
-	"google.golang.org/grpc/metadata"
-
-	"github.com/pydio/cells/v4/common/service/context/ckeys"
-	metadata2 "github.com/pydio/cells/v4/common/service/context/metadata"
+	"github.com/spf13/cobra"
 )
 
-// MetaIncomingContext looks for x-cells- metadata keys in IncomingContext and
-// set them in standard metadata map
-func MetaIncomingContext(ctx context.Context) (context.Context, bool, error) {
-	if md, ok := metadata.FromIncomingContext(ctx); ok {
-		cellsMeta := make(map[string]string)
-		for k, v := range md {
-			if strings.HasPrefix(k, ckeys.CellsMetaPrefix) {
-				cellsMeta[strings.TrimPrefix(k, ckeys.CellsMetaPrefix)] = strings.Join(v, "")
-			}
-		}
-		if len(cellsMeta) > 0 {
-			ctx = metadata2.NewContext(ctx, cellsMeta)
-			return ctx, true, nil
-		}
-	}
-	return ctx, false, nil
+// AdminCmd groups the data manipulation commands
+// The sub-commands are connecting via gRPC to a **running** Cells instance.
+var AdminCmd = &cobra.Command{
+	Use:   "admin",
+	Short: "Direct Read/Write access to Cells data",
+	Long: `
+DESCRIPTION
+
+  Set of commands with direct access to Cells data.
+	
+  These commands require a running Cells instance. They connect directly to low-level services
+  using gRPC connections. They are not authenticated.
+`,
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+
+		bindViperFlags(cmd.Flags(), map[string]string{})
+
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		cmd.Help()
+	},
+}
+
+func init() {
+	// Registry / Broker Flags
+	addRegistryFlags(AdminCmd.PersistentFlags())
+	RootCmd.AddCommand(AdminCmd)
 }

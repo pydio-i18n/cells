@@ -24,7 +24,6 @@ import (
 	"context"
 	"net/http"
 
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common/service/context/metadata"
@@ -126,6 +125,7 @@ func ctxWithOpIdFromMeta(ctx context.Context) context.Context {
 	return ctx
 }
 
+// todo v4
 func SpanUnaryClientInterceptor() grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		//fmt.Println("Client Call", method)
@@ -148,6 +148,7 @@ func SpanUnaryClientInterceptor() grpc.UnaryClientInterceptor {
 	}
 }
 
+// todo v4
 func SpanStreamClientInterceptor() grpc.StreamClientInterceptor {
 	return func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 		//fmt.Println("Client Stream", method)
@@ -170,26 +171,11 @@ func SpanStreamClientInterceptor() grpc.StreamClientInterceptor {
 	}
 }
 
-func SpanUnaryServerInterceptor() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		// fmt.Println("Server", req.Method())
-		ctx = childOrNewSpan(ctx)
-		ctx = ctxWithOpIdFromMeta(ctx)
-		return handler(ctx, req)
-	}
-}
-
-func SpanStreamServerInterceptor() grpc.StreamServerInterceptor {
-	return func(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-		ctx := stream.Context()
-		ctx = childOrNewSpan(ctx)
-		ctx = ctxWithOpIdFromMeta(ctx)
-
-		wrapped := grpc_middleware.WrapServerStream(stream)
-		wrapped.WrappedContext = ctx
-
-		return handler(srv, wrapped)
-	}
+// SpanIncomingContext updates Spans Ids in context
+func SpanIncomingContext(ctx context.Context) (context.Context, bool, error) {
+	ctx = childOrNewSpan(ctx)
+	ctx = ctxWithOpIdFromMeta(ctx)
+	return ctx, true, nil
 }
 
 /*

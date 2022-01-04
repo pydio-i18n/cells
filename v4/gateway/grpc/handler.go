@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/proto/tree"
@@ -21,10 +20,11 @@ type TreeHandler struct {
 	tree.UnimplementedNodeProviderStreamerServer
 
 	router nodes.Handler
+	name   string
 }
 
 func (t *TreeHandler) Name() string {
-	return common.ServiceGatewayGrpc
+	return t.name
 }
 
 func (t *TreeHandler) fixMode(n *tree.Node) {

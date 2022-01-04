@@ -132,11 +132,11 @@ func GetRolesForUser(ctx context.Context, user *idm.User, createMissing bool) []
 }
 
 // GetRoles Objects from a list of role names.
-func GetRoles(ctx context.Context, names []string) []*idm.Role {
+func GetRoles(ctx context.Context, names []string) ([]*idm.Role, error) {
 
 	var roles []*idm.Role
 	if len(names) == 0 {
-		return roles
+		return roles, nil
 	}
 
 	query, _ := anypb.New(&idm.RoleSingleQuery{Uuid: names})
@@ -144,18 +144,16 @@ func GetRoles(ctx context.Context, names []string) []*idm.Role {
 	stream, err := roleClient.SearchRole(ctx, &idm.SearchRoleRequest{Query: &service.Query{SubQueries: []*anypb.Any{query}}})
 
 	if err != nil {
-		if !strings.Contains(err.Error(), "context canceled") {
-			log.Logger(ctx).Error("Failed to retrieve roles", zap.Error(err), zap.Any("c", ctx))
-		}
-		return nil
+		return nil, err
 	}
-
-	defer stream.CloseSend()
 
 	for {
 		response, err := stream.Recv()
 
 		if err != nil {
+			if err != io.EOF {
+				return nil, err
+			}
 			break
 		}
 
@@ -171,16 +169,16 @@ func GetRoles(ctx context.Context, names []string) []*idm.Role {
 		}
 	}
 	//log.Logger(ctx).Debug("GetRoles", zap.Any("roles", sorted))
-	return sorted
+	return sorted, nil
 }
 
 // GetACLsForRoles compiles ALCs for a list of roles.
-func GetACLsForRoles(ctx context.Context, roles []*idm.Role, actions ...*idm.ACLAction) []*idm.ACL {
+func GetACLsForRoles(ctx context.Context, roles []*idm.Role, actions ...*idm.ACLAction) ([]*idm.ACL, error) {
 
 	var acls []*idm.ACL
 
 	if len(roles) == 0 {
-		return acls
+		return acls, nil
 	}
 
 	// First we retrieve the roleIDs from the role names
@@ -195,12 +193,12 @@ func GetACLsForRoles(ctx context.Context, roles []*idm.Role, actions ...*idm.ACL
 
 	q1Any, err := anypb.New(q1)
 	if err != nil {
-		return acls
+		return acls, err
 	}
 
 	q2Any, err := anypb.New(q2)
 	if err != nil {
-		return acls
+		return acls, err
 	}
 	//s := time.Now()
 	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
@@ -213,15 +211,16 @@ func GetACLsForRoles(ctx context.Context, roles []*idm.Role, actions ...*idm.ACL
 
 	if err != nil {
 		log.Logger(ctx).Error("GetACLsForRoles", zap.Error(err))
-		return nil
+		return nil, err
 	}
-
-	defer stream.CloseSend()
 
 	for {
 		response, err := stream.Recv()
 
 		if err != nil {
+			if err != io.EOF {
+				return nil, err
+			}
 			break
 		}
 
@@ -230,7 +229,7 @@ func GetACLsForRoles(ctx context.Context, roles []*idm.Role, actions ...*idm.ACL
 
 	//log.Logger(ctx).Debug("GetACLsForRoles", zap.Any("acls", acls), zap.Any("roles", roles), zap.Any("actions", actions), zap.Duration("t", time.Now().Sub(s)))
 
-	return acls
+	return acls, nil
 }
 
 // GetACLsForWorkspace compiles ACLs list attached to a given workspace.
@@ -404,9 +403,16 @@ func AccessListFromContextClaims(ctx context.Context) (accessList *AccessList, e
 		}
 	}
 	//fmt.Println("Loading AccessList")
-	roles := GetRoles(ctx, strings.Split(claims.Roles, ","))
+	roles, e := GetRoles(ctx, strings.Split(claims.Roles, ","))
+	if e != nil {
+		return nil, e
+	}
 	accessList = NewAccessList(roles)
-	accessList.Append(GetACLsForRoles(ctx, roles, AclRead, AclDeny, AclWrite, AclLock, AclPolicy))
+	aa, e := GetACLsForRoles(ctx, roles, AclRead, AclDeny, AclWrite, AclLock, AclPolicy)
+	if e != nil {
+		return nil, e
+	}
+	accessList.Append(aa)
 	accessList.Flatten(ctx)
 
 	if claims.ProvidesScopes {
@@ -554,7 +560,11 @@ func AccessListFromRoles(ctx context.Context, roles []*idm.Role, countPolicies b
 			}
 		*/
 	}
-	accessList.Append(GetACLsForRoles(ctx, roles, search...))
+	aa, e := GetACLsForRoles(ctx, roles, search...)
+	if e != nil {
+		return nil, e
+	}
+	accessList.Append(aa)
 	accessList.Flatten(ctx)
 
 	if loadWorkspaces {
@@ -576,7 +586,10 @@ func AccessListLoadFrontValues(ctx context.Context, accessList *AccessList) erro
 		return nil
 	}
 
-	values := GetACLsForRoles(ctx, accessList.OrderedRoles, AclFrontAction_, AclFrontParam_)
+	values, er := GetACLsForRoles(ctx, accessList.OrderedRoles, AclFrontAction_, AclFrontParam_)
+	if er != nil {
+		return er
+	}
 	accessList.FrontPluginsValues = values
 
 	return nil

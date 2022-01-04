@@ -78,7 +78,7 @@ func TestSearchUniqueUser(t *testing.T) {
 		rr := permissions.GetRolesForUser(bg, adminUser, false)
 		So(rr, ShouldHaveLength, 3)
 
-		rr = permissions.GetRoles(bg, []string{"ADMINS"})
+		rr, _ = permissions.GetRoles(bg, []string{"ADMINS"})
 		So(rr, ShouldHaveLength, 1)
 
 	})

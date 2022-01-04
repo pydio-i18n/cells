@@ -45,9 +45,6 @@ const (
 		{{if $ExternalHost}}request_header Host {{$ExternalHost}}{{end}}
 		request_header X-Real-IP {remote}
 
-		# Special rewrite for grpc requests (always sent on root path)
-		rewrite @grpc-content /grpc{path}
-
 		# Special rewrite for s3 list buckets (always sent on root path)
 		# rewrite @list_buckets /io{path}
 

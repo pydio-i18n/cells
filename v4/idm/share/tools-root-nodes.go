@@ -3,8 +3,9 @@ package share
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -162,8 +163,15 @@ func DetectInheritedPolicy(ctx context.Context, roots []*tree.Node, loadedParent
 		if !ok {
 			return "", fmt.Errorf("cannot find claims in context")
 		}
-		roles := permissions.GetRoles(ctx, strings.Split(claims.Roles, ","))
-		acls := permissions.GetACLsForRoles(ctx, roles, &idm.ACLAction{Name: "default-cells-policy"})
+		roles, er := permissions.GetRoles(ctx, strings.Split(claims.Roles, ","))
+		if er != nil {
+			return "", er
+		}
+		acls, er := permissions.GetACLsForRoles(ctx, roles, &idm.ACLAction{Name: "default-cells-policy"})
+		if er != nil {
+			return "", er
+		}
+
 		for _, role := range roles {
 			for _, acl := range acls {
 				if acl.RoleID == role.Uuid && acl.Action.Name == "default-cells-policy" {

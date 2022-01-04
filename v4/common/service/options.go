@@ -5,12 +5,13 @@ import (
 	"crypto/tls"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/service/frontend"
-
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/server"
+	"github.com/pydio/cells/v4/common/service/frontend"
 	"github.com/pydio/cells/v4/common/utils/uuid"
 )
+
+type ServerProvider func(ctx context.Context) (server.Server, error)
 
 // ServiceOptions stores all options for a pydio service
 type ServiceOptions struct {
@@ -33,10 +34,11 @@ type ServiceOptions struct {
 	// Port      string
 	TLSConfig *tls.Config
 
-	Server      server.Server
-	serverType  server.ServerType
-	serverStart func() error
-	serverStop  func() error
+	Server         server.Server
+	ServerProvider ServerProvider
+	serverType     server.ServerType
+	serverStart    func() error
+	serverStop     func() error
 
 	Dependencies []*dependency
 
@@ -115,9 +117,17 @@ func WithTLSConfig(c *tls.Config) ServiceOption {
 	}
 }
 
+// WithServer directly presets the server.Server instance
 func WithServer(s server.Server) ServiceOption {
 	return func(o *ServiceOptions) {
 		o.Server = s
+	}
+}
+
+// WithServerProvider passes a callback producing a new server.Server
+func WithServerProvider(provider ServerProvider) ServiceOption {
+	return func(o *ServiceOptions) {
+		o.ServerProvider = provider
 	}
 }
 
