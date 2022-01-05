@@ -49,24 +49,58 @@ var (
 	ctx    context.Context
 	cancel context.CancelFunc
 
-	cfgFile string
-
 	infoCommands = []string{"version", "completion", "doc", "help", "--help", "bash", "zsh", os.Args[0]}
 )
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:   "test",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Use:   os.Args[0],
+	Short: "Secure File Sharing for business",
+	Long: `
+DESCRIPTION
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+  Pydio Cells is self-hosted Document Sharing & Collaboration software for organizations that need 
+  advanced sharing without security trade-offs. Cells gives you full control of your document sharing 
+  environment – combining fast performance, huge file transfer sizes, granular security, and advanced 
+  workflow automations in an easy-to-set-up and easy-to-support self-hosted platform.
+
+CONFIGURE
+
+  For the very first run, use '` + os.Args[0] + ` configure' to begin the browser-based or command-line based installation wizard. 
+  Services will automatically start at the end of a browser-based installation.
+
+RUN
+
+  Run '$ ` + os.Args[0] + ` start' to load all services.
+
+WORKING DIRECTORIES
+
+  By default, application data is stored under the standard OS application dir: 
+  
+   - Linux: ${USER_HOME}/.config/pydio/cells
+   - Darwin: ${USER_HOME}/Library/Application Support/Pydio/cells
+   - Windows: ${USER_HOME}/ApplicationData/Roaming/Pydio/cells
+
+  You can customize the storage locations with the following ENV variables: 
+  
+   - CELLS_WORKING_DIR: replace the whole standard application dir
+   - CELLS_DATA_DIR: replace the location for storing default datasources (default CELLS_WORKING_DIR/data)
+   - CELLS_LOG_DIR: replace the location for storing logs (default CELLS_WORKING_DIR/logs)
+   - CELLS_SERVICES_DIR: replace location for services-specific data (default CELLS_WORKING_DIR/services) 
+
+LOGS LEVEL
+
+  By default, logs are outputted in console format at the Info level and appended to a CELLS_LOG_DIR/pydio.log file. You can: 
+   - Change the level (debug, info, warn or error) with the --log flag
+   - Output the logs in json format with --log_json=true 
+   - Prevent logs from being written to a file with --log_to_file=false
+
+  For backward compatibility:
+   - The CELLS_LOGS_LEVEL environment variable still works to define the --log flag (or CELLS_LOG env var)
+     but is now deprecated and will disappear in version 4.     
+   - The --log=production flag still works and is equivalent to "--log=info --log_json=true --log_to_file=true"
+      
+`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -77,19 +111,6 @@ func Execute() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-}
-
-func init() {
-	// cobra.OnInitialize(initConfig)
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.test.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 func skipCoreInit() bool {

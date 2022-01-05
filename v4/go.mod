@@ -14,12 +14,12 @@ require (
 	github.com/beevik/ntp v0.3.0
 	github.com/blevesearch/bleve v1.0.14
 	github.com/c2fo/testify v0.0.0-20150827203832-fba96363964a // indirect
-	github.com/caddyserver/caddy v1.0.5
 	github.com/caddyserver/caddy/v2 v2.4.5
 	github.com/cskr/pubsub v1.0.2
 	github.com/disintegration/imaging v1.6.2
 	github.com/dustin/go-humanize v1.0.1-0.20200219035652-afde56e7acac
 	github.com/emicklei/go-restful v2.15.0+incompatible
+	github.com/fatih/color v1.13.0
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-openapi/errors v0.20.1
@@ -66,13 +66,16 @@ require (
 	github.com/mssola/user_agent v0.5.3
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/nicksnyder/go-i18n v1.10.0
+	github.com/olekukonko/tablewriter v0.0.5
 	github.com/ory/fosite v0.40.3-0.20211101181407-30e8cb92e53c
 	github.com/ory/hydra v1.10.7
 	github.com/ory/ladon v1.2.0
 	github.com/ory/x v0.0.303
 	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/pborman/uuid v1.2.1
 	github.com/philopon/go-toposort v0.0.0-20170620085441-9be86dbd762f
 	github.com/pkg/errors v0.9.1
+	github.com/pydio/go v0.0.0-20191211170306-d00ac19450ef // indirect
 	github.com/pydio/melody v0.0.0-20190928133520-4271c6513fb6
 	github.com/pydio/pydio-sdk-go v0.0.0-20190116153840-23ce5c39e65c
 	github.com/rjeczalik/notify v0.9.2
@@ -95,6 +98,9 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/twmb/murmur3 v1.1.6 // indirect
 	github.com/uber-go/tally v3.4.2+incompatible
+	github.com/yudai/gojsondiff v1.0.0
+	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
+	github.com/yudai/pp v2.0.1+incompatible // indirect
 	github.com/yvasiyarov/php_session_decoder v0.0.0-20180803065642-a065a3b0b7d1
 	github.com/zalando/go-keyring v0.1.1
 	go.etcd.io/bbolt v1.3.6
