@@ -34,6 +34,7 @@ import (
 	"github.com/pydio/cells/v4/common/auth"
 	"github.com/pydio/cells/v4/common/config"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/rs/cors"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
@@ -97,7 +98,12 @@ func init() {
 				}
 				fmt.Println("Attach router to /oidc/")
 
-				serveMux.Handle("/oidc/", http.StripPrefix("/oidc", router))
+				serveMux.Handle("/oidc/", http.StripPrefix("/oidc", cors.New(cors.Options{
+					AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
+					AllowedHeaders:   []string{"Authorization", "Content-Type"},
+					ExposedHeaders:   []string{"Content-Type"},
+					AllowCredentials: true,
+				}).Handler(router)))
 				return nil
 			}),
 			/*

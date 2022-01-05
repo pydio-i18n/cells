@@ -21,6 +21,7 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 	"sync"
@@ -124,6 +125,7 @@ func InitConfiguration(values configx.Values) {
 	defer confMutex.Unlock()
 	initConnector := false
 	for _, rootUrl := range config.GetSitesAllowedURLs() {
+		fmt.Println("Auth Provider - rootUrl", rootUrl)
 		p := NewProvider(rootUrl.String(), values)
 		if !initConnector {
 			// Use first conf as default
@@ -167,7 +169,26 @@ func GetConfigurationProvider(hostname ...string) ConfigurationProvider {
 func NewProvider(rootURL string, values configx.Values) ConfigurationProvider {
 	// Todo V4 : Do we need more from the original conf ?
 	val := configx.New()
-	_ = val.Val("secrets.system").Set([]string{values.Val("secret").String()})
+	_ = val.Val(hconf.KeyGetSystemSecret).Set([]string{values.Val("secret").String()})
+	_ = val.Val(hconf.KeyPublicURL).Set(rootURL + "/oidc")
+	_ = val.Val(hconf.KeyIssuerURL).Set(rootURL + "/oidc")
+	_ = val.Val(hconf.KeyLoginURL).Set(rootURL + "/oauth2/login")
+	_ = val.Val(hconf.KeyLogoutURL).Set(rootURL + "/oauth2/logout")
+	_ = val.Val(hconf.KeyConsentURL).Set(rootURL + "/oauth2/consent")
+	_ = val.Val(hconf.KeyErrorURL).Set(rootURL + "/oauth2/fallbacks/error")
+	_ = val.Val(hconf.KeyLogoutRedirectURL).Set(rootURL + "/oauth2/logout/callback")
+
+	_ = val.Val(hconf.KeyLogLevel).Set("trace")
+	_ = val.Val("log.leak_sensitive_values").Set(true)
+
+	rr := values.Val("insecureRedirects").StringArray()
+	sites, _ := config.LoadSites()
+	var out []string
+	for _, r := range rr {
+		out = append(out, varsFromStr(r, sites)...)
+	}
+	_ = val.Val("dangerous-allow-insecure-redirect-urls").Set(out)
+
 	provider, _ := hconf.New(logrusx.New("test", "test"), hconfx.WithValues(val.Map()))
 	return &configurationProvider{
 		Provider: provider,
@@ -378,6 +399,7 @@ func (v *configurationProvider) AllowTLSTerminationFrom() []string {
 }
 
 func (v *configurationProvider) AccessTokenStrategy() string {
+	v.Provider.AccessTokenStrategy()
 	return v.v.Val("accessTokenStrategy").Default("opaque").String()
 }
 

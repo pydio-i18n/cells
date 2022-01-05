@@ -33,9 +33,6 @@ const (
 {{range .Binds}}{{.}} {{end}} {
 	root * "{{if $SiteWebRoot}}{{$SiteWebRoot}}{{else}}{{$.WebRoot}}{{end}}"
 
-	@grpc-content {
-		header Content-type *application/grpc*
-	}
 	@list_buckets {
 		path / /probe-bucket-sign*
 		header Authorization *AWS4-HMAC-SHA256*

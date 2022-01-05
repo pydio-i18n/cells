@@ -41,7 +41,7 @@ func AuthorizationCodeAuth(middleware frontend.AuthMiddleware) frontend.AuthMidd
 			return middleware(req, rsp, in, out, session)
 		}
 
-		token, err := auth.DefaultJWTVerifier().Exchange(req.Request.Context(), in.AuthInfo["code"])
+		token, err := auth.DefaultJWTVerifier().Exchange(req.Request.Context(), in.AuthInfo["code"], in.AuthInfo["code_verifier"])
 		if err != nil {
 			return err
 		}

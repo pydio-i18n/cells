@@ -152,6 +152,8 @@ message CreateAuthCodeRequest {
     ID Consent = 1;
     string ClientID = 2;
     string RedirectURI = 3;
+    string CodeChallenge = 4;
+    string CodeChallengeMethod = 5;
 }
 
 message CreateAuthCodeResponse {

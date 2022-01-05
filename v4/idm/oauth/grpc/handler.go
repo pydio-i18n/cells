@@ -76,6 +76,10 @@ func (h *Handler) Name() string {
 	return h.name
 }
 
+func (h *Handler) LongVerifier() string {
+	return strings.ReplaceAll(uuid.New()+uuid.New(), "-", "")
+}
+
 func (h *Handler) GetLogin(ctx context.Context, in *pauth.GetLoginRequest) (*pauth.GetLoginResponse, error) {
 	req, err := auth.GetRegistry().ConsentManager().GetLoginRequest(ctx, in.Challenge)
 	if err != nil {
@@ -289,6 +293,9 @@ func (h *Handler) CreateAuthCode(ctx context.Context, in *pauth.CreateAuthCodeRe
 	values.Set("redirect_uri", in.GetRedirectURI())
 	values.Set("response_type", "code")
 	values.Set("consent_verifier", in.GetConsent().GetVerifier())
+	values.Set("code_challenge", in.GetCodeChallenge())
+	values.Set("code_challenge_method", in.GetCodeChallengeMethod())
+
 	values.Set("state", uuid.New())
 
 	req, err := http.NewRequest("POST", "", strings.NewReader(values.Encode()))
@@ -490,6 +497,8 @@ func (h *Handler) Exchange(ctx context.Context, in *pauth.ExchangeRequest) (*pau
 	values.Set("client_id", config.DefaultOAuthClientID)
 	values.Set("grant_type", "authorization_code")
 	values.Set("code", in.Code)
+	fmt.Println("code_verifier", in.CodeVerifier)
+	values.Set("code_verifier", in.CodeVerifier)
 	values.Set("redirect_uri", config.GetDefaultSiteURL()+"/auth/callback")
 
 	req, err := http.NewRequest("POST", "", strings.NewReader(values.Encode()))

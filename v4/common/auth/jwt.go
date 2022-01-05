@@ -60,7 +60,7 @@ type ContextVerifier interface {
 }
 
 type Exchanger interface {
-	Exchange(context.Context, string) (*oauth2.Token, error)
+	Exchange(context.Context, string, string) (*oauth2.Token, error)
 }
 
 // TokenOption is an AuthCodeOption is passed to Config.AuthCodeURL.
@@ -262,7 +262,7 @@ func (j *JWTVerifier) verifyTokenWithRetry(ctx context.Context, rawIDToken strin
 }
 
 // Exchange retrieves an oauth2 Token from a code.
-func (j *JWTVerifier) Exchange(ctx context.Context, code string) (*oauth2.Token, error) {
+func (j *JWTVerifier) Exchange(ctx context.Context, code, codeVerifier string) (*oauth2.Token, error) {
 	var oauth2Token *oauth2.Token
 	var err error
 
@@ -273,7 +273,7 @@ func (j *JWTVerifier) Exchange(ctx context.Context, code string) (*oauth2.Token,
 		}
 
 		// Verify state and errors.
-		oauth2Token, err = exch.Exchange(ctx, code)
+		oauth2Token, err = exch.Exchange(ctx, code, codeVerifier)
 		if err == nil {
 			break
 		}

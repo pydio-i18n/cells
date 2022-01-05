@@ -232,6 +232,9 @@ func syncClients(ctx context.Context, s client.Storage, c common.Scanner) error 
 		}
 
 		cli.RedirectURIs = redirectURIs
+		if cli.Secret == "" {
+			cli.TokenEndpointAuthMethod = "none"
+		}
 
 		if errors.Cause(err) == sqlcon.ErrNoRows {
 			// Let's create it

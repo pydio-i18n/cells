@@ -22,12 +22,12 @@ package hydra
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"time"
 
 	"golang.org/x/oauth2"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/proto/auth"
 )
 
@@ -158,12 +158,14 @@ func AcceptLogout(ctx context.Context, challenge string, accessToken string, ref
 	return nil
 }
 
-func CreateAuthCode(ctx context.Context, consent *auth.ID, clientID, redirectURI string) (string, error) {
+func CreateAuthCode(ctx context.Context, consent *auth.ID, clientID, redirectURI, codeChallenge, codeChallengeMethod string) (string, error) {
 	c := auth.NewAuthCodeProviderClient(grpc.NewClientConn(common.ServiceOAuth))
 	resp, err := c.CreateAuthCode(ctx, &auth.CreateAuthCodeRequest{
-		Consent:     consent,
-		ClientID:    clientID,
-		RedirectURI: redirectURI,
+		Consent:             consent,
+		ClientID:            clientID,
+		RedirectURI:         redirectURI,
+		CodeChallenge:       codeChallenge,
+		CodeChallengeMethod: codeChallengeMethod,
 	})
 	if err != nil {
 		return "", err
@@ -196,11 +198,12 @@ func PasswordCredentialsToken(ctx context.Context, username, password string) (*
 	return token, nil
 }
 
-func Exchange(ctx context.Context, code string) (*oauth2.Token, error) {
+func Exchange(ctx context.Context, code string, verifier string) (*oauth2.Token, error) {
 
 	c := auth.NewAuthCodeExchangerClient(grpc.NewClientConn(common.ServiceOAuth))
 	resp, err := c.Exchange(ctx, &auth.ExchangeRequest{
-		Code: code,
+		Code:         code,
+		CodeVerifier: verifier,
 	})
 	if err != nil {
 		return nil, err

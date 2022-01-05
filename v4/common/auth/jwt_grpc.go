@@ -76,8 +76,8 @@ func (p *grpcProvider) PasswordCredentialsToken(ctx context.Context, userName st
 	return hydra.PasswordCredentialsToken(ctx, userName, password)
 }
 
-func (p *grpcProvider) Exchange(ctx context.Context, code string) (*oauth2.Token, error) {
-	return hydra.Exchange(ctx, code)
+func (p *grpcProvider) Exchange(ctx context.Context, code, codeVerifier string) (*oauth2.Token, error) {
+	return hydra.Exchange(ctx, code, codeVerifier)
 }
 
 type grpcToken struct {

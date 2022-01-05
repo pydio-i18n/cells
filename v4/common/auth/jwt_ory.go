@@ -22,6 +22,8 @@ package auth
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/base64"
 	"net/url"
 	"time"
 
@@ -116,7 +118,7 @@ func (p *oryprovider) LoginChallengeCode(ctx context.Context, claims claim.Claim
 		return "", err
 	}
 
-	code, err := hydra.CreateAuthCode(ctx, consent, login.GetClientID(), redirectURL)
+	code, err := hydra.CreateAuthCode(ctx, consent, login.GetClientID(), redirectURL, requestURLValues.Get("code_challenge"), requestURLValues.Get("code_challenge_method"))
 	if err != nil {
 		log.Logger(ctx).Error("Failed to create auth code ", zap.Error(err))
 		return "", err
@@ -230,7 +232,7 @@ func (p *oryprovider) PasswordCredentialsCode(ctx context.Context, userName stri
 		return "", err
 	}
 
-	code, err := hydra.CreateAuthCode(ctx, consent, login.GetClientID(), redirectURL)
+	code, err := hydra.CreateAuthCode(ctx, consent, login.GetClientID(), redirectURL, requestURLValues.Get("code_challenge"), requestURLValues.Get("code_challenge_method"))
 	if err != nil {
 		log.Logger(ctx).Error("Failed to create auth code ", zap.Error(err))
 		return "", err
@@ -343,14 +345,23 @@ func (p *oryprovider) PasswordCredentialsToken(ctx context.Context, userName str
 		return nil, err
 	}
 
-	code, err := hydra.CreateAuthCode(ctx, consent, login.GetClientID(), redirectURL)
+	verifier := consent.Challenge + consent.Challenge // Must be > 43 characters
+	hash := sha256.New()
+	if _, err := hash.Write([]byte(verifier)); err != nil {
+		return nil, err
+	}
+	codeChallenge := base64.RawURLEncoding.EncodeToString(hash.Sum([]byte{}))
+
+	codeChallengeMethod := "S256"
+
+	code, err := hydra.CreateAuthCode(ctx, consent, login.GetClientID(), redirectURL, codeChallenge, codeChallengeMethod)
 	if err != nil {
 		e := fosite.ErrorToRFC6749Error(err)
 		log.Logger(ctx).Error("Failed to create auth code ", zap.Error(e))
 		return nil, err
 	}
 
-	return hydra.Exchange(ctx, code)
+	return hydra.Exchange(ctx, code, verifier)
 }
 
 func (p *oryprovider) Logout(ctx context.Context, requestUrl, username, sessionID string, opts ...TokenOption) error {
