@@ -16,6 +16,7 @@ import (
 )
 
 type Server struct {
+	id     string
 	name   string
 	cancel context.CancelFunc
 	net.Listener
@@ -37,7 +38,8 @@ func New(ctx context.Context) server.Server {
 	ctx, cancel := context.WithCancel(ctx)
 
 	return server.NewServer(ctx, &Server{
-		name:     "http-" + uuid.New(),
+		id:       "http-" + uuid.New(),
+		name:     "http",
 		cancel:   cancel,
 		ServeMux: mux,
 		Server:   srv,
@@ -84,8 +86,16 @@ func (s *Server) Endpoints() []string {
 	return endpoints
 }
 
+func (s *Server) ID() string {
+	return s.id
+}
+
 func (s *Server) Name() string {
 	return s.name
+}
+
+func (s *Server) Type() server.ServerType {
+	return server.ServerType_HTTP
 }
 
 func (s *Server) Metadata() map[string]string {

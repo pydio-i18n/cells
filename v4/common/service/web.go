@@ -4,14 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/pydio/cells/v4/common/server"
 	"net/http"
 	"reflect"
 	"strings"
 	"sync"
-
-	"github.com/pydio/cells/v4/common/service/frontend"
-
-	"github.com/pydio/cells/v4/common/server"
 
 	"github.com/emicklei/go-restful"
 	"github.com/go-openapi/loads"
@@ -24,6 +21,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/rest"
 	"github.com/pydio/cells/v4/common/server/middleware"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/frontend"
 )
 
 var (

@@ -17,10 +17,15 @@ type Handler struct {
 	reg registry.Registry
 }
 
+func NewHandler(reg registry.Registry) *Handler {
+	return &Handler{
+		reg: reg,
+	}
+}
+
 func (h *Handler) Name() string {
 	return common.ServiceGrpcNamespace_ + common.ServiceRegistry
 }
-
 
 func (h *Handler) Start(ctx context.Context, item *pb.Item) (*pb.EmptyResponse, error) {
 	if err := h.reg.Start(service.ToItem(item)); err != nil {
@@ -116,8 +121,8 @@ func (h *Handler) Watch(req *pb.WatchRequest, stream pb.Registry_WatchServer) er
 		}
 
 		stream.Send(&pb.Result{
-			Action:  res.Action(),
-			Item: service.ToProtoItem(res.Item()),
+			Action: res.Action(),
+			Item:   service.ToProtoItem(res.Item()),
 		})
 	}
 }

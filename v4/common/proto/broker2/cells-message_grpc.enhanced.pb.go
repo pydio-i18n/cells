@@ -8,6 +8,7 @@ package broker
 
 import (
 	fmt "fmt"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
@@ -42,14 +43,14 @@ func (m BrokerEnhancedServer) Publish(s Broker_PublishServer) error {
 	return status.Errorf(codes.Unimplemented, "method Publish not implemented")
 }
 
-func (m BrokerEnhancedServer) Subscribe(s Broker_SubscribeServer) error {
+func (m BrokerEnhancedServer) Subscribe(r *SubscribeRequest, s Broker_SubscribeServer) error {
 	md, ok := metadata.FromIncomingContext(s.Context())
 	if !ok {
 		return status.Errorf(codes.FailedPrecondition, "method Subscribe should have a context")
 	}
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
-			return mm.Subscribe(s)
+			return mm.Subscribe(r, s)
 		}
 	}
 	return status.Errorf(codes.Unimplemented, "method Subscribe not implemented")

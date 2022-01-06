@@ -1,27 +1,28 @@
-package registry
+package broker
 
 import (
 	"context"
 
-	"google.golang.org/grpc"
+	"github.com/pydio/cells/v4/common/broker"
+
+	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/plugins"
-	pbregistry "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/service"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"google.golang.org/grpc"
 )
 
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
 		service.NewService(
-			service.Name(common.ServiceGrpcNamespace_+common.ServiceRegistry),
+			service.Name(common.ServiceGrpcNamespace_+common.ServiceBroker),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagDiscovery),
 			service.Description("Registry"),
 			service.WithGRPC(func(ctx context.Context, srv *grpc.Server) error {
-				reg := servicecontext.GetRegistry(ctx)
-				pbregistry.RegisterRegistryServer(srv, NewHandler(reg))
+				pb.RegisterPublisherServer(srv, NewHandler(broker.Default()))
+				pb.RegisterSubscriberServer(srv, NewHandler(broker.Default()))
 
 				return nil
 			}),

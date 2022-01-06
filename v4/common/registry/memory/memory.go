@@ -68,7 +68,7 @@ func (m *memory) Stop(item registry.Item) error {
 func (m *memory) Register(item registry.Item) error {
 	// Then register all services
 	for k, v := range m.register {
-		if v.Name() == item.Name() {
+		if v.ID() == item.ID() {
 			m.register[k] = item
 			go m.sendEvent(&result{action: "update", item: item})
 			return nil
@@ -84,7 +84,7 @@ func (m *memory) Register(item registry.Item) error {
 
 func (m *memory) Deregister(item registry.Item) error {
 	for k, v := range m.register {
-		if item.Name() == v.Name() {
+		if item.ID() == v.ID() {
 			m.register = append(m.register[:k], m.register[k+1:]...)
 			go m.sendEvent(&result{action: "delete", item: item})
 		}

@@ -165,7 +165,7 @@ func RegisterDigestJob(ctx context.Context) error {
 		},
 	}
 
-	cliJob := jobs.NewJobServiceClient(grpc2.NewClientConn(common.ServiceJobs, grpc2.CallTimeoutShort))
+	cliJob := jobs.NewJobServiceClient(grpc2.NewClientConn(common.ServiceJobs, grpc2.WithCallTimeout(grpc2.CallTimeoutShort)))
 	return std.Retry(ctx, func() error {
 		_, e := cliJob.PutJob(ctx, &jobs.PutJobRequest{Job: job})
 		return e

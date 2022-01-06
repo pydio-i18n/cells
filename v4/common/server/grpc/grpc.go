@@ -13,15 +13,20 @@ import (
 )
 
 type Server struct {
+	id     string
 	name   string
 	cancel context.CancelFunc
+	opts   *Options
 	addr   string
-	net.Listener
 	*grpc.Server
 }
 
 // New creates the generic grpc.Server
-func New(ctx context.Context) server.Server {
+func New(ctx context.Context, opt ...Option) server.Server {
+	opts := new(Options)
+	for _, o := range opt {
+		o(opts)
+	}
 	s := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			servicecontext.ContextUnaryServerInterceptor(servicecontext.SpanIncomingContext),
@@ -38,9 +43,11 @@ func New(ctx context.Context) server.Server {
 	ctx, cancel := context.WithCancel(ctx)
 
 	return server.NewServer(ctx, &Server{
-		name:   "grpc-" + uuid.New(),
+		id:     "grpc-" + uuid.New(),
+		name:   "grpc",
 		cancel: cancel,
 		addr:   viper.GetString("grpc.address"),
+		opts:   opts,
 		Server: s,
 	})
 }
@@ -53,23 +60,30 @@ func NewWithServer(ctx context.Context, s *grpc.Server, listen string) server.Se
 		cancel: cancel,
 		addr:   listen,
 		Server: s,
+		opts:   new(Options),
 	})
 
 }
 
-func (s *Server) Serve() error {
-	//fmt.Println("Serving Grpc on " + s.addr)
-	lis, err := net.Listen("tcp", s.addr)
-	if err != nil {
-		return err
-	}
+func (s *Server) Type() server.ServerType {
+	return server.ServerType_GRPC
+}
 
-	s.Listener = lis
+func (s *Server) Serve() error {
+	if s.opts.Listener == nil {
+		//fmt.Println("Serving Grpc on " + s.addr)
+		lis, err := net.Listen("tcp", s.addr)
+		if err != nil {
+			return err
+		}
+
+		s.opts.Listener = lis
+	}
 
 	go func() {
 		defer s.cancel()
 
-		if err := s.Server.Serve(lis); err != nil {
+		if err := s.Server.Serve(s.opts.Listener); err != nil {
 			// TODO v4 - log or summat
 		}
 	}()
@@ -80,8 +94,12 @@ func (s *Server) Serve() error {
 func (s *Server) Stop() error {
 	s.Server.Stop()
 
-	return s.Listener.Close()
+	return s.opts.Listener.Close()
 
+}
+
+func (s *Server) ID() string {
+	return s.id
 }
 
 func (s *Server) Name() string {
@@ -93,10 +111,10 @@ func (s *Server) Metadata() map[string]string {
 }
 
 func (s *Server) Address() []string {
-	if s.Listener == nil {
+	if s.opts.Listener == nil {
 		return []string{}
 	}
-	return []string{s.Listener.Addr().String()}
+	return []string{s.opts.Listener.Addr().String()}
 }
 
 func (s *Server) Endpoints() []string {

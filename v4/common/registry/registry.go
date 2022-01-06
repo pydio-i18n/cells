@@ -18,6 +18,7 @@ type Registry interface {
 
 type Item interface {
 	Name() string
+	ID() string
 	Metadata() map[string]string
 	As(interface{}) bool
 }

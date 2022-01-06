@@ -213,6 +213,7 @@ func (b *broker) Subscribe(ctx context.Context, topic string, handler Subscriber
 			if err != nil {
 				break
 			}
+
 			msg.Ack()
 
 			if err := handler(&message{

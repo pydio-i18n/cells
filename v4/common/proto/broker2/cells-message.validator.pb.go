@@ -6,6 +6,7 @@ package broker
 import (
 	fmt "fmt"
 	math "math"
+
 	proto "github.com/golang/protobuf/proto"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
@@ -19,11 +20,9 @@ func (this *Empty) Validate() error {
 	return nil
 }
 func (this *PublishRequest) Validate() error {
-	for _, item := range this.Messages {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Messages", err)
-			}
+	if this.Messages != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Messages); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Messages", err)
 		}
 	}
 	return nil
@@ -31,7 +30,7 @@ func (this *PublishRequest) Validate() error {
 func (this *SubscribeRequest) Validate() error {
 	return nil
 }
-func (this *SubscribeResponse) Validate() error {
+func (this *Messages) Validate() error {
 	for _, item := range this.Messages {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {

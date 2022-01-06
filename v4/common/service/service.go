@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/spf13/viper"
@@ -27,12 +28,15 @@ const (
 
 var (
 	mandatoryOptions []ServiceOption
+
+	errNoServerAttached = errors.New("no server attached to the service")
 )
 
 type Service interface {
 	Init(opts ...ServiceOption)
 	Options() *ServiceOptions
 	Metadata() map[string]string
+	ID() string
 	Name() string
 	Start() error
 	Stop() error
@@ -114,15 +118,13 @@ func (s *service) Start() (er error) {
 		}
 	}
 
-	if bs, ok := s.opts.Server.(server.WrappedServer); ok {
-		bs.RegisterAfterServe(func() error {
-			return UpdateServiceVersion(s.opts)
+	s.opts.Server.AfterServe(func() error {
+		return UpdateServiceVersion(s.opts)
+	})
+	for _, after := range s.opts.AfterServe {
+		s.opts.Server.AfterServe(func() error {
+			return after(s.opts.Context)
 		})
-		for _, after := range s.opts.AfterServe {
-			bs.RegisterAfterServe(func() error {
-				return after(s.opts.Context)
-			})
-		}
 	}
 
 	log.Logger(s.opts.Context).Info("started")
@@ -188,6 +190,9 @@ func buildForkStartParams(serviceName string) []string {
 
 func (s *service) Name() string {
 	return s.opts.Name
+}
+func (s *service) ID() string {
+	return s.opts.ID
 }
 func (s *service) Version() string {
 	return s.opts.Version
