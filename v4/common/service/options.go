@@ -5,9 +5,10 @@ import (
 	"crypto/tls"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/service/frontend"
+
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/server"
-	"github.com/pydio/cells/v4/common/service/frontend"
 	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
@@ -22,7 +23,9 @@ type ServiceOptions struct {
 	Version     string
 	Description string
 	Source      string
-	Metadata    map[string]string
+
+	// TODO V4 - MUST BE FOUND IN REGISTRY
+	Metadata map[string]string
 
 	Context context.Context
 	Cancel  context.CancelFunc

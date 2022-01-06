@@ -77,6 +77,10 @@ var _ registry.Service = (*mockService)(nil)
 type mockService struct {
 }
 
+func (s mockService) ID() string {
+	return "pydio.grpc.config"
+}
+
 func (s mockService) Name() string {
 	return "pydio.grpc.config"
 }

@@ -1,7 +1,6 @@
 package grpc
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"regexp"
@@ -27,10 +26,11 @@ var (
 )
 
 func init() {
-	resolver.Register(NewBuilder())
+	// resolver.Register(NewBuilder())
 }
 
 type cellsBuilder struct {
+	reg registry.Registry
 }
 
 type cellsResolver struct {
@@ -44,22 +44,24 @@ type cellsResolver struct {
 	disableServiceConfig bool
 }
 
-func NewBuilder() resolver.Builder {
-	return &cellsBuilder{}
+func NewBuilder(reg registry.Registry) resolver.Builder {
+	return &cellsBuilder{reg: reg}
 }
 
 func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opts resolver.BuildOptions) (resolver.Resolver, error) {
-	host, port, name, err := parseTarget(fmt.Sprintf("%s/%s", target.Authority, target.Endpoint))
+	// host, port, name, err := parseTarget(fmt.Sprintf("%s/%s", target.Authority, target.Endpoint))
+	_, _, name, err := parseTarget(fmt.Sprintf("%s/%s", target.Authority, target.Endpoint))
 	if err != nil {
 		return nil, err
 	}
 
-	reg, err := registry.OpenRegistry(context.Background(), fmt.Sprintf("grpc://%s%s", host, port))
-	if err != nil {
-		return nil, err
-	}
+	//reg, err := registry.OpenRegistry(context.Background(), "memory:///")
+	//// reg, err := registry.OpenRegistry(context.Background(), fmt.Sprintf("grpc://%s%s", host, port))
+	//if err != nil {
+	//	return nil, err
+	//}
 
-	services, err := reg.List(registry.WithType(pb.ItemType_SERVICE))
+	services, err := b.reg.List(registry.WithType(pb.ItemType_SERVICE))
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +73,7 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 	}
 
 	cr := &cellsResolver{
-		reg:                  reg,
+		reg:                  b.reg,
 		name:                 name,
 		cc:                   cc,
 		m:                    m,
@@ -127,10 +129,13 @@ func (cr *cellsResolver) sendState() {
 		})
 	}
 	//fmt.Printf("Update State with %d addresses\n", len(addresses))
-	cr.cc.UpdateState(resolver.State{
-		Addresses:     addresses,
-		ServiceConfig: cr.cc.ParseServiceConfig(`{"loadBalancingPolicy": "lb"}`),
-	})
+	if err := cr.cc.UpdateState(resolver.State{
+		Addresses: addresses,
+		// ServiceConfig: cr.cc.ParseServiceConfig(`{"loadBalancingPolicy": "lb"}`),
+		// ServiceConfig: cr.cc.ParseServiceConfig(`{"loadBalancingPolicy": "pick_first"}`),
+	}); err != nil {
+		fmt.Println("And the error is ? ", err)
+	}
 }
 
 func (b *cellsBuilder) Scheme() string {
@@ -156,8 +161,6 @@ func parseTarget(target string) (host, port, name string, err error) {
 	host = groups[1]
 	port = groups[2]
 	name = groups[3]
-	if port == "" {
-		port = defaultPort
-	}
+
 	return host, port, name, nil
 }

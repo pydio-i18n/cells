@@ -25,29 +25,25 @@ var (
 )
 
 // NewClientConn returns a client attached to the defaults.
-func NewClientConn(serviceName string, callTimeout ...time.Duration) grpc.ClientConnInterface {
+func NewClientConn(serviceName string, opt ...Option) grpc.ClientConnInterface {
+	opts := new(Options)
+	opts.DialOptions = append(opts.DialOptions, grpc.WithInsecure())
+	for _, o := range opt {
+		o(opts)
+	}
 
 	if c, o := mox[strings.TrimPrefix(serviceName, common.ServiceGrpcNamespace_)]; o {
 		return c
 	}
 
-	var err error
-	once.Do(func() {
-		conn, err = grpc.Dial("cells://:8001/", grpc.WithInsecure())
-	})
-
+	conn, err := grpc.Dial("cells:///", opts.DialOptions...)
 	if err != nil {
 		fmt.Println(err)
 		return nil
 	}
 
-	to := time.Duration(0)
-	if len(callTimeout) > 0 {
-		to = callTimeout[0]
-	}
-
 	return &clientConn{
-		callTimeout: to,
+		callTimeout: opts.CallTimeout,
 		ClientConn:  conn,
 		serviceName: common.ServiceGrpcNamespace_ + strings.TrimPrefix(serviceName, common.ServiceGrpcNamespace_),
 	}

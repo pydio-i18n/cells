@@ -23,11 +23,9 @@ package cmd
 import (
 	"log"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"github.com/pydio/cells/v4/common/broker"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/plugins"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
@@ -41,6 +39,8 @@ import (
 	"github.com/pydio/cells/v4/common/server/http"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -274,19 +274,16 @@ to quickly create a Cobra application.`,
 					}
 				}
 
-				// Checking which service is needed
-				bs, ok := opts.Server.(server.WrappedServer)
-				if ok {
-					bs.RegisterBeforeServe(s.Start)
-					bs.RegisterAfterServe(func() error {
-						// Register service again to update nodes information
-						if err := reg.Register(s); err != nil {
-							return err
-						}
-						return nil
-					})
-					bs.RegisterBeforeStop(s.Stop)
-				}
+				opts.Server.BeforeServe(s.Start)
+				opts.Server.AfterServe(func() error {
+					// Register service again to update nodes information
+					if err := reg.Register(s); err != nil {
+						return err
+					}
+					return nil
+				})
+				opts.Server.BeforeStop(s.Stop)
+
 			}
 		}
 

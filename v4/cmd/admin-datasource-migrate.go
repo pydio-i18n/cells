@@ -197,7 +197,7 @@ DESCRIPTION
 						migrateLogger("Cleaned index with result: "+resp.GetJsonDiff(), true)
 					}
 				} else {
-					streamClient := tree.NewNodeReceiverStreamClient(grpc.NewClientConn(common.ServiceDataIndex_+source.Name, 60*time.Minute))
+					streamClient := tree.NewNodeReceiverStreamClient(grpc.NewClientConn(common.ServiceDataIndex_+source.Name, grpc.WithCallTimeout(60*time.Minute)))
 					streamer, e := streamClient.CreateNodeStream(authCtx)
 					if e != nil {
 						migrateLogger(fmt.Sprintf("[ERROR] Cannot open stream to index service %s", e.Error()), true)

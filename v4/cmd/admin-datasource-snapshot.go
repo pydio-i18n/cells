@@ -84,7 +84,7 @@ EXAMPLES
 		}
 		syncService := "pydio.grpc.data.sync." + snapshotDsName
 
-		cli := sync.NewSyncEndpointClient(grpc.NewClientConn(syncService, 30*time.Minute))
+		cli := sync.NewSyncEndpointClient(grpc.NewClientConn(syncService, grpc.WithCallTimeout(30*time.Minute)))
 		c := metadata.WithUserNameMetadata(context.Background(), common.PydioSystemUsername)
 		req := &sync.ResyncRequest{}
 		if snapshotOperation == "delete" {

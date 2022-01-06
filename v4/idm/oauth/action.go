@@ -52,7 +52,7 @@ func InsertPruningJob(ctx context.Context) error {
 
 	return std.Retry(ctx, func() error {
 
-		cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs, grpc.CallTimeoutShort))
+		cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs, grpc.WithCallTimeout(grpc.CallTimeoutShort)))
 		if resp, e := cli.GetJob(ctx, &jobs.GetJobRequest{JobID: pruneTokensActionName}); e == nil && resp.Job != nil {
 			return nil // Already exists
 		} else if e != nil {

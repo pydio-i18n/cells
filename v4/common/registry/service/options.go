@@ -22,6 +22,7 @@ package service
 
 import (
 	"context"
+
 	"google.golang.org/grpc"
 
 	"github.com/micro/micro/v3/service/registry"
@@ -30,7 +31,7 @@ import (
 type connKey struct{}
 
 // WithConn sets the gRPC connection
-func WithConn(c *grpc.ClientConn) registry.Option {
+func WithConn(c grpc.ClientConnInterface) registry.Option {
 	return func(o *registry.Options) {
 		if o.Context == nil {
 			o.Context = context.Background()

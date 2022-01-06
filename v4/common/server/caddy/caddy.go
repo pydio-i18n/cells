@@ -62,6 +62,7 @@ const (
 )
 
 type Server struct {
+	id   string
 	name string
 	*http.ServeMux
 	Confs []byte
@@ -133,7 +134,8 @@ func New(ctx context.Context, dir string) (server.Server, error) {
 	}
 
 	return server.NewServer(ctx, &Server{
-		name:     "caddy-" + uuid.New(),
+		id:       "caddy-" + uuid.New(),
+		name:     "caddy",
 		ServeMux: srvMUX,
 		Confs:    confs,
 	}), nil
@@ -141,6 +143,10 @@ func New(ctx context.Context, dir string) (server.Server, error) {
 
 func (s *Server) Serve() error {
 	return caddy.Load(s.Confs, true)
+}
+
+func (s *Server) Type() server.ServerType {
+	return server.ServerType_HTTP
 }
 
 func (s *Server) Stop() error {
@@ -158,6 +164,10 @@ func (s *Server) Endpoints() []string {
 	}
 
 	return endpoints
+}
+
+func (s *Server) ID() string {
+	return s.id
 }
 
 func (s *Server) Name() string {

@@ -3,8 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/server"
 	"net/http"
+
+	"github.com/pydio/cells/v4/common/server"
 )
 
 // WithHTTP adds a http micro service handler to the current service
