@@ -62,7 +62,7 @@ func (a pydioAuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		signedKey, err := cmd.ExposedParseSignV4(v4Auth)
 		if err == nil {
 			if signedKey != a.globalAccessKey {
-				log.Logger(ctx).Info("Use AWS Api Key as JWT: " + signedKey)
+				log.Logger(ctx).Debug("Use AWS Api Key as JWT: " + signedKey)
 				resignRequestV4 = true
 				r.Header.Set("X-Pydio-Bearer", signedKey)
 			}

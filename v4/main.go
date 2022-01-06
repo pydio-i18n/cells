@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/pydio/cells/v4/cmd"
+	"github.com/pydio/cells/v4/common"
 
 	// Register minio client for objects storage
 	_ "github.com/pydio/cells/v4/common/nodes/objects/mc"
@@ -106,5 +107,7 @@ import (
 )
 
 func main() {
+	common.PackageType = "PydioHome"
+	common.PackageLabel = "Pydio Cells Home Edition"
 	cmd.Execute()
 }

@@ -40,7 +40,8 @@ const (
 
 	route /* {
 		{{if $ExternalHost}}request_header Host {{$ExternalHost}}{{end}}
-		request_header X-Real-IP {remote}
+		request_header X-Real-IP {http.request.remote}
+		request_header X-Forwarded-Proto {http.request.scheme}
 
 		# Special rewrite for s3 list buckets (always sent on root path)
 		# rewrite @list_buckets /io{path}
