@@ -21,8 +21,7 @@
 package rest
 
 import (
-	"github.com/emicklei/go-restful"
-
+	restful "github.com/emicklei/go-restful"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/proto/encryption"
@@ -41,7 +40,7 @@ func (s *Handler) ListEncryptionKeys(req *restful.Request, resp *restful.Respons
 		return
 	}
 
-	encClient := encryption.NewUserKeyStoreClient(grpc.NewClientConn(common.ServiceUserKey))
+	encClient := encryption.NewUserKeyStoreClient(grpc.GetClientConnFromCtx(s.MainCtx, common.ServiceUserKey))
 	var response *encryption.AdminListKeysResponse
 	var err error
 	if response, err = encClient.AdminListKeys(req.Request.Context(), &request); err != nil {
@@ -59,7 +58,7 @@ func (s *Handler) CreateEncryptionKey(req *restful.Request, resp *restful.Respon
 		return
 	}
 
-	encClient := encryption.NewUserKeyStoreClient(grpc.NewClientConn(common.ServiceUserKey))
+	encClient := encryption.NewUserKeyStoreClient(grpc.GetClientConnFromCtx(s.MainCtx, common.ServiceUserKey))
 	var response *encryption.AdminCreateKeyResponse
 	var err error
 	if response, err = encClient.AdminCreateKey(req.Request.Context(), &request); err != nil {
@@ -77,7 +76,7 @@ func (s *Handler) DeleteEncryptionKey(req *restful.Request, resp *restful.Respon
 		return
 	}
 
-	encClient := encryption.NewUserKeyStoreClient(grpc.NewClientConn(common.ServiceUserKey))
+	encClient := encryption.NewUserKeyStoreClient(grpc.GetClientConnFromCtx(s.MainCtx, common.ServiceUserKey))
 	var response *encryption.AdminDeleteKeyResponse
 	var err error
 	if response, err = encClient.AdminDeleteKey(req.Request.Context(), &request); err != nil {
@@ -95,7 +94,7 @@ func (s *Handler) ExportEncryptionKey(req *restful.Request, resp *restful.Respon
 		return
 	}
 
-	encClient := encryption.NewUserKeyStoreClient(grpc.NewClientConn(common.ServiceUserKey))
+	encClient := encryption.NewUserKeyStoreClient(grpc.GetClientConnFromCtx(s.MainCtx, common.ServiceUserKey))
 	var response *encryption.AdminExportKeyResponse
 	var err error
 	if response, err = encClient.AdminExportKey(req.Request.Context(), &request); err != nil {
@@ -113,7 +112,7 @@ func (s *Handler) ImportEncryptionKey(req *restful.Request, resp *restful.Respon
 		return
 	}
 
-	encClient := encryption.NewUserKeyStoreClient(grpc.NewClientConn(common.ServiceUserKey))
+	encClient := encryption.NewUserKeyStoreClient(grpc.GetClientConnFromCtx(s.MainCtx, common.ServiceUserKey))
 	var response *encryption.AdminImportKeyResponse
 	var err error
 	if response, err = encClient.AdminImportKey(req.Request.Context(), &request); err != nil {

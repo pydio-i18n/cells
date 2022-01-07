@@ -17,7 +17,7 @@ const name = "lb"
 
 // newBuilder creates a new roundrobin balancer builder.
 func newBuilder() balancer.Builder {
-	return base.NewBalancerBuilder(name, &rrPickerBuilder{}, base.Config{HealthCheck: true})
+	return base.NewBalancerBuilder(name, &rrPickerBuilder{}, base.Config{HealthCheck: false})
 }
 
 func init() {
@@ -43,6 +43,7 @@ func (*rrPickerBuilder) Build(info base.PickerBuildInfo) balancer.Picker {
 			v.subConns = append(v.subConns, sc)
 		}
 	}
+
 	for _, sc := range scs {
 		sc.next = rand.Intn(len(sc.subConns))
 	}
@@ -77,5 +78,6 @@ func (p *rrPicker) Pick(i balancer.PickInfo) (balancer.PickResult, error) {
 	sc := pc.subConns[pc.next]
 	pc.next = (pc.next + 1) % len(pc.subConns)
 	pc.mu.Unlock()
+
 	return balancer.PickResult{SubConn: sc}, nil
 }

@@ -170,7 +170,7 @@ func (s *Handler) initSync(syncConfig *object.DataSource) error {
 		defer wg.Done()
 		std.Retry(ctx, func() error {
 			log.Logger(ctx).Debug("Sync " + dataSource + " - Try to contact Index")
-			cli := tree.NewNodeProviderClient(grpccli.NewClientConn(common.ServiceDataIndex_ + dataSource))
+			cli := tree.NewNodeProviderClient(grpccli.GetClientConnFromCtx(ctx, common.ServiceDataIndex_+dataSource))
 			if s, e := cli.ListNodes(context.Background(), &tree.ListNodesRequest{Node: &tree.Node{Path: "/"}}); e != nil {
 				return e
 			} else {
@@ -180,7 +180,7 @@ func (s *Handler) initSync(syncConfig *object.DataSource) error {
 
 			/*
 				// TODO V4
-				c := protoservice.NewServiceClient(grpccli.NewClientConn(common.ServiceDataIndex_ + dataSource))
+				c := protoservice.NewServiceClient(grpccli.GetClientConnFromCtx(common.ServiceDataIndex_ + dataSource))
 				r, err := c.Status(context.Background(), &emptypb.Empty{})
 				if err != nil {
 					log.Logger(ctx).Debug("Contact index error", zap.Error(err))
@@ -204,7 +204,7 @@ func (s *Handler) initSync(syncConfig *object.DataSource) error {
 		std.Retry(ctx, func() error {
 			retryCount++
 			log.Logger(ctx).Info(fmt.Sprintf("Trying to contact object service %s (retry %d)", common.ServiceDataObjects_+syncConfig.ObjectsServiceName, retryCount))
-			cli := object.NewObjectsEndpointClient(grpccli.NewClientConn(common.ServiceDataObjects_ + syncConfig.ObjectsServiceName))
+			cli := object.NewObjectsEndpointClient(grpccli.GetClientConnFromCtx(ctx, common.ServiceDataObjects_+syncConfig.ObjectsServiceName))
 			ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
 			defer cancel()
 			resp, err := cli.GetMinioConfig(ctx, &object.GetMinioConfigRequest{})
@@ -270,7 +270,7 @@ func (s *Handler) initSync(syncConfig *object.DataSource) error {
 	normalizeS3, _ := strconv.ParseBool(syncConfig.StorageConfiguration[object.StorageKeyNormalize])
 	var computer func(string) (int64, error)
 	if syncConfig.EncryptionMode != object.EncryptionMode_CLEAR {
-		keyClient := encryption.NewNodeKeyManagerClient(grpccli.NewClientConn(common.ServiceEncKey))
+		keyClient := encryption.NewNodeKeyManagerClient(grpccli.GetClientConnFromCtx(ctx, common.ServiceEncKey))
 		computer = func(nodeUUID string) (i int64, e error) {
 			if resp, e := keyClient.GetNodePlainSize(ctx, &encryption.GetNodePlainSizeRequest{
 				NodeId: nodeUUID,
@@ -370,7 +370,7 @@ func (s *Handler) initSync(syncConfig *object.DataSource) error {
 		source = s3client
 	}
 
-	conn := grpccli.NewClientConn(common.ServiceDataIndex_ + dataSource)
+	conn := grpccli.GetClientConnFromCtx(ctx, common.ServiceDataIndex_+dataSource)
 	s.indexClientWrite = tree.NewNodeReceiverClient(conn)
 	s.indexClientRead = tree.NewNodeProviderClient(conn)
 	s.indexClientClean = protosync.NewSyncEndpointClient(conn)
@@ -621,7 +621,7 @@ func (s *Handler) TriggerResync(c context.Context, req *protosync.ResyncRequest)
 		if req.Task != nil {
 			theTask := req.Task
 			// Todo v4 : add client.Retries(3)
-			taskClient := jobs.NewJobServiceClient(grpccli.NewClientConn(common.ServiceJobs))
+			taskClient := jobs.NewJobServiceClient(grpccli.GetClientConnFromCtx(s.globalCtx, common.ServiceJobs))
 			theTask.StatusMessage = "Error"
 			theTask.HasProgress = true
 			theTask.Progress = 1
@@ -676,7 +676,7 @@ func (s *Handler) CleanResourcesBeforeDelete(ctx context.Context, request *objec
 
 	serviceName := servicecontext.GetServiceName(ctx)
 	dsName := strings.TrimPrefix(serviceName, common.ServiceGrpcNamespace_+common.ServiceDataSync_)
-	taskClient := jobs.NewJobServiceClient(grpccli.NewClientConn(common.ServiceJobs))
+	taskClient := jobs.NewJobServiceClient(grpccli.GetClientConnFromCtx(ctx, common.ServiceJobs))
 	log.Logger(ctx).Info("Removing job for datasource " + dsName)
 	if _, e := taskClient.DeleteJob(ctx, &jobs.DeleteJobRequest{
 		JobID: "resync-ds-" + dsName,

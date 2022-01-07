@@ -345,7 +345,7 @@ func (f *FlatStorageHandler) recomputeETag(ctx context.Context, identifier strin
 
 func (f *FlatStorageHandler) encPlainSizeRecompute(ctx context.Context, nodeUUID, dsName string) (int64, error) {
 	if keyClient == nil {
-		keyClient = encryption.NewNodeKeyManagerClient(grpc2.NewClientConn(common.ServiceEncKey))
+		keyClient = encryption.NewNodeKeyManagerClient(grpc2.GetClientConnFromCtx(ctx, common.ServiceEncKey))
 	}
 	if resp, e := keyClient.GetNodePlainSize(ctx, &encryption.GetNodePlainSizeRequest{
 		NodeId: nodeUUID,

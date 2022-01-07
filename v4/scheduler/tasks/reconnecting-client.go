@@ -38,7 +38,7 @@ func (s *ReconnectingClient) Stop() {
 func (s *ReconnectingClient) chanToStream(ch chan interface{}, requeue ...*jobs.Task) {
 
 	go func() {
-		taskClient := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs, grpc.WithCallTimeout(5*time.Minute)))
+		taskClient := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(s.parentCtx, common.ServiceJobs, grpc.WithCallTimeout(5*time.Minute)))
 		streamer, e := taskClient.PutTaskStream(s.parentCtx)
 		if e != nil {
 			log.Logger(s.parentCtx).Error("Streamer PutTaskStream", zap.Error(e))

@@ -50,15 +50,16 @@ const (
 )
 
 type ChatHandler struct {
+	ctx       context.Context
 	Websocket *melody.Melody
 	Pool      nodes.SourcesPool
 }
 
 // NewChatHandler creates a new ChatHandler
-func NewChatHandler(serviceCtx context.Context) *ChatHandler {
-	w := &ChatHandler{}
-	w.Pool = nodes.NewClientsPool(true, nil)
-	w.initHandlers(serviceCtx)
+func NewChatHandler(ctx context.Context) *ChatHandler {
+	w := &ChatHandler{ctx: ctx}
+	w.Pool = nodes.NewClientsPool(ctx, true, nil)
+	w.initHandlers(ctx)
 	return w
 }
 
@@ -108,7 +109,7 @@ func (c *ChatHandler) BroadcastChatMessage(ctx context.Context, msg *chat.ChatEv
 }
 
 func (c *ChatHandler) getChatClient() chat.ChatServiceClient {
-	return chat.NewChatServiceClient(grpc.NewClientConn(common.ServiceChat))
+	return chat.NewChatServiceClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceChat))
 }
 
 func (c *ChatHandler) initHandlers(serviceCtx context.Context) {
@@ -438,7 +439,7 @@ func (c *ChatHandler) auth(session *melody.Session, room *chat.ChatRoom) (bool, 
 
 		// Check node is readable and writeable
 		if uuidRouter == nil {
-			uuidRouter = compose.NewClient(compose.UuidComposer()...)
+			uuidRouter = compose.NewClient(compose.UuidComposer(nodes.WithContext(c.ctx))...)
 		}
 		resp, e := uuidRouter.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Uuid: room.RoomTypeObject}})
 		if e != nil {

@@ -22,9 +22,10 @@ package cmd
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
 	"time"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/pydio/cells/v4/common/service/errors"
 	"go.uber.org/zap"
@@ -133,7 +134,7 @@ func (c *ResyncAction) Run(ctx context.Context, channels *actions.RunnableChanne
 	srvName := jobs.EvaluateFieldStr(ctx, input, c.ServiceName)
 	// V4: strip grpc prefix
 	srvName = strings.TrimPrefix(srvName, common.ServiceGrpcNamespace_)
-	syncClient := sync.NewSyncEndpointClient(grpc.NewClientConn(srvName))
+	syncClient := sync.NewSyncEndpointClient(grpc.GetClientConnFromCtx(ctx, srvName))
 	log.TasksLogger(ctx).Info("Sending Resync command to " + srvName)
 	_, e := syncClient.TriggerResync(ctx, &sync.ResyncRequest{
 		Path:   jobs.EvaluateFieldStr(ctx, input, c.Path),

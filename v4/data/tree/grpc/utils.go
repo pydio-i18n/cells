@@ -68,8 +68,8 @@ func updateServicesList(ctx context.Context, treeServer *TreeServer, retry int) 
 
 		ds := DataSource{
 			Name:   dataSourceName,
-			writer: tree.NewNodeReceiverClient(grpc.NewClientConn(indexService)),
-			reader: tree.NewNodeProviderClient(grpc.NewClientConn(indexService)),
+			writer: tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(ctx, indexService)),
+			reader: tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(ctx, indexService)),
 		}
 
 		dataSources[dataSourceName] = ds

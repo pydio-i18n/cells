@@ -109,7 +109,7 @@ func (p *NsProvider) Load() {
 		p.loaded = true
 	}()
 	for _, srv := range services {
-		cl := idm.NewUserMetaServiceClient(grpc.NewClientConn(strings.TrimPrefix(srv.Name(), common.ServiceGrpcNamespace_)))
+		cl := idm.NewUserMetaServiceClient(grpc.GetClientConnFromCtx(p.Ctx, strings.TrimPrefix(srv.Name(), common.ServiceGrpcNamespace_)))
 		s, e := cl.ListUserMetaNamespace(context.Background(), &idm.ListUserMetaNamespaceRequest{})
 		if e != nil {
 			continue
@@ -135,7 +135,7 @@ func (p *NsProvider) InitStreamers(ctx context.Context) error {
 		return err
 	}
 	for _, srv := range services {
-		c := tree.NewNodeProviderStreamerClient(grpc.NewClientConn(strings.TrimPrefix(srv.Name(), common.ServiceGrpcNamespace_)))
+		c := tree.NewNodeProviderStreamerClient(grpc.GetClientConnFromCtx(ctx, strings.TrimPrefix(srv.Name(), common.ServiceGrpcNamespace_)))
 		if s, e := c.ReadNodeStream(ctx); e == nil {
 			p.streamers = append(p.streamers, s)
 		}

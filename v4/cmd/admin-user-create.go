@@ -103,7 +103,7 @@ EXAMPLES
 			Attributes: map[string]string{"profile": common.PydioProfileStandard},
 		}
 
-		userClient := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
+		userClient := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUser))
 		sQ, _ := anypb.New(&idm.UserSingleQuery{Login: userCreateLogin})
 		st, e := userClient.SearchUser(ctx, &idm.SearchUserRequest{Query: &service.Query{SubQueries: []*anypb.Any{sQ}}})
 		if e != nil {
@@ -140,7 +140,7 @@ EXAMPLES
 			Label:    "User " + u.Login + " role",
 		}
 
-		roleClient := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
+		roleClient := idm.NewRoleServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceRole))
 		if _, err := roleClient.CreateRole(context.Background(), &idm.CreateRoleRequest{
 			Role: &newRole,
 		}); err != nil {

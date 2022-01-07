@@ -28,10 +28,10 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/emicklei/go-restful"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 
+	restful "github.com/emicklei/go-restful"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/client/grpc"
@@ -388,9 +388,9 @@ func (s *Handler) findWorkspacesForDatasource(ctx context.Context, dsName string
 	// List all workspaces
 	// List all ACLs
 	// Check if Nodes belong to datasource => break
-	wsClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
-	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
-	treeClient := tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceTree))
+	wsClient := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceWorkspace))
+	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
+	treeClient := tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(ctx, common.ServiceTree))
 	wsSearch, _ := anypb.New(&idm.WorkspaceSingleQuery{
 		Scope: idm.WorkspaceScope_ADMIN,
 	})
@@ -434,7 +434,7 @@ func (s *Handler) findWorkspacesForDatasource(ctx context.Context, dsName string
 
 func removeFullVersioningJob(ctx context.Context, dsName string) error {
 	jId := "full-versioning-job-" + dsName
-	jobsClient := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
+	jobsClient := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceJobs))
 	to, can := context.WithTimeout(ctx, grpc.CallTimeoutShort)
 	defer can()
 	_, e := jobsClient.DeleteJob(to, &jobs.DeleteJobRequest{JobID: jId})
@@ -474,7 +474,7 @@ func createFullVersioningJob(ctx context.Context, dsName string) error {
 		},
 	}
 
-	jobsClient := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
+	jobsClient := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceJobs))
 	to, can := context.WithTimeout(ctx, grpc.CallTimeoutShort)
 	defer can()
 	if _, err := jobsClient.GetJob(to, &jobs.GetJobRequest{JobID: j.ID}); err != nil {

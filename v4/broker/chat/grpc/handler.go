@@ -44,7 +44,7 @@ var (
 
 func getMetaClient() tree.NodeReceiverClient {
 	if metaClient == nil {
-		metaClient = tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceMeta))
+		metaClient = tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceMeta))
 	}
 	return metaClient
 }

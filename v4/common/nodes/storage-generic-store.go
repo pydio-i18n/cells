@@ -40,7 +40,7 @@ func GetGenericStoreClient(ctx context.Context, storeNamespace string) (client S
 		return nil, "", err
 	}
 
-	s3endpointClient := object.NewDataSourceEndpointClient(grpc.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceDataSync_ + dataSource))
+	s3endpointClient := object.NewDataSourceEndpointClient(grpc.GetClientConnFromCtx(ctx, common.ServiceGrpcNamespace_+common.ServiceDataSync_+dataSource))
 	response, err := s3endpointClient.GetDataSourceConfig(ctx, &object.GetDataSourceConfigRequest{})
 	if err != nil {
 		return nil, "", err

@@ -2,8 +2,9 @@ package rest
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -26,7 +27,7 @@ func (h *WorkspaceHandler) loadRootNodesForWorkspaces(ctx context.Context, wsUUI
 	for _, a := range acls {
 		wsAcls[a.WorkspaceID] = append(wsAcls[a.WorkspaceID], a)
 	}
-	streamer := tree.NewNodeProviderStreamerClient(grpc.NewClientConn(common.ServiceTree))
+	streamer := tree.NewNodeProviderStreamerClient(grpc.GetClientConnFromCtx(ctx, common.ServiceTree))
 	c, e := streamer.ReadNodeStream(ctx)
 	if e != nil {
 		return e
@@ -75,7 +76,7 @@ func (h *WorkspaceHandler) loadRootNodesForWorkspaces(ctx context.Context, wsUUI
 func (h *WorkspaceHandler) storeRootNodesAsACLs(ctx context.Context, ws *idm.Workspace, update bool) error {
 
 	reassign := make(map[string][]*idm.ACLAction)
-	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 
 	if update {
 		// Delete current Root Nodes ACLs
@@ -205,7 +206,7 @@ func (h *WorkspaceHandler) extractDefaultRights(ctx context.Context, workspace *
 
 func (h *WorkspaceHandler) bulkReadDefaultRights(ctx context.Context, uuids []string, wss map[string]*idm.Workspace) error {
 
-	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 	// Load RootRole ACLs and append to Attributes
 	q1, _ := anypb.New(&idm.ACLSingleQuery{
 		WorkspaceIDs: uuids,
@@ -265,7 +266,7 @@ func (h *WorkspaceHandler) bulkReadDefaultRights(ctx context.Context, uuids []st
 
 func (h *WorkspaceHandler) manageDefaultRights(ctx context.Context, workspace *idm.Workspace, read bool, rightsValue string, newQuota string) error {
 
-	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 	if read {
 		// Load RootRole ACLs and append to Attributes
 		q1, _ := anypb.New(&idm.ACLSingleQuery{

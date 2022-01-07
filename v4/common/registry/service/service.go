@@ -60,7 +60,12 @@ func (o *URLOpener) OpenURL(ctx context.Context, u *url.URL) (registry.Registry,
 		}
 
 		// TODO v4 error handling
-		conn = cgrpc.NewClientConn(address)
+		cli, err := grpc.Dial(u.Hostname()+":"+u.Port(), grpc.WithInsecure(), grpc.WithBlock())
+		if err != nil {
+			return err
+		}
+
+		conn = cgrpc.NewClientConn("pydio.grpc.registry", cgrpc.WithClientConn(cli))
 
 		return nil
 	}, 30*time.Second, 5*time.Minute)

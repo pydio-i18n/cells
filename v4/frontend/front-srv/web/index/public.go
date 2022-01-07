@@ -80,7 +80,7 @@ func (h *PublicHandler) computeTplConf(req *http.Request, linkId string) (status
 		return 404, tplConf
 	}
 
-	cl := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
+	cl := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceWorkspace))
 	q, _ := anypb.New(&idm.WorkspaceSingleQuery{
 		Uuid: linkData.RepositoryId,
 	})
@@ -187,7 +187,7 @@ func (h *PublicHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // Load link from Docstore
 func (h *PublicHandler) loadLink(ctx context.Context, linkUuid string) (*docstore.ShareDocument, error) {
 
-	store := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
+	store := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(ctx, common.ServiceDocStore))
 	resp, e := store.GetDocument(ctx, &docstore.GetDocumentRequest{DocumentID: linkUuid, StoreID: common.DocStoreIdShares})
 	if e != nil {
 		return nil, fmt.Errorf("cannot find document")

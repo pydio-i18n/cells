@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	c := grpc.NewClientConn("pydio.grpc.config")
+	c := grpc.GetClientConnFromCtx(context.Background(), "pydio.grpc.config")
 
 	confCli := config.NewConfigClient(c)
 	if err := setConfig(confCli); err != nil {
@@ -24,7 +24,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	// c = grpc.NewClientConn("pydio.grpc.registry")
+	// c = grpc.GetClientConnFromCtx("pydio.grpc.registry")
 
 	/*regCli := registry.NewRegistryClient(c)
 	/*go func() {
@@ -41,7 +41,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	c = grpc.NewClientConn("pydio.grpc.data.index.pydiods1")
+	c = grpc.GetClientConnFromCtx("pydio.grpc.data.index.pydiods1")
 
 	nodeReceiverCli := tree.NewNodeReceiverClient(c)
 	if err := createNode(nodeReceiverCli); err != nil {

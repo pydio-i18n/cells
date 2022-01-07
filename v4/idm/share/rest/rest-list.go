@@ -89,7 +89,7 @@ func (h *SharesHandler) ListSharedResources(req *restful.Request, rsp *restful.R
 		qs = append(qs, q)
 	}
 
-	cl := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
+	cl := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceWorkspace))
 	streamer, err := cl.SearchWorkspace(ctx, &idm.SearchWorkspaceRequest{
 		Query: &service2.Query{
 			SubQueries: qs,
@@ -188,8 +188,8 @@ func (h *SharesHandler) ListSharedResources(req *restful.Request, rsp *restful.R
 func (h *SharesHandler) LoadAdminRootNodes(ctx context.Context, detectedRoots []string) (rootNodes map[string]*tree.Node) {
 
 	rootNodes = make(map[string]*tree.Node)
-	router := compose.NewClient(compose.UuidComposer(nodes.AsAdmin())...)
-	metaClient := tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceMeta))
+	router := compose.NewClient(compose.UuidComposer(nodes.WithContext(h.ctx), nodes.AsAdmin())...)
+	metaClient := tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(ctx, common.ServiceMeta))
 	for _, rootId := range detectedRoots {
 		request := &tree.ReadNodeRequest{Node: &tree.Node{Uuid: rootId}}
 		if resp, err := router.ReadNode(ctx, request); err == nil {

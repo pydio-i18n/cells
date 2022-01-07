@@ -23,8 +23,9 @@ package rest
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"time"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/pydio/cells/v4/common/utils/uuid"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -68,7 +69,7 @@ func FirstRun(ctx context.Context) error {
 		return nil
 	}
 
-	wsClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
+	wsClient := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceWorkspace))
 
 	if hasPersonal {
 		log.Logger(ctx).Info("Creating a Personal workspace")
@@ -135,7 +136,7 @@ func createWs(ctx context.Context, wsClient idm.WorkspaceServiceClient, ws *idm.
 	}
 	std.Retry(ctx, func() error {
 		log.Logger(ctx).Info("Settings ACLS for workspace")
-		aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+		aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 		for _, acl := range acls {
 			_, e := aclClient.CreateACL(ctx, &idm.CreateACLRequest{ACL: acl})
 			if e != nil {

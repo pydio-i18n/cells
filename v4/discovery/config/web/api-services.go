@@ -172,7 +172,7 @@ func (h *Handler) ListPeerFolders(req *restful.Request, resp *restful.Response) 
 	resp.WriteEntity(coll)
 	/*
 		srvName := common.ServiceGrpcNamespace_ + common.ServiceDataObjects
-		cl := tree.NewNodeProviderClient(grpc.NewClientConn(srvName))
+		cl := tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(srvName))
 		var opts []client.CallOption
 		if listReq.PeerAddress != "" {
 			selectorOption := client.WithSelectOption(registry.PeerClientSelector(srvName, listReq.PeerAddress))
@@ -212,7 +212,7 @@ func (h *Handler) CreatePeerFolder(req *restful.Request, resp *restful.Response)
 	}
 	/*
 		srvName := common.ServiceGrpcNamespace_ + common.ServiceDataObjects
-		cl := tree.NewNodeReceiverClient(grpc.NewClientConn(srvName))
+		cl := tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(srvName))
 		var opts []client.CallOption
 		if createReq.PeerAddress != "" {
 			selectorOption := client.WithSelectOption(registry.PeerClientSelector(srvName, createReq.PeerAddress))
@@ -294,8 +294,8 @@ func (h *Handler) ValidateLocalDSFolderOnPeer(ctx context.Context, newSource *ob
 			opts = append(opts, selectorOption)
 		}
 
-		cl := tree.NewNodeProviderClient(grpc.NewClientConn(srvName))
-		wCl := tree.NewNodeReceiverClient(grpc.NewClientConn(srvName))
+		cl := tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(srvName))
+		wCl := tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(srvName))
 
 		// Check it's two level deep
 		parentName := path.Dir(folder)

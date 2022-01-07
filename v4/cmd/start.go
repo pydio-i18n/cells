@@ -23,9 +23,13 @@ package cmd
 import (
 	"log"
 
+	clientcontext "github.com/pydio/cells/v4/common/client/context"
+
 	"github.com/pydio/cells/v4/common/broker"
 	"golang.org/x/sync/errgroup"
+	"google.golang.org/grpc"
 
+	clientgrpc "github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/plugins"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
@@ -35,7 +39,7 @@ import (
 	servercontext "github.com/pydio/cells/v4/common/server/context"
 	"github.com/pydio/cells/v4/common/server/fork"
 	"github.com/pydio/cells/v4/common/server/generic"
-	"github.com/pydio/cells/v4/common/server/grpc"
+	servergrpc "github.com/pydio/cells/v4/common/server/grpc"
 	"github.com/pydio/cells/v4/common/server/http"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
@@ -90,10 +94,17 @@ to quickly create a Cobra application.`,
 			return err
 		}
 
+		// Create a main client connection
+		conn, err := grpc.Dial("cells:///", grpc.WithInsecure(), grpc.WithResolvers(clientgrpc.NewBuilder(reg)))
+		if err != nil {
+			return err
+		}
+
 		broker.Register(broker.NewBroker(viper.GetString("broker")))
 
 		ctx = servercontext.WithRegistry(ctx, reg)
 		ctx = servicecontext.WithRegistry(ctx, pluginsReg)
+		ctx = clientcontext.WithClientConn(ctx, conn)
 
 		//localEndpointURI := "192.168.1.5:5454"
 		//reporterURI := "http://localhost:9411/api/v2/spans"
@@ -244,7 +255,7 @@ to quickly create a Cobra application.`,
 					if s.IsGRPC() {
 
 						if srvGRPC == nil {
-							srvGRPC = grpc.New(ctx)
+							srvGRPC = servergrpc.New(ctx)
 							srvs = append(srvs, srvGRPC)
 						}
 						opts.Server = srvGRPC

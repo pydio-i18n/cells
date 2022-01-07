@@ -17,7 +17,6 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/url"
 	"sync"
 
@@ -75,7 +74,7 @@ type URLOpener struct {
 func (o *URLOpener) OpenTopicURL(ctx context.Context, u *url.URL) (*pubsub.Topic, error) {
 
 	if _, ok := publishers[u.Host]; !ok {
-		conn := grpc.NewClientConn(common.ServiceBroker)
+		conn := grpc.GetClientConnFromCtx(ctx, common.ServiceBroker)
 		cli := pb.NewBrokerClient(conn)
 		if s, err := cli.Publish(ctx); err != nil {
 			return nil, err
@@ -109,7 +108,7 @@ func (o *URLOpener) OpenSubscriptionURL(ctx context.Context, u *url.URL) (*pubsu
 
 	sub, ok := subscribers[u.Host]
 	if !ok {
-		conn := grpc.NewClientConn(common.ServiceBroker)
+		conn := grpc.GetClientConnFromCtx(ctx, common.ServiceBroker)
 		cli, err := pb.NewBrokerClient(conn).Subscribe(ctx)
 		if err != nil {
 			return nil, err
@@ -182,7 +181,7 @@ func NewTopic(path string, opts ...Option) (*pubsub.Topic, error) {
 	}
 
 	if stream == nil {
-		conn := grpc.NewClientConn(common.ServiceBroker)
+		conn := grpc.GetClientConnFromCtx(ctx, common.ServiceBroker)
 		cli := pb.NewBrokerClient(conn)
 		if s, err := cli.Publish(ctx); err != nil {
 			return nil, err
@@ -306,7 +305,7 @@ func NewSubscription(path string, opts ...Option) (*pubsub.Subscription, error) 
 
 	if ch == nil {
 		ch = make(chan []*pb.Message)
-		conn := grpc.NewClientConn(common.ServiceBroker)
+		conn := grpc.GetClientConnFromCtx(ctx, common.ServiceBroker)
 		// req := &pb.SubscribeRequest{Topic: path, Queue: options.Queue}
 		cli, err := pb.NewBrokerClient(conn).Subscribe(ctx)
 		if err != nil {
@@ -345,7 +344,6 @@ func NewSubscription(path string, opts ...Option) (*pubsub.Subscription, error) 
 		}()
 	}
 
-	fmt.Println("Created new subscription")
 	return pubsub.NewSubscription(&subscription{
 		in: ch,
 	}, nil, nil), nil

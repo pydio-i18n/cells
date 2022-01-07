@@ -51,7 +51,7 @@ func (h *Handler) Syslog(req *restful.Request, rsp *restful.Response) {
 	}
 	ctx := req.Request.Context()
 
-	c := log.NewLogRecorderClient(grpc.NewClientConn(common.ServiceLog))
+	c := log.NewLogRecorderClient(grpc.GetClientConnFromCtx(ctx, common.ServiceLog))
 
 	res, err := c.ListLogs(ctx, &input)
 	if err != nil {

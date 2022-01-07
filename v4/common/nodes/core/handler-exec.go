@@ -535,7 +535,7 @@ func (e *Executor) MultipartListObjectParts(ctx context.Context, target *tree.No
 
 func (e *Executor) StreamChanges(ctx context.Context, in *tree.StreamChangesRequest, opts ...grpc.CallOption) (tree.NodeChangesStreamer_StreamChangesClient, error) {
 
-	cli := tree.NewNodeChangesStreamerClient(grpc2.NewClientConn(common.ServiceTree))
+	cli := tree.NewNodeChangesStreamerClient(grpc2.GetClientConnFromCtx(ctx, common.ServiceTree))
 	return cli.StreamChanges(ctx, in, opts...)
 
 }

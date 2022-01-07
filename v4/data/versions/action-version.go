@@ -110,7 +110,7 @@ func (c *VersionAction) Run(ctx context.Context, channels *actions.RunnableChann
 		return input.WithError(e), e
 	}
 
-	versionClient := tree.NewNodeVersionerClient(grpc.NewClientConn(common.ServiceVersions))
+	versionClient := tree.NewNodeVersionerClient(grpc.GetClientConnFromCtx(ctx, common.ServiceVersions))
 	request := &tree.CreateVersionRequest{Node: node}
 	if input.Event != nil {
 		ce := &tree.NodeChangeEvent{}

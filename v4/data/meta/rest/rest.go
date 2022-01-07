@@ -284,7 +284,7 @@ func (h *Handler) SetMeta(req *restful.Request, resp *restful.Response) {
 	er := h.GetRouter().WrapCallback(func(inputFilter nodes.FilterFunc, outputFilter nodes.FilterFunc) error {
 		ctx, node, _ = inputFilter(ctx, node, "in")
 
-		cli := tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceMeta))
+		cli := tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(ctx, common.ServiceMeta))
 		if _, er := cli.UpdateNode(ctx, &tree.UpdateNodeRequest{From: node, To: node}); er != nil {
 			log.Logger(ctx).Error("Failed to change the meta data", zap.Error(er))
 			return er
@@ -322,7 +322,7 @@ func (h *Handler) DeleteMeta(req *restful.Request, resp *restful.Response) {
 	er := h.GetRouter().WrapCallback(func(inputFilter nodes.FilterFunc, outputFilter nodes.FilterFunc) error {
 		ctx, node, _ = inputFilter(ctx, node, "in")
 
-		cli := tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceMeta))
+		cli := tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(ctx, common.ServiceMeta))
 		if _, er := cli.UpdateNode(ctx, &tree.UpdateNodeRequest{From: node, To: node}); er != nil {
 			return er
 		}
@@ -338,7 +338,7 @@ func (h *Handler) DeleteMeta(req *restful.Request, resp *restful.Response) {
 
 func (h *Handler) GetRouter() nodes.Client {
 	if h.router == nil {
-		h.router = compose.NewClient(compose.PathComposer(nodes.WithAuditEventsLogging(), nodes.WithRegistryWatch(servicecontext.GetRegistry(h.Ctx)))...)
+		h.router = compose.NewClient(compose.PathComposer(nodes.WithContext(h.Ctx), nodes.WithAuditEventsLogging(), nodes.WithRegistryWatch(servicecontext.GetRegistry(h.Ctx)))...)
 	}
 	return h.router
 }

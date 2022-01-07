@@ -22,6 +22,7 @@ package timer
 
 import (
 	"context"
+
 	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
@@ -82,7 +83,7 @@ func NewEventProducer(rootCtx context.Context) *EventProducer {
 func (e *EventProducer) Start() error {
 
 	// Load all schedules
-	cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
+	cli := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(e.Context, common.ServiceJobs))
 	streamer, err := cli.ListJobs(e.Context, &jobs.ListJobsRequest{TimersOnly: true})
 	if err != nil {
 		return err

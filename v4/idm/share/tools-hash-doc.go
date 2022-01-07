@@ -42,7 +42,7 @@ const PasswordComplexitySuffix = "#$!Az1"
 
 func StoreHashDocument(ctx context.Context, ownerUser *idm.User, link *rest.ShareLink, updateHash ...string) error {
 
-	store := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
+	store := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(ctx, common.ServiceDocStore))
 
 	hashDoc := &docstore.ShareDocument{
 		OwnerId:       ownerUser.Login,
@@ -107,7 +107,7 @@ func StoreHashDocument(ctx context.Context, ownerUser *idm.User, link *rest.Shar
 
 func LoadHashDocumentData(ctx context.Context, shareLink *rest.ShareLink, acls []*idm.ACL) error {
 
-	store := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
+	store := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(ctx, common.ServiceDocStore))
 	streamer, er := store.ListDocuments(ctx, &docstore.ListDocumentsRequest{StoreID: common.DocStoreIdShares, Query: &docstore.DocumentQuery{
 		MetaQuery: "+REPOSITORY:\"" + shareLink.Uuid + "\" +SHARE_TYPE:minisite",
 	}})
@@ -192,7 +192,7 @@ func LoadHashDocumentData(ctx context.Context, shareLink *rest.ShareLink, acls [
 
 func DeleteHashDocument(ctx context.Context, shareId string) error {
 
-	store := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
+	store := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(ctx, common.ServiceDocStore))
 	resp, err := store.DeleteDocuments(ctx, &docstore.DeleteDocumentsRequest{StoreID: common.DocStoreIdShares, Query: &docstore.DocumentQuery{
 		MetaQuery: "+REPOSITORY:\"" + shareId + "\" +SHARE_TYPE:minisite",
 	}})
@@ -210,7 +210,7 @@ func DeleteHashDocument(ctx context.Context, shareId string) error {
 // the passed userLogin value.
 func SearchHashDocumentForUser(ctx context.Context, userLogin string) (*docstore.ShareDocument, error) {
 
-	store := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
+	store := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(ctx, common.ServiceDocStore))
 
 	// SEARCH PUBLIC
 	streamer, err := store.ListDocuments(ctx, &docstore.ListDocumentsRequest{StoreID: common.DocStoreIdShares, Query: &docstore.DocumentQuery{

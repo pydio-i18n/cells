@@ -77,7 +77,7 @@ func init() {
 
 				dao := servicecontext.GetDAO(c).(activity.DAO)
 				// Register Subscribers
-				subscriber := NewEventsSubscriber(dao)
+				subscriber := NewEventsSubscriber(c, dao)
 				// Start batcher - it is stopped by c.Done()
 				batcher := cache.NewEventsBatcher(c, 3*time.Second, 20*time.Second, 2000, true, func(ctx context.Context, msg ...*tree.NodeChangeEvent) {
 					if e := subscriber.HandleNodeChange(ctx, msg[0]); e != nil {
@@ -165,7 +165,7 @@ func RegisterDigestJob(ctx context.Context) error {
 		},
 	}
 
-	cliJob := jobs.NewJobServiceClient(grpc2.NewClientConn(common.ServiceJobs, grpc2.WithCallTimeout(grpc2.CallTimeoutShort)))
+	cliJob := jobs.NewJobServiceClient(grpc2.GetClientConnFromCtx(ctx, common.ServiceJobs, grpc2.WithCallTimeout(grpc2.CallTimeoutShort)))
 	return std.Retry(ctx, func() error {
 		_, e := cliJob.PutJob(ctx, &jobs.PutJobRequest{Job: job})
 		return e

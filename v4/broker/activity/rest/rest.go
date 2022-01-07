@@ -49,12 +49,17 @@ import (
 
 // ActivityHandler responds to activity REST requests
 type ActivityHandler struct {
+	ctx    context.Context
 	router *compose.Reverse
 }
 
 func NewActivityHandler(ctx context.Context) *ActivityHandler {
 	return &ActivityHandler{
-		router: compose.ReverseClient(nodes.WithRegistryWatch(servicecontext.GetRegistry(ctx))),
+		ctx: ctx,
+		router: compose.ReverseClient(
+			nodes.WithContext(ctx),
+			nodes.WithRegistryWatch(servicecontext.GetRegistry(ctx)),
+		),
 	}
 }
 
@@ -70,7 +75,7 @@ func (a *ActivityHandler) Filter() func(string) string {
 
 // Internal function to retrieve activity GRPC client
 func (a *ActivityHandler) getClient() activity.ActivityServiceClient {
-	return activity.NewActivityServiceClient(grpc.NewClientConn(common.ServiceActivity))
+	return activity.NewActivityServiceClient(grpc.GetClientConnFromCtx(a.ctx, common.ServiceActivity))
 }
 
 // Stream returns a collection of activities

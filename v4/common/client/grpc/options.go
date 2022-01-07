@@ -9,14 +9,14 @@ import (
 type Option func(*Options)
 
 type Options struct {
-	Registry    string
+	ClientConn  grpc.ClientConnInterface
 	CallTimeout time.Duration
 	DialOptions []grpc.DialOption
 }
 
-func WithRegistry(r string) Option {
+func WithClientConn(c grpc.ClientConnInterface) Option {
 	return func(o *Options) {
-		o.Registry = r
+		o.ClientConn = c
 	}
 }
 

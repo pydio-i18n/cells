@@ -21,6 +21,7 @@
 package rest
 
 import (
+	"context"
 	"github.com/emicklei/go-restful"
 	"github.com/pydio/cells/v4/common/client/grpc"
 	"go.uber.org/zap"
@@ -37,6 +38,8 @@ import (
 
 // Handler for the rest package
 type Handler struct {
+	ctx context.Context
+
 	resources.ResourceProviderHandler
 }
 
@@ -67,7 +70,7 @@ func (a *Handler) PutAcl(req *restful.Request, rsp *restful.Response) {
 		return
 	}
 
-	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 	response, er := aclClient.CreateACL(req.Request.Context(), &idm.CreateACLRequest{
 		ACL: &inputACL,
 	})
@@ -115,7 +118,7 @@ func (a *Handler) DeleteAcl(req *restful.Request, rsp *restful.Response) {
 		SubQueries: []*anypb.Any{acQ},
 	}
 
-	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 	response, err := aclClient.DeleteACL(ctx, &idm.DeleteACLRequest{
 		Query: query,
 	})
@@ -159,7 +162,7 @@ func (a *Handler) SearchAcls(req *restful.Request, rsp *restful.Response) {
 		query.SubQueries = append(query.SubQueries, anyfied)
 	}
 
-	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 	streamer, err := aclClient.SearchACL(ctx, &idm.SearchACLRequest{
 		Query: query,
 	})

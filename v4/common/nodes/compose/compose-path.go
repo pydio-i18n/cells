@@ -45,6 +45,7 @@ func PathClientAdmin() nodes.Client {
 }
 
 func PathComposer(oo ...nodes.Option) []nodes.Option {
+
 	return append(oo,
 		nodes.WithCore(func(pool nodes.SourcesPool) nodes.Handler {
 			exe := &core.Executor{}

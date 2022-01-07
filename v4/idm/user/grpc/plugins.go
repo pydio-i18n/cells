@@ -136,7 +136,7 @@ func InitDefaults(ctx context.Context) error {
 			}
 			// Create user role
 			std.Retry(ctx, func() error {
-				roleClient := idm.NewRoleServiceClient(grpc2.NewClientConn(common.ServiceRole))
+				roleClient := idm.NewRoleServiceClient(grpc2.GetClientConnFromCtx(ctx, common.ServiceRole))
 				_, e := roleClient.CreateRole(ctx, &idm.CreateRoleRequest{Role: &idm.Role{
 					Uuid:     newUser.Uuid,
 					Label:    newUser.Login + " role",
@@ -169,7 +169,7 @@ func InitDefaults(ctx context.Context) error {
 		}
 		// Create user role
 		std.Retry(ctx, func() error {
-			roleClient := idm.NewRoleServiceClient(grpc2.NewClientConn(common.ServiceRole))
+			roleClient := idm.NewRoleServiceClient(grpc2.GetClientConnFromCtx(ctx, common.ServiceRole))
 			_, e := roleClient.CreateRole(ctx, &idm.CreateRoleRequest{Role: &idm.Role{
 				Uuid:     newAnon.Uuid,
 				Label:    newAnon.Login + " role",

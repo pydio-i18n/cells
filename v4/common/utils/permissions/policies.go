@@ -126,7 +126,7 @@ var checkersCache = cache.NewShort(cache.WithEviction(1*time.Minute), cache.With
 
 func loadPoliciesByResourcesType(ctx context.Context, resType string) ([]*idm.Policy, error) {
 
-	cli := idm.NewPolicyEngineServiceClient(grpc.NewClientConn(common.ServicePolicy))
+	cli := idm.NewPolicyEngineServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServicePolicy))
 	r, e := cli.ListPolicyGroups(ctx, &idm.ListPolicyGroupsRequest{})
 	if e != nil {
 		return nil, e

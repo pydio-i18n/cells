@@ -56,14 +56,16 @@ type MicroEventsSubscriber struct {
 	roleClient   idm.RoleServiceClient
 	wsClient     idm.WorkspaceServiceClient
 	parentsCache cache.Short
+	ctx          context.Context
 	dao          activity.DAO
 
 	changeEvents []*idm.ChangeEvent
 	aclsChan     chan *idm.ChangeEvent
 }
 
-func NewEventsSubscriber(dao activity.DAO) *MicroEventsSubscriber {
+func NewEventsSubscriber(ctx context.Context, dao activity.DAO) *MicroEventsSubscriber {
 	m := &MicroEventsSubscriber{
+		ctx:          ctx,
 		dao:          dao,
 		aclsChan:     make(chan *idm.ChangeEvent),
 		parentsCache: cache.NewShort(cache.WithEviction(3*time.Minute), cache.WithCleanWindow(10*time.Minute)),
@@ -74,28 +76,28 @@ func NewEventsSubscriber(dao activity.DAO) *MicroEventsSubscriber {
 
 func (e *MicroEventsSubscriber) getTreeClient() tree.NodeProviderClient {
 	if e.treeClient == nil {
-		e.treeClient = tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceTree))
+		e.treeClient = tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(e.ctx, common.ServiceTree))
 	}
 	return e.treeClient
 }
 
 func (e *MicroEventsSubscriber) getUserClient() idm.UserServiceClient {
 	if e.usrClient == nil {
-		e.usrClient = idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
+		e.usrClient = idm.NewUserServiceClient(grpc.GetClientConnFromCtx(e.ctx, common.ServiceUser))
 	}
 	return e.usrClient
 }
 
 func (e *MicroEventsSubscriber) getRoleClient() idm.RoleServiceClient {
 	if e.roleClient == nil {
-		e.roleClient = idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
+		e.roleClient = idm.NewRoleServiceClient(grpc.GetClientConnFromCtx(e.ctx, common.ServiceRole))
 	}
 	return e.roleClient
 }
 
 func (e *MicroEventsSubscriber) getWorkspaceClient() idm.WorkspaceServiceClient {
 	if e.wsClient == nil {
-		e.wsClient = idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
+		e.wsClient = idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(e.ctx, common.ServiceWorkspace))
 	}
 	return e.wsClient
 }
@@ -222,7 +224,7 @@ func (e *MicroEventsSubscriber) HandleNodeChange(ctx context.Context, msg *tree.
 }
 
 func (e *MicroEventsSubscriber) vNodeResolver(ctx context.Context, n *tree.Node) (*tree.Node, bool) {
-	pool := nodes.NewClientsPool(false, nil)
+	pool := nodes.NewClientsPool(e.ctx, false, nil)
 	return abstract.GetVirtualNodesManager().GetResolver(pool, false)(ctx, n)
 }
 
