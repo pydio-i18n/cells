@@ -25,6 +25,7 @@ package actions
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common"
 	"time"
 
 	"github.com/pydio/cells/v4/common/forms"
@@ -75,7 +76,7 @@ type ActionDescription struct {
 
 // ConcreteAction is the base interface for pydio actions. All actions must implement this interface.
 type ConcreteAction interface {
-
+	common.RuntimeProvider
 	// GetName returns a unique identifier
 	GetName() string
 	// Init initialize parameters

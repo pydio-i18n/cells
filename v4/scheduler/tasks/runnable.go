@@ -74,13 +74,18 @@ func NewRunnable(ctx context.Context, parentPath string, chainIndex int, task *T
 		ActionPath: aPath,
 	}
 	// Find Concrete Implementation from ActionID
-	impl, ok := actions.GetActionsManager().ActionById(action.ID)
-	if ok {
+
+	if impl, ok := actions.GetActionsManager().ActionById(action.ID); ok {
 		r.Implementation = impl
-		r.Implementation.Init(task.Job, action)
-	}
-	if walker, ok := impl.(actions.RecursiveNodeWalkerAction); ok && action.NodesFilter != nil {
-		walker.SetNodeFilterAsWalkFilter(action.NodesFilter)
+		r.Implementation.SetRuntimeContext(r.Task.GetRuntimeContext())
+		if e := r.Implementation.Init(task.Job, action); e != nil {
+			log.TasksLogger(ctx).Error("Error during initialization of "+action.ID+": "+e.Error(), zap.Error(e))
+		}
+		if walker, ok2 := impl.(actions.RecursiveNodeWalkerAction); ok2 && action.NodesFilter != nil {
+			walker.SetNodeFilterAsWalkFilter(action.NodesFilter)
+		}
+	} else {
+		log.TasksLogger(ctx).Error("Cannot find action " + action.ID)
 	}
 	return r
 }

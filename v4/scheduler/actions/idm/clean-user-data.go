@@ -2,6 +2,7 @@ package idm
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common"
 	"path"
 	"time"
 
@@ -25,6 +26,7 @@ var (
 )
 
 type CleanUserDataAction struct {
+	common.RuntimeHolder
 	targetParent string
 }
 
@@ -115,6 +117,7 @@ func (c *CleanUserDataAction) Run(ctx context.Context, channels *actions.Runnabl
 	}
 
 	router := compose.PathClient(
+		nodes.WithContext(c.GetRuntimeContext()),
 		nodes.AsAdmin(),
 		nodes.WithSynchronousTasks(),
 	)

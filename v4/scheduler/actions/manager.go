@@ -24,6 +24,7 @@ import (
 	"context"
 	"sync"
 
+	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/forms"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/service/errors"
@@ -100,7 +101,9 @@ func (m *ActionsManager) LoadActionForm(actionID string) (*forms.Form, error) {
 	return nil, errors.NotFound("action.not.found", "cannot find action with ID %s", actionID)
 }
 
-type ignoredAction struct{}
+type ignoredAction struct {
+	common.RuntimeHolder
+}
 
 func (i *ignoredAction) GetName() string {
 	return IgnoredActionName

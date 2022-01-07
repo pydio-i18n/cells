@@ -43,6 +43,7 @@ var (
 )
 
 type ResyncAction struct {
+	common.RuntimeHolder
 	ServiceName string
 	Path        string
 	DryRun      bool
@@ -134,7 +135,7 @@ func (c *ResyncAction) Run(ctx context.Context, channels *actions.RunnableChanne
 	srvName := jobs.EvaluateFieldStr(ctx, input, c.ServiceName)
 	// V4: strip grpc prefix
 	srvName = strings.TrimPrefix(srvName, common.ServiceGrpcNamespace_)
-	syncClient := sync.NewSyncEndpointClient(grpc.GetClientConnFromCtx(ctx, srvName))
+	syncClient := sync.NewSyncEndpointClient(grpc.GetClientConnFromCtx(c.GetRuntimeContext(), srvName))
 	log.TasksLogger(ctx).Info("Sending Resync command to " + srvName)
 	_, e := syncClient.TriggerResync(ctx, &sync.ResyncRequest{
 		Path:   jobs.EvaluateFieldStr(ctx, input, c.Path),

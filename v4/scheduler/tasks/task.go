@@ -27,6 +27,7 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
+	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/utils/permissions"
@@ -37,6 +38,7 @@ import (
 type Task struct {
 	*jobs.Job
 	sync.RWMutex
+	common.RuntimeHolder
 	context        context.Context
 	initialMessage jobs.ActionMessage
 	lockedTask     *jobs.Task

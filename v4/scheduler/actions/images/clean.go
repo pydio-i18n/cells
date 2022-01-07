@@ -39,7 +39,9 @@ var (
 	cleanThumbTaskName = "actions.images.clean"
 )
 
-type CleanThumbsTask struct{}
+type CleanThumbsTask struct {
+	common.RuntimeHolder
+}
 
 // GetDescription returns action description
 func (c *CleanThumbsTask) GetDescription(lang ...string) actions.ActionDescription {
@@ -89,12 +91,12 @@ func (c *CleanThumbsTask) Run(ctx context.Context, channels *actions.RunnableCha
 		return input.WithError(err), err
 	}
 	for _, oi := range listRes.Contents {
-		tCtx, tNode, e := getThumbLocation(ctx, oi.Key)
+		tCtx, tNode, e := getThumbLocation(c.GetRuntimeContext(), ctx, oi.Key)
 		if e != nil {
 			log.Logger(ctx).Debug("Cannot get thumbnail location", zap.Error(e))
 			return input.WithError(e), e
 		}
-		if _, err := getRouter().DeleteNode(tCtx, &tree.DeleteNodeRequest{Node: tNode}); err != nil {
+		if _, err := getRouter(c.GetRuntimeContext()).DeleteNode(tCtx, &tree.DeleteNodeRequest{Node: tNode}); err != nil {
 			log.Logger(ctx).Debug("Cannot delete thumbnail", zap.Error(err))
 			return input.WithError(err), err
 		}

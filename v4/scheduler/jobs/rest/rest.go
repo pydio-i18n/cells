@@ -35,7 +35,6 @@ import (
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes"
-	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	log2 "github.com/pydio/cells/v4/common/proto/log"
 	"github.com/pydio/cells/v4/common/proto/rest"
@@ -50,14 +49,13 @@ var (
 )
 
 func getRouter() nodes.Client {
-	if router == nil {
-		router = compose.PathClient(nodes.WithRegistryWatch())
-	}
 	return router
 }
 
 // JobsHandler implements methods accessed via the REST gateway to the job definition repository
-type JobsHandler struct{}
+type JobsHandler struct {
+	RuntimeContext context.Context
+}
 
 // SwaggerTags list the names of the service tags declared in the swagger json implemented by this service
 func (s *JobsHandler) SwaggerTags() []string {

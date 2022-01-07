@@ -41,6 +41,7 @@ var (
 )
 
 type MetaAction struct {
+	common.RuntimeHolder
 	Client   tree.NodeReceiverClient
 	MetaJSON string
 }
@@ -86,7 +87,7 @@ func (c *MetaAction) GetName() string {
 func (c *MetaAction) Init(job *jobs.Job, action *jobs.Action) error {
 
 	if !nodes.IsUnitTestEnv {
-		c.Client = tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceMeta))
+		c.Client = tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(c.GetRuntimeContext(), common.ServiceMeta))
 	}
 	c.MetaJSON = action.Parameters["metaJSON"]
 

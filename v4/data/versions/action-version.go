@@ -45,7 +45,9 @@ import (
 	"github.com/pydio/cells/v4/scheduler/actions"
 )
 
-type VersionAction struct{}
+type VersionAction struct {
+	common.RuntimeHolder
+}
 
 func (c *VersionAction) GetDescription(lang ...string) actions.ActionDescription {
 	return actions.ActionDescription{
@@ -70,9 +72,9 @@ var (
 	router            nodes.Client
 )
 
-func getRouter() nodes.Client {
+func getRouter(runtime context.Context) nodes.Client {
 	if router == nil {
-		router = compose.PathClient(nodes.AsAdmin(), nodes.WithRegistryWatch())
+		router = compose.PathClient(nodes.WithContext(runtime), nodes.AsAdmin(), nodes.WithRegistryWatch())
 	}
 	return router
 }
@@ -105,12 +107,12 @@ func (c *VersionAction) Run(ctx context.Context, channels *actions.RunnableChann
 	}
 
 	// TODO: find clients from pool so that they are considered the same by the CopyObject request
-	source, e := DataSourceForPolicy(ctx, policy) //getRouter().GetClientsPool().GetDataSourceInfo(common.PydioVersionsNamespace)
+	source, e := DataSourceForPolicy(c.GetRuntimeContext(), policy) //getRouter().GetClientsPool().GetDataSourceInfo(common.PydioVersionsNamespace)
 	if e != nil {
 		return input.WithError(e), e
 	}
 
-	versionClient := tree.NewNodeVersionerClient(grpc.GetClientConnFromCtx(ctx, common.ServiceVersions))
+	versionClient := tree.NewNodeVersionerClient(grpc.GetClientConnFromCtx(c.GetRuntimeContext(), common.ServiceVersions))
 	request := &tree.CreateVersionRequest{Node: node}
 	if input.Event != nil {
 		ce := &tree.NodeChangeEvent{}
@@ -143,7 +145,7 @@ func (c *VersionAction) Run(ctx context.Context, channels *actions.RunnableChann
 		},
 	}
 
-	written, err := getRouter().CopyObject(ctx, sourceNode, targetNode, &models.CopyRequestData{})
+	written, err := getRouter(c.GetRuntimeContext()).CopyObject(ctx, sourceNode, targetNode, &models.CopyRequestData{})
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("Copying %s -> %s", sourceNode.GetPath(), targetNode.GetUuid()))
 		return input.WithError(err), err
@@ -164,7 +166,7 @@ func (c *VersionAction) Run(ctx context.Context, channels *actions.RunnableChann
 		output.AppendOutput(&jobs.ActionOutput{Success: true})
 		ctx = nodes.WithBranchInfo(ctx, "in", branchInfo)
 		for _, version := range response.PruneVersions {
-			_, errDel := getRouter().DeleteNode(ctx, &tree.DeleteNodeRequest{Node: version.GetLocation()})
+			_, errDel := getRouter(c.GetRuntimeContext()).DeleteNode(ctx, &tree.DeleteNodeRequest{Node: version.GetLocation()})
 			if errDel != nil {
 				return input.WithError(errDel), errDel
 			}

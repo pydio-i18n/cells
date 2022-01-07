@@ -40,8 +40,8 @@ func PathClient(oo ...nodes.Option) nodes.Client {
 	return NewClient(PathComposer(oo...)...)
 }
 
-func PathClientAdmin() nodes.Client {
-	return NewClient(PathComposer(nodes.AsAdmin())...)
+func PathClientAdmin(oo ...nodes.Option) nodes.Client {
+	return NewClient(append(oo, PathComposer(nodes.AsAdmin())...)...)
 }
 
 func PathComposer(oo ...nodes.Option) []nodes.Option {

@@ -21,6 +21,7 @@ var (
 )
 
 type DeleteUsersAction struct {
+	common.RuntimeHolder
 	task   *jobs.Task
 	params map[string]string
 }

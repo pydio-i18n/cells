@@ -49,6 +49,7 @@ import (
 )
 
 type MigrateGlobalMetaAction struct {
+	common.RuntimeHolder
 	remoteUrl        *url.URL
 	remoteUser       string
 	remotePassword   string
@@ -91,7 +92,7 @@ func (c *MigrateGlobalMetaAction) GetName() string {
 // GetRouter returns an initialized router
 func (c *MigrateGlobalMetaAction) GetRouter() nodes.Client {
 	if c.router == nil {
-		c.router = compose.PathClient()
+		c.router = compose.PathClient(nodes.WithContext(c.GetRuntimeContext()))
 	}
 	return c.router
 }

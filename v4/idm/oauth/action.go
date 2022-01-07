@@ -81,7 +81,9 @@ var (
 	pruneTokensActionName = "actions.auth.prune.tokens"
 )
 
-type PruneTokensAction struct{}
+type PruneTokensAction struct {
+	common.RuntimeHolder
+}
 
 func (c *PruneTokensAction) GetDescription(lang ...string) actions.ActionDescription {
 	return actions.ActionDescription{

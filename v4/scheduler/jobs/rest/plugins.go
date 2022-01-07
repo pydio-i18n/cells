@@ -48,7 +48,7 @@ func init() {
 					nodes.WithContext(ctx),
 					nodes.WithRegistryWatch(servicecontext.GetRegistry(ctx)),
 				)
-				return new(JobsHandler)
+				return &JobsHandler{RuntimeContext: ctx}
 			}),
 		)
 	})

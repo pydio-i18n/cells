@@ -77,6 +77,7 @@ type ThumbnailsMeta struct {
 }
 
 type ThumbnailExtractor struct {
+	common.RuntimeHolder
 	thumbSizes map[string]int
 	metaClient tree.NodeReceiverClient
 }
@@ -136,7 +137,7 @@ func (t *ThumbnailExtractor) Init(job *jobs.Job, action *jobs.Action) error {
 		t.thumbSizes = map[string]int{"sm": 300}
 	}
 	if !nodes.IsUnitTestEnv {
-		t.metaClient = tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceMeta))
+		t.metaClient = tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(t.GetRuntimeContext(), common.ServiceMeta))
 	}
 	return nil
 }
@@ -190,7 +191,7 @@ func (t *ThumbnailExtractor) resize(ctx context.Context, node *tree.Node, sizes 
 	} else {
 		// Security in case Router is not transmitting nodes immutably
 		routerNode := proto.Clone(node).(*tree.Node)
-		reader, err = getRouter().GetObject(ctx, routerNode, &models.GetRequestData{Length: -1})
+		reader, err = getRouter(t.GetRuntimeContext()).GetObject(ctx, routerNode, &models.GetRequestData{Length: -1})
 		errPath = routerNode.Path
 	}
 	if err != nil {
@@ -345,12 +346,12 @@ func (t *ThumbnailExtractor) writeSizeFromSrc(ctx context.Context, img image.Ima
 		}
 		logger.Debug("Writing thumbnail to thumbs bucket", zap.Any("image size", targetSize))
 		displayMemStat(ctx, "BEFORE PUT OBJECT WITH CONTEXT")
-		tCtx, tNode, e := getThumbLocation(ctx, objectName)
+		tCtx, tNode, e := getThumbLocation(t.GetRuntimeContext(), ctx, objectName)
 		if e != nil {
 			return false, e
 		}
 		tNode.Size = int64(buf.Len())
-		written, err := getRouter().PutObject(tCtx, tNode, buf, &models.PutRequestData{
+		written, err := getRouter(t.GetRuntimeContext()).PutObject(tCtx, tNode, buf, &models.PutRequestData{
 			Size:     tNode.Size,
 			Metadata: requestMeta,
 		})

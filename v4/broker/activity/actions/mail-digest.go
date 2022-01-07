@@ -47,6 +47,7 @@ const (
 )
 
 type MailDigestAction struct {
+	common.RuntimeHolder
 	mailerClient   mailer.MailerServiceClient
 	activityClient activity.ActivityServiceClient
 	userClient     idm.UserServiceClient
@@ -87,9 +88,9 @@ func (m *MailDigestAction) Init(job *jobs.Job, action *jobs.Action) error {
 	if email, ok := action.Parameters["dryMail"]; ok && email != "" {
 		m.dryMail = email
 	}
-	m.mailerClient = mailer.NewMailerServiceClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceMailer))
-	m.activityClient = activity.NewActivityServiceClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceActivity))
-	m.userClient = idm.NewUserServiceClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceUser))
+	m.mailerClient = mailer.NewMailerServiceClient(grpc.GetClientConnFromCtx(m.GetRuntimeContext(), common.ServiceMailer))
+	m.activityClient = activity.NewActivityServiceClient(grpc.GetClientConnFromCtx(m.GetRuntimeContext(), common.ServiceActivity))
+	m.userClient = idm.NewUserServiceClient(grpc.GetClientConnFromCtx(m.GetRuntimeContext(), common.ServiceUser))
 	return nil
 }
 

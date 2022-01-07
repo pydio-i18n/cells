@@ -12,6 +12,7 @@ import (
 )
 
 type ScopedRouterConsumer struct {
+	common.RuntimeProvider
 	owner        string
 	ownerScope   bool
 	presetClient nodes.Handler
@@ -36,7 +37,7 @@ func (s *ScopedRouterConsumer) GetHandler(ctx context.Context) (context.Context,
 		return ctx, s.presetClient, nil
 	}
 	if s.owner == common.PydioSystemUsername || !s.ownerScope {
-		return ctx, compose.PathClientAdmin(), nil
+		return ctx, compose.PathClientAdmin(nodes.WithContext(s.GetRuntimeContext())), nil
 	} else {
 		if u, claims := permissions.FindUserNameInContext(ctx); u != s.owner || claims.Name != s.owner {
 			if user, e := permissions.SearchUniqueUser(ctx, s.owner, ""); e != nil {
@@ -45,6 +46,6 @@ func (s *ScopedRouterConsumer) GetHandler(ctx context.Context) (context.Context,
 				ctx = auth.WithImpersonate(ctx, user)
 			}
 		}
-		return ctx, compose.PathClient(), nil
+		return ctx, compose.PathClient(nodes.WithContext(s.GetRuntimeContext())), nil
 	}
 }

@@ -46,6 +46,7 @@ var (
 )
 
 type OnDeleteVersionsAction struct {
+	common.RuntimeHolder
 	Handler    nodes.Handler
 	Pool       nodes.SourcesPool
 	rootFolder string
@@ -90,8 +91,8 @@ func (c *OnDeleteVersionsAction) GetName() string {
 // Init passes the parameters to a newly created PruneVersionsAction.
 func (c *OnDeleteVersionsAction) Init(job *jobs.Job, action *jobs.Action) error {
 
-	c.Handler = getRouter()
-	c.Pool = getRouter().GetClientsPool()
+	c.Handler = getRouter(c.GetRuntimeContext())
+	c.Pool = getRouter(c.GetRuntimeContext()).GetClientsPool()
 	var ok bool
 	if c.rootFolder, ok = action.Parameters["rootFolder"]; !ok {
 		c.rootFolder = "$DELETED"
@@ -114,7 +115,7 @@ func (c *OnDeleteVersionsAction) Run(ctx context.Context, channels *actions.Runn
 	if policy == nil {
 		return input.WithIgnore(), nil
 	}
-	ds, e := DataSourceForPolicy(ctx, policy)
+	ds, e := DataSourceForPolicy(c.GetRuntimeContext(), policy)
 	if e != nil {
 		return input.WithError(e), e
 	}
@@ -126,7 +127,7 @@ func (c *OnDeleteVersionsAction) Run(ctx context.Context, channels *actions.Runn
 	prefix := strings.TrimSuffix(base, ext)
 	parentCreated := false
 
-	versionClient := tree.NewNodeVersionerClient(grpc.GetClientConnFromCtx(ctx, common.ServiceVersions))
+	versionClient := tree.NewNodeVersionerClient(grpc.GetClientConnFromCtx(c.GetRuntimeContext(), common.ServiceVersions))
 
 	if response, err := versionClient.PruneVersions(ctx, &tree.PruneVersionsRequest{UniqueNode: node}); err == nil {
 		deleteStrategy := policy.GetNodeDeletedStrategy()

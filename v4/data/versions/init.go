@@ -100,9 +100,9 @@ func PolicyForNode(ctx context.Context, node *tree.Node) *tree.VersioningPolicy 
 // backward compatibility.
 func DataSourceForPolicy(ctx context.Context, policy *tree.VersioningPolicy) (nodes.LoadedSource, error) {
 	if policy.VersionsDataSourceName == "default" {
-		return getRouter().GetClientsPool().GetDataSourceInfo(common.PydioVersionsNamespace)
+		return getRouter(ctx).GetClientsPool().GetDataSourceInfo(common.PydioVersionsNamespace)
 	}
-	if ls, err := getRouter().GetClientsPool().GetDataSourceInfo(policy.VersionsDataSourceName); err == nil {
+	if ls, err := getRouter(ctx).GetClientsPool().GetDataSourceInfo(policy.VersionsDataSourceName); err == nil {
 		if policy.VersionsDataSourceBucket != "" {
 			ls.ObjectsBucket = policy.VersionsDataSourceBucket
 		}
