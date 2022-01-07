@@ -42,6 +42,10 @@ const (
 	pydioBackend = "pydio"
 )
 
+var (
+	PydioGateway *Pydio
+)
+
 func init() {
 	e := minio.RegisterGatewayCommand(cli.Command{
 		Name:               pydioBackend,
@@ -56,7 +60,9 @@ func init() {
 
 }
 
-type Pydio struct{}
+type Pydio struct {
+	RuntimeCtx context.Context
+}
 
 // s3Objects implements gateway for Minio and S3 compatible object storage servers.
 type pydioObjects struct {
@@ -83,12 +89,14 @@ func (p *Pydio) Name() string {
 
 // NewGatewayLayer returns a new  ObjectLayer.
 func (p *Pydio) NewGatewayLayer(_ madmin.Credentials) (minio.ObjectLayer, error) {
-	o := &pydioObjects{}
-	o.Router = compose.PathClient(
-		nodes.WithRegistryWatch(),
-		nodes.WithReadEventsLogging(),
-		nodes.WithAuditEventsLogging(),
-	)
+	o := &pydioObjects{
+		Router: compose.PathClient(
+			nodes.WithContext(p.RuntimeCtx),
+			nodes.WithRegistryWatch(),
+			nodes.WithReadEventsLogging(),
+			nodes.WithAuditEventsLogging(),
+		),
+	}
 	return o, nil
 }
 
@@ -102,7 +110,7 @@ func (p *Pydio) Production() bool {
 // Handler for 'minio gateway azure' command line.
 func pydioGatewayMain(ctx *cli.Context) {
 	fmt.Println("STARTING PYDIO GATEWAY NOW")
-	minio.StartGateway(ctx, &Pydio{})
+	minio.StartGateway(ctx, PydioGateway)
 }
 
 // fromMinioClientObjectInfo converts minio ObjectInfo to gateway ObjectInfo

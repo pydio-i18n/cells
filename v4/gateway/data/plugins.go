@@ -24,6 +24,7 @@ package gateway
 import (
 	"context"
 	"fmt"
+	pydio "github.com/pydio/cells/v4/gateway/data/gw"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -116,6 +117,9 @@ func (g *gatewayDataServer) Start(ctx context.Context) error {
 	os.Setenv("MINIO_ROOT_PASSWORD", common.S3GatewayRootPassword)
 
 	minio.HookRegisterGlobalHandler(hooks.GetPydioAuthHandlerFunc("gateway"))
+	pydio.PydioGateway = &pydio.Pydio{
+		RuntimeCtx: ctx,
+	}
 
 	params := []string{"minio", "gateway", "pydio", "--address", fmt.Sprintf(":%d", g.port), "--quiet"}
 	minio.Main(params)
