@@ -22,6 +22,7 @@
 package rest
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"strings"
@@ -66,9 +67,10 @@ var (
 	providerClient tree.NodeProviderClient
 )
 
-func getClient() tree.NodeProviderClient {
+func getClient(ctx context.Context) tree.NodeProviderClient {
 	if providerClient == nil {
 		providerClient = compose.PathClient(
+			nodes.WithContext(ctx),
 			nodes.AsAdmin(),
 			nodes.WithVirtualNodesBrowsing(),
 		)
@@ -351,7 +353,7 @@ func (h *Handler) DeleteNodes(req *restful.Request, resp *restful.Response) {
 
 	cli := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceJobs))
 	moveLabel := T("Jobs.User.MoveRecycle")
-	fullPathRouter := compose.PathClientAdmin()
+	fullPathRouter := compose.PathClientAdmin(nodes.WithContext(h.RuntimeCtx))
 	for recyclePath, selectedPaths := range deleteJobs.RecycleMoves {
 
 		// Create recycle bins now, to make sure user is notified correctly
@@ -601,7 +603,7 @@ func (h *Handler) ListAdminTree(req *restful.Request, resp *restful.Response) {
 		return
 	}
 
-	parentResp, err := getClient().ReadNode(req.Request.Context(), &tree.ReadNodeRequest{
+	parentResp, err := getClient(h.RuntimeCtx).ReadNode(req.Request.Context(), &tree.ReadNodeRequest{
 		Node:        input.Node,
 		WithCommits: input.WithCommits,
 	})
@@ -610,7 +612,7 @@ func (h *Handler) ListAdminTree(req *restful.Request, resp *restful.Response) {
 		return
 	}
 
-	streamer, err := getClient().ListNodes(req.Request.Context(), &input)
+	streamer, err := getClient(h.RuntimeCtx).ListNodes(req.Request.Context(), &input)
 	if err != nil {
 		service.RestError500(req, resp, err)
 		return
@@ -642,7 +644,7 @@ func (h *Handler) StatAdminTree(req *restful.Request, resp *restful.Response) {
 		return
 	}
 
-	response, err := getClient().ReadNode(req.Request.Context(), &input)
+	response, err := getClient(h.RuntimeCtx).ReadNode(req.Request.Context(), &input)
 	if err != nil {
 		service.RestError500(req, resp, err)
 		return

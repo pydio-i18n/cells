@@ -25,6 +25,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/pydio/cells/v4/common/nodes"
 	"io"
 	"io/ioutil"
 	"os"
@@ -65,11 +66,12 @@ var (
 )
 
 type FrontendHandler struct {
+	runtimeCtx context.Context
 	resources.ResourceProviderHandler
 }
 
-func NewFrontendHandler() *FrontendHandler {
-	f := &FrontendHandler{}
+func NewFrontendHandler(runtimeCtx context.Context) *FrontendHandler {
+	f := &FrontendHandler{runtimeCtx: runtimeCtx}
 	return f
 }
 
@@ -337,7 +339,7 @@ func (a *FrontendHandler) FrontServeBinary(req *restful.Request, rsp *restful.Re
 	binaryUuid := req.PathParameter("Uuid")
 	ctx := req.Request.Context()
 
-	router := compose.PathClient()
+	router := compose.PathClient(nodes.WithContext(a.runtimeCtx))
 	var readNode *tree.Node
 	var extension string
 
@@ -410,7 +412,7 @@ func (a *FrontendHandler) FrontPutBinary(req *restful.Request, rsp *restful.Resp
 	ctxUser, ctxClaims := permissions.FindUserNameInContext(ctx)
 
 	log.Logger(ctx).Debug("Upload Binary", zap.String("type", binaryType), zap.Any("header", f2))
-	router := compose.PathClient()
+	router := compose.PathClient(nodes.WithContext(a.runtimeCtx))
 	ctx = ctxWithoutCookies(ctx)
 
 	defer f1.Close()
@@ -487,7 +489,7 @@ func (a *FrontendHandler) FrontPutBinary(req *restful.Request, rsp *restful.Resp
 		}
 	} else if binaryType == "GLOBAL" {
 
-		router := compose.PathClient()
+		router := compose.PathClient(nodes.WithContext(a.runtimeCtx))
 		node := &tree.Node{
 			Path: common.PydioDocstoreBinariesNamespace + "/global_binaries." + binaryId,
 		}

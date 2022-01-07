@@ -72,7 +72,7 @@ func (sc *Client) LoadDetectedRootNodes(ctx context.Context, detectedRoots []str
 func (sc *Client) ParseRootNodes(ctx context.Context, shareRequest *rest.PutCellRequest) (*tree.Node, bool, error) {
 
 	var createdNode *tree.Node
-	router := compose.PathClient()
+	router := compose.PathClient(nodes.WithContext(context.TODO()))
 	for i, n := range shareRequest.Room.RootNodes {
 		r, e := router.ReadNode(ctx, &tree.ReadNodeRequest{Node: n})
 		if e != nil {

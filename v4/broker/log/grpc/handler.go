@@ -45,6 +45,7 @@ import (
 type Handler struct {
 	sync.UnimplementedSyncEndpointServer
 	proto.UnimplementedLogRecorderServer
+	RuntimeCtx  context.Context
 	Repo        log.MessageRepository
 	HandlerName string
 }
@@ -124,7 +125,7 @@ func (h *Handler) TriggerResync(ctx context.Context, request *sync.ResyncRequest
 		theTask.StartTime = int32(time.Now().Unix())
 		closeTask = func(e error) {
 			// TODO V4 : We passed a Retry Option Here
-			taskClient := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceJobs))
+			taskClient := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(h.RuntimeCtx, common.ServiceJobs))
 			theTask.EndTime = int32(time.Now().Unix())
 			if e != nil {
 				theTask.StatusMessage = "Error " + e.Error()

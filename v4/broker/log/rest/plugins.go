@@ -38,7 +38,9 @@ func init() {
 			service.Description("RESTful Gateway to search in the log repositories"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceLog, []string{}),
 			service.WithWeb(func(c context.Context) service.WebHandler {
-				return new(Handler)
+				return &Handler{
+					RuntimeCtx: c,
+				}
 			}),
 		)
 	})

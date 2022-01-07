@@ -23,6 +23,7 @@ package rest
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/nodes"
 	"time"
 
 	"github.com/emicklei/go-restful"
@@ -48,7 +49,9 @@ import (
 	"github.com/pydio/cells/v4/idm/oauth/lang"
 )
 
-type TokenHandler struct{}
+type TokenHandler struct {
+	RuntimeCtx context.Context
+}
 
 // SwaggerTags list the names of the service tags declared in the swagger json implemented by this service
 func (a *TokenHandler) SwaggerTags() []string {
@@ -255,7 +258,7 @@ func (a *TokenHandler) GenerateDocumentAccessToken(req *restful.Request, resp *r
 		return
 	}
 	ctx := req.Request.Context()
-	router := compose.PathClient()
+	router := compose.PathClient(nodes.WithContext(a.RuntimeCtx))
 	readResp, e := router.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Path: datRequest.Path}})
 	if e != nil {
 		service.RestErrorDetect(req, resp, e)

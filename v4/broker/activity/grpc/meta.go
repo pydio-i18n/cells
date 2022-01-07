@@ -24,6 +24,7 @@ import (
 	"strings"
 
 	"go.uber.org/zap"
+	"golang.org/x/net/context"
 
 	activity "github.com/pydio/cells/v4/broker/activity"
 	"github.com/pydio/cells/v4/common"
@@ -35,7 +36,8 @@ import (
 
 type MetaProvider struct {
 	tree.UnimplementedNodeProviderStreamerServer
-	dao activity.DAO
+	RuntimeCtx context.Context
+	dao        activity.DAO
 }
 
 func (m *MetaProvider) Name() string {

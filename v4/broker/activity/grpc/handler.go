@@ -42,7 +42,8 @@ import (
 
 type Handler struct {
 	proto.UnimplementedActivityServiceServer
-	dao activity.DAO
+	RuntimeCtx context.Context
+	dao        activity.DAO
 }
 
 func (h *Handler) Name() string {
@@ -78,7 +79,7 @@ func (h *Handler) StreamActivities(request *proto.StreamActivitiesRequest, strea
 
 	ctx := stream.Context()
 	log.Logger(ctx).Debug("Should get activities", zap.Any("r", request))
-	treeStreamer := tree.NewNodeProviderStreamerClient(grpc.GetClientConnFromCtx(ctx, common.ServiceTree))
+	treeStreamer := tree.NewNodeProviderStreamerClient(grpc.GetClientConnFromCtx(h.RuntimeCtx, common.ServiceTree))
 	sClient, e := treeStreamer.ReadNodeStream(ctx)
 	if e != nil {
 		return e

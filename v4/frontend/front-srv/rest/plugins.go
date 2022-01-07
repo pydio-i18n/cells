@@ -110,7 +110,7 @@ func init() {
 			service.PluginBoxes(BasePluginsBox),
 			service.WithWebSession("POST:/frontend/binaries"),
 			service.WithWeb(func(c context.Context) service.WebHandler {
-				return NewFrontendHandler()
+				return NewFrontendHandler(c)
 			}),
 		)
 	})

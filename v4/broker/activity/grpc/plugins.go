@@ -127,8 +127,8 @@ func init() {
 					return e
 				}
 
-				proto.RegisterActivityServiceEnhancedServer(srv, &Handler{dao: dao})
-				tree.RegisterNodeProviderStreamerEnhancedServer(srv, &MetaProvider{dao: dao})
+				proto.RegisterActivityServiceEnhancedServer(srv, &Handler{RuntimeCtx: ctx, dao: dao})
+				tree.RegisterNodeProviderStreamerEnhancedServer(srv, &MetaProvider{RuntimeCtx: ctx, dao: dao})
 
 				return nil
 			}),
