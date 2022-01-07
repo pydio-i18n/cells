@@ -1,3 +1,23 @@
+/*
+ * Copyright (c) 2022. Abstrium SAS <team (at) pydio.com>
+ * This file is part of Pydio Cells.
+ *
+ * Pydio Cells is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Pydio Cells is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Pydio Cells.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * The latest code can be found at <https://pydio.com>.
+ */
+
 package share
 
 import (
@@ -27,6 +47,7 @@ type PluginOptions struct {
 	enableFolderInternal    bool
 }
 
+// CheckLinkOptionsAgainstConfigs loads specific share configurations from ACLs and checks that current link complies with these.
 func (sc *Client) CheckLinkOptionsAgainstConfigs(ctx context.Context, link *rest.ShareLink, wss []*tree.WorkspaceRelativePath, files, folders bool) (PluginOptions, error) {
 
 	contextParams, e := sc.aclParams(ctx)
@@ -56,8 +77,9 @@ func (sc *Client) CheckLinkOptionsAgainstConfigs(ctx context.Context, link *rest
 	return options, nil
 }
 
+// CheckCellOptionsAgainstConfigs loads specific share configurations from ACLs and checks that current cell complies with these.
 func (sc *Client) CheckCellOptionsAgainstConfigs(ctx context.Context, request *rest.PutCellRequest) error {
-	router := compose.ReverseClient()
+	router := compose.ReverseClient(nodes.WithContext(sc.RuntimeContext))
 	acl, e := permissions.AccessListFromContextClaims(ctx)
 	if e != nil {
 		return e

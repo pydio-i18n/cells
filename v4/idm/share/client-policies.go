@@ -1,3 +1,23 @@
+/*
+ * Copyright (c) 2022. Abstrium SAS <team (at) pydio.com>
+ * This file is part of Pydio Cells.
+ *
+ * Pydio Cells is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Pydio Cells is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Pydio Cells.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * The latest code can be found at <https://pydio.com>.
+ */
+
 package share
 
 import (
@@ -12,6 +32,7 @@ import (
 	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
+// InheritPolicies find possible SecurityPolicy currently implied and compute a new one based on it.
 func (sc *Client) InheritPolicies(ctx context.Context, policyName string, read, write bool) (string, error) {
 	polClient := idm.NewPolicyEngineServiceClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServicePolicy))
 	response, e := polClient.ListPolicyGroups(ctx, &idm.ListPolicyGroupsRequest{})
@@ -123,6 +144,7 @@ func (sc *Client) policyByName(groups []*idm.PolicyGroup, name string) (*idm.Pol
 	return parent, true
 }
 
+// InterpretInheritedPolicy translates a SecurityPolicy to read/write permissions for user readability
 func (sc *Client) InterpretInheritedPolicy(ctx context.Context, name string) (read, write bool, e error) {
 	polClient := idm.NewPolicyEngineServiceClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServicePolicy))
 	response, e := polClient.ListPolicyGroups(ctx, &idm.ListPolicyGroupsRequest{})
