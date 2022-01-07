@@ -247,7 +247,7 @@ func (j *JWTVerifier) verifyTokenWithRetry(ctx context.Context, rawIDToken strin
 			break
 		}
 
-		log.Logger(ctx).Info("jwt rawIdToken verify: failed", zap.Error(err))
+		log.Logger(ctx).Debug("jwt rawIdToken verify: failed, trying next", zap.Error(err))
 	}
 
 	if (idToken == nil || err != nil) && !isRetry {
