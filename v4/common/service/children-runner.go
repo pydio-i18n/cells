@@ -236,7 +236,7 @@ func (c *ChildrenRunner) Watch(ctx context.Context) error {
 					all.Scan(&conf)
 					_, exists := conf[c.childPrefix+name]
 					if !exists && c.beforeDeleteClean {
-						caller := object.NewResourceCleanerEndpointClient(grpc.NewClientConn(c.childPrefix + name))
+						caller := object.NewResourceCleanerEndpointClient(grpc.GetClientConnFromCtx(ctx, c.childPrefix+name))
 						if resp, err := caller.CleanResourcesBeforeDelete(ctx, &object.CleanResourcesRequest{}); err == nil {
 							log.Logger(ctx).Info("Successfully cleaned resources before stopping service", zap.String("msg", resp.Message))
 						} else {

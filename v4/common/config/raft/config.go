@@ -1,3 +1,4 @@
+//go:build ignore
 // +build ignore
 
 /*
@@ -25,6 +26,7 @@ package raft
 import (
 	"context"
 	"encoding/json"
+
 	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/utils/configx"
 
@@ -77,7 +79,7 @@ func (c *conf) Val(path ...string) configx.Values {
 }
 
 func NewConfig() configx.Entrypoint {
-	cli := storage.NewStorageEndpointClient(grpc.NewClientConn(common.ServiceConfig))
+	cli := storage.NewStorageEndpointClient(grpc.GetClientConnFromCtx(ctx, common.ServiceConfig))
 	return &conf{
 		cli: cli,
 	}

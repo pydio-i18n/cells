@@ -142,7 +142,7 @@ func (s *Subscriber) Init() {
 
 	go std.Retry(context.Background(), func() error {
 		// Load Jobs Definitions
-		jobClients := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
+		jobClients := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(s.rootCtx, common.ServiceJobs))
 		streamer, e := jobClients.ListJobs(s.rootCtx, &jobs.ListJobsRequest{})
 		if e != nil {
 			return e
@@ -281,7 +281,7 @@ func (s *Subscriber) timerEvent(ctx context.Context, event *jobs.JobTriggerEvent
 	j, ok := s.definitions[jobId]
 	if !ok {
 		// Try to load definition directly for JobsService
-		jobClients := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
+		jobClients := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceJobs))
 		resp, e := jobClients.GetJob(ctx, &jobs.GetJobRequest{JobID: jobId})
 		if e != nil || resp.Job == nil {
 			return nil

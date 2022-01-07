@@ -80,7 +80,7 @@ func (mh *MailerHandler) Send(req *restful.Request, rsp *restful.Response) {
 	log.Logger(ctx).Debug("Sending Email", log.DangerouslyZapSmallSlice("to", message.To), zap.String("subject", message.Subject), zap.Any("templateData", message.TemplateData))
 
 	langs := i18n.UserLanguagesFromRestRequest(req, config.Get())
-	cli := mailer.NewMailerServiceClient(grpc.NewClientConn(common.ServiceMailer))
+	cli := mailer.NewMailerServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceMailer))
 
 	claims, ok := ctx.Value(claim.ContextKey).(claim.Claims)
 	if !ok {

@@ -22,8 +22,9 @@ package rest
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"strings"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -75,7 +76,7 @@ func findRecycleForSource(ctx context.Context, source *tree.Node, ancestors []*t
 		Actions: []*idm.ACLAction{permissions.AclRecycleRoot},
 	})
 	recycleAcls := map[string]bool{}
-	cl := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+	cl := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 	s, e := cl.SearchACL(ctx, &idm.SearchACLRequest{
 		Query: &service.Query{SubQueries: []*anypb.Any{q}},
 	})

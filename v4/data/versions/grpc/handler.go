@@ -180,7 +180,7 @@ func (h *Handler) StoreVersion(ctx context.Context, request *tree.StoreVersionRe
 
 func (h *Handler) PruneVersions(ctx context.Context, request *tree.PruneVersionsRequest) (*tree.PruneVersionsResponse, error) {
 
-	cl := tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceTree))
+	cl := tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(ctx, common.ServiceTree))
 
 	var idsToDelete []string
 

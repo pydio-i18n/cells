@@ -72,14 +72,13 @@ func NewClaimsHandlerWrapper() server.HandlerWrapper {
 // HttpWrapperJWT captures and verifies a JWT token if it's present in the headers.
 // Warning: it goes through if there is no JWT => the next handlers
 // must verify if a valid user was found or not.
-func HttpWrapperJWT(h http.Handler) http.Handler {
+func HttpWrapperJWT(ctx context.Context, h http.Handler) http.Handler {
 
 	jwtVerifier := auth.DefaultJWTVerifier()
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		c := r.Context()
-		log.Logger(c).Debug("JWTHttpHandler: Checking JWT")
+		log.Logger(ctx).Debug("JWTHttpHandler: Checking JWT")
 
 		if val, ok1 := r.Header["Authorization"]; ok1 {
 
@@ -88,9 +87,9 @@ func HttpWrapperJWT(h http.Handler) http.Handler {
 			//var claims claim.Claims
 			var err error
 
-			c, _, err = jwtVerifier.Verify(c, rawIDToken)
+			c, _, err := jwtVerifier.Verify(r.Context(), rawIDToken)
 			if err != nil {
-				log.Logger(context.Background()).Debug("jwtVerifier Error", zap.Error(err))
+				log.Logger(ctx).Debug("jwtVerifier Error", zap.Error(err))
 				if isRestApiPublicMethod(r) {
 					h.ServeHTTP(w, r) // Serve an empty state
 					return
@@ -102,7 +101,7 @@ func HttpWrapperJWT(h http.Handler) http.Handler {
 					// This is a wrong JWT, go out with error
 					w.WriteHeader(401)
 					w.Write([]byte("Unauthorized.\n"))
-					log.Auditer(c).Error(
+					log.Auditer(ctx).Error(
 						"Blocked invalid JWT",
 						log.GetAuditId(common.AuditInvalidJwt),
 					)
@@ -110,9 +109,9 @@ func HttpWrapperJWT(h http.Handler) http.Handler {
 				return
 			}
 
+			r = r.WithContext(c)
 		}
 
-		r = r.WithContext(c)
 		h.ServeHTTP(w, r)
 	})
 }

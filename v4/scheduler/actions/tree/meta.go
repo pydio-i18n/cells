@@ -86,7 +86,7 @@ func (c *MetaAction) GetName() string {
 func (c *MetaAction) Init(job *jobs.Job, action *jobs.Action) error {
 
 	if !nodes.IsUnitTestEnv {
-		c.Client = tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceMeta))
+		c.Client = tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceMeta))
 	}
 	c.MetaJSON = action.Parameters["metaJSON"]
 

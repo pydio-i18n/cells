@@ -20,7 +20,11 @@
 
 package nodes
 
-import "github.com/pydio/cells/v4/common/registry"
+import (
+	"context"
+
+	"github.com/pydio/cells/v4/common/registry"
+)
 
 type Option func(options *RouterOptions)
 type Adapter interface {
@@ -29,6 +33,8 @@ type Adapter interface {
 
 // RouterOptions holds configuration flags to pass to a router constructor easily.
 type RouterOptions struct {
+	Context context.Context
+
 	CoreClient func(pool SourcesPool) Handler
 
 	AdminView     bool
@@ -46,6 +52,11 @@ type RouterOptions struct {
 	Pool     SourcesPool
 }
 
+func WithContext(ctx context.Context) Option {
+	return func(options *RouterOptions) {
+		options.Context = ctx
+	}
+}
 func WithCore(init func(pool SourcesPool) Handler) Option {
 	return func(options *RouterOptions) {
 		options.CoreClient = init

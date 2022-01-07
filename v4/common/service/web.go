@@ -29,7 +29,7 @@ var (
 	swaggerJSONStrings    []string
 	swaggerMergedDocument *loads.Document
 
-	wm     []func(handler http.Handler) http.Handler
+	wm     []func(context.Context, http.Handler) http.Handler
 	wmOnce = &sync.Once{}
 )
 
@@ -50,7 +50,7 @@ type WebHandler interface {
 	Filter() func(string) string
 }
 
-func getWebMiddlewares(serviceName string) []func(handler http.Handler) http.Handler {
+func getWebMiddlewares(serviceName string) []func(ctx context.Context, handler http.Handler) http.Handler {
 	wmOnce.Do(func() {
 		wm = append(wm,
 			servicecontext.HttpWrapperMetrics,
@@ -61,7 +61,7 @@ func getWebMiddlewares(serviceName string) []func(handler http.Handler) http.Han
 		)
 	})
 	// Append dynamic wrapper to append service name to context
-	sw := func(handler http.Handler) http.Handler {
+	sw := func(ctx context.Context, handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 			c := servicecontext.WithServiceName(request.Context(), serviceName)
 			handler.ServeHTTP(writer, request.WithContext(c))
@@ -162,7 +162,7 @@ func WithWeb(handler func(ctx context.Context) WebHandler) ServiceOption {
 
 			if o.Name != common.ServiceRestNamespace_+common.ServiceInstall {
 				for _, wrap := range getWebMiddlewares(o.Name) {
-					wrapped = wrap(wrapped)
+					wrapped = wrap(o.Context, wrapped)
 				}
 			}
 			if o.UseWebSession {

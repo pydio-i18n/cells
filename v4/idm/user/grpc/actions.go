@@ -86,7 +86,7 @@ func (a *DeleteUsersAction) Run(ctx context.Context, channels *actions.RunnableC
 		return input.WithError(e), e
 	}
 	q, _ := anypb.New(singleQ)
-	uCl := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser, grpc.WithCallTimeout(30*time.Minute)))
+	uCl := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUser, grpc.WithCallTimeout(30*time.Minute)))
 	_, e := uCl.DeleteUser(ctx, &idm.DeleteUserRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}})
 	if e != nil {
 		input = input.WithError(e)

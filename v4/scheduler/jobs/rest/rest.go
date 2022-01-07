@@ -21,6 +21,7 @@
 package rest
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -78,7 +79,7 @@ func (s *JobsHandler) UserListJobs(req *restful.Request, rsp *restful.Response) 
 		return
 	}
 	ctx := req.Request.Context()
-	cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
+	cli := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceJobs))
 	output := &rest.UserJobsCollection{}
 	var uName, profile string
 	if ctx.Value(claim.ContextKey) != nil {
@@ -153,7 +154,7 @@ func (s *JobsHandler) UserControlJob(req *restful.Request, rsp *restful.Response
 	}
 	ctx := req.Request.Context()
 	if cmd.Cmd == jobs.Command_Delete {
-		cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
+		cli := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceJobs))
 		delRequest := &jobs.DeleteTasksRequest{
 			JobId:  cmd.JobId,
 			TaskID: []string{cmd.TaskId},
@@ -175,7 +176,7 @@ func (s *JobsHandler) UserControlJob(req *restful.Request, rsp *restful.Response
 
 	} else if cmd.Cmd == jobs.Command_Active || cmd.Cmd == jobs.Command_Inactive {
 
-		cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
+		cli := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceJobs))
 		if jobResp, err := cli.GetJob(ctx, &jobs.GetJobRequest{JobID: cmd.JobId}); err == nil {
 
 			job := jobResp.Job
@@ -195,7 +196,7 @@ func (s *JobsHandler) UserControlJob(req *restful.Request, rsp *restful.Response
 		}
 
 	} else {
-		cli := jobs.NewTaskServiceClient(grpc.NewClientConn(common.ServiceTasks))
+		cli := jobs.NewTaskServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceTasks))
 		if response, err := cli.Control(ctx, &cmd); err == nil {
 			rsp.WriteEntity(response)
 		} else {
@@ -213,7 +214,7 @@ func (s *JobsHandler) UserDeleteTasks(req *restful.Request, rsp *restful.Respons
 		return
 	}
 
-	cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
+	cli := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceJobs))
 	response, e := cli.DeleteTasks(req.Request.Context(), &request)
 	if e != nil {
 		service.RestErrorDetect(req, rsp, e)
@@ -322,7 +323,7 @@ func (s *JobsHandler) ListTasksLogs(req *restful.Request, rsp *restful.Response)
 	}
 	ctx := req.Request.Context()
 
-	c := log2.NewLogRecorderClient(grpc.NewClientConn(common.ServiceJobs))
+	c := log2.NewLogRecorderClient(grpc.GetClientConnFromCtx(ctx, common.ServiceJobs))
 
 	res, err := c.ListLogs(ctx, &input)
 	if err != nil {

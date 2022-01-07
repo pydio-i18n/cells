@@ -57,7 +57,7 @@ func (p *pydioconnector) Prompt() string {
 
 func (p *pydioconnector) Login(ctx context.Context, s Scopes, username, password string) (Identity, bool, error) {
 	// Check the user has successfully logged in
-	c := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
+	c := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUser))
 	resp, err := c.BindUser(ctx, &idm.BindUserRequest{UserName: username, Password: password})
 	if err != nil {
 		if errors.FromError(err).Code == http.StatusForbidden {

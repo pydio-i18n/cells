@@ -22,9 +22,10 @@ package nodes
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"math"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/h2non/filetype"
 	"go.uber.org/zap"
@@ -126,7 +127,7 @@ func WrapReaderForMime(ctx context.Context, clone *tree.Node, reader io.Reader) 
 		return reader
 	}
 	if mimeMetaClient == nil {
-		mimeMetaClient = tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceMeta))
+		mimeMetaClient = tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(ctx, common.ServiceGrpcNamespace_+common.ServiceMeta))
 	}
 	bgCtx := metadata.NewBackgroundWithMetaCopy(ctx)
 	return NewTeeMimeReader(reader, func(result *MimeResult) {

@@ -47,13 +47,14 @@ func init() {
 			service.Description("DAV Gateway to tree service"),
 			service.WithHTTP(func(ctx context.Context, mux *http.ServeMux) error {
 				davRouter = compose.PathClient(
+					nodes.WithContext(ctx),
 					nodes.WithRegistryWatch(),
 					nodes.WithAuditEventsLogging(),
 					nodes.WithSynchronousCaching(),
 					nodes.WithSynchronousTasks(),
 				)
 				handler := newHandler(ctx, davRouter)
-				handler = servicecontext.HttpWrapperMeta(handler)
+				handler = servicecontext.HttpWrapperMeta(ctx, handler)
 				mux.Handle("/dav/", handler)
 				return nil
 			}),

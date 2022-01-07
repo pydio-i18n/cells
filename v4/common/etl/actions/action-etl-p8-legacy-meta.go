@@ -131,7 +131,7 @@ func (c *MigratePydioMetaAction) Run(ctx context.Context, channels *actions.Runn
 	q, _ := anypb.New(&idm.WorkspaceSingleQuery{
 		Scope: idm.WorkspaceScope_ADMIN,
 	})
-	wsClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
+	wsClient := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceWorkspace))
 	s, e := wsClient.SearchWorkspace(ctx, &idm.SearchWorkspaceRequest{
 		Query: &service.Query{SubQueries: []*anypb.Any{q}},
 	})
@@ -168,7 +168,7 @@ func (c *MigratePydioMetaAction) Run(ctx context.Context, channels *actions.Runn
 	}
 
 	// For those with Template Path, impersonate each user
-	uClient := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
+	uClient := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUser))
 	qU, _ := anypb.New(&idm.UserSingleQuery{
 		NodeType: idm.NodeType_USER,
 	})
@@ -214,7 +214,7 @@ func (c *MigratePydioMetaAction) Run(ctx context.Context, channels *actions.Runn
 func (c *MigratePydioMetaAction) BrowseNodesForMeta(ctx context.Context, slug string, channels *actions.RunnableChannels) []error {
 	router := c.GetRouter()
 	log.TasksLogger(ctx).Info("Browsing Workspace " + slug + " looking for legacy metadata files")
-	metaClient := tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceMeta))
+	metaClient := tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(ctx, common.ServiceMeta))
 	s, e := router.ListNodes(ctx, &tree.ListNodesRequest{Node: &tree.Node{Path: slug}, Recursive: true, FilterType: tree.NodeType_LEAF})
 	if e != nil {
 		return []error{e}

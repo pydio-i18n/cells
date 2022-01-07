@@ -68,7 +68,7 @@ func init() {
 			//service.Unique(true),
 			service.AfterServe(func(ctx context.Context) error {
 				return std.Retry(ctx, func() error {
-					jobsClient := jobs.NewJobServiceClient(grpc2.NewClientConn(common.ServiceJobs))
+					jobsClient := jobs.NewJobServiceClient(grpc2.GetClientConnFromCtx(ctx, common.ServiceJobs))
 					to, cancel := context.WithTimeout(ctx, grpc2.CallTimeoutShort)
 					defer cancel()
 					// Migration from old prune-versions-job : delete if exists, replaced by composed job
@@ -159,7 +159,7 @@ func InitDefaults(ctx context.Context) error {
 		ctx, can := context.WithTimeout(ctx, grpc2.CallTimeoutShort)
 		defer can()
 
-		dc := docstore.NewDocStoreClient(grpc2.NewClientConn(common.ServiceDocStore))
+		dc := docstore.NewDocStoreClient(grpc2.GetClientConnFromCtx(ctx, common.ServiceDocStore))
 		_, e := dc.PutDocument(ctx, &docstore.PutDocumentRequest{
 			StoreID:    common.DocStoreIdVersioningPolicies,
 			DocumentID: "default-policy",

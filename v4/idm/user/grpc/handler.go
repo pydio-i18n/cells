@@ -67,12 +67,13 @@ func (a ByOverride) Less(i, j int) bool { return !a[i].ForceOverride && a[j].For
 
 // Handler definition
 type Handler struct {
+	ctx context.Context
 	idm.UnimplementedUserServiceServer
 	dao user.DAO
 }
 
 func NewHandler(ctx context.Context, dao user.DAO) idm.NamedUserServiceServer {
-	return &Handler{dao: dao}
+	return &Handler{ctx: ctx, dao: dao}
 }
 
 func (h *Handler) Name() string {
@@ -452,7 +453,7 @@ func (h *Handler) loadAutoAppliesRoles(ctx context.Context) (autoApplies map[str
 	}
 
 	autoApplies = make(map[string][]*idm.Role)
-	roleCli := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
+	roleCli := idm.NewRoleServiceClient(grpc.GetClientConnFromCtx(h.ctx, common.ServiceRole))
 	q, _ := anypb.New(&idm.RoleSingleQuery{HasAutoApply: true})
 	stream, e := roleCli.SearchRole(ctx, &idm.SearchRoleRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}})
 	if e != nil {

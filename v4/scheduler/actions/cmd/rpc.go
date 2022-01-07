@@ -202,7 +202,7 @@ func (c *RpcAction) Run(ctx context.Context, channels *actions.RunnableChannels,
 	_ = protojson.Unmarshal([]byte(c.JsonRequest), request)
 
 	output := input
-	conn := grpc.NewClientConn(serviceName)
+	conn := grpc.GetClientConnFromCtx(ctx, serviceName)
 	if methodDescriptor.IsStreamingServer() {
 
 		cStream, e := conn.NewStream(ctx, &grpc2.StreamDesc{ServerStreams: true}, methodSendName)

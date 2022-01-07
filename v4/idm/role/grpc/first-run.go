@@ -169,7 +169,7 @@ func InitRoles(ctx context.Context) error {
 		go func() {
 			<-time.After(10 * time.Second)
 			er := std.Retry(ctx, func() error {
-				aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+				aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 				for _, acl := range rolesAcls {
 					_, e := aclClient.CreateACL(ctx, &idm.CreateACLRequest{ACL: acl})
 					if e != nil {
@@ -237,7 +237,7 @@ func UpgradeTo12(ctx context.Context) error {
 			break
 		}
 		e = std.Retry(ctx, func() error {
-			aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+			aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 			for _, acl := range insert.Acls {
 				_, e := aclClient.CreateACL(ctx, &idm.CreateACLRequest{ACL: acl})
 				if e != nil {

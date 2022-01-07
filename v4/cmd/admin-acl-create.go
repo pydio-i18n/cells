@@ -43,7 +43,7 @@ DESCRIPTION
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		client := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+		client := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 
 		response, err := client.CreateACL(context.Background(), &idm.CreateACLRequest{
 			ACL: &idm.ACL{

@@ -76,7 +76,7 @@ EXAMPLE
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		client := tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceMeta))
+		client := tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(ctx, common.ServiceMeta))
 
 		response, err := client.ReadNode(context.Background(), &tree.ReadNodeRequest{
 			Node: &tree.Node{

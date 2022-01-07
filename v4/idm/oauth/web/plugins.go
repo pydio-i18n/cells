@@ -93,7 +93,7 @@ func init() {
 							}
 					*/
 
-					subRouter.Handler(servicecontext.HttpWrapperMeta(public))
+					subRouter.Handler(servicecontext.HttpWrapperMeta(ctx, public))
 					//subRouter.PathPrefix("/oidc/").Handler(http.StripPrefix("/oidc", servicecontext.HttpWrapperMeta(public)))
 				}
 				fmt.Println("Attach router to /oidc/")

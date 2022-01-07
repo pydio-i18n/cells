@@ -15,6 +15,7 @@ require (
 	github.com/blevesearch/bleve v1.0.14
 	github.com/c2fo/testify v0.0.0-20150827203832-fba96363964a // indirect
 	github.com/caddyserver/caddy/v2 v2.4.5
+	github.com/coredns/coredns v1.4.0
 	github.com/cskr/pubsub v1.0.2
 	github.com/disintegration/imaging v1.6.2
 	github.com/dustin/go-humanize v1.0.1-0.20200219035652-afde56e7acac

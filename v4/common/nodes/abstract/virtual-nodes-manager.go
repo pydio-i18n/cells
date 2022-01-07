@@ -84,9 +84,10 @@ func (m *VirtualNodesManager) Load(forceReload ...bool) {
 			return
 		}
 	}
-	log.Logger(context.Background()).Debug("Reloading virtual nodes to cache")
+	ctx := context.TODO()
+	log.Logger(ctx).Debug("Reloading virtual nodes to cache")
 	m.nodes = []*tree.Node{}
-	cli := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
+	cli := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(ctx, common.ServiceDocStore))
 	stream, e := cli.ListDocuments(context.Background(), &docstore.ListDocumentsRequest{
 		StoreID: common.DocStoreIdVirtualNodes,
 		Query:   &docstore.DocumentQuery{},
@@ -302,7 +303,7 @@ func (m *VirtualNodesManager) resolvePathWithClaims(ctx context.Context, vNode *
 
 // copyRecycleRootAcl creates recycle_root ACL on newly created node
 func (m *VirtualNodesManager) copyRecycleRootAcl(ctx context.Context, vNode *tree.Node, resolved *tree.Node) error {
-	cl := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+	cl := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 	// Check if vNode has this flag set
 	q, _ := anypb.New(&idm.ACLSingleQuery{
 		NodeIDs: []string{vNode.Uuid},

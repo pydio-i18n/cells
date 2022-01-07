@@ -23,11 +23,12 @@ package images
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/rwcarlsen/goexif/exif"
 	"go.uber.org/zap"
@@ -86,7 +87,7 @@ func (e *ExifProcessor) GetName() string {
 func (e *ExifProcessor) Init(job *jobs.Job, action *jobs.Action) error {
 	//e.Router = views.NewStandardRouter(views.RouterOptions{AdminView: true, WatchRegistry: false})
 	if !nodes.IsUnitTestEnv {
-		e.metaClient = tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceMeta))
+		e.metaClient = tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceMeta))
 	}
 	return nil
 }

@@ -115,7 +115,7 @@ func newService(ctx context.Context, dsObject *object.DataSource) {
 			md := make(map[string]string)
 			md[common.PydioContextUserKey] = common.PydioSystemUsername
 			jobCtx := metadata.NewContext(ctx, md)
-			jobsClient := jobs.NewJobServiceClient(grpc2.NewClientConn(common.ServiceJobs, grpc2.WithCallTimeout(grpc2.CallTimeoutShort)))
+			jobsClient := jobs.NewJobServiceClient(grpc2.GetClientConnFromCtx(ctx, common.ServiceJobs, grpc2.WithCallTimeout(grpc2.CallTimeoutShort)))
 			serviceName := common.ServiceGrpcNamespace_ + common.ServiceDataSync_ + datasource
 
 			if !dsObject.FlatStorage {

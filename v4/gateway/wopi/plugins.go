@@ -46,7 +46,7 @@ func init() {
 			service.Description("WOPI REST Gateway to tree service"),
 			//service.RouterDependencies(),
 			service.WithHTTP(func(ctx context.Context, mux *http.ServeMux) error {
-				client = compose.NewClient(compose.UuidComposer(nodes.WithRegistryWatch(), nodes.WithAuditEventsLogging())...)
+				client = compose.NewClient(compose.UuidComposer(nodes.WithContext(ctx), nodes.WithRegistryWatch(), nodes.WithAuditEventsLogging())...)
 				wopiRouter := NewRouter()
 				mux.Handle("/wopi/", wopiRouter)
 				return nil

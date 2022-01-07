@@ -68,7 +68,9 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 	var m = map[string][]string{}
 	for _, s := range services {
 		for _, n := range s.(registry.Service).Nodes() {
-			m[n.Address()[0]] = append(m[n.Address()[0]], s.Name())
+			for _, a := range n.Address() {
+				m[a] = append(m[a], s.Name())
+			}
 		}
 	}
 
@@ -102,7 +104,10 @@ func (cr *cellsResolver) watch() {
 		var s registry.Service
 		if r.Item().As(&s) && (r.Action() == "create" || r.Action() == "update") {
 			for _, n := range s.Nodes() {
-				cr.m[n.Address()[0]] = append(cr.m[n.Address()[0]], s.Name())
+				for _, a := range n.Address() {
+					cr.m[a] = append(cr.m[a], s.Name())
+				}
+				// cr.m[n.Address()[0]] = append(cr.m[n.Address()[0]], s.Name())
 			}
 
 			cr.updatedStateTimer.Reset(100 * time.Millisecond)
@@ -128,10 +133,13 @@ func (cr *cellsResolver) sendState() {
 			Attributes: attributes.New("services", v),
 		})
 	}
-	//fmt.Printf("Update State with %d addresses\n", len(addresses))
+	if len(addresses) == 0 {
+		// dont' bother sending yet
+		return
+	}
 	if err := cr.cc.UpdateState(resolver.State{
-		Addresses: addresses,
-		// ServiceConfig: cr.cc.ParseServiceConfig(`{"loadBalancingPolicy": "lb"}`),
+		Addresses:     addresses,
+		ServiceConfig: cr.cc.ParseServiceConfig(`{"loadBalancingPolicy": "lb"}`),
 		// ServiceConfig: cr.cc.ParseServiceConfig(`{"loadBalancingPolicy": "pick_first"}`),
 	}); err != nil {
 		fmt.Println("And the error is ? ", err)

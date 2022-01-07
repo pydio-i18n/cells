@@ -102,7 +102,7 @@ func (s *TreeServer) TriggerResync(ctx context.Context, request *sync.ResyncRequ
 func (s *TreeServer) checkACLs(ctx context.Context, ll []index.LostAndFound) (marked []index.LostAndFound, conflicts []index.LostAndFound, e error) {
 
 	if aclClient == nil {
-		aclClient = idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+		aclClient = idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 	}
 	var uuids []string
 	for _, l := range ll {

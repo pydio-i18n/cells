@@ -103,7 +103,7 @@ func deleteUser(ctx context.Context, login string) error {
 	}
 	query, _ := anypb.New(singleQ)
 	mainQuery := &service2.Query{SubQueries: []*anypb.Any{query}}
-	cli := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
+	cli := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUser))
 
 	stream, err := cli.SearchUser(ctx, &idm.SearchUserRequest{Query: mainQuery})
 	if err != nil {

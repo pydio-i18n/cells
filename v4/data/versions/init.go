@@ -77,7 +77,7 @@ func PolicyForNode(ctx context.Context, node *tree.Node) *tree.VersioningPolicy 
 		return v.(*tree.VersioningPolicy)
 	}
 
-	dc := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
+	dc := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(ctx, common.ServiceDocStore))
 	r, e := dc.GetDocument(ctx, &docstore.GetDocumentRequest{
 		StoreID:    common.DocStoreIdVersioningPolicies,
 		DocumentID: policyName,

@@ -51,12 +51,14 @@ import (
 
 // SharesHandler implements handler methods for the share REST service.
 type SharesHandler struct {
+	ctx context.Context
 	resources.ResourceProviderHandler
 }
 
 // NewSharesHandler simply creates a new SharesHandler.
-func NewSharesHandler() *SharesHandler {
+func NewSharesHandler(ctx context.Context) *SharesHandler {
 	h := new(SharesHandler)
+	h.ctx = ctx
 	h.ServiceName = common.ServiceWorkspace
 	h.ResourceName = "rooms"
 	//h.PoliciesLoader = h.loadPoliciesForResource
@@ -133,7 +135,7 @@ func (h *SharesHandler) PutCell(req *restful.Request, rsp *restful.Response) {
 	}
 
 	// Now set ACLs on Workspace
-	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 	var currentAcls []*idm.ACL
 	var currentRoots []string
 	if !wsCreated {
@@ -199,7 +201,7 @@ func (h *SharesHandler) PutCell(req *restful.Request, rsp *restful.Response) {
 
 	// Now update workspace
 	log.Logger(ctx).Debug("Updating workspace", zap.Any("workspace", workspace))
-	wsClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
+	wsClient := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceWorkspace))
 	if _, err := wsClient.CreateWorkspace(ctx, &idm.CreateWorkspaceRequest{Workspace: workspace}); err != nil {
 		service.RestError500(req, rsp, err)
 		return
@@ -336,7 +338,7 @@ func (h *SharesHandler) PutShareLink(req *restful.Request, rsp *restful.Response
 	var user *idm.User
 	var err error
 	var create bool
-	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 	if link.Uuid == "" {
 		create = true
 		workspace, _, err = share.GetOrCreateWorkspace(ctx, ownerUser, "", idm.WorkspaceScope_LINK, link.Label, link.Description, false)
@@ -398,7 +400,7 @@ func (h *SharesHandler) PutShareLink(req *restful.Request, rsp *restful.Response
 			Action:   service2.ResourcePolicyAction_READ,
 			Effect:   service2.ResourcePolicy_allow,
 		})
-		wsClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
+		wsClient := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceWorkspace))
 		wsClient.CreateWorkspace(ctx, &idm.CreateWorkspaceRequest{Workspace: workspace})
 		track("CreateWorkspace")
 	} else {
@@ -569,7 +571,7 @@ func (h *SharesHandler) UpdateSharePolicies(req *restful.Request, rsp *restful.R
 		return
 	}
 	ctx := req.Request.Context()
-	cli := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
+	cli := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceWorkspace))
 	q, _ := anypb.New(&idm.WorkspaceSingleQuery{
 		Uuid: input.Uuid,
 	})
@@ -624,7 +626,7 @@ func (h *SharesHandler) UpdateSharePolicies(req *restful.Request, rsp *restful.R
 func (h *SharesHandler) docStoreStatus() error {
 	return nil
 	// TODO V4 - Not implemented by server yet
-	cli := grpc_health_v1.NewHealthClient(grpc.NewClientConn(common.ServiceDocStore))
+	cli := grpc_health_v1.NewHealthClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceDocStore))
 	_, er := cli.Check(context.Background(), &grpc_health_v1.HealthCheckRequest{})
 	return er
 }

@@ -53,7 +53,7 @@ func init() {
 				},
 			}),
 			service.WithWeb(func(c context.Context) service.WebHandler {
-				return NewSharesHandler()
+				return NewSharesHandler(c)
 			}),
 		)
 	})

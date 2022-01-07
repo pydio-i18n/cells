@@ -23,11 +23,13 @@ package grpc
 import (
 	"context"
 	"fmt"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"io"
 	"strings"
 	"sync"
 	"time"
+
+	clientcontext "github.com/pydio/cells/v4/common/client/context"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
@@ -116,6 +118,7 @@ func (s *TreeServer) ReadNodeStream(streamer tree.NodeProviderStreamer_ReadNodeS
 	// We must make sure that metaStreamers are using a proper context at creation
 	// otherwise it can create a goroutine leak on linux.
 	ctx := metadata.NewBackgroundWithMetaCopy(streamer.Context())
+	ctx = clientcontext.WithClientConn(ctx, clientcontext.GetClientConn(s.MainCtx))
 	ctx = servicecontext.WithRegistry(ctx, servicecontext.GetRegistry(s.MainCtx))
 	metaStreamer := meta.NewStreamLoader(ctx)
 	defer metaStreamer.Close()

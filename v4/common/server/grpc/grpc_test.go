@@ -117,7 +117,7 @@ func TestServiceRegistry(t *testing.T) {
 
 	listenerApp1 := createApp1(mem)
 
-	conn := cgrpc.NewClientConn("test.registry", cgrpc.WithDialOptions(
+	conn := cgrpc.GetClientConnFromCtx(ctx, "test.registry", cgrpc.WithDialOptions(
 		grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
 			fmt.Println("And the address is ? ", addr)
 			return listenerApp1.Dial()
@@ -174,7 +174,7 @@ func TestServiceRegistry(t *testing.T) {
 	//	}
 	//}()
 
-	conn2 := cgrpc.NewClientConn("test.service", cgrpc.WithDialOptions(
+	conn2 := cgrpc.GetClientConnFromCtx(ctx, "test.service", cgrpc.WithDialOptions(
 		grpc.WithResolvers(NewBuilder(reg)),
 	))
 
