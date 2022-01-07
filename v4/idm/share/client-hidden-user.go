@@ -22,11 +22,11 @@ import (
 )
 
 // GetOrCreateHiddenUser will load or create a user to create a ShareLink with.
-func GetOrCreateHiddenUser(ctx context.Context, ownerUser *idm.User, link *rest.ShareLink, passwordEnabled bool, updatePassword string, passwordHashed bool) (user *idm.User, err error) {
+func (sc *Client) GetOrCreateHiddenUser(ctx context.Context, ownerUser *idm.User, link *rest.ShareLink, passwordEnabled bool, updatePassword string, passwordHashed bool) (user *idm.User, err error) {
 
 	// Create or Load corresponding Hidden User
-	uClient := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUser))
-	roleClient := idm.NewRoleServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceRole))
+	uClient := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceUser))
+	roleClient := idm.NewRoleServiceClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceRole))
 	if link.UserLogin == "" {
 		newUuid := uuid.New()
 		login := strings.Replace(newUuid, "-", "", -1)[0:16]
@@ -39,7 +39,7 @@ func GetOrCreateHiddenUser(ctx context.Context, ownerUser *idm.User, link *rest.
 		}
 		if len(link.Policies) == 0 {
 			// Apply default policies and make sure user can read himself
-			link.Policies = OwnerResourcePolicies(ctx, ownerUser, newUuid)
+			link.Policies = sc.OwnerResourcePolicies(ctx, ownerUser, newUuid)
 			link.Policies = append(link.Policies, &service.ResourcePolicy{
 				Resource: newUuid,
 				Subject:  fmt.Sprintf("user:%s", login),
@@ -100,7 +100,7 @@ func GetOrCreateHiddenUser(ctx context.Context, ownerUser *idm.User, link *rest.
 }
 
 // UpdateACLsForHiddenUser deletes and replaces access ACLs for a hidden user.
-func UpdateACLsForHiddenUser(ctx context.Context, roleId string, workspaceId string, rootNodes []*tree.Node, permissions []rest.ShareLinkAccessType, parentPolicy string, update bool) error {
+func (sc *Client) UpdateACLsForHiddenUser(ctx context.Context, roleId string, workspaceId string, rootNodes []*tree.Node, permissions []rest.ShareLinkAccessType, parentPolicy string, update bool) error {
 
 	HasRead := false
 	HasWrite := false
@@ -113,7 +113,7 @@ func UpdateACLsForHiddenUser(ctx context.Context, roleId string, workspaceId str
 		}
 	}
 
-	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceAcl))
 	if update {
 		// Delete existing acls for existing user
 		q, _ := anypb.New(&idm.ACLSingleQuery{RoleIDs: []string{roleId}})
@@ -127,13 +127,13 @@ func UpdateACLsForHiddenUser(ctx context.Context, roleId string, workspaceId str
 		return nil
 	}
 
-	acls, err := GetTemplateACLsForMinisite(ctx, roleId, permissions, aclClient)
+	acls, err := sc.GetTemplateACLsForMinisite(ctx, roleId, permissions, aclClient)
 	if err != nil {
 		return err
 	}
 	for _, rootNode := range rootNodes {
 		if parentPolicy != "" {
-			newPol, e := InheritPolicies(ctx, parentPolicy, HasRead, HasWrite)
+			newPol, e := sc.InheritPolicies(ctx, parentPolicy, HasRead, HasWrite)
 			if e != nil {
 				return e
 			}
@@ -186,11 +186,11 @@ func UpdateACLsForHiddenUser(ctx context.Context, roleId string, workspaceId str
 }
 
 // DeleteHiddenUser removes hidden user associated with this link
-func DeleteHiddenUser(ctx context.Context, link *rest.ShareLink) error {
+func (sc *Client) DeleteHiddenUser(ctx context.Context, link *rest.ShareLink) error {
 	if link.UserLogin == "" {
 		return nil
 	}
-	uClient := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUser))
+	uClient := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceUser))
 	q1, _ := anypb.New(&idm.UserSingleQuery{Login: link.UserLogin})
 	q2, _ := anypb.New(&idm.UserSingleQuery{AttributeName: idm.UserAttrHidden, AttributeValue: "true"})
 	_, e := uClient.DeleteUser(ctx, &idm.DeleteUserRequest{Query: &service.Query{
@@ -202,12 +202,12 @@ func DeleteHiddenUser(ctx context.Context, link *rest.ShareLink) error {
 
 // ClearLostHiddenUsers makes sure that hidden users that are not linked to any existing link
 // are removed. This is used during a migration to fix the missing users deletion prior to v2.0.0
-func ClearLostHiddenUsers(ctx context.Context) error {
+func (sc *Client) ClearLostHiddenUsers(ctx context.Context) error {
 
 	log.Logger(ctx).Info("Migration: looking for hidden users unlinked from any public link")
 
 	// List hidden users and check for their associated links
-	uClient := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUser))
+	uClient := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceUser))
 	q, _ := anypb.New(&idm.UserSingleQuery{AttributeName: idm.UserAttrHidden, AttributeValue: "true"})
 	stream, e := uClient.SearchUser(ctx, &idm.SearchUserRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}})
 	if e != nil {
@@ -219,7 +219,7 @@ func ClearLostHiddenUsers(ctx context.Context) error {
 		if er != nil {
 			break
 		}
-		if doc, er := SearchHashDocumentForUser(ctx, resp.User.Login); er == nil && doc != nil {
+		if doc, er := sc.SearchHashDocumentForUser(ctx, resp.User.Login); er == nil && doc != nil {
 			log.Logger(ctx).Debug("Found Link for user", resp.User.ZapLogin(), zap.Any("doc", doc))
 		} else if er == nil && doc == nil {
 			deleteQ, _ := anypb.New(&idm.UserSingleQuery{Uuid: resp.User.Uuid})

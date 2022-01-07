@@ -29,11 +29,11 @@ import (
 
 // LoadDetectedRootNodes find actual nodes in the tree, and enrich their metadata if they appear
 // in many workspaces for the current user.
-func LoadDetectedRootNodes(ctx context.Context, detectedRoots []string) (rootNodes map[string]*tree.Node) {
+func (sc *Client) LoadDetectedRootNodes(ctx context.Context, detectedRoots []string) (rootNodes map[string]*tree.Node) {
 
 	rootNodes = make(map[string]*tree.Node)
 	router := compose.NewClient(compose.UuidComposer()...)
-	metaClient := tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(ctx, common.ServiceMeta))
+	metaClient := tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceMeta))
 	eventFilter := compose.ReverseClient(nodes.AsAdmin())
 	accessList, _ := permissions.AccessListFromContextClaims(ctx)
 	for _, rootId := range detectedRoots {
@@ -69,7 +69,7 @@ func LoadDetectedRootNodes(ctx context.Context, detectedRoots []string) (rootNod
 
 // ParseRootNodes reads the request property to either create a new node using the "rooms" Virtual node,
 // or just verify that the root nodes are not empty.
-func ParseRootNodes(ctx context.Context, shareRequest *rest.PutCellRequest) (*tree.Node, bool, error) {
+func (sc *Client) ParseRootNodes(ctx context.Context, shareRequest *rest.PutCellRequest) (*tree.Node, bool, error) {
 
 	var createdNode *tree.Node
 	router := compose.PathClient()
@@ -113,7 +113,7 @@ func ParseRootNodes(ctx context.Context, shareRequest *rest.PutCellRequest) (*tr
 			}
 			// Update node meta
 			createResp.Node.MustSetMeta(common.MetaFlagCellNode, true)
-			metaClient := tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(ctx, common.ServiceMeta))
+			metaClient := tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceMeta))
 			metaClient.CreateNode(ctx, &tree.CreateNodeRequest{Node: createResp.Node})
 			shareRequest.Room.RootNodes = append(shareRequest.Room.RootNodes, createResp.Node)
 			createdNode = createResp.Node
@@ -146,7 +146,7 @@ func ParseRootNodes(ctx context.Context, shareRequest *rest.PutCellRequest) (*tr
 
 }
 
-func DetectInheritedPolicy(ctx context.Context, roots []*tree.Node, loadedParents []*tree.WorkspaceRelativePath) (string, error) {
+func (sc *Client) DetectInheritedPolicy(ctx context.Context, roots []*tree.Node, loadedParents []*tree.WorkspaceRelativePath) (string, error) {
 
 	var parentPol string
 
@@ -193,7 +193,7 @@ func DetectInheritedPolicy(ctx context.Context, roots []*tree.Node, loadedParent
 	if loadedParents != nil {
 		ww = loadedParents
 	} else {
-		rpw, e := RootsParentWorkspaces(ctx, roots)
+		rpw, e := sc.RootsParentWorkspaces(ctx, roots)
 		if e != nil {
 			return "", e
 		}
@@ -223,7 +223,7 @@ func DetectInheritedPolicy(ctx context.Context, roots []*tree.Node, loadedParent
 
 // DeleteRootNodeRecursively loads all children of a root node and delete them, including the
 // .pydio hidden files when they are folders.
-func DeleteRootNodeRecursively(ctx context.Context, ownerName string, roomNode *tree.Node) error {
+func (sc *Client) DeleteRootNodeRecursively(ctx context.Context, ownerName string, roomNode *tree.Node) error {
 
 	manager := abstract.GetVirtualNodesManager()
 	router := compose.PathClientAdmin()
@@ -234,7 +234,7 @@ func DeleteRootNodeRecursively(ctx context.Context, ownerName string, roomNode *
 		}
 		realNode := &tree.Node{Path: parentNode.Path + "/" + strings.TrimRight(roomNode.Path, "/")}
 		// Now send deletion to scheduler
-		cli := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceJobs))
+		cli := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceJobs))
 		jobUuid := "cells-delete-" + uuid.New()
 		q, _ := anypb.New(&tree.Query{
 			Paths: []string{realNode.Path},
@@ -265,7 +265,7 @@ func DeleteRootNodeRecursively(ctx context.Context, ownerName string, roomNode *
 
 // CheckLinkRootNodes loads the root nodes and check if one of the is readonly. If so, check that
 // link permissions do not try to set the Upload mode.
-func CheckLinkRootNodes(ctx context.Context, link *rest.ShareLink) (workspaces []*tree.WorkspaceRelativePath, files, folders bool, e error) {
+func (sc *Client) CheckLinkRootNodes(ctx context.Context, link *rest.ShareLink) (workspaces []*tree.WorkspaceRelativePath, files, folders bool, e error) {
 
 	router := compose.NewClient(compose.UuidComposer()...)
 	var hasReadonly bool
@@ -302,7 +302,7 @@ func CheckLinkRootNodes(ctx context.Context, link *rest.ShareLink) (workspaces [
 
 }
 
-func RootsParentWorkspaces(ctx context.Context, rr []*tree.Node) (ww []*tree.WorkspaceRelativePath, e error) {
+func (sc *Client) RootsParentWorkspaces(ctx context.Context, rr []*tree.Node) (ww []*tree.WorkspaceRelativePath, e error) {
 	router := compose.NewClient(compose.UuidComposer()...)
 	for _, r := range rr {
 		if r.GetMetaBool(common.MetaFlagCellNode) {

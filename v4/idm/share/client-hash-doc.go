@@ -40,9 +40,9 @@ import (
 
 const PasswordComplexitySuffix = "#$!Az1"
 
-func StoreHashDocument(ctx context.Context, ownerUser *idm.User, link *rest.ShareLink, updateHash ...string) error {
+func (sc *Client) StoreHashDocument(ctx context.Context, ownerUser *idm.User, link *rest.ShareLink, updateHash ...string) error {
 
-	store := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(ctx, common.ServiceDocStore))
+	store := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceDocStore))
 
 	hashDoc := &docstore.ShareDocument{
 		OwnerId:       ownerUser.Login,
@@ -105,9 +105,9 @@ func StoreHashDocument(ctx context.Context, ownerUser *idm.User, link *rest.Shar
 
 }
 
-func LoadHashDocumentData(ctx context.Context, shareLink *rest.ShareLink, acls []*idm.ACL) error {
+func (sc *Client) LoadHashDocumentData(ctx context.Context, shareLink *rest.ShareLink, acls []*idm.ACL) error {
 
-	store := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(ctx, common.ServiceDocStore))
+	store := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceDocStore))
 	streamer, er := store.ListDocuments(ctx, &docstore.ListDocumentsRequest{StoreID: common.DocStoreIdShares, Query: &docstore.DocumentQuery{
 		MetaQuery: "+REPOSITORY:\"" + shareLink.Uuid + "\" +SHARE_TYPE:minisite",
 	}})
@@ -163,7 +163,7 @@ func LoadHashDocumentData(ctx context.Context, shareLink *rest.ShareLink, acls [
 		case permissions.AclWrite.Name:
 			write = true
 		case permissions.AclPolicy.Name:
-			read, write, _ = InterpretInheritedPolicy(ctx, acl.Action.Value)
+			read, write, _ = sc.InterpretInheritedPolicy(ctx, acl.Action.Value)
 		}
 		if read {
 			if shareLink.ViewTemplateName != "pydio_unique_dl" {
@@ -190,9 +190,9 @@ func LoadHashDocumentData(ctx context.Context, shareLink *rest.ShareLink, acls [
 
 }
 
-func DeleteHashDocument(ctx context.Context, shareId string) error {
+func (sc *Client) DeleteHashDocument(ctx context.Context, shareId string) error {
 
-	store := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(ctx, common.ServiceDocStore))
+	store := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceDocStore))
 	resp, err := store.DeleteDocuments(ctx, &docstore.DeleteDocumentsRequest{StoreID: common.DocStoreIdShares, Query: &docstore.DocumentQuery{
 		MetaQuery: "+REPOSITORY:\"" + shareId + "\" +SHARE_TYPE:minisite",
 	}})
@@ -208,9 +208,9 @@ func DeleteHashDocument(ctx context.Context, shareId string) error {
 
 // SearchHashDocumentForUser searches the DocStore to find documents that have either PRELOG_USER or PRESET_LOGIN with
 // the passed userLogin value.
-func SearchHashDocumentForUser(ctx context.Context, userLogin string) (*docstore.ShareDocument, error) {
+func (sc *Client) SearchHashDocumentForUser(ctx context.Context, userLogin string) (*docstore.ShareDocument, error) {
 
-	store := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(ctx, common.ServiceDocStore))
+	store := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceDocStore))
 
 	// SEARCH PUBLIC
 	streamer, err := store.ListDocuments(ctx, &docstore.ListDocumentsRequest{StoreID: common.DocStoreIdShares, Query: &docstore.DocumentQuery{

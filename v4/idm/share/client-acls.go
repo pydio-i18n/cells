@@ -5,16 +5,15 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pydio/cells/v4/common/client/grpc"
-
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/rest"
-	service "github.com/pydio/cells/v4/common/proto/service"
+	"github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/permissions"
@@ -27,22 +26,22 @@ type ContextEditableChecker interface {
 }
 
 // WorkspaceToCellObject rewrites a workspace to a Cell object by reloading its ACLs.
-func WorkspaceToCellObject(ctx context.Context, workspace *idm.Workspace, checker ContextEditableChecker) (*rest.Cell, error) {
+func (sc *Client) WorkspaceToCellObject(ctx context.Context, workspace *idm.Workspace, checker ContextEditableChecker) (*rest.Cell, error) {
 
-	acls, detectedRoots, err := CommonAclsForWorkspace(ctx, workspace.UUID)
+	acls, detectedRoots, err := sc.CommonAclsForWorkspace(ctx, workspace.UUID)
 	if err != nil {
 		log.Logger(ctx).Error("Error while loading common acls for workspace", zap.Error(err))
 		return nil, err
 	}
 	log.Logger(ctx).Debug("Detected Roots for object", log.DangerouslyZapSmallSlice("roots", detectedRoots))
-	roomAcls := AclsToCellAcls(ctx, acls)
+	roomAcls := sc.AclsToCellAcls(ctx, acls)
 
 	log.Logger(ctx).Debug("Computed roomAcls before load", zap.Any("roomAcls", roomAcls))
-	if err := LoadCellAclsObjects(ctx, roomAcls, checker); err != nil {
+	if err := sc.LoadCellAclsObjects(ctx, roomAcls, checker); err != nil {
 		log.Logger(ctx).Error("Error on loadRomAclsObjects", zap.Error(err))
 		return nil, err
 	}
-	rootNodes := LoadDetectedRootNodes(ctx, detectedRoots)
+	rootNodes := sc.LoadDetectedRootNodes(ctx, detectedRoots)
 	var nodesSlices []*tree.Node
 	for _, node := range rootNodes {
 		nodesSlices = append(nodesSlices, node)
@@ -59,9 +58,9 @@ func WorkspaceToCellObject(ctx context.Context, workspace *idm.Workspace, checke
 	}, nil
 }
 
-func WorkspaceToShareLinkObject(ctx context.Context, workspace *idm.Workspace, checker ContextEditableChecker) (*rest.ShareLink, error) {
+func (sc *Client) WorkspaceToShareLinkObject(ctx context.Context, workspace *idm.Workspace, checker ContextEditableChecker) (*rest.ShareLink, error) {
 
-	acls, detectedRoots, err := CommonAclsForWorkspace(ctx, workspace.UUID)
+	acls, detectedRoots, err := sc.CommonAclsForWorkspace(ctx, workspace.UUID)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +76,7 @@ func WorkspaceToShareLinkObject(ctx context.Context, workspace *idm.Workspace, c
 		shareLink.RootNodes = append(shareLink.RootNodes, &tree.Node{Uuid: rootId})
 	}
 
-	if err := LoadHashDocumentData(ctx, shareLink, acls); err != nil {
+	if err := sc.LoadHashDocumentData(ctx, shareLink, acls); err != nil {
 		return nil, err
 	}
 
@@ -88,7 +87,7 @@ func WorkspaceToShareLinkObject(ctx context.Context, workspace *idm.Workspace, c
 }
 
 // AclsToCellAcls Rewrites a flat list of ACLs to a structured map of CellAcls (more easily usable by clients).
-func AclsToCellAcls(ctx context.Context, acls []*idm.ACL) map[string]*rest.CellAcl {
+func (sc *Client) AclsToCellAcls(ctx context.Context, acls []*idm.ACL) map[string]*rest.CellAcl {
 
 	roomAcls := make(map[string]*rest.CellAcl)
 	registeredRolesAcls := make(map[string]bool)
@@ -101,7 +100,7 @@ func AclsToCellAcls(ctx context.Context, acls []*idm.ACL) map[string]*rest.CellA
 				roomAcls[acl.RoleID] = roomAcl
 			}
 			if acl.Action.Name == permissions.AclPolicy.Name {
-				r, w, e := InterpretInheritedPolicy(ctx, acl.Action.Value)
+				r, w, e := sc.InterpretInheritedPolicy(ctx, acl.Action.Value)
 				if e != nil {
 					log.Logger(ctx).Error("Error while interpreting inherited policy", zap.Error(e))
 				}
@@ -121,10 +120,10 @@ func AclsToCellAcls(ctx context.Context, acls []*idm.ACL) map[string]*rest.CellA
 }
 
 // LoadCellAclsObjects loads associated users / groups / roles based on the role Ids of the acls.
-func LoadCellAclsObjects(ctx context.Context, roomAcls map[string]*rest.CellAcl, checker ContextEditableChecker) error {
+func (sc *Client) LoadCellAclsObjects(ctx context.Context, roomAcls map[string]*rest.CellAcl, checker ContextEditableChecker) error {
 
 	log.Logger(ctx).Debug("LoadCellAclsObjects", zap.Any("acls", roomAcls))
-	roleClient := idm.NewRoleServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceRole))
+	roleClient := idm.NewRoleServiceClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceRole))
 	var roleIds []string
 	for _, acl := range roomAcls {
 		roleIds = append(roleIds, acl.RoleId)
@@ -158,7 +157,7 @@ func LoadCellAclsObjects(ctx context.Context, roomAcls map[string]*rest.CellAcl,
 			userQ, _ := anypb.New(&idm.UserSingleQuery{Uuid: roleId})
 			subQueries = append(subQueries, userQ)
 		}
-		userClient := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUser))
+		userClient := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceUser))
 		stream, err := userClient.SearchUser(ctx, &idm.SearchUserRequest{Query: &service.Query{SubQueries: subQueries}})
 		if err != nil {
 			return err
@@ -188,7 +187,7 @@ func LoadCellAclsObjects(ctx context.Context, roomAcls map[string]*rest.CellAcl,
 }
 
 // CommonAclsForWorkspace makes successive calls to ACL service to get all ACLs for a given workspace.
-func CommonAclsForWorkspace(ctx context.Context, workspaceId string) (result []*idm.ACL, detectedRoots []string, err error) {
+func (sc *Client) CommonAclsForWorkspace(ctx context.Context, workspaceId string) (result []*idm.ACL, detectedRoots []string, err error) {
 
 	result, err = permissions.GetACLsForWorkspace(ctx, []string{workspaceId}, permissions.AclRead, permissions.AclWrite, permissions.AclPolicy)
 	if err != nil {
@@ -210,7 +209,7 @@ func CommonAclsForWorkspace(ctx context.Context, workspaceId string) (result []*
 
 // DiffAcls compares to slices of ACLs on their RoleID and Action and
 // returns slices of Acls to add and to remove.
-func DiffAcls(ctx context.Context, initial []*idm.ACL, newOnes []*idm.ACL) (add []*idm.ACL, remove []*idm.ACL) {
+func (sc *Client) DiffAcls(ctx context.Context, initial []*idm.ACL, newOnes []*idm.ACL) (add []*idm.ACL, remove []*idm.ACL) {
 
 	equals := func(a *idm.ACL, b *idm.ACL) bool {
 		return a.NodeID == b.NodeID && a.RoleID == b.RoleID && a.Action.Name == b.Action.Name && a.Action.Value == b.Action.Value
@@ -238,7 +237,7 @@ func DiffAcls(ctx context.Context, initial []*idm.ACL, newOnes []*idm.ACL) (add 
 }
 
 // DiffReadRoles detects the roles that have been globally added or removed, whatever the node.
-func DiffReadRoles(ctx context.Context, initial []*idm.ACL, newOnes []*idm.ACL) (add []string, remove []string) {
+func (sc *Client) DiffReadRoles(ctx context.Context, initial []*idm.ACL, newOnes []*idm.ACL) (add []string, remove []string) {
 
 	filter := func(acls []*idm.ACL) (roles map[string]bool) {
 		roles = make(map[string]bool)
@@ -246,7 +245,7 @@ func DiffReadRoles(ctx context.Context, initial []*idm.ACL, newOnes []*idm.ACL) 
 			if acl.Action.Name == permissions.AclRead.Name {
 				roles[acl.RoleID] = true
 			} else if acl.Action.Name == permissions.AclPolicy.Name {
-				if r, _, _ := InterpretInheritedPolicy(ctx, acl.Action.Value); r {
+				if r, _, _ := sc.InterpretInheritedPolicy(ctx, acl.Action.Value); r {
 					roles[acl.RoleID] = true
 				}
 			}
@@ -271,7 +270,7 @@ func DiffReadRoles(ctx context.Context, initial []*idm.ACL, newOnes []*idm.ACL) 
 }
 
 // ComputeTargetAcls create ACL objects that should be applied for this cell.
-func ComputeTargetAcls(ctx context.Context, ownerUser *idm.User, cell *rest.Cell, workspaceId string, readonly bool, parentPolicy string) ([]*idm.ACL, error) {
+func (sc *Client) ComputeTargetAcls(ctx context.Context, ownerUser *idm.User, cell *rest.Cell, workspaceId string, readonly bool, parentPolicy string) ([]*idm.ACL, error) {
 
 	if parentPolicy != "" {
 		log.Logger(ctx).Debug("Share: Computing ACL based on parent policy " + parentPolicy)
@@ -304,7 +303,7 @@ func ComputeTargetAcls(ctx context.Context, ownerUser *idm.User, cell *rest.Cell
 				}
 			}
 			if parentPolicy != "" {
-				newPol, er := InheritPolicies(ctx, parentPolicy, read, write)
+				newPol, er := sc.InheritPolicies(ctx, parentPolicy, read, write)
 				if er != nil {
 					return nil, er
 				}
@@ -325,7 +324,7 @@ func ComputeTargetAcls(ctx context.Context, ownerUser *idm.User, cell *rest.Cell
 		// Make sure that the current user has at least READ permissions
 		if !userInAcls {
 			if parentPolicy != "" {
-				minPol, er := InheritPolicies(ctx, parentPolicy, true, !readonly)
+				minPol, er := sc.InheritPolicies(ctx, parentPolicy, true, !readonly)
 				if er != nil {
 					return nil, er
 				}
@@ -360,13 +359,13 @@ func ComputeTargetAcls(ctx context.Context, ownerUser *idm.User, cell *rest.Cell
 }
 
 // UpdatePoliciesFromAcls recomputes the required policies from acl changes.
-func UpdatePoliciesFromAcls(ctx context.Context, workspace *idm.Workspace, initial []*idm.ACL, target []*idm.ACL) bool {
+func (sc *Client) UpdatePoliciesFromAcls(ctx context.Context, workspace *idm.Workspace, initial []*idm.ACL, target []*idm.ACL) bool {
 
 	var output []*service.ResourcePolicy
 	initialPolicies := workspace.Policies
 	resourceId := workspace.UUID
 
-	addReads, removeReads := DiffReadRoles(ctx, initial, target)
+	addReads, removeReads := sc.DiffReadRoles(ctx, initial, target)
 	ignoreAdds := make(map[string]bool)
 
 	for _, p := range initialPolicies {
@@ -403,13 +402,13 @@ func UpdatePoliciesFromAcls(ctx context.Context, workspace *idm.Workspace, initi
 
 // GetOrCreateWorkspace finds a workspace by its Uuid or creates it with the current user ResourcePolicies
 // if it does not already exist.
-func GetOrCreateWorkspace(ctx context.Context, ownerUser *idm.User, wsUuid string, scope idm.WorkspaceScope, label string, description string, updateIfNeeded bool) (*idm.Workspace, bool, error) {
+func (sc *Client) GetOrCreateWorkspace(ctx context.Context, ownerUser *idm.User, wsUuid string, scope idm.WorkspaceScope, label string, description string, updateIfNeeded bool) (*idm.Workspace, bool, error) {
 
 	var workspace *idm.Workspace
 
 	log.Logger(ctx).Debug("GetOrCreateWorkspace", zap.String("wsUuid", wsUuid), zap.Any("scope", scope.String()), zap.Bool("updateIfNeeded", updateIfNeeded))
 
-	wsClient := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceWorkspace))
+	wsClient := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceWorkspace))
 	var create bool
 	if wsUuid == "" {
 		if label == "" {
@@ -423,7 +422,7 @@ func GetOrCreateWorkspace(ctx context.Context, ownerUser *idm.User, wsUuid strin
 			Description: description,
 			Scope:       scope,
 			Slug:        slug.Make(label),
-			Policies:    OwnerResourcePolicies(ctx, ownerUser, wsUuid),
+			Policies:    sc.OwnerResourcePolicies(ctx, ownerUser, wsUuid),
 		}})
 		if err != nil {
 			return workspace, false, err
@@ -474,15 +473,15 @@ func GetOrCreateWorkspace(ctx context.Context, ownerUser *idm.User, wsUuid strin
 
 // DeleteWorkspace deletes a workspace and associated policies and ACLs. It also
 // deletes the room node if necessary.
-func DeleteWorkspace(ctx context.Context, ownerUser *idm.User, scope idm.WorkspaceScope, workspaceId string, checker ContextEditableChecker) error {
+func (sc *Client) DeleteWorkspace(ctx context.Context, ownerUser *idm.User, scope idm.WorkspaceScope, workspaceId string, checker ContextEditableChecker) error {
 
-	workspace, _, err := GetOrCreateWorkspace(ctx, ownerUser, workspaceId, scope, "", "", false)
+	workspace, _, err := sc.GetOrCreateWorkspace(ctx, ownerUser, workspaceId, scope, "", "", false)
 	if err != nil {
 		return err
 	}
 	if scope == idm.WorkspaceScope_ROOM {
 		// check if we must delete the room node
-		if output, err := WorkspaceToCellObject(ctx, workspace, checker); err == nil {
+		if output, err := sc.WorkspaceToCellObject(ctx, workspace, checker); err == nil {
 			log.Logger(ctx).Debug("Will Delete Workspace for Room", zap.Any("room", output))
 			var roomNode *tree.Node
 			for _, node := range output.RootNodes {
@@ -492,14 +491,14 @@ func DeleteWorkspace(ctx context.Context, ownerUser *idm.User, scope idm.Workspa
 				}
 			}
 			if roomNode != nil {
-				if err := DeleteRootNodeRecursively(ctx, ownerUser.GetLogin(), roomNode); err != nil {
+				if err := sc.DeleteRootNodeRecursively(ctx, ownerUser.GetLogin(), roomNode); err != nil {
 					return err
 				}
 			}
 		}
 	}
 	// Deleting workspace will delete associated policies and associated ACLs
-	wsClient := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceWorkspace))
+	wsClient := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceWorkspace))
 	q, _ := anypb.New(&idm.WorkspaceSingleQuery{
 		Uuid: workspaceId,
 	})
@@ -512,7 +511,7 @@ func DeleteWorkspace(ctx context.Context, ownerUser *idm.User, scope idm.Workspa
 
 // OwnerResourcePolicies produces a set of policies given ownership to current context user,
 // read/write to current context user, and write access to profile:admin (can be useful for admin).
-func OwnerResourcePolicies(ctx context.Context, ownerUser *idm.User, resourceId string) []*service.ResourcePolicy {
+func (sc *Client) OwnerResourcePolicies(ctx context.Context, ownerUser *idm.User, resourceId string) []*service.ResourcePolicy {
 
 	userId := ownerUser.Uuid
 	userLogin := ownerUser.Login
@@ -547,7 +546,7 @@ func OwnerResourcePolicies(ctx context.Context, ownerUser *idm.User, resourceId 
 }
 
 // GetTemplateACLsForMinisite loads actions and parameter acls from specific template roles.
-func GetTemplateACLsForMinisite(ctx context.Context, roleId string, perms []rest.ShareLinkAccessType, aclClient idm.ACLServiceClient) (acls []*idm.ACL, err error) {
+func (sc *Client) GetTemplateACLsForMinisite(ctx context.Context, roleId string, perms []rest.ShareLinkAccessType, aclClient idm.ACLServiceClient) (acls []*idm.ACL, err error) {
 
 	DownloadEnabled := false
 	for _, perm := range perms {

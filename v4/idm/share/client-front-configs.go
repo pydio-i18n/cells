@@ -27,15 +27,15 @@ type PluginOptions struct {
 	enableFolderInternal    bool
 }
 
-func CheckLinkOptionsAgainstConfigs(ctx context.Context, link *rest.ShareLink, wss []*tree.WorkspaceRelativePath, files, folders bool) (PluginOptions, error) {
+func (sc *Client) CheckLinkOptionsAgainstConfigs(ctx context.Context, link *rest.ShareLink, wss []*tree.WorkspaceRelativePath, files, folders bool) (PluginOptions, error) {
 
-	contextParams, e := aclParams(ctx)
+	contextParams, e := sc.aclParams(ctx)
 	if e != nil {
 		return PluginOptions{}, e
 	}
-	options := defaultOptions()
+	options := sc.defaultOptions()
 	checkScopes := permissions.FrontValuesScopesFromWorkspaceRelativePaths(wss)
-	options = filterOptionsFromScopes(options, contextParams, checkScopes)
+	options = sc.filterOptionsFromScopes(options, contextParams, checkScopes)
 
 	if files && !options.enableFilePublicLinks {
 		return options, errors.Forbidden("file.public-link.forbidden", "You are not allowed to create public link on files")
@@ -56,17 +56,17 @@ func CheckLinkOptionsAgainstConfigs(ctx context.Context, link *rest.ShareLink, w
 	return options, nil
 }
 
-func CheckCellOptionsAgainstConfigs(ctx context.Context, request *rest.PutCellRequest) error {
+func (sc *Client) CheckCellOptionsAgainstConfigs(ctx context.Context, request *rest.PutCellRequest) error {
 	router := compose.ReverseClient()
 	acl, e := permissions.AccessListFromContextClaims(ctx)
 	if e != nil {
 		return e
 	}
-	contextParams, e := aclParams(ctx)
+	contextParams, e := sc.aclParams(ctx)
 	if e != nil {
 		return e
 	}
-	options := defaultOptions()
+	options := sc.defaultOptions()
 	aclWss := acl.Workspaces
 	return router.WrapCallback(func(inputFilter nodes.FilterFunc, outputFilter nodes.FilterFunc) error {
 		for _, n := range request.Room.RootNodes {
@@ -87,7 +87,7 @@ func CheckCellOptionsAgainstConfigs(ctx context.Context, request *rest.PutCellRe
 				folders = true
 			}
 			scopes := permissions.FrontValuesScopesFromWorkspaces(wss)
-			loopOptions := filterOptionsFromScopes(options, contextParams, scopes)
+			loopOptions := sc.filterOptionsFromScopes(options, contextParams, scopes)
 			if e != nil {
 				return e
 			}
@@ -102,7 +102,7 @@ func CheckCellOptionsAgainstConfigs(ctx context.Context, request *rest.PutCellRe
 	})
 }
 
-func defaultOptions() PluginOptions {
+func (sc *Client) defaultOptions() PluginOptions {
 	// Defaults
 	configParams := config.Get("frontend", "plugin", "action.share")
 	options := PluginOptions{
@@ -119,7 +119,7 @@ func defaultOptions() PluginOptions {
 	return options
 }
 
-func aclParams(ctx context.Context) (configx.Values, error) {
+func (sc *Client) aclParams(ctx context.Context) (configx.Values, error) {
 	acl, e := permissions.AccessListFromContextClaims(ctx)
 	if e != nil {
 		return nil, e
@@ -128,7 +128,7 @@ func aclParams(ctx context.Context) (configx.Values, error) {
 	return acl.FlattenedFrontValues().Val("parameters", "action.share"), nil
 }
 
-func filterOptionsFromScopes(options PluginOptions, contextParams configx.Values, scopes []string) PluginOptions {
+func (sc *Client) filterOptionsFromScopes(options PluginOptions, contextParams configx.Values, scopes []string) PluginOptions {
 
 	// Check expiration time
 	for _, scope := range scopes {

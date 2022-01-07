@@ -48,7 +48,8 @@ func init() {
 				{
 					TargetVersion: service.ValidVersion("1.6.2"),
 					Up: func(ctx context.Context) error {
-						return share.ClearLostHiddenUsers(ctx)
+						sc := share.NewClient(ctx)
+						return sc.ClearLostHiddenUsers(ctx)
 					},
 				},
 			}),
