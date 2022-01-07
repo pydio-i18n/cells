@@ -28,7 +28,6 @@ import (
 
 	"github.com/emicklei/go-restful"
 	"github.com/go-openapi/spec"
-	"github.com/micro/micro/v3/service/registry"
 	"github.com/ory/ladon"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -42,8 +41,10 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/object"
+	pbregistry "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/proto/rest"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/errors"
@@ -104,17 +105,18 @@ func (s *Handler) EndpointsDiscovery(req *restful.Request, resp *restful.Respons
 	endpointResponse.Endpoints["websocket"] = withScheme(withPath(urlParsed, "/ws/event"), wsProtocol).String()
 	endpointResponse.Endpoints["frontend"] = withPath(urlParsed, "").String()
 
-	// TODO v4 http version
 	if urlParsed.Scheme == "http" {
 		if external := viper.GetString("grpc_external"); external != "" {
 			endpointResponse.Endpoints["grpc"] = external
 		} else {
 			// Pure HTTP and no grpc_external : detect GRPC_CLEAR Service Port
 			var grpcPorts []string
-			if ss, e := registry.GetService(common.ServiceGatewayGrpcClear); e == nil {
-				for _, s := range ss {
-					for _, n := range s.Nodes {
-						grpcPorts = append(grpcPorts, fmt.Sprintf("%d", n.Address))
+			reg := servicecontext.GetRegistry(s.MainCtx)
+			if s, e := reg.Get(common.ServiceGatewayGrpcClear, registry.WithType(pbregistry.ItemType_SERVICE)); e == nil {
+				srv := s.(registry.Service)
+				for _, n := range srv.Nodes() {
+					for _, a := range n.Address() {
+						grpcPorts = append(grpcPorts, strings.ReplaceAll(a, "[::]:", ""))
 					}
 				}
 			}

@@ -135,6 +135,8 @@ func HttpMetaFromGrpcContext(ctx context.Context, name string) (string, bool) {
 			return v, true
 		} else if vs, os := md[strings.ToLower(name)]; os {
 			return vs, true
+		} else if vc, oc := md[strings.Title(strings.ToLower(name))]; oc {
+			return vc, true
 		}
 	}
 	return "", false

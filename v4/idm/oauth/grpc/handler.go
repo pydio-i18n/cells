@@ -497,7 +497,6 @@ func (h *Handler) Exchange(ctx context.Context, in *pauth.ExchangeRequest) (*pau
 	values.Set("client_id", config.DefaultOAuthClientID)
 	values.Set("grant_type", "authorization_code")
 	values.Set("code", in.Code)
-	fmt.Println("code_verifier", in.CodeVerifier)
 	values.Set("code_verifier", in.CodeVerifier)
 	values.Set("redirect_uri", config.GetDefaultSiteURL()+"/auth/callback")
 

@@ -21,7 +21,6 @@
 package auth
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
 	"sync"
@@ -125,7 +124,6 @@ func InitConfiguration(values configx.Values) {
 	defer confMutex.Unlock()
 	initConnector := false
 	for _, rootUrl := range config.GetSitesAllowedURLs() {
-		fmt.Println("Auth Provider - rootUrl", rootUrl)
 		p := NewProvider(rootUrl.String(), values)
 		if !initConnector {
 			// Use first conf as default
