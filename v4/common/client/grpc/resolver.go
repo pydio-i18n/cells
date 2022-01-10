@@ -55,24 +55,7 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 		return nil, err
 	}
 
-	//reg, err := registry.OpenRegistry(context.Background(), "memory:///")
-	//// reg, err := registry.OpenRegistry(context.Background(), fmt.Sprintf("grpc://%s%s", host, port))
-	//if err != nil {
-	//	return nil, err
-	//}
-
-	services, err := b.reg.List(registry.WithType(pb.ItemType_SERVICE))
-	if err != nil {
-		return nil, err
-	}
 	var m = map[string][]string{}
-	for _, s := range services {
-		for _, n := range s.(registry.Service).Nodes() {
-			for _, a := range n.Address() {
-				m[a] = append(m[a], s.Name())
-			}
-		}
-	}
 
 	cr := &cellsResolver{
 		reg:                  b.reg,
@@ -85,6 +68,25 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 
 	go cr.updateState()
 	go cr.watch()
+
+	//reg, err := registry.OpenRegistry(context.Background(), "memory:///")
+	//// reg, err := registry.OpenRegistry(context.Background(), fmt.Sprintf("grpc://%s%s", host, port))
+	//if err != nil {
+	//	return nil, err
+	//}
+
+	services, err := b.reg.List(registry.WithType(pb.ItemType_SERVICE))
+	if err != nil {
+		return nil, err
+	}
+
+	for _, s := range services {
+		for _, n := range s.(registry.Service).Nodes() {
+			for _, a := range n.Address() {
+				m[a] = append(m[a], s.Name())
+			}
+		}
+	}
 
 	return cr, nil
 }

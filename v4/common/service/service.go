@@ -19,6 +19,8 @@ type service struct {
 	opts *ServiceOptions
 }
 
+var _ registry.Service = (*service)(nil)
+
 const (
 	configSrvKeyFork      = "fork"
 	configSrvKeyAutoStart = "autostart"
@@ -84,6 +86,11 @@ func (s *service) Metadata() map[string]string {
 
 func (s *service) As(i interface{}) bool {
 	if v, ok := i.(*Service); ok {
+		*v = s
+		return true
+	}
+
+	if v, ok := i.(*registry.Service); ok {
 		*v = s
 		return true
 	}

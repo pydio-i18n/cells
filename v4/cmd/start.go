@@ -84,7 +84,7 @@ to quickly create a Cobra application.`,
 
 		// broker.Connect()
 
-		pluginsReg, err := registry.OpenRegistry(ctx, "memory:///")
+		pluginsReg, err := registry.OpenRegistry(ctx, "memory:///?cache=shared")
 		if err != nil {
 			return err
 		}
