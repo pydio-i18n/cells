@@ -75,7 +75,7 @@ require (
 	github.com/pborman/uuid v1.2.1
 	github.com/philopon/go-toposort v0.0.0-20170620085441-9be86dbd762f
 	github.com/pkg/errors v0.9.1
-	github.com/pydio/go v0.0.0-20191211170306-d00ac19450ef // indirect
+	github.com/pydio/go v0.0.0-20191211170306-d00ac19450ef
 	github.com/pydio/melody v0.0.0-20190928133520-4271c6513fb6
 	github.com/pydio/pydio-sdk-go v0.0.0-20190116153840-23ce5c39e65c
 	github.com/rjeczalik/notify v0.9.2
@@ -128,4 +128,4 @@ require (
 )
 
 //replace github.com/minio/minio => /Users/charles/Sources/go/src/github.com/pydio/minio
-replace github.com/minio/minio => github.com/pydio/minio v0.0.0-20211122154507-cf0bc00fb0b8
+replace github.com/minio/minio => github.com/pydio/minio v0.0.0-20220110094737-71dca4158db2
