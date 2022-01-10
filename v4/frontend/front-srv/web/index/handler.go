@@ -2,6 +2,7 @@ package index
 
 import (
 	"compress/gzip"
+	"context"
 	"encoding/xml"
 	"html/template"
 	"net/http"
@@ -14,13 +15,16 @@ import (
 )
 
 type IndexHandler struct {
+	runtimeCtx       context.Context
 	tpl              *template.Template
 	loadingTpl       *template.Template
 	frontendDetected bool
 }
 
-func NewIndexHandler() *IndexHandler {
-	h := &IndexHandler{}
+func NewIndexHandler(ctx context.Context) *IndexHandler {
+	h := &IndexHandler{
+		runtimeCtx: ctx,
+	}
 	h.tpl, _ = template.New("index").Parse(Page)
 	h.loadingTpl, _ = template.New("loading").Parse(loading)
 	return h
@@ -44,6 +48,7 @@ func (h *IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	scopes := user.GetActiveScopes()
 
 	status := frontend.RequestStatus{
+		RuntimeCtx:    h.runtimeCtx,
 		Config:        c,
 		AclParameters: aclParameters,
 		AclActions:    aclActions,

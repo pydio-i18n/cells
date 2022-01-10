@@ -80,7 +80,7 @@ func init() {
 
 				mux.Handle("/index.json", fs)
 				mux.Handle("/plug/", http.StripPrefix("/plug/", fs))
-				indexHandler := index.NewIndexHandler()
+				indexHandler := index.NewIndexHandler(ctx)
 				mux.HandleFunc("/robots.txt", func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(200)
 					w.Header().Set("Content-Type", "text/plain")

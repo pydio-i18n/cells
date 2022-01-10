@@ -24,6 +24,7 @@ package rest
 import (
 	"context"
 	"encoding/gob"
+	"github.com/pydio/cells/v4/frontend/front-srv/rest/modifiers"
 	"os"
 
 	"github.com/pydio/cells/v4/common"
@@ -32,7 +33,6 @@ import (
 	"github.com/pydio/cells/v4/common/service"
 	"github.com/pydio/cells/v4/common/service/frontend"
 	"github.com/pydio/cells/v4/frontend/front-srv"
-	"github.com/pydio/cells/v4/frontend/front-srv/rest/modifiers"
 )
 
 var BasePluginsBox = frontend.PluginBox{

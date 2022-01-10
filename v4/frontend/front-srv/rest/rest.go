@@ -110,6 +110,7 @@ func (a *FrontendHandler) FrontState(req *restful.Request, rsp *restful.Response
 	scopes := user.GetActiveScopes()
 
 	status := frontend.RequestStatus{
+		RuntimeCtx:    a.runtimeCtx,
 		Config:        c,
 		AclParameters: aclParameters,
 		AclActions:    aclActions,
@@ -177,7 +178,7 @@ func (a *FrontendHandler) FrontPlugins(req *restful.Request, rsp *restful.Respon
 		lang = "en-us"
 	}
 
-	plugins := pool.AllPluginsManifests(req.Request.Context(), lang)
+	plugins := pool.AllPluginsManifests(a.runtimeCtx, lang)
 	rsp.WriteAsXml(plugins)
 }
 
@@ -248,7 +249,11 @@ func (a *FrontendHandler) FrontSession(req *restful.Request, rsp *restful.Respon
 	}
 
 	response := &rest.FrontSessionResponse{}
-	if e := frontend.ApplyAuthMiddlewares(req, rsp, &loginRequest, response, session); e != nil {
+	inReq := &frontend.FrontSessionWithRuntimeCtx{
+		RuntimeCtx:          a.runtimeCtx,
+		FrontSessionRequest: &loginRequest,
+	}
+	if e := frontend.ApplyAuthMiddlewares(req, rsp, inReq, response, session); e != nil {
 		if e := session.Save(req.Request, rsp.ResponseWriter); e != nil {
 			log.Logger(ctx).Error("Error saving session", zap.Error(e))
 		}
