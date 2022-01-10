@@ -104,11 +104,16 @@ func (a *FrontendHandler) FrontState(req *restful.Request, rsp *restful.Response
 
 	rolesConfigs := user.FlattenedRolesConfigs()
 
+	c := config.Get()
+	aclParameters := rolesConfigs.Val("parameters")
+	aclActions := rolesConfigs.Val("actions")
+	scopes := user.GetActiveScopes()
+
 	status := frontend.RequestStatus{
-		Config:        config.Get(),
-		AclParameters: rolesConfigs.Val("parameters"),
-		AclActions:    rolesConfigs.Val("actions"),
-		WsScopes:      user.GetActiveScopes(),
+		Config:        c,
+		AclParameters: aclParameters,
+		AclActions:    aclActions,
+		WsScopes:      scopes,
 		User:          user,
 		NoClaims:      !user.Logged,
 		Lang:          lang,

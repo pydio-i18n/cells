@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. Abstrium SAS <team (at) pydio.com>
+ * Copyright (c) 2022. Abstrium SAS <team (at) pydio.com>
  * This file is part of Pydio Cells.
  *
  * Pydio Cells is free software: you can redistribute it and/or modify
@@ -40,6 +40,7 @@ import (
 
 const PasswordComplexitySuffix = "#$!Az1"
 
+// StoreHashDocument sends link data to the storage backend, currently the Docstore service.
 func (sc *Client) StoreHashDocument(ctx context.Context, ownerUser *idm.User, link *rest.ShareLink, updateHash ...string) error {
 
 	store := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceDocStore))
@@ -105,6 +106,7 @@ func (sc *Client) StoreHashDocument(ctx context.Context, ownerUser *idm.User, li
 
 }
 
+// LoadHashDocumentData loads link data from the storage (currently Docstore) by link Uuid.
 func (sc *Client) LoadHashDocumentData(ctx context.Context, shareLink *rest.ShareLink, acls []*idm.ACL) error {
 
 	store := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceDocStore))
@@ -190,6 +192,7 @@ func (sc *Client) LoadHashDocumentData(ctx context.Context, shareLink *rest.Shar
 
 }
 
+// DeleteHashDocument removes link data from the storage.
 func (sc *Client) DeleteHashDocument(ctx context.Context, shareId string) error {
 
 	store := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceDocStore))

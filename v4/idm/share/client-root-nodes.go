@@ -1,3 +1,23 @@
+/*
+ * Copyright (c) 2022. Abstrium SAS <team (at) pydio.com>
+ * This file is part of Pydio Cells.
+ *
+ * Pydio Cells is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Pydio Cells is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Pydio Cells.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * The latest code can be found at <https://pydio.com>.
+ */
+
 package share
 
 import (
@@ -32,9 +52,9 @@ import (
 func (sc *Client) LoadDetectedRootNodes(ctx context.Context, detectedRoots []string) (rootNodes map[string]*tree.Node) {
 
 	rootNodes = make(map[string]*tree.Node)
-	router := compose.NewClient(compose.UuidComposer()...)
+	router := compose.NewClient(compose.UuidComposer(nodes.WithContext(sc.RuntimeContext))...)
 	metaClient := tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServiceMeta))
-	eventFilter := compose.ReverseClient(nodes.AsAdmin())
+	eventFilter := compose.ReverseClient(nodes.WithContext(sc.RuntimeContext), nodes.AsAdmin())
 	accessList, _ := permissions.AccessListFromContextClaims(ctx)
 	for _, rootId := range detectedRoots {
 		request := &tree.ReadNodeRequest{Node: &tree.Node{Uuid: rootId}}
@@ -72,7 +92,7 @@ func (sc *Client) LoadDetectedRootNodes(ctx context.Context, detectedRoots []str
 func (sc *Client) ParseRootNodes(ctx context.Context, shareRequest *rest.PutCellRequest) (*tree.Node, bool, error) {
 
 	var createdNode *tree.Node
-	router := compose.PathClient(nodes.WithContext(context.TODO()))
+	router := compose.PathClient(nodes.WithContext(sc.RuntimeContext))
 	for i, n := range shareRequest.Room.RootNodes {
 		r, e := router.ReadNode(ctx, &tree.ReadNodeRequest{Node: n})
 		if e != nil {
@@ -87,7 +107,7 @@ func (sc *Client) ParseRootNodes(ctx context.Context, shareRequest *rest.PutCell
 	if shareRequest.CreateEmptyRoot {
 
 		manager := abstract.GetVirtualNodesManager()
-		internalRouter := compose.PathClientAdmin()
+		internalRouter := compose.PathClientAdmin(nodes.WithContext(sc.RuntimeContext))
 		if root, exists := manager.ByUuid("cells"); exists {
 			parentNode, err := manager.ResolveInContext(ctx, root, internalRouter.GetClientsPool(), true)
 			if err != nil {
@@ -226,7 +246,7 @@ func (sc *Client) DetectInheritedPolicy(ctx context.Context, roots []*tree.Node,
 func (sc *Client) DeleteRootNodeRecursively(ctx context.Context, ownerName string, roomNode *tree.Node) error {
 
 	manager := abstract.GetVirtualNodesManager()
-	router := compose.PathClientAdmin()
+	router := compose.PathClientAdmin(nodes.WithContext(sc.RuntimeContext))
 	if root, exists := manager.ByUuid("cells"); exists {
 		parentNode, err := manager.ResolveInContext(ctx, root, router.GetClientsPool(), true)
 		if err != nil {
@@ -267,7 +287,7 @@ func (sc *Client) DeleteRootNodeRecursively(ctx context.Context, ownerName strin
 // link permissions do not try to set the Upload mode.
 func (sc *Client) CheckLinkRootNodes(ctx context.Context, link *rest.ShareLink) (workspaces []*tree.WorkspaceRelativePath, files, folders bool, e error) {
 
-	router := compose.NewClient(compose.UuidComposer()...)
+	router := compose.NewClient(compose.UuidComposer(nodes.WithContext(sc.GetRuntimeContext()))...)
 	var hasReadonly bool
 	for i, r := range link.RootNodes {
 		resp, er := router.ReadNode(ctx, &tree.ReadNodeRequest{Node: r})
@@ -302,8 +322,9 @@ func (sc *Client) CheckLinkRootNodes(ctx context.Context, link *rest.ShareLink) 
 
 }
 
+// RootsParentWorkspaces reads parents and find the root node of the workspace
 func (sc *Client) RootsParentWorkspaces(ctx context.Context, rr []*tree.Node) (ww []*tree.WorkspaceRelativePath, e error) {
-	router := compose.NewClient(compose.UuidComposer()...)
+	router := compose.NewClient(compose.UuidComposer(nodes.WithContext(sc.RuntimeContext))...)
 	for _, r := range rr {
 		if r.GetMetaBool(common.MetaFlagCellNode) {
 			continue
@@ -314,7 +335,7 @@ func (sc *Client) RootsParentWorkspaces(ctx context.Context, rr []*tree.Node) (w
 			return
 		}
 		if resp.Node == nil {
-			e = errors.NotFound(common.ServiceShare, "cannot find root node")
+			e = errors.NotFound("node.not.found", "cannot find root node")
 			return
 		}
 		ww = append(ww, resp.Node.AppearsIn...)

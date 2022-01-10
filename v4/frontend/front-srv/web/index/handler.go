@@ -38,11 +38,16 @@ func (h *IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	user := &frontend.User{}
 	rolesConfigs := user.FlattenedRolesConfigs()
 
+	c := config.Get()
+	aclParameters := rolesConfigs.Val("parameters")
+	aclActions := rolesConfigs.Val("actions")
+	scopes := user.GetActiveScopes()
+
 	status := frontend.RequestStatus{
-		Config:        config.Get(),
-		AclParameters: rolesConfigs.Val("parameters"),
-		AclActions:    rolesConfigs.Val("actions"),
-		WsScopes:      user.GetActiveScopes(),
+		Config:        c,
+		AclParameters: aclParameters,
+		AclActions:    aclActions,
+		WsScopes:      scopes,
 		User:          user,
 		NoClaims:      !user.Logged,
 		Lang:          "en",
@@ -119,7 +124,7 @@ func (h *IndexHandler) detectFrontendService() bool {
 
 	return true
 	//if h.frontendDetected {
-		//return true
+	//return true
 	//}
 	// TODO v4 ?
 	//if s, e := defaults.Registry().GetService(common.ServiceRestNamespace_ + common.ServiceFrontend); e == nil && len(s) > 0 {
