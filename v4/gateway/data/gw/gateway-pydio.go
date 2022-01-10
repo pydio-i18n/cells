@@ -148,7 +148,7 @@ func pydioToMinioError(err error, bucket, key string) error {
 			Object: key,
 		}
 	case 422:
-		err = minio.BucketQuotaExceeded{
+		err = minio.PydioQuotaExceeded{
 			Bucket: bucket,
 			Object: key,
 		}
