@@ -31,11 +31,13 @@ class ActionButton extends Component{
     render(){
 
         const {palette} = this.props.muiTheme;
+        const {destructive} = this.props;
+        const color = destructive ? '#d32f2f' : palette.primary1Color;
 
         const style = {
             root: {
                 borderRadius: '50%',
-                border: '1px solid ' + palette.primary1Color,
+                border: '1px solid ' + color,
                 backgroundColor: 'transparent',
                 width: 36, height: 36,
                 padding: '8px 6px',
@@ -43,7 +45,7 @@ class ActionButton extends Component{
                 zIndex: 0
             },
             icon: {
-                color: palette.primary1Color,
+                color: color,
                 fontSize: 20,
                 lineHeight: '20px'
             }

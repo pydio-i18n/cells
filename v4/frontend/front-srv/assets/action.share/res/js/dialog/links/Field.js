@@ -130,7 +130,7 @@ class PublicLinkField extends React.Component {
         if(this.state.editLink && editAllowed){
             return (
                 <div>
-                    <div style={{display:'flex', alignItems:'center', backgroundColor: '#f5f5f5', padding: '0 6px', margin: '0 -6px', borderRadius: 2}}>
+                    <div style={{display:'flex', alignItems:'center', backgroundColor: 'rgb(246, 246, 248)', padding: 6, borderRadius: 2}}>
                         <span style={{fontSize:16, color:'rgba(0,0,0,0.4)', display: 'inline-block', maxWidth: 160, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{PathUtils.getDirname(publicLink) + '/ '}</span>
                         <TextField style={{flex:1, marginRight: 10, marginLeft: 10}} onChange={this.changeLink} value={this.state.customLink !== undefined ? this.state.customLink : linkModel.getLink().LinkHash}/>
                         <ActionButton mdiIcon="check" callback={this.toggleEditMode} />
@@ -171,6 +171,9 @@ class PublicLinkField extends React.Component {
             }
             if(ShareHelper.qrcodeEnabled()){
                 actionLinks.push(<ActionButton key="qrcode" callback={this.toggleQRCode} mdiIcon="qrcode" messageId={'94'}/>);
+            }
+            if(this.props.onDisableLink) {
+                actionLinks.push(<ActionButton key="delete" destructive={true} callback={() => this.props.onDisableLink()} mdiIcon="link-off" messageId="45"/>);
             }
             if(actionLinks.length){
                 actionLinks = (

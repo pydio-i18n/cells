@@ -199,12 +199,12 @@ class NewCellsList extends React.Component {
 
         return (
             <div style={this.props.style}>
-                <div style={{display:'flex', alignItems:'center', backgroundColor: 'rgb(246, 246, 248)', borderBottom: '0px solid rgb(224, 224, 224)', fontSize: 15}}>
+                <div style={{display:'none', alignItems:'center', backgroundColor: 'rgb(246, 246, 248)', borderBottom: '0px solid rgb(224, 224, 224)', fontSize: 15}}>
                     <div style={{flex: 1, padding: 15, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}}>{legend}</div>
                     {deleteUniqueCellButton && <div>{deleteUniqueCellButton}</div>}
                     <div style={{width: 10}}/>
                 </div>
-                <List>{cells}</List>
+                <List style={{minHeight: 300}}>{cells}</List>
                 {addToCellMenu && <div style={{borderTop:'1px solid #e0e0e0', padding:'20px 16px'}}>{addToCellMenu}</div>}
             </div>
         );
