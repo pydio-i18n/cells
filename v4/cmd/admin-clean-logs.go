@@ -79,7 +79,7 @@ EXAMPLES
 
 		cmd.Printf("Sending resync command to service %s with parameter TRUNCATE/%s\n", syncService, byteSize)
 
-		cli := sync.NewSyncEndpointClient(grpc.NewClientConn(cleanLogsService))
+		cli := sync.NewSyncEndpointClient(grpc.GetClientConnFromCtx(ctx, cleanLogsService))
 		c, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 		defer cancel()
 		c = metadata.WithUserNameMetadata(c, common.PydioSystemUsername)

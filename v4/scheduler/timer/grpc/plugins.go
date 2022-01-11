@@ -45,7 +45,7 @@ func init() {
 			service.Description("Triggers events based on a scheduler pattern"),
 			service.WithGeneric(func(c context.Context, server *generic.Server) error {
 
-				producer := timer.NewEventProducer(ctx)
+				producer := timer.NewEventProducer(c)
 				subscriber := &timer.JobsEventsSubscriber{
 					Producer: producer,
 				}

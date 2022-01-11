@@ -265,7 +265,7 @@ func (a *QuotaFilter) FindParentWorkspaces(ctx context.Context, workspace *idm.W
 		GroupPath: userObject.GroupPath,
 	}
 	parentContext = context.WithValue(ctx, claim.ContextKey, claims)
-	vResolver := abstract.GetVirtualNodesManager().GetResolver(a.ClientsPool, false)
+	vResolver := abstract.GetVirtualNodesManager(ctx).GetResolver(a.ClientsPool, false)
 	ownerWsRoots := make(map[string]*idm.Workspace)
 
 	for _, ws := range ownerAcls.Workspaces {
@@ -280,7 +280,7 @@ func (a *QuotaFilter) FindParentWorkspaces(ctx context.Context, workspace *idm.W
 		}
 	}
 
-	treeClient := tree.NewNodeProviderClient(grpc2.NewClientConn(common.ServiceTree))
+	treeClient := tree.NewNodeProviderClient(grpc2.GetClientConnFromCtx(ctx, common.ServiceTree))
 	for _, root := range workspace.RootUUIDs {
 		if n, o := vResolver(ctx, &tree.Node{Uuid: root}); o {
 			root = n.Uuid
@@ -308,7 +308,7 @@ func (a *QuotaFilter) FindParentWorkspaces(ctx context.Context, workspace *idm.W
 // given by the orderedRoles list.
 func (a *QuotaFilter) QuotaForWorkspace(ctx context.Context, workspace *idm.Workspace, orderedRoles []string) (maxQuota int64, currentUsage int64, err error) {
 
-	aclClient := idm.NewACLServiceClient(grpc2.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc2.GetClientConnFromCtx(ctx, common.ServiceAcl))
 	q2, _ := anypb.New(&idm.ACLSingleQuery{WorkspaceIDs: []string{workspace.UUID}})
 	stream, er := aclClient.SearchACL(ctx, &idm.SearchACLRequest{Query: &service.Query{SubQueries: []*anypb.Any{q2}}})
 	if er != nil {
@@ -351,8 +351,8 @@ func (a *QuotaFilter) QuotaForWorkspace(ctx context.Context, workspace *idm.Work
 
 	if maxQuota > 0 {
 		log.Logger(ctx).Debug("Found Quota", zap.Any("q", maxQuota), zap.Any("roots", detectedRoots))
-		treeClient := tree.NewNodeProviderClient(grpc2.NewClientConn(common.ServiceTree))
-		resolver := abstract.GetVirtualNodesManager().GetResolver(a.ClientsPool, false)
+		treeClient := tree.NewNodeProviderClient(grpc2.GetClientConnFromCtx(ctx, common.ServiceTree))
+		resolver := abstract.GetVirtualNodesManager(ctx).GetResolver(a.ClientsPool, false)
 		for nodeId := range detectedRoots {
 			var rootNode *tree.Node
 			if n, o := resolver(ctx, &tree.Node{Uuid: nodeId}); o {

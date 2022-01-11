@@ -27,8 +27,8 @@ import (
 
 func init() {
 
-	handlersRegister := func(g *grpc.Server, clear bool) {
-		h := &TreeHandler{}
+	handlersRegister := func(runtimeCtx context.Context, g *grpc.Server, clear bool) {
+		h := &TreeHandler{runtimeCtx: runtimeCtx}
 		if clear {
 			h.name = common.ServiceGatewayGrpcClear
 		} else {
@@ -71,8 +71,8 @@ func init() {
 			clearOpts = append(clearOpts,
 				service.Context(ctx),
 				service.WithServerProvider(createServerProvider(false)),
-				service.WithGRPC(func(c context.Context, g *grpc.Server) error {
-					handlersRegister(g, true)
+				service.WithGRPC(func(runtimeCtx context.Context, srv *grpc.Server) error {
+					handlersRegister(runtimeCtx, srv, true)
 					return nil
 				}),
 			)
@@ -82,8 +82,8 @@ func init() {
 			tlsOpts = append(tlsOpts,
 				service.Context(ctx),
 				service.WithServerProvider(createServerProvider(true)),
-				service.WithGRPC(func(c context.Context, g *grpc.Server) error {
-					handlersRegister(g, false)
+				service.WithGRPC(func(runtimeCtx context.Context, srv *grpc.Server) error {
+					handlersRegister(runtimeCtx, srv, false)
 					return nil
 				}),
 			)

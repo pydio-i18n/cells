@@ -183,6 +183,7 @@ func (p *PluginsPool) AllPluginsManifests(ctx context.Context, lang string) *Cpl
 		}
 	}
 	emptyStatus := RequestStatus{
+		RuntimeCtx:    ctx,
 		Config:        config.Get(),
 		Lang:          lang,
 		NoClaims:      true,

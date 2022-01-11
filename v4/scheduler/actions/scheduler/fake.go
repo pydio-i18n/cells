@@ -23,6 +23,7 @@ package scheduler
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common"
 	"time"
 
 	"github.com/pydio/cells/v4/common/forms"
@@ -36,6 +37,7 @@ var (
 )
 
 type FakeAction struct {
+	common.RuntimeHolder
 	timer  string
 	ticker string
 }

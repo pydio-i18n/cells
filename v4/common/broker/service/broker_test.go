@@ -48,7 +48,7 @@ func TestServiceBroker(t *testing.T) {
 
 	topic, _ := NewTopic("test")
 
-	numMessages := 10000
+	numMessages := 1000
 
 	wg.Add(numMessages)
 

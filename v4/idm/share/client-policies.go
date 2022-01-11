@@ -1,8 +1,29 @@
+/*
+ * Copyright (c) 2022. Abstrium SAS <team (at) pydio.com>
+ * This file is part of Pydio Cells.
+ *
+ * Pydio Cells is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Pydio Cells is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Pydio Cells.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * The latest code can be found at <https://pydio.com>.
+ */
+
 package share
 
 import (
 	"context"
 	"fmt"
+
 	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/pydio/cells/v4/common"
@@ -11,14 +32,15 @@ import (
 	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
-func InheritPolicies(ctx context.Context, policyName string, read, write bool) (string, error) {
-	polClient := idm.NewPolicyEngineServiceClient(grpc.NewClientConn(common.ServicePolicy))
+// InheritPolicies find possible SecurityPolicy currently implied and compute a new one based on it.
+func (sc *Client) InheritPolicies(ctx context.Context, policyName string, read, write bool) (string, error) {
+	polClient := idm.NewPolicyEngineServiceClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServicePolicy))
 	response, e := polClient.ListPolicyGroups(ctx, &idm.ListPolicyGroupsRequest{})
 	if e != nil {
 		return "", e
 	}
 	gg := response.PolicyGroups
-	parent, ok := policyByName(gg, policyName)
+	parent, ok := sc.policyByName(gg, policyName)
 	if !ok {
 		return "", fmt.Errorf("cannot find parent policy %s", policyName)
 	}
@@ -33,10 +55,10 @@ func InheritPolicies(ctx context.Context, policyName string, read, write bool) (
 		return "", fmt.Errorf("provide at least one of read or write for extending policy")
 	}
 	// Create inherited flavours
-	if ro, o := policyByName(gg, policyName+"-"+suffix); o {
+	if ro, o := sc.policyByName(gg, policyName+"-"+suffix); o {
 		return ro.Uuid, nil
 	}
-	roPol, e := derivePolicy(parent, read, write, suffix)
+	roPol, e := sc.derivePolicy(parent, read, write, suffix)
 	if e != nil {
 		return "", e
 	}
@@ -47,7 +69,7 @@ func InheritPolicies(ctx context.Context, policyName string, read, write bool) (
 	return roPol.Uuid, nil
 }
 
-func derivePolicy(policy *idm.PolicyGroup, read, write bool, suffix string) (*idm.PolicyGroup, error) {
+func (sc *Client) derivePolicy(policy *idm.PolicyGroup, read, write bool, suffix string) (*idm.PolicyGroup, error) {
 	var label string
 	switch suffix {
 	case "ro":
@@ -108,7 +130,7 @@ func derivePolicy(policy *idm.PolicyGroup, read, write bool, suffix string) (*id
 	return newG, nil
 }
 
-func policyByName(groups []*idm.PolicyGroup, name string) (*idm.PolicyGroup, bool) {
+func (sc *Client) policyByName(groups []*idm.PolicyGroup, name string) (*idm.PolicyGroup, bool) {
 	var parent *idm.PolicyGroup
 	for _, p := range groups {
 		if p.Uuid == name {
@@ -122,14 +144,15 @@ func policyByName(groups []*idm.PolicyGroup, name string) (*idm.PolicyGroup, boo
 	return parent, true
 }
 
-func InterpretInheritedPolicy(ctx context.Context, name string) (read, write bool, e error) {
-	polClient := idm.NewPolicyEngineServiceClient(grpc.NewClientConn(common.ServicePolicy))
+// InterpretInheritedPolicy translates a SecurityPolicy to read/write permissions for user readability
+func (sc *Client) InterpretInheritedPolicy(ctx context.Context, name string) (read, write bool, e error) {
+	polClient := idm.NewPolicyEngineServiceClient(grpc.GetClientConnFromCtx(sc.RuntimeContext, common.ServicePolicy))
 	response, e := polClient.ListPolicyGroups(ctx, &idm.ListPolicyGroupsRequest{})
 	if e != nil {
 		return false, false, e
 	}
 	gg := response.PolicyGroups
-	parent, ok := policyByName(gg, name)
+	parent, ok := sc.policyByName(gg, name)
 	if !ok {
 		return false, false, fmt.Errorf("could not find associated policy!")
 	}

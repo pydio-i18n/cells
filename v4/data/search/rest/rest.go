@@ -43,9 +43,9 @@ import (
 )
 
 type Handler struct {
-	globalCtx context.Context
-	router    nodes.Client
-	client    tree.SearcherClient
+	runtimeCtx context.Context
+	router     nodes.Client
+	client     tree.SearcherClient
 }
 
 // SwaggerTags list the names of the service tags declared in the swagger json implemented by this service
@@ -60,14 +60,17 @@ func (s *Handler) Filter() func(string) string {
 
 func (s *Handler) getRouter() nodes.Client {
 	if s.router == nil {
-		s.router = compose.PathClient(nodes.WithRegistryWatch(servicecontext.GetRegistry(s.globalCtx)))
+		s.router = compose.PathClient(
+			nodes.WithContext(s.runtimeCtx),
+			nodes.WithRegistryWatch(servicecontext.GetRegistry(s.runtimeCtx)),
+		)
 	}
 	return s.router
 }
 
 func (s *Handler) getClient() tree.SearcherClient {
 	if s.client == nil {
-		s.client = tree.NewSearcherClient(grpc.NewClientConn(common.ServiceSearch))
+		s.client = tree.NewSearcherClient(grpc.GetClientConnFromCtx(s.runtimeCtx, common.ServiceSearch))
 	}
 	return s.client
 }
@@ -103,7 +106,7 @@ func (s *Handler) Nodes(req *restful.Request, rsp *restful.Response) {
 		}
 	}
 
-	cl := tree.NewNodeProviderStreamerClient(grpc.NewClientConn(common.ServiceTree))
+	cl := tree.NewNodeProviderStreamerClient(grpc.GetClientConnFromCtx(ctx, common.ServiceTree))
 	nodeStreamer, e := cl.ReadNodeStream(ctx)
 	if e == nil {
 		defer nodeStreamer.CloseSend()

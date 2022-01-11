@@ -9,6 +9,10 @@ import (
 	"net/url"
 	"strings"
 
+	"google.golang.org/grpc"
+
+	clientcontext "github.com/pydio/cells/v4/common/client/context"
+
 	caddy "github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
@@ -21,6 +25,7 @@ import (
 
 func RegisterServerMux(ctx context.Context, s *http.ServeMux) {
 	caddy.RegisterModule(Middleware{
+		c: clientcontext.GetClientConn(ctx),
 		r: servercontext.GetRegistry(ctx),
 		s: s,
 	})
@@ -28,6 +33,7 @@ func RegisterServerMux(ctx context.Context, s *http.ServeMux) {
 }
 
 type Middleware struct {
+	c grpc.ClientConnInterface
 	r registry.Registry
 	s *http.ServeMux
 }
@@ -76,7 +82,9 @@ func (m Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 	// try to find it in the current mux
 	_, pattern := m.s.Handler(r)
 	if len(pattern) > 0 && (pattern != "/" || r.URL.Path == "/") {
-		m.s.ServeHTTP(w, r)
+		ctx := clientcontext.WithClientConn(r.Context(), m.c)
+
+		m.s.ServeHTTP(w, r.WithContext(ctx))
 		return nil
 	}
 

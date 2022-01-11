@@ -21,9 +21,9 @@
 package rest
 
 import (
-	"github.com/emicklei/go-restful"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	restful "github.com/emicklei/go-restful"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/proto/docstore"
@@ -39,7 +39,7 @@ VERSIONING POLICIES MANAGEMENT
 // ListVirtualNodes list all defined template paths.
 func (s *Handler) ListVirtualNodes(req *restful.Request, resp *restful.Response) {
 	//T := lang.Bundle().GetTranslationFunc(utils.UserLanguagesFromRestRequest(req)...)
-	dc := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
+	dc := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(s.MainCtx, common.ServiceDocStore))
 	docs, er := dc.ListDocuments(req.Request.Context(), &docstore.ListDocumentsRequest{
 		StoreID: common.DocStoreIdVirtualNodes,
 	})

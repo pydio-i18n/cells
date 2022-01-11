@@ -21,6 +21,7 @@
 package middleware
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -43,41 +44,37 @@ var (
 )
 
 // HttpWrapperPolicy applies relevant policy rules and blocks the request if necessary
-func HttpWrapperPolicy(h http.Handler) http.Handler {
-
+func HttpWrapperPolicy(ctx context.Context, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		c := r.Context()
-
 		subjects := []string{"profile:anon"}
 		policyRequestContext := make(map[string]string)
 
 		// Find profile in claims, if any
-		if cValue := c.Value(claim.ContextKey); cValue != nil {
+		if cValue := r.Context().Value(claim.ContextKey); cValue != nil {
 			if claims, ok := cValue.(claim.Claims); ok {
-				log.Logger(c).Debug("Got Claims", zap.Any("claims", claims))
+				log.Logger(ctx).Debug("Got Claims", zap.Any("claims", claims))
 				policyRequestContext[HTTPMetaJwtClientApp] = claims.GetClientApp()
 				policyRequestContext[HTTPMetaJwtIssuer] = claims.Issuer
 				subjects = permissions.PolicyRequestSubjectsFromClaims(claims)
 			}
 		} else {
-			log.Logger(c).Debug("No Claims Found", zap.Any("ctx", c))
+			log.Logger(ctx).Debug("No Claims Found", zap.Any("ctx", ctx))
 		}
 
-		client := idm.NewPolicyEngineServiceClient(grpc.NewClientConn(common.ServicePolicy))
+		client := idm.NewPolicyEngineServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServicePolicy))
 		request := &idm.PolicyEngineRequest{
 			Subjects: subjects,
 			Resource: "rest:" + strings.TrimPrefix(r.RequestURI, common.DefaultRouteREST),
 			Action:   r.Method,
 		}
 
-		permissions.PolicyContextFromMetadata(policyRequestContext, c)
+		permissions.PolicyContextFromMetadata(policyRequestContext, r.Context())
 		if len(policyRequestContext) > 0 {
 			request.Context = policyRequestContext
 		}
 
 		// Effective request to ladon
-		resp, err := client.IsAllowed(c, request)
+		resp, err := client.IsAllowed(r.Context(), request)
 
 		if err != nil || !resp.Allowed {
 			if isRestApiPublicMethod(r) {
@@ -86,7 +83,7 @@ func HttpWrapperPolicy(h http.Handler) http.Handler {
 			}
 			code := 401
 			body := "Unauthorized"
-			log.Logger(c).Debug("PolicyHttpHandlerWrapper denied access", zap.Error(err), zap.Any("request", request))
+			log.Logger(ctx).Debug("PolicyHttpHandlerWrapper denied access", zap.Error(err), zap.Any("request", request))
 			var msg string
 			if err != nil {
 				code = 500
@@ -96,13 +93,13 @@ func HttpWrapperPolicy(h http.Handler) http.Handler {
 				msg = fmt.Sprintf("Policies blocked %s request at %s. Response: %s", r.Method, r.RequestURI, resp.String())
 			}
 
-			log.Logger(c).Error(msg, zap.Error(err))
+			log.Logger(ctx).Error(msg, zap.Error(err))
 			w.WriteHeader(code)
 			w.Write([]byte(body + "\n"))
 			return
 		}
 
-		r = r.WithContext(c)
+		r = r.WithContext(r.Context())
 		h.ServeHTTP(w, r)
 	})
 }

@@ -58,9 +58,10 @@ var (
 )
 
 // getRouter provides a singleton-initialized StandardRouter in AdminView.
-func getRouter() nodes.Client {
+func getRouter(runtime context.Context) nodes.Client {
 	if router == nil {
 		router = compose.PathClient(
+			nodes.WithContext(runtime),
 			nodes.AsAdmin(),
 			nodes.WithRegistryWatch(),
 		)
@@ -69,8 +70,8 @@ func getRouter() nodes.Client {
 }
 
 // getThumbLocation returns a node with the correct ds name for pydio thumbs store.
-func getThumbLocation(ctx context.Context, keyName string) (c context.Context, n *tree.Node, e error) {
-	source, er := getRouter().GetClientsPool().GetDataSourceInfo(common.PydioThumbstoreNamespace)
+func getThumbLocation(rCtx, ctx context.Context, keyName string) (c context.Context, n *tree.Node, e error) {
+	source, er := getRouter(rCtx).GetClientsPool().GetDataSourceInfo(common.PydioThumbstoreNamespace)
 	if er != nil {
 		e = er
 		return

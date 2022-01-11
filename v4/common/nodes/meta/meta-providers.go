@@ -146,7 +146,7 @@ func getMetaProviderStreamers(ctx context.Context) ([]tree.NodeProviderStreamerC
 	var names []string
 
 	// Load core Meta
-	result = append(result, tree.NewNodeProviderStreamerClient(grpc.NewClientConn(common.ServiceMeta)))
+	result = append(result, tree.NewNodeProviderStreamerClient(grpc.GetClientConnFromCtx(ctx, common.ServiceMeta)))
 	names = append(names, common.ServiceGrpcNamespace_+common.ServiceMeta)
 
 	// Load User meta (if claims are not empty!)
@@ -161,7 +161,7 @@ func getMetaProviderStreamers(ctx context.Context) ([]tree.NodeProviderStreamerC
 	}
 
 	for _, srv := range ss {
-		result = append(result, tree.NewNodeProviderStreamerClient(grpc.NewClientConn(strings.TrimPrefix(srv.Name(), common.ServiceGrpcNamespace_))))
+		result = append(result, tree.NewNodeProviderStreamerClient(grpc.GetClientConnFromCtx(ctx, strings.TrimPrefix(srv.Name(), common.ServiceGrpcNamespace_))))
 		names = append(names, srv.Name())
 	}
 

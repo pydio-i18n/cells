@@ -48,7 +48,7 @@ import (
 
 // LoginSuccessWrapper wraps functionalities after user was successfully logged in
 func LoginSuccessWrapper(middleware frontend.AuthMiddleware) frontend.AuthMiddleware {
-	return func(req *restful.Request, rsp *restful.Response, in *rest.FrontSessionRequest, out *rest.FrontSessionResponse, session *sessions.Session) error {
+	return func(req *restful.Request, rsp *restful.Response, in *frontend.FrontSessionWithRuntimeCtx, out *rest.FrontSessionResponse, session *sessions.Session) error {
 		if a, ok := in.AuthInfo["type"]; !ok || a != "credentials" && a != "authorization_code" { // Ignore this middleware
 			return middleware(req, rsp, in, out, session)
 		}
@@ -105,14 +105,14 @@ func LoginSuccessWrapper(middleware frontend.AuthMiddleware) frontend.AuthMiddle
 		if user.Attributes != nil {
 			if _, ok := user.Attributes["failedConnections"]; ok {
 				log.Logger(ctx).Info("[WrapWithUserLocks] Resetting user failedConnections", user.ZapLogin())
-				userClient := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
+				userClient := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(in.RuntimeCtx, common.ServiceUser))
 				delete(user.Attributes, "failedConnections")
 				userClient.CreateUser(ctx, &idm.CreateUserRequest{User: user})
 			}
 		}
 
 		// Checking policies
-		cli := idm.NewPolicyEngineServiceClient(grpc.NewClientConn(common.ServicePolicy))
+		cli := idm.NewPolicyEngineServiceClient(grpc.GetClientConnFromCtx(in.RuntimeCtx, common.ServicePolicy))
 		policyContext := make(map[string]string)
 		permissions.PolicyContextFromMetadata(policyContext, ctx)
 		subjects := permissions.PolicyRequestSubjectsFromUser(user)
@@ -139,7 +139,7 @@ func LoginSuccessWrapper(middleware frontend.AuthMiddleware) frontend.AuthMiddle
 
 		if lang, ok := in.AuthInfo["lang"]; ok {
 			if _, o := i18n.AvailableLanguages[lang]; o {
-				aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+				aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(in.RuntimeCtx, common.ServiceAcl))
 				// Remove previous value if any
 				delQ, _ := anypb.New(&idm.ACLSingleQuery{RoleIDs: []string{user.GetUuid()}, Actions: []*idm.ACLAction{{Name: "parameter:core.conf:lang"}}, WorkspaceIDs: []string{"PYDIO_REPO_SCOPE_ALL"}})
 				send, can := context.WithTimeout(ctx, 500*time.Millisecond)
@@ -170,7 +170,7 @@ func LoginSuccessWrapper(middleware frontend.AuthMiddleware) frontend.AuthMiddle
 
 // LoginFailedWrapper wraps functionalities after user failed to log in
 func LoginFailedWrapper(middleware frontend.AuthMiddleware) frontend.AuthMiddleware {
-	return func(req *restful.Request, rsp *restful.Response, in *rest.FrontSessionRequest, out *rest.FrontSessionResponse, session *sessions.Session) error {
+	return func(req *restful.Request, rsp *restful.Response, in *frontend.FrontSessionWithRuntimeCtx, out *rest.FrontSessionResponse, session *sessions.Session) error {
 		if a, ok := in.AuthInfo["type"]; !ok || a != "credentials" && a != "external" { // Ignore this middleware
 			return middleware(req, rsp, in, out, session)
 		}
@@ -242,7 +242,7 @@ func LoginFailedWrapper(middleware frontend.AuthMiddleware) frontend.AuthMiddlew
 		}
 
 		log.Logger(ctx).Debug(fmt.Sprintf("[WrapWithUserLocks] Updating failed connection number for user [%s]", user.GetLogin()), user.ZapLogin())
-		userClient := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
+		userClient := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(in.RuntimeCtx, common.ServiceUser))
 		if _, e := userClient.CreateUser(ctx, &idm.CreateUserRequest{User: user}); e != nil {
 			log.Logger(ctx).Error("could not store failedConnection for user", zap.Error(e))
 		}

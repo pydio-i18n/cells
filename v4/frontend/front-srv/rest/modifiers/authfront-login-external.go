@@ -34,7 +34,7 @@ import (
 
 // LoginExternalAuth allows users having a valid Cells session to create an authorization code directly
 func LoginExternalAuth(middleware frontend.AuthMiddleware) frontend.AuthMiddleware {
-	return func(req *restful.Request, rsp *restful.Response, in *rest.FrontSessionRequest, out *rest.FrontSessionResponse, session *sessions.Session) error {
+	return func(req *restful.Request, rsp *restful.Response, in *frontend.FrontSessionWithRuntimeCtx, out *rest.FrontSessionResponse, session *sessions.Session) error {
 		if a, ok := in.AuthInfo["type"]; !ok || a != "external" { // Ignore this middleware
 			return middleware(req, rsp, in, out, session)
 		}

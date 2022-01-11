@@ -23,11 +23,13 @@ package grpc
 import (
 	"context"
 	"fmt"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"io"
 	"strings"
 	"sync"
 	"time"
+
+	clientcontext "github.com/pydio/cells/v4/common/client/context"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
@@ -116,8 +118,9 @@ func (s *TreeServer) ReadNodeStream(streamer tree.NodeProviderStreamer_ReadNodeS
 	// We must make sure that metaStreamers are using a proper context at creation
 	// otherwise it can create a goroutine leak on linux.
 	ctx := metadata.NewBackgroundWithMetaCopy(streamer.Context())
+	ctx = clientcontext.WithClientConn(ctx, clientcontext.GetClientConn(s.MainCtx))
 	ctx = servicecontext.WithRegistry(ctx, servicecontext.GetRegistry(s.MainCtx))
-	metaStreamer := meta.NewStreamLoader(ctx)
+	metaStreamer := meta.NewStreamLoader(s.MainCtx)
 	defer metaStreamer.Close()
 
 	msCtx := context.WithValue(ctx, "MetaStreamer", metaStreamer)
@@ -220,7 +223,7 @@ func (s *TreeServer) ReadNode(ctx context.Context, req *tree.ReadNodeRequest) (*
 	if ms := ctx.Value("MetaStreamer"); ms != nil {
 		metaStreamer = ms.(meta.Loader)
 	} else {
-		metaStreamer = meta.NewStreamLoader(servicecontext.WithRegistry(ctx, servicecontext.GetRegistry(s.MainCtx)))
+		metaStreamer = meta.NewStreamLoader(s.MainCtx)
 		defer metaStreamer.Close()
 	}
 	resp := &tree.ReadNodeResponse{}
@@ -270,7 +273,12 @@ func (s *TreeServer) ListNodes(req *tree.ListNodesRequest, resp tree.NodeProvide
 
 	ctx := resp.Context()
 	defer track("ListNodes", ctx, time.Now(), req, resp)
-	metaStreamer := meta.NewStreamLoader(servicecontext.WithRegistry(ctx, servicecontext.GetRegistry(s.MainCtx)))
+
+	/*mainCtx := s.MainCtx
+	mainCtx = servicecontext.WithRegistry(ctx, servicecontext.GetRegistry(mainCtx))
+	mainCtx = clientcontext.WithClientConn(ctx, clientcontext.GetClientConn(mainCtx))*/
+	metaStreamer := meta.NewStreamLoader(s.MainCtx)
+
 	defer metaStreamer.Close()
 
 	// Special case to get ancestors

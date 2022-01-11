@@ -39,7 +39,7 @@ func init() {
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceSearch, []string{}),
 			service.WithWeb(func(c context.Context) service.WebHandler {
 				return &Handler{
-					globalCtx: c,
+					runtimeCtx: c,
 				}
 			}),
 		)

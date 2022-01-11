@@ -33,7 +33,7 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/client/grpc"
+	clientgrpc "github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/object"
@@ -69,6 +69,8 @@ func (s LoadedSource) MarshalLogObject(encoder zapcore.ObjectEncoder) error {
 // ClientsPool is responsible for discovering available datasources and
 // keeping an up to date registry that is used by the routers.
 type ClientsPool struct {
+	ctx context.Context
+
 	sync.Mutex
 	sources map[string]LoadedSource
 	aliases map[string]sourceAlias
@@ -82,9 +84,10 @@ type ClientsPool struct {
 }
 
 // NewClientsPool creates a client Pool and initialises it by calling the registry.
-func NewClientsPool(watchRegistry bool, registry registry.Registry) *ClientsPool {
+func NewClientsPool(ctx context.Context, watchRegistry bool, registry registry.Registry) *ClientsPool {
 
 	pool := &ClientsPool{
+		ctx:     ctx,
 		sources: make(map[string]LoadedSource),
 		aliases: make(map[string]sourceAlias),
 	}
@@ -123,7 +126,7 @@ func (p *ClientsPool) GetTreeClient() tree.NodeProviderClient {
 	if p.treeClient != nil {
 		return p.treeClient
 	}
-	return tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceTree))
+	return tree.NewNodeProviderClient(clientgrpc.GetClientConnFromCtx(p.ctx, common.ServiceGrpcNamespace_+common.ServiceTree))
 }
 
 // GetTreeClientWrite returns the internal NodeReceiverClient pointing to the TreeService.
@@ -131,7 +134,7 @@ func (p *ClientsPool) GetTreeClientWrite() tree.NodeReceiverClient {
 	if p.treeClientWrite != nil {
 		return p.treeClientWrite
 	}
-	return tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceTree))
+	return tree.NewNodeReceiverClient(clientgrpc.GetClientConnFromCtx(p.ctx, common.ServiceGrpcNamespace_+common.ServiceTree))
 }
 
 // GetDataSourceInfo tries to find information about a DataSource, eventually retrying as DataSource
@@ -205,12 +208,11 @@ func (p *ClientsPool) LoadDataSources() {
 	sources := config.Get("services", common.ServiceGrpcNamespace_+common.ServiceDataSync, "sources").StringArray()
 	sources = config.SourceNamesFiltered(sources)
 
-	ctx := context.Background()
 	for _, source := range sources {
-		endpointClient := object.NewDataSourceEndpointClient(grpc.NewClientConn(common.ServiceGrpcNamespace_ + common.ServiceDataSync_ + source))
-		response, err := endpointClient.GetDataSourceConfig(ctx, &object.GetDataSourceConfigRequest{})
+		endpointClient := object.NewDataSourceEndpointClient(clientgrpc.GetClientConnFromCtx(p.ctx, common.ServiceGrpcNamespace_+common.ServiceDataSync_+source))
+		response, err := endpointClient.GetDataSourceConfig(context.Background(), &object.GetDataSourceConfigRequest{})
 		if err == nil && response.DataSource != nil {
-			log.Logger(ctx).Debug("Creating client for datasource " + source)
+			log.Logger(context.Background()).Debug("Creating client for datasource " + source)
 			if e := p.CreateClientsForDataSource(source, response.DataSource); e != nil {
 				log.Logger(context.Background()).Warn("Cannot create clients for datasource "+source, zap.Error(e))
 			}
@@ -335,7 +337,7 @@ func (p *ClientsPool) CreateClientsForDataSource(dataSourceName string, dataSour
 
 func MakeFakeClientsPool(tc tree.NodeProviderClient, tw tree.NodeReceiverClient) *ClientsPool {
 	IsUnitTestEnv = true
-	c := NewClientsPool(false, nil)
+	c := NewClientsPool(context.TODO(), false, nil)
 
 	c.treeClient = tc
 	c.treeClientWrite = tw

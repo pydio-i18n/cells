@@ -23,7 +23,6 @@ package archive
 import (
 	"context"
 	"fmt"
-	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"io"
 	"path"
 	"strings"
@@ -36,6 +35,7 @@ import (
 	"github.com/pydio/cells/v4/common/nodes/models"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/scheduler/actions"
 	"github.com/pydio/cells/v4/scheduler/actions/tools"
 )

@@ -22,9 +22,10 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"net/url"
 	"time"
+
+	cgrpc "github.com/pydio/cells/v4/common/client/grpc"
 
 	"google.golang.org/grpc"
 
@@ -37,7 +38,7 @@ import (
 var scheme = "grpc"
 
 type URLOpener struct {
-	*grpc.ClientConn
+	grpc.ClientConnInterface
 }
 
 func init() {
@@ -47,16 +48,26 @@ func init() {
 
 func (o *URLOpener) OpenURL(ctx context.Context, u *url.URL) (registry.Registry, error) {
 	// We use WithBlock, shall we timeout and retry here ?
-	var conn *grpc.ClientConn
+	var conn grpc.ClientConnInterface
 	err := std.Retry(ctx, func() error {
-		c, can := context.WithTimeout(ctx, 1*time.Minute)
-		defer can()
-		var e error
-		conn, e = grpc.DialContext(c, u.Hostname()+":"+u.Port(), grpc.WithInsecure(), grpc.WithBlock())
-		if e != nil {
-			fmt.Println("Cannot open registry yet, will retry")
+		// c, can := context.WithTimeout(ctx, 1*time.Minute)
+		// defer can()
+		// var e error
+
+		address := u.Hostname()
+		if port := u.Port(); port != "" {
+			address = address + ":" + port
 		}
-		return e
+
+		// TODO v4 error handling
+		cli, err := grpc.Dial(u.Hostname()+":"+u.Port(), grpc.WithInsecure(), grpc.WithBlock())
+		if err != nil {
+			return err
+		}
+
+		conn = cgrpc.NewClientConn("pydio.grpc.registry", cgrpc.WithClientConn(cli))
+
+		return nil
 	}, 30*time.Second, 5*time.Minute)
 	if err != nil {
 		return nil, err
@@ -68,9 +79,9 @@ func (o *URLOpener) OpenURL(ctx context.Context, u *url.URL) (registry.Registry,
 		}
 	*/
 
-	return registry.NewRegistry(NewRegistry(
+	return NewRegistry(
 		WithConn(conn),
-	)), nil
+	), nil
 }
 
 var (
@@ -270,8 +281,8 @@ func NewRegistry(opts ...mregistry.Option) registry.Registry {
 	options.Context = ctx
 
 	// extract the client from the context, fallback to grpc
-	var conn *grpc.ClientConn
-	conn, ok := options.Context.Value(connKey{}).(*grpc.ClientConn)
+	var conn grpc.ClientConnInterface
+	conn, ok := options.Context.Value(connKey{}).(grpc.ClientConnInterface)
 	if !ok {
 		conn, _ = grpc.Dial(":8000")
 	}
@@ -302,5 +313,5 @@ func NewRegistry(opts ...mregistry.Option) registry.Registry {
 		}
 	}()
 
-	return r
+	return registry.NewRegistry(r)
 }

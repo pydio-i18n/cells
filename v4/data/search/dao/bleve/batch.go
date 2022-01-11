@@ -185,14 +185,14 @@ func (b *Batch) createBackgroundContext(parent context.Context) context.Context 
 
 func (b *Batch) getUuidRouter() nodes.Handler {
 	if b.uuidRouter == nil {
-		b.uuidRouter = compose.NewClient(compose.UuidComposer(nodes.AsAdmin(), nodes.WithRegistryWatch(servicecontext.GetRegistry(b.ctx)))...)
+		b.uuidRouter = compose.NewClient(compose.UuidComposer(nodes.AsAdmin(), nodes.WithContext(b.ctx), nodes.WithRegistryWatch(servicecontext.GetRegistry(b.ctx)))...)
 	}
 	return b.uuidRouter
 }
 
 func (b *Batch) getStdRouter() nodes.Handler {
 	if b.stdRouter == nil {
-		b.stdRouter = compose.NewClient(compose.PathComposer(nodes.AsAdmin(), nodes.WithRegistryWatch(servicecontext.GetRegistry(b.ctx)))...)
+		b.stdRouter = compose.NewClient(compose.PathComposer(nodes.AsAdmin(), nodes.WithContext(b.ctx), nodes.WithRegistryWatch(servicecontext.GetRegistry(b.ctx)))...)
 	}
 	return b.stdRouter
 }

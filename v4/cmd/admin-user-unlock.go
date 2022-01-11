@@ -58,7 +58,7 @@ EXAMPLE
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		client := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
+		client := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUser))
 
 		users, err := searchUser(context.Background(), client, userUnlockLogin)
 		if err != nil {

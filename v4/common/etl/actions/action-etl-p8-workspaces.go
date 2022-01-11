@@ -112,7 +112,7 @@ func (c *SyncWorkspacesAction) Init(job *jobs.Job, action *jobs.Action) error {
 
 func (c *SyncWorkspacesAction) migratePydio8(ctx context.Context, mapping map[string]string, progress chan etl.MergeOperation) {
 
-	options := stores.CreateOptions(ctx, c.params, jobs.ActionMessage{})
+	options := stores.CreateOptions(c.GetRuntimeContext(), ctx, c.params, jobs.ActionMessage{})
 	left, err := stores.LoadReadableStore(c.leftType, options)
 	if err != nil {
 		progress <- etl.MergeOperation{Error: err}

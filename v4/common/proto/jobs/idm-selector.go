@@ -23,6 +23,7 @@ package jobs
 import (
 	"context"
 	"fmt"
+
 	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"google.golang.org/protobuf/proto"
@@ -57,7 +58,7 @@ func (m *IdmSelector) Select(ctx context.Context, input ActionMessage, objects c
 	}
 	switch m.Type {
 	case IdmSelectorType_User:
-		userClient := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
+		userClient := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUser))
 		s, e := userClient.SearchUser(ctx, &idm.SearchUserRequest{Query: query})
 		if e != nil {
 			return e
@@ -74,7 +75,7 @@ func (m *IdmSelector) Select(ctx context.Context, input ActionMessage, objects c
 			objects <- resp.User
 		}
 	case IdmSelectorType_Role:
-		roleClient := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
+		roleClient := idm.NewRoleServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceRole))
 		if s, e := roleClient.SearchRole(ctx, &idm.SearchRoleRequest{Query: query}); e != nil {
 			return e
 		} else {
@@ -91,7 +92,7 @@ func (m *IdmSelector) Select(ctx context.Context, input ActionMessage, objects c
 			}
 		}
 	case IdmSelectorType_Workspace:
-		wsClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
+		wsClient := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceWorkspace))
 		if s, e := wsClient.SearchWorkspace(ctx, &idm.SearchWorkspaceRequest{Query: query}); e != nil {
 			return e
 		} else {
@@ -108,7 +109,7 @@ func (m *IdmSelector) Select(ctx context.Context, input ActionMessage, objects c
 			}
 		}
 	case IdmSelectorType_Acl:
-		aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+		aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 		if s, e := aclClient.SearchACL(ctx, &idm.SearchACLRequest{Query: query}); e != nil {
 			return e
 		} else {
@@ -349,7 +350,7 @@ func (m *IdmSelector) WorkspaceFromEventContext(ctx context.Context) (*idm.Works
 	if !o {
 		return nil, false
 	}
-	wsClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
+	wsClient := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceWorkspace))
 	q, _ := anypb.New(&idm.WorkspaceSingleQuery{Uuid: wsUuid})
 	r, e := wsClient.SearchWorkspace(ctx, &idm.SearchWorkspaceRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}})
 	if e != nil {

@@ -38,7 +38,7 @@ func init() {
 			//service.RouterDependencies(),
 			service.WithWeb(func(c context.Context) service.WebHandler {
 				h := &Handler{}
-				h.Ctx = c
+				h.RuntimeCtx = c
 				return h
 			}),
 		)

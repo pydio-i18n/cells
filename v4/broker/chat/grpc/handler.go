@@ -42,16 +42,17 @@ var (
 	metaClient tree.NodeReceiverClient
 )
 
-func getMetaClient() tree.NodeReceiverClient {
+func getMetaClient(runtimeContext context.Context) tree.NodeReceiverClient {
 	if metaClient == nil {
-		metaClient = tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceMeta))
+		metaClient = tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(runtimeContext, common.ServiceMeta))
 	}
 	return metaClient
 }
 
 type ChatHandler struct {
 	chat.UnimplementedChatServiceServer
-	dao chat2.DAO
+	RuntimeCtx context.Context
+	dao        chat2.DAO
 }
 
 func (c *ChatHandler) Name() string {
@@ -158,7 +159,7 @@ func (c *ChatHandler) PostMessage(ctx context.Context, req *chat.PostMessageRequ
 					}},
 				})
 				if count, e := c.dao.CountMessages(room); e == nil {
-					getMetaClient().UpdateNode(bgCtx, &tree.UpdateNodeRequest{To: &tree.Node{
+					getMetaClient(c.RuntimeCtx).UpdateNode(bgCtx, &tree.UpdateNodeRequest{To: &tree.Node{
 						Uuid: room.RoomTypeObject,
 						MetaStore: map[string]string{
 							"has_comments": fmt.Sprintf("%d", count),
@@ -194,7 +195,7 @@ func (c *ChatHandler) DeleteMessage(ctx context.Context, req *chat.DeleteMessage
 					if count > 0 {
 						meta = fmt.Sprintf("%d", count)
 					}
-					getMetaClient().UpdateNode(bgCtx, &tree.UpdateNodeRequest{To: &tree.Node{
+					getMetaClient(c.RuntimeCtx).UpdateNode(bgCtx, &tree.UpdateNodeRequest{To: &tree.Node{
 						Uuid: room.RoomTypeObject,
 						MetaStore: map[string]string{
 							"has_comments": meta,

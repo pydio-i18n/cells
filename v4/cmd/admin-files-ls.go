@@ -66,7 +66,7 @@ EXAMPLE
 
  `,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		client := tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceTree))
+		client := tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(ctx, common.ServiceTree))
 
 		// List all children and move them all
 		streamer, err := client.ListNodes(context.Background(), &tree.ListNodesRequest{Node: &tree.Node{Path: lsPath}, Recursive: lsRecursive})

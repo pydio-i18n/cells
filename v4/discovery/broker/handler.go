@@ -10,7 +10,9 @@ import (
 
 type Handler struct {
 	pb.UnimplementedBrokerServer
-	broker broker.Broker
+
+	broker      broker.Broker
+	subscribers map[string][]string
 }
 
 func NewHandler(b broker.Broker) *Handler {
@@ -31,7 +33,7 @@ func (h *Handler) Publish(stream pb.Broker_PublishServer) error {
 			return err
 		}
 
-		for _, message := range req.Messages.Messages {
+		for _, message := range req.Messages {
 			if err := h.broker.PublishRaw(stream.Context(), req.Topic, message.Body, message.Header); err != nil {
 				return err
 			}
@@ -39,26 +41,31 @@ func (h *Handler) Publish(stream pb.Broker_PublishServer) error {
 	}
 }
 
-func (h *Handler) Subscribe(req *pb.SubscribeRequest, stream pb.Broker_SubscribeServer) error {
-	// TODO v4 - manage unsubscription
-	_, err := h.broker.Subscribe(stream.Context(), req.Topic, func(msg broker.Message) error {
-		mm := &pb.Messages{}
-		var target = &pb.Message{}
-		target.Header, target.Body = msg.RawData()
-		mm.Messages = append(mm.Messages, target)
-		if err := stream.Send(mm); err != nil {
+func (h *Handler) Subscribe(stream pb.Broker_SubscribeServer) error {
+	for {
+		req, err := stream.Recv()
+		if err != nil {
 			return err
 		}
 
-		return nil
-	})
+		topic := req.GetTopic()
+		// queue := req.GetQueue()
 
-	if err != nil {
-		return err
+		// TODO v4 - manage unsubscription
+		h.broker.Subscribe(stream.Context(), topic, func(msg broker.Message) error {
+			mm := &pb.SubscribeResponse{}
+			var target = &pb.Message{}
+			target.Header, target.Body = msg.RawData()
+
+			fmt.Println("And the message we've received is ? ", string(target.Body))
+			// mm.Queue = queue
+			mm.Id = req.Id
+			mm.Messages = append(mm.Messages, target)
+			if err := stream.Send(mm); err != nil {
+				return err
+			}
+
+			return nil
+		})
 	}
-
-	// TODO v4 - plug that to context
-	select {}
-
-	return nil
 }

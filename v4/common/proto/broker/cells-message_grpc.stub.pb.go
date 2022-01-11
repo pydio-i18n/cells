@@ -9,10 +9,9 @@ package broker
 import (
 	context "context"
 	fmt "fmt"
-	io "io"
-
 	stubs "github.com/pydio/cells/v4/common/server/stubs"
 	grpc "google.golang.org/grpc"
+	io "io"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -43,10 +42,8 @@ func (s *BrokerStub) NewStream(ctx context.Context, desc *grpc.StreamDesc, metho
 		return st, nil
 	case "/broker.Broker/Subscribe":
 		st := &BrokerStub_SubscribeStreamer{}
-		st.Init(ctx, func(i interface{}) error {
-			go s.BrokerServer.Subscribe(i.(*SubscribeRequest), st)
-			return nil
-		})
+		st.Init(ctx)
+		go s.BrokerServer.Subscribe(st)
 		return st, nil
 	}
 	return nil, fmt.Errorf(method + "  not implemented")
@@ -67,17 +64,22 @@ func (s *BrokerStub_PublishStreamer) Send(response *Empty) error {
 	s.RespChan <- response
 	return nil
 }
-func (s *BrokerStub_PublishStreamer) SendAndClose(response *Empty) error {
-	s.RespChan <- response
-	close(s.RespChan)
+func (s *BrokerStub_PublishStreamer) SendAndClose(*Empty) error {
 	return nil
 }
 
 type BrokerStub_SubscribeStreamer struct {
-	stubs.ClientServerStreamerCore
+	stubs.BidirServerStreamerCore
 }
 
-func (s *BrokerStub_SubscribeStreamer) Send(response *Messages) error {
+func (s *BrokerStub_SubscribeStreamer) Recv() (*SubscribeRequest, error) {
+	if req, o := <-s.ReqChan; o {
+		return req.(*SubscribeRequest), nil
+	} else {
+		return nil, io.EOF
+	}
+}
+func (s *BrokerStub_SubscribeStreamer) Send(response *SubscribeResponse) error {
 	s.RespChan <- response
 	return nil
 }

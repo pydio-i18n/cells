@@ -23,11 +23,13 @@ package cmd
 import (
 	"log"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"golang.org/x/sync/errgroup"
+	clientcontext "github.com/pydio/cells/v4/common/client/context"
 
 	"github.com/pydio/cells/v4/common/broker"
+	"golang.org/x/sync/errgroup"
+	"google.golang.org/grpc"
+
+	clientgrpc "github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/plugins"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
@@ -37,10 +39,12 @@ import (
 	servercontext "github.com/pydio/cells/v4/common/server/context"
 	"github.com/pydio/cells/v4/common/server/fork"
 	"github.com/pydio/cells/v4/common/server/generic"
-	"github.com/pydio/cells/v4/common/server/grpc"
+	servergrpc "github.com/pydio/cells/v4/common/server/grpc"
 	"github.com/pydio/cells/v4/common/server/http"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -80,7 +84,7 @@ to quickly create a Cobra application.`,
 
 		// broker.Connect()
 
-		pluginsReg, err := registry.OpenRegistry(ctx, "memory:///")
+		pluginsReg, err := registry.OpenRegistry(ctx, "memory:///?cache=shared")
 		if err != nil {
 			return err
 		}
@@ -90,10 +94,17 @@ to quickly create a Cobra application.`,
 			return err
 		}
 
+		// Create a main client connection
+		conn, err := grpc.Dial("cells:///", grpc.WithInsecure(), grpc.WithResolvers(clientgrpc.NewBuilder(reg)))
+		if err != nil {
+			return err
+		}
+
 		broker.Register(broker.NewBroker(viper.GetString("broker")))
 
 		ctx = servercontext.WithRegistry(ctx, reg)
 		ctx = servicecontext.WithRegistry(ctx, pluginsReg)
+		ctx = clientcontext.WithClientConn(ctx, conn)
 
 		//localEndpointURI := "192.168.1.5:5454"
 		//reporterURI := "http://localhost:9411/api/v2/spans"
@@ -244,7 +255,7 @@ to quickly create a Cobra application.`,
 					if s.IsGRPC() {
 
 						if srvGRPC == nil {
-							srvGRPC = grpc.New(ctx)
+							srvGRPC = servergrpc.New(ctx)
 							srvs = append(srvs, srvGRPC)
 						}
 						opts.Server = srvGRPC
@@ -274,19 +285,16 @@ to quickly create a Cobra application.`,
 					}
 				}
 
-				// Checking which service is needed
-				bs, ok := opts.Server.(server.WrappedServer)
-				if ok {
-					bs.RegisterBeforeServe(s.Start)
-					bs.RegisterAfterServe(func() error {
-						// Register service again to update nodes information
-						if err := reg.Register(s); err != nil {
-							return err
-						}
-						return nil
-					})
-					bs.RegisterBeforeStop(s.Stop)
-				}
+				opts.Server.BeforeServe(s.Start)
+				opts.Server.AfterServe(func() error {
+					// Register service again to update nodes information
+					if err := reg.Register(s); err != nil {
+						return err
+					}
+					return nil
+				})
+				opts.Server.BeforeStop(s.Stop)
+
 			}
 		}
 

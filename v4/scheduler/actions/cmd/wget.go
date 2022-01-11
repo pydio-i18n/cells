@@ -52,6 +52,7 @@ var (
 
 // WGetAction performs a wget command with the provided URL
 type WGetAction struct {
+	common.RuntimeHolder
 	Router     nodes.Client
 	SourceUrl  string
 	targetPath string
@@ -111,7 +112,7 @@ func (w *WGetAction) Init(job *jobs.Job, action *jobs.Action) error {
 	} else {
 		return errors.BadRequest(common.ServiceTasks, "missing parameter url in Action")
 	}
-	w.Router = compose.PathClientAdmin()
+	w.Router = compose.PathClientAdmin(nodes.WithContext(w.GetRuntimeContext()))
 	return nil
 }
 

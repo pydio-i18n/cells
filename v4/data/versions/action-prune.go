@@ -22,6 +22,7 @@ package versions
 
 import (
 	"context"
+
 	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
@@ -42,6 +43,7 @@ var (
 )
 
 type PruneVersionsAction struct {
+	common.RuntimeHolder
 	Handler nodes.Handler
 	Pool    nodes.SourcesPool
 }
@@ -71,8 +73,8 @@ func (c *PruneVersionsAction) GetName() string {
 // Init passes the parameters to a newly created PruneVersionsAction.
 func (c *PruneVersionsAction) Init(job *jobs.Job, action *jobs.Action) error {
 
-	c.Pool = getRouter().GetClientsPool()
-	c.Handler = getRouter()
+	c.Pool = getRouter(c.GetRuntimeContext()).GetClientsPool()
+	c.Handler = getRouter(c.GetRuntimeContext())
 	return nil
 }
 
@@ -98,7 +100,7 @@ func (c *PruneVersionsAction) Run(ctx context.Context, channels *actions.Runnabl
 	} else {
 		log.TasksLogger(ctx).Info("Starting action: one or more datasources found with versioning enabled.")
 	}
-	versionClient := tree.NewNodeVersionerClient(grpc.NewClientConn(common.ServiceVersions))
+	versionClient := tree.NewNodeVersionerClient(grpc.GetClientConnFromCtx(c.GetRuntimeContext(), common.ServiceVersions))
 	if response, err := versionClient.PruneVersions(ctx, &tree.PruneVersionsRequest{AllDeletedNodes: true}); err == nil {
 		for _, version := range response.DeletedVersions {
 			deleteNode := version.GetLocation()

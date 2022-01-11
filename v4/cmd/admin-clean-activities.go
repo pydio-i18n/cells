@@ -158,7 +158,7 @@ EXAMPLES
 		} else {
 			requestData, _ := json.Marshal(requestParameters)
 
-			jobClient := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
+			jobClient := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceJobs))
 			job := &jobs.Job{
 				ID:             uuid.New(),
 				Owner:          purgeActivityAdminUser,

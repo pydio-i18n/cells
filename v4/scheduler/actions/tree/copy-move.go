@@ -23,11 +23,12 @@ package tree
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"path"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -219,7 +220,7 @@ func (c *CopyMoveAction) suffixPathIfNecessary(ctx context.Context, cli nodes.Ha
 
 	if r, e := cli.ReadNode(ctx, &tree.ReadNodeRequest{Node: pNode}); e == nil && !nodes.IsUnitTestEnv {
 		pNode = r.GetNode()
-		aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+		aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(c.GetRuntimeContext(), common.ServiceAcl))
 		q, _ := anypb.New(&idm.ACLSingleQuery{
 			Actions: []*idm.ACLAction{{Name: permissions.AclChildLock.Name + ":*"}},
 			NodeIDs: []string{pNode.GetUuid()},

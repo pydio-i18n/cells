@@ -190,7 +190,7 @@ func SpanSubscriberWrapper(subscriberFunc server.SubscriberFunc) server.Subscrib
 */
 
 // HttpWrapperSpan extracts data from request and put it in context Metadata field
-func HttpWrapperSpan(h http.Handler) http.Handler {
+func HttpWrapperSpan(ctx context.Context, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r = r.WithContext(childOrNewSpan(r.Context()))
 		h.ServeHTTP(w, r)

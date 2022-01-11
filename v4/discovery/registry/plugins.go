@@ -21,7 +21,7 @@ func init() {
 			service.Description("Registry"),
 			service.WithGRPC(func(ctx context.Context, srv *grpc.Server) error {
 				reg := servicecontext.GetRegistry(ctx)
-				pbregistry.RegisterRegistryServer(srv, &Handler{reg: reg})
+				pbregistry.RegisterRegistryServer(srv, NewHandler(reg))
 
 				return nil
 			}),

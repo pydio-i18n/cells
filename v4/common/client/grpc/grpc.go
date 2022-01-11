@@ -2,59 +2,81 @@ package grpc
 
 import (
 	"context"
-	"fmt"
+	"runtime/debug"
 	"strings"
-	"sync"
 	"time"
 
+	servercontext "github.com/pydio/cells/v4/common/server/context"
+
+	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
 	"github.com/pydio/cells/v4/common"
+	clientcontext "github.com/pydio/cells/v4/common/client/context"
+	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/service/context/ckeys"
 	metadata2 "github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 var (
-	conn *grpc.ClientConn
-	once = &sync.Once{}
-	mox  = map[string]grpc.ClientConnInterface{}
+	mox = map[string]grpc.ClientConnInterface{}
 
 	CallTimeoutDefault = 10 * time.Minute
 	CallTimeoutShort   = 1 * time.Second
 )
 
+func GetClientConnFromCtx(ctx context.Context, serviceName string, opt ...Option) grpc.ClientConnInterface {
+	if ctx == nil {
+		return NewClientConn(serviceName, opt...)
+	}
+	conn := clientcontext.GetClientConn(ctx)
+	reg := servercontext.GetRegistry(ctx)
+	opt = append(opt, WithClientConn(conn))
+	opt = append(opt, WithRegistry(reg))
+	return NewClientConn(serviceName, opt...)
+}
+
 // NewClientConn returns a client attached to the defaults.
-func NewClientConn(serviceName string, callTimeout ...time.Duration) grpc.ClientConnInterface {
+func NewClientConn(serviceName string, opt ...Option) grpc.ClientConnInterface {
+	opts := new(Options)
+	for _, o := range opt {
+		o(opts)
+	}
 
 	if c, o := mox[strings.TrimPrefix(serviceName, common.ServiceGrpcNamespace_)]; o {
 		return c
 	}
 
-	var err error
-	once.Do(func() {
-		conn, err = grpc.Dial("cells://:8001/", grpc.WithInsecure())
-	})
+	if opts.ClientConn == nil || opts.DialOptions != nil {
+		if opts.Registry == nil {
+			debug.PrintStack()
 
-	if err != nil {
-		fmt.Println(err)
-		return nil
-	}
+			reg, err := registry.OpenRegistry(context.Background(), viper.GetString("registry"))
+			if err != nil {
+				return nil
+			}
 
-	to := time.Duration(0)
-	if len(callTimeout) > 0 {
-		to = callTimeout[0]
+			opts.Registry = reg
+		}
+
+		opts.DialOptions = append([]grpc.DialOption{grpc.WithInsecure(), grpc.WithResolvers(NewBuilder(opts.Registry))}, opts.DialOptions...)
+		conn, err := grpc.Dial("cells:///", opts.DialOptions...)
+		if err != nil {
+			return nil
+		}
+		opts.ClientConn = conn
 	}
 
 	return &clientConn{
-		callTimeout: to,
-		ClientConn:  conn,
-		serviceName: common.ServiceGrpcNamespace_ + strings.TrimPrefix(serviceName, common.ServiceGrpcNamespace_),
+		callTimeout:         opts.CallTimeout,
+		ClientConnInterface: opts.ClientConn,
+		serviceName:         common.ServiceGrpcNamespace_ + strings.TrimPrefix(serviceName, common.ServiceGrpcNamespace_),
 	}
 }
 
 type clientConn struct {
-	*grpc.ClientConn
+	grpc.ClientConnInterface
 	serviceName string
 	callTimeout time.Duration
 }
@@ -78,7 +100,7 @@ func (cc *clientConn) Invoke(ctx context.Context, method string, args interface{
 		defer cancel()
 	}
 	ctx = metadata.NewOutgoingContext(ctx, md)
-	return cc.ClientConn.Invoke(ctx, method, args, reply, opts...)
+	return cc.ClientConnInterface.Invoke(ctx, method, args, reply, opts...)
 }
 
 // NewStream begins a streaming RPC.
@@ -99,7 +121,7 @@ func (cc *clientConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, meth
 		defer cancel()
 	}
 	ctx = metadata.NewOutgoingContext(ctx, md)
-	return cc.ClientConn.NewStream(ctx, desc, method, opts...)
+	return cc.ClientConnInterface.NewStream(ctx, desc, method, opts...)
 }
 
 // RegisterMock registers a stubbed ClientConnInterface for a given service

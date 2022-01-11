@@ -42,10 +42,13 @@ func init() {
 			service.Description("REST gateway to the scheduler service"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceJobs, []string{}),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceTasks, []string{}),
-			service.WithWeb(func(c context.Context) service.WebHandler {
+			service.WithWeb(func(ctx context.Context) service.WebHandler {
 				// Init router with current registry
-				router = compose.PathClient(nodes.WithRegistryWatch(servicecontext.GetRegistry(c)))
-				return new(JobsHandler)
+				router = compose.PathClient(
+					nodes.WithContext(ctx),
+					nodes.WithRegistryWatch(servicecontext.GetRegistry(ctx)),
+				)
+				return &JobsHandler{RuntimeContext: ctx}
 			}),
 		)
 	})

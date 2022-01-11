@@ -8,6 +8,7 @@ import (
 )
 
 type Server struct {
+	id       string
 	name     string
 	cancel   context.CancelFunc
 	handlers []func() error
@@ -21,6 +22,7 @@ type Handler interface {
 func New(ctx context.Context) server.Server {
 	ctx, cancel := context.WithCancel(ctx)
 	return server.NewServer(ctx, &Server{
+		id:     "generic",
 		name:   "generic-" + uuid.New(),
 		cancel: cancel,
 	})
@@ -50,8 +52,16 @@ func (s *Server) Stop() error {
 	return nil
 }
 
+func (s *Server) ID() string {
+	return s.id
+}
+
 func (s *Server) Name() string {
 	return s.name
+}
+
+func (s *Server) Type() server.ServerType {
+	return server.ServerType_GENERIC
 }
 
 func (s *Server) Metadata() map[string]string {

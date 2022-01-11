@@ -142,7 +142,7 @@ func (s *Subscriber) Init() {
 
 	go std.Retry(context.Background(), func() error {
 		// Load Jobs Definitions
-		jobClients := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
+		jobClients := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(s.rootCtx, common.ServiceJobs))
 		streamer, e := jobClients.ListJobs(s.rootCtx, &jobs.ListJobsRequest{})
 		if e != nil {
 			return e
@@ -281,7 +281,7 @@ func (s *Subscriber) timerEvent(ctx context.Context, event *jobs.JobTriggerEvent
 	j, ok := s.definitions[jobId]
 	if !ok {
 		// Try to load definition directly for JobsService
-		jobClients := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
+		jobClients := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceJobs))
 		resp, e := jobClients.GetJob(ctx, &jobs.GetJobRequest{JobID: jobId})
 		if e != nil || resp.Job == nil {
 			return nil
@@ -302,6 +302,7 @@ func (s *Subscriber) timerEvent(ctx context.Context, event *jobs.JobTriggerEvent
 		log.Logger(ctx).Info("Run Job " + jobId + " on timer event " + event.Schedule.String())
 	}
 	task := NewTaskFromEvent(ctx, j, event)
+	task.SetRuntimeContext(s.rootCtx)
 	go task.EnqueueRunnables(s.queue)
 
 	return nil
@@ -373,6 +374,7 @@ func (s *Subscriber) processNodeEvent(ctx context.Context, event *tree.NodeChang
 
 		log.Logger(tCtx).Debug("Run Job " + jobId + " on event " + eventMatch)
 		task := NewTaskFromEvent(tCtx, jobData, event)
+		task.SetRuntimeContext(s.rootCtx)
 		go task.EnqueueRunnables(s.queue)
 	}
 
@@ -404,6 +406,7 @@ func (s *Subscriber) idmEvent(ctx context.Context, event *idm.ChangeEvent) error
 				}
 				log.Logger(tCtx).Debug("Run Job " + jobId + " on event " + eName)
 				task := NewTaskFromEvent(tCtx, jobData, event)
+				task.SetRuntimeContext(s.rootCtx)
 				go task.EnqueueRunnables(s.queue)
 			}
 		}

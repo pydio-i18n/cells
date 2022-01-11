@@ -58,12 +58,13 @@ var (
 // VirtualNodesManager keeps an internal list of virtual nodes.
 // They are cached for one minute to avoid too many requests on docstore service.
 type VirtualNodesManager struct {
+	ctx        context.Context
 	nodes      []*tree.Node
 	loginLower bool
 }
 
 // GetVirtualNodesManager creates a new VirtualNodesManager.
-func GetVirtualNodesManager() *VirtualNodesManager {
+func GetVirtualNodesManager(ctx context.Context) *VirtualNodesManager {
 	if vManagerCache == nil {
 		vManagerCache = cache.NewShort(cache.WithEviction(time.Second*60), cache.WithCleanWindow(time.Second*120))
 	}
@@ -71,7 +72,7 @@ func GetVirtualNodesManager() *VirtualNodesManager {
 		vManager.Load()
 		return vManager
 	}
-	vManager = &VirtualNodesManager{}
+	vManager = &VirtualNodesManager{ctx: ctx}
 	vManager.Load()
 	return vManager
 }
@@ -84,10 +85,10 @@ func (m *VirtualNodesManager) Load(forceReload ...bool) {
 			return
 		}
 	}
-	log.Logger(context.Background()).Debug("Reloading virtual nodes to cache")
+	log.Logger(m.ctx).Debug("Reloading virtual nodes to cache")
 	m.nodes = []*tree.Node{}
-	cli := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
-	stream, e := cli.ListDocuments(context.Background(), &docstore.ListDocumentsRequest{
+	cli := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(m.ctx, common.ServiceDocStore))
+	stream, e := cli.ListDocuments(m.ctx, &docstore.ListDocumentsRequest{
 		StoreID: common.DocStoreIdVirtualNodes,
 		Query:   &docstore.DocumentQuery{},
 	})
@@ -302,7 +303,7 @@ func (m *VirtualNodesManager) resolvePathWithClaims(ctx context.Context, vNode *
 
 // copyRecycleRootAcl creates recycle_root ACL on newly created node
 func (m *VirtualNodesManager) copyRecycleRootAcl(ctx context.Context, vNode *tree.Node, resolved *tree.Node) error {
-	cl := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+	cl := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 	// Check if vNode has this flag set
 	q, _ := anypb.New(&idm.ACLSingleQuery{
 		NodeIDs: []string{vNode.Uuid},

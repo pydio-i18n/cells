@@ -46,6 +46,7 @@ var (
 )
 
 type RpcAction struct {
+	common.RuntimeHolder
 	ServiceName string
 	MethodName  string
 	JsonRequest string
@@ -202,7 +203,7 @@ func (c *RpcAction) Run(ctx context.Context, channels *actions.RunnableChannels,
 	_ = protojson.Unmarshal([]byte(c.JsonRequest), request)
 
 	output := input
-	conn := grpc.NewClientConn(serviceName)
+	conn := grpc.GetClientConnFromCtx(c.GetRuntimeContext(), serviceName)
 	if methodDescriptor.IsStreamingServer() {
 
 		cStream, e := conn.NewStream(ctx, &grpc2.StreamDesc{ServerStreams: true}, methodSendName)

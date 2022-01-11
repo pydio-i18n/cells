@@ -66,7 +66,7 @@ func GetRolesForUser(ctx context.Context, user *idm.User, createMissing bool) []
 		return roles
 	}
 
-	roleClient := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
+	roleClient := idm.NewRoleServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceRole))
 
 	query, _ := anypb.New(&idm.RoleSingleQuery{
 		Uuid: roleIds,
@@ -140,7 +140,7 @@ func GetRoles(ctx context.Context, names []string) ([]*idm.Role, error) {
 	}
 
 	query, _ := anypb.New(&idm.RoleSingleQuery{Uuid: names})
-	roleClient := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
+	roleClient := idm.NewRoleServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceRole))
 	stream, err := roleClient.SearchRole(ctx, &idm.SearchRoleRequest{Query: &service.Query{SubQueries: []*anypb.Any{query}}})
 
 	if err != nil {
@@ -201,7 +201,7 @@ func GetACLsForRoles(ctx context.Context, roles []*idm.Role, actions ...*idm.ACL
 		return acls, err
 	}
 	//s := time.Now()
-	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 	stream, err := aclClient.SearchACL(ctx, &idm.SearchACLRequest{
 		Query: &service.Query{
 			SubQueries: []*anypb.Any{q1Any, q2Any},
@@ -240,7 +240,7 @@ func GetACLsForWorkspace(ctx context.Context, workspaceIds []string, actions ...
 	q2, _ := anypb.New(&idm.ACLSingleQuery{Actions: actions})
 	subQueries = append(subQueries, q1, q2)
 
-	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 	stream, err := aclClient.SearchACL(ctx, &idm.SearchACLRequest{
 		Query: &service.Query{
 			SubQueries: subQueries,
@@ -278,7 +278,7 @@ func GetWorkspacesForACLs(ctx context.Context, list *AccessList) []*idm.Workspac
 		return workspaces
 	}
 
-	workspaceClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
+	workspaceClient := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceWorkspace))
 
 	var queries []*anypb.Any
 	for workspaceID := range workspaceNodes {
@@ -321,7 +321,7 @@ func GetACLsForActions(ctx context.Context, actions ...*idm.ACLAction) (acls []*
 	q1, _ := anypb.New(&idm.ACLSingleQuery{Actions: actions})
 	subQueries = append(subQueries, q1)
 
-	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 	stream, err := aclClient.SearchACL(ctx, &idm.SearchACLRequest{
 		Query: &service.Query{
 			SubQueries: subQueries,
@@ -460,7 +460,7 @@ func SearchUniqueUser(ctx context.Context, login string, uuid string, queries ..
 		}
 	}
 
-	userCli := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
+	userCli := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUser))
 	var searchRequests []*anypb.Any
 	if uuid != "" {
 		searchRequest, _ := anypb.New(&idm.UserSingleQuery{Uuid: uuid})
@@ -500,7 +500,7 @@ func SearchUniqueUser(ctx context.Context, login string, uuid string, queries ..
 // SearchUniqueWorkspace is a wrapper of SearchWorkspace to load a unique workspace
 func SearchUniqueWorkspace(ctx context.Context, wsUuid string, wsSlug string, queries ...*idm.WorkspaceSingleQuery) (*idm.Workspace, error) {
 
-	wsCli := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
+	wsCli := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceWorkspace))
 	if wsUuid != "" {
 		queries = append(queries, &idm.WorkspaceSingleQuery{Uuid: wsUuid})
 	} else if wsSlug != "" {
@@ -638,7 +638,7 @@ func CheckContentLock(ctx context.Context, node *tree.Node) error {
 		userName = claims.Name
 	}
 
-	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 	// Look for "quota" ACLs on this node
 	singleQ := &idm.ACLSingleQuery{NodeIDs: []string{node.Uuid}, Actions: []*idm.ACLAction{{Name: AclContentLock.Name}}}
 	//log.Logger(ctx).Debug("SEARCHING FOR LOCKS IN ACLS", zap.Any("q", singleQ))

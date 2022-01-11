@@ -37,7 +37,8 @@ import (
 )
 
 type grpcVerifier struct {
-	service string
+	RuntimeCtx context.Context
+	service    string
 }
 
 func (p *grpcVerifier) GetType() ProviderType {
@@ -46,7 +47,7 @@ func (p *grpcVerifier) GetType() ProviderType {
 
 func (p *grpcVerifier) Verify(ctx context.Context, rawIDToken string) (IDToken, error) {
 
-	cli := auth.NewAuthTokenVerifierClient(grpc.NewClientConn(strings.TrimPrefix(p.service, common.ServiceGrpcNamespace_)))
+	cli := auth.NewAuthTokenVerifierClient(grpc.GetClientConnFromCtx(p.RuntimeCtx, strings.TrimPrefix(p.service, common.ServiceGrpcNamespace_)))
 
 	resp, err := cli.Verify(ctx, &auth.VerifyTokenRequest{
 		Token: rawIDToken,
