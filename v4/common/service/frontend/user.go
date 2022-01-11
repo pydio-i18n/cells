@@ -338,7 +338,7 @@ func (u *User) publishWorkspaces(status RequestStatus, pool *PluginsPool) (works
 	}
 
 	// Used to detect "personal files"-like workspace
-	vNodeManager := abstract.GetVirtualNodesManager()
+	vNodeManager := abstract.GetVirtualNodesManager(status.RuntimeCtx)
 
 	for _, ws := range u.Workspaces {
 		repo := &Crepo{

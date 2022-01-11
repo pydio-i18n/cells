@@ -59,11 +59,13 @@ var profilesLevel = map[string]int{
 }
 
 type UserHandler struct {
+	RuntimeCtx context.Context
 	resources.ResourceProviderHandler
 }
 
-func NewUserHandler() *UserHandler {
+func NewUserHandler(ctx context.Context) *UserHandler {
 	h := &UserHandler{}
+	h.RuntimeCtx = ctx
 	h.PoliciesLoader = h.PoliciesForUserId
 	h.ServiceName = common.ServiceUser
 	h.ResourceName = "user"

@@ -84,7 +84,7 @@ func (r *Reverse) WorkspaceCanSeeNode(ctx context.Context, accessList *permissio
 	roots := workspace.RootUUIDs
 	var ancestors []*tree.Node
 	var ancestorsLoaded bool
-	resolver := abstract.GetVirtualNodesManager().GetResolver(r.GetClientsPool(), false)
+	resolver := abstract.GetVirtualNodesManager(ctx).GetResolver(r.GetClientsPool(), false)
 	for _, root := range roots {
 		if parent, ok := r.NodeIsChildOfRoot(ctx, node, root); ok {
 			if accessList != nil {
@@ -120,7 +120,7 @@ func (r *Reverse) WorkspaceCanSeeNode(ctx context.Context, accessList *permissio
 // NodeIsChildOfRoot compares pathes between possible parent and child
 func (r *Reverse) NodeIsChildOfRoot(ctx context.Context, node *tree.Node, rootId string) (*tree.Node, bool) {
 
-	vManager := abstract.GetVirtualNodesManager()
+	vManager := abstract.GetVirtualNodesManager(ctx)
 	if virtualNode, exists := vManager.ByUuid(rootId); exists {
 		if resolved, e := vManager.ResolveInContext(ctx, virtualNode, r.GetClientsPool(), false); e == nil {
 			//log.Logger(ctx).Info("NodeIsChildOfRoot, Comparing Pathes on resolved", zap.String("node", node.Path), zap.String("root", resolved.Path))

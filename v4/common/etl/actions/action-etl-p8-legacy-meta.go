@@ -304,7 +304,7 @@ func (c *MigratePydioMetaAction) WorkspaceHasTemplatePath(ctx context.Context, w
 		r, e := treeClient.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Uuid: a.NodeID}})
 		if e == nil && r != nil {
 			return false, nil
-		} else if _, ok := abstract.GetVirtualNodesManager().ByUuid(a.NodeID); ok {
+		} else if _, ok := abstract.GetVirtualNodesManager(c.GetRuntimeContext()).ByUuid(a.NodeID); ok {
 			return true, nil
 		} else {
 			return false, fmt.Errorf("cannot find root nodes")

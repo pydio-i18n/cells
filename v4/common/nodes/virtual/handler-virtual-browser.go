@@ -60,7 +60,7 @@ func NewVirtualNodesBrowser() *BrowserHandler {
 // ReadNode creates a fake node if admin is reading info about a virtual node
 func (v *BrowserHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 
-	if virtual, exists := abstract.GetVirtualNodesManager().ByPath(in.Node.Path); exists {
+	if virtual, exists := abstract.GetVirtualNodesManager(ctx).ByPath(in.Node.Path); exists {
 		log.Logger(ctx).Debug("Virtual Node Browser, Found", zap.Any("found", virtual))
 		return &tree.ReadNodeResponse{Node: virtual}, nil
 	}
@@ -71,7 +71,7 @@ func (v *BrowserHandler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest,
 // ListNodes Append virtual nodes to the datasources list if admin is listing the root of the tree
 func (v *BrowserHandler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts ...grpc.CallOption) (streamer tree.NodeProvider_ListNodesClient, e error) {
 
-	vManager := abstract.GetVirtualNodesManager()
+	vManager := abstract.GetVirtualNodesManager(ctx)
 	if virtual, exists := vManager.ByPath(in.Node.Path); exists {
 		log.Logger(ctx).Debug("Virtual Node Browser, Found, send no children", zap.Any("found", virtual))
 		s := nodes.NewWrappingStreamer()

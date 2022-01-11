@@ -7,6 +7,8 @@ import (
 	"net/http/pprof"
 	"reflect"
 
+	"github.com/pydio/cells/v4/common/server/middleware"
+
 	"github.com/spf13/viper"
 
 	"github.com/pydio/cells/v4/common/server"
@@ -34,6 +36,7 @@ func New(ctx context.Context) server.Server {
 
 	srv := &http.Server{}
 	srv.Handler = registrymux.NewMiddleware(servercontext.GetRegistry(ctx), mux)
+	srv.Handler = ContextMiddlewareHandler(middleware.ClientConnIncomingContext(ctx), srv.Handler)
 
 	ctx, cancel := context.WithCancel(ctx)
 

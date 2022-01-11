@@ -58,8 +58,8 @@ const LimiterBurst = 20
 
 func updateSessionFromClaims(session *melody.Session, claims claim.Claims, pool nodes.SourcesPool) {
 
-	ctx := context.WithValue(context.Background(), claim.ContextKey, claims)
-	vNodeResolver := abstract.GetVirtualNodesManager().GetResolver(pool, true)
+	ctx := context.WithValue(context.TODO(), claim.ContextKey, claims)
+	vNodeResolver := abstract.GetVirtualNodesManager(ctx).GetResolver(pool, true)
 	accessList, err := permissions.AccessListFromContextClaims(ctx)
 	if err != nil {
 		log.Logger(ctx).Error("Error while setting workspaces in session", zap.Error(err))

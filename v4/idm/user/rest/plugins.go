@@ -39,7 +39,7 @@ func init() {
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceUser, []string{}),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceRole, []string{}),
 			service.WithWeb(func(c context.Context) service.WebHandler {
-				return NewUserHandler()
+				return NewUserHandler(c)
 			}),
 		)
 	})

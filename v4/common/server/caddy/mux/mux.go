@@ -82,9 +82,9 @@ func (m Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 	// try to find it in the current mux
 	_, pattern := m.s.Handler(r)
 	if len(pattern) > 0 && (pattern != "/" || r.URL.Path == "/") {
-		//ctx := clientcontext.WithClientConn(r.Context(), m.c)
+		ctx := clientcontext.WithClientConn(r.Context(), m.c)
 
-		m.s.ServeHTTP(w, r)
+		m.s.ServeHTTP(w, r.WithContext(ctx))
 		return nil
 	}
 

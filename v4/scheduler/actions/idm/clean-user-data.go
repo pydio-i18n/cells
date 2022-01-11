@@ -125,7 +125,7 @@ func (c *CleanUserDataAction) Run(ctx context.Context, channels *actions.Runnabl
 	clientsPool := router.GetClientsPool()
 	var cleaned bool
 	// For the moment, just rename personal folder to user UUID to collision with new user with same Login
-	vNodesManager := abstract.GetVirtualNodesManager()
+	vNodesManager := abstract.GetVirtualNodesManager(ctx)
 	for _, vNode := range vNodesManager.ListNodes() {
 		onDelete, ok := vNode.MetaStore["onDelete"]
 		if !ok || onDelete != "rename-uuid" {

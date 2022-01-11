@@ -4,6 +4,8 @@ import (
 	"context"
 	"net"
 
+	"github.com/pydio/cells/v4/common/server/middleware"
+
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 
@@ -32,11 +34,15 @@ func New(ctx context.Context, opt ...Option) server.Server {
 			servicecontext.ContextUnaryServerInterceptor(servicecontext.SpanIncomingContext),
 			servicecontext.MetricsUnaryServerInterceptor(),
 			servicecontext.ContextUnaryServerInterceptor(servicecontext.MetaIncomingContext),
+			servicecontext.ContextUnaryServerInterceptor(middleware.ClientConnIncomingContext(ctx)),
+			servicecontext.ContextUnaryServerInterceptor(middleware.RegistryIncomingContext(ctx)),
 		),
 		grpc.ChainStreamInterceptor(
 			servicecontext.ContextStreamServerInterceptor(servicecontext.SpanIncomingContext),
 			servicecontext.MetricsStreamServerInterceptor(),
 			servicecontext.ContextStreamServerInterceptor(servicecontext.MetaIncomingContext),
+			servicecontext.ContextStreamServerInterceptor(middleware.ClientConnIncomingContext(ctx)),
+			servicecontext.ContextStreamServerInterceptor(middleware.RegistryIncomingContext(ctx)),
 		),
 	)
 
