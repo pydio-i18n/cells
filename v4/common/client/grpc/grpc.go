@@ -2,10 +2,11 @@ package grpc
 
 import (
 	"context"
-	"fmt"
 	"runtime/debug"
 	"strings"
 	"time"
+
+	servercontext "github.com/pydio/cells/v4/common/server/context"
 
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
@@ -30,7 +31,9 @@ func GetClientConnFromCtx(ctx context.Context, serviceName string, opt ...Option
 		return NewClientConn(serviceName, opt...)
 	}
 	conn := clientcontext.GetClientConn(ctx)
+	reg := servercontext.GetRegistry(ctx)
 	opt = append(opt, WithClientConn(conn))
+	opt = append(opt, WithRegistry(reg))
 	return NewClientConn(serviceName, opt...)
 }
 
@@ -46,17 +49,20 @@ func NewClientConn(serviceName string, opt ...Option) grpc.ClientConnInterface {
 	}
 
 	if opts.ClientConn == nil || opts.DialOptions != nil {
-		debug.PrintStack()
+		if opts.Registry == nil {
+			debug.PrintStack()
 
-		reg, err := registry.OpenRegistry(context.Background(), viper.GetString("registry"))
-		if err != nil {
-			fmt.Println(err)
-			return nil
+			reg, err := registry.OpenRegistry(context.Background(), viper.GetString("registry"))
+			if err != nil {
+				return nil
+			}
+
+			opts.Registry = reg
 		}
-		opts.DialOptions = append([]grpc.DialOption{grpc.WithInsecure(), grpc.WithResolvers(NewBuilder(reg))}, opts.DialOptions...)
+
+		opts.DialOptions = append([]grpc.DialOption{grpc.WithInsecure(), grpc.WithResolvers(NewBuilder(opts.Registry))}, opts.DialOptions...)
 		conn, err := grpc.Dial("cells:///", opts.DialOptions...)
 		if err != nil {
-			fmt.Println(err)
 			return nil
 		}
 		opts.ClientConn = conn

@@ -24,11 +24,14 @@ package gateway
 import (
 	"context"
 	"fmt"
-	pydio "github.com/pydio/cells/v4/gateway/data/gw"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"os"
+
+	"github.com/pydio/cells/v4/common/server/middleware"
+
+	pydio "github.com/pydio/cells/v4/gateway/data/gw"
 
 	minio "github.com/minio/minio/cmd"
 	"go.uber.org/zap"
@@ -36,6 +39,7 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
+	serverhttp "github.com/pydio/cells/v4/common/server/http"
 	"github.com/pydio/cells/v4/common/service"
 	"github.com/pydio/cells/v4/common/utils/net"
 	_ "github.com/pydio/cells/v4/gateway/data/gw"
@@ -95,7 +99,7 @@ func init() {
 					certFile: certFile,
 					keyFile:  keyFile,
 				}
-				go srv.Start(ctx)
+				go srv.Start(c)
 
 				return nil
 			}),
@@ -116,6 +120,7 @@ func (g *gatewayDataServer) Start(ctx context.Context) error {
 	os.Setenv("MINIO_ROOT_USER", common.S3GatewayRootUser)
 	os.Setenv("MINIO_ROOT_PASSWORD", common.S3GatewayRootPassword)
 
+	minio.HookRegisterGlobalHandler(serverhttp.ContextMiddlewareHandler(middleware.ClientConnIncomingContext(ctx)))
 	minio.HookRegisterGlobalHandler(hooks.GetPydioAuthHandlerFunc("gateway"))
 	pydio.PydioGateway = &pydio.Pydio{
 		RuntimeCtx: ctx,

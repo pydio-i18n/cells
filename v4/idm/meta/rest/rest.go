@@ -315,9 +315,11 @@ func (s *UserMetaHandler) UpdateUserMetaNamespace(req *restful.Request, rsp *res
 
 func (s *UserMetaHandler) ListUserMetaNamespace(req *restful.Request, rsp *restful.Response) {
 
-	nsClient := idm.NewUserMetaServiceClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceUserMeta))
+	ctx := req.Request.Context()
+
+	nsClient := idm.NewUserMetaServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUserMeta))
 	output := &rest.UserMetaNamespaceCollection{}
-	if ns, err := s.ListAllNamespaces(req.Request.Context(), nsClient); err == nil {
+	if ns, err := s.ListAllNamespaces(ctx, nsClient); err == nil {
 		for _, n := range ns {
 			if n.Namespace == namespace.ReservedNamespaceBookmark {
 				continue

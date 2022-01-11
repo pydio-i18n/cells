@@ -173,7 +173,7 @@ func buildForkStartParams(serviceName string) []string {
 		"--fork",
 		"--grpc.address", ":0",
 		"--http.address", ":0",
-		"--config", viper.GetString("config"),
+		// "--config", viper.GetString("config"),
 		"--registry", r,
 		"--broker", b,
 	}

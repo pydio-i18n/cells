@@ -33,7 +33,7 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/client/grpc"
+	clientgrpc "github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/object"
@@ -126,7 +126,7 @@ func (p *ClientsPool) GetTreeClient() tree.NodeProviderClient {
 	if p.treeClient != nil {
 		return p.treeClient
 	}
-	return tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(p.ctx, common.ServiceGrpcNamespace_+common.ServiceTree))
+	return tree.NewNodeProviderClient(clientgrpc.GetClientConnFromCtx(p.ctx, common.ServiceGrpcNamespace_+common.ServiceTree))
 }
 
 // GetTreeClientWrite returns the internal NodeReceiverClient pointing to the TreeService.
@@ -134,7 +134,7 @@ func (p *ClientsPool) GetTreeClientWrite() tree.NodeReceiverClient {
 	if p.treeClientWrite != nil {
 		return p.treeClientWrite
 	}
-	return tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(p.ctx, common.ServiceGrpcNamespace_+common.ServiceTree))
+	return tree.NewNodeReceiverClient(clientgrpc.GetClientConnFromCtx(p.ctx, common.ServiceGrpcNamespace_+common.ServiceTree))
 }
 
 // GetDataSourceInfo tries to find information about a DataSource, eventually retrying as DataSource
@@ -209,7 +209,7 @@ func (p *ClientsPool) LoadDataSources() {
 	sources = config.SourceNamesFiltered(sources)
 
 	for _, source := range sources {
-		endpointClient := object.NewDataSourceEndpointClient(grpc.GetClientConnFromCtx(p.ctx, common.ServiceGrpcNamespace_+common.ServiceDataSync_+source))
+		endpointClient := object.NewDataSourceEndpointClient(clientgrpc.GetClientConnFromCtx(p.ctx, common.ServiceGrpcNamespace_+common.ServiceDataSync_+source))
 		response, err := endpointClient.GetDataSourceConfig(context.Background(), &object.GetDataSourceConfigRequest{})
 		if err == nil && response.DataSource != nil {
 			log.Logger(context.Background()).Debug("Creating client for datasource " + source)

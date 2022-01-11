@@ -45,6 +45,12 @@ type Subscriber interface {
 	Recv() (*pb.SubscribeResponse, error)
 }
 
+func WithContext(ctx context.Context) Option {
+	return func(o *Options) {
+		o.Context = ctx
+	}
+}
+
 // WithPublisher sets the RPC client
 func WithPublisher(pub Publisher) Option {
 	return func(o *Options) {

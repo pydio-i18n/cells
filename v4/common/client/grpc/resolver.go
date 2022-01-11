@@ -55,25 +55,17 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 		return nil, err
 	}
 
-	var m = map[string][]string{}
-
 	cr := &cellsResolver{
 		reg:                  b.reg,
 		name:                 name,
 		cc:                   cc,
-		m:                    m,
+		m:                    map[string][]string{},
 		disableServiceConfig: opts.DisableServiceConfig,
 		updatedStateTimer:    time.NewTimer(100 * time.Millisecond),
 	}
 
 	go cr.updateState()
 	go cr.watch()
-
-	//reg, err := registry.OpenRegistry(context.Background(), "memory:///")
-	//// reg, err := registry.OpenRegistry(context.Background(), fmt.Sprintf("grpc://%s%s", host, port))
-	//if err != nil {
-	//	return nil, err
-	//}
 
 	services, err := b.reg.List(registry.WithType(pb.ItemType_SERVICE))
 	if err != nil {
@@ -83,10 +75,12 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 	for _, s := range services {
 		for _, n := range s.(registry.Service).Nodes() {
 			for _, a := range n.Address() {
-				m[a] = append(m[a], s.Name())
+				cr.m[a] = append(cr.m[a], s.Name())
 			}
 		}
 	}
+
+	cr.sendState()
 
 	return cr, nil
 }
@@ -97,6 +91,7 @@ func (cr *cellsResolver) watch() {
 		return
 	}
 
+	fmt.Println("Initial Registry watch done")
 	for {
 		r, err := w.Next()
 		if err != nil {
@@ -112,7 +107,7 @@ func (cr *cellsResolver) watch() {
 				// cr.m[n.Address()[0]] = append(cr.m[n.Address()[0]], s.Name())
 			}
 
-			cr.updatedStateTimer.Reset(100 * time.Millisecond)
+			cr.updatedStateTimer.Reset(1 * time.Second)
 		}
 	}
 }
@@ -139,10 +134,10 @@ func (cr *cellsResolver) sendState() {
 		// dont' bother sending yet
 		return
 	}
+
 	if err := cr.cc.UpdateState(resolver.State{
 		Addresses:     addresses,
 		ServiceConfig: cr.cc.ParseServiceConfig(`{"loadBalancingPolicy": "lb"}`),
-		// ServiceConfig: cr.cc.ParseServiceConfig(`{"loadBalancingPolicy": "pick_first"}`),
 	}); err != nil {
 		fmt.Println("And the error is ? ", err)
 	}

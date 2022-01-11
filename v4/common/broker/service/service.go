@@ -148,7 +148,7 @@ func (o *URLOpener) OpenSubscriptionURL(ctx context.Context, u *url.URL) (*pubsu
 
 	sub.out[subId] = subReceiver
 
-	return NewSubscription(topicName, WithSubscriber(sub))
+	return NewSubscription(topicName, WithContext(ctx), WithSubscriber(sub))
 }
 
 var errNotExist = errors.New("cellspubsub: topic does not exist")

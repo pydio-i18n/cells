@@ -3,6 +3,7 @@ package grpc
 import (
 	"time"
 
+	"github.com/pydio/cells/v4/common/registry"
 	"google.golang.org/grpc"
 )
 
@@ -10,6 +11,7 @@ type Option func(*Options)
 
 type Options struct {
 	ClientConn  grpc.ClientConnInterface
+	Registry    registry.Registry
 	CallTimeout time.Duration
 	DialOptions []grpc.DialOption
 }
@@ -17,6 +19,12 @@ type Options struct {
 func WithClientConn(c grpc.ClientConnInterface) Option {
 	return func(o *Options) {
 		o.ClientConn = c
+	}
+}
+
+func WithRegistry(r registry.Registry) Option {
+	return func(o *Options) {
+		o.Registry = r
 	}
 }
 
