@@ -146,7 +146,7 @@ func (s *UserMetaHandler) UpdateUserMeta(req *restful.Request, rsp *restful.Resp
 			return
 		}
 		if meta.Namespace != namespace.ReservedNamespaceBookmark {
-			if _, er := router.CanApply(ctx, &tree.NodeChangeEvent{Type: tree.NodeChangeEvent_CREATE, Target: resp.Node}); er != nil {
+			if _, er := router.CanApply(ctx, &tree.NodeChangeEvent{Type: tree.NodeChangeEvent_UPDATE_CONTENT, Target: resp.Node}); er != nil {
 				service.RestError403(req, rsp, er)
 				return
 			}
