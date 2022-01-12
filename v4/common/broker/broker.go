@@ -56,12 +56,14 @@ type SubscriberHandler func(Message) error
 
 // NewBroker wraps a standard broker but prevents it from disconnecting while there still is a service running
 func NewBroker(s string, opts ...Option) Broker {
+	options := newOptions(opts...)
+
 	return &broker{
-		publishOpener: func(ctx context.Context, topic string) (*pubsub.Topic, error) {
-			return pubsub.OpenTopic(ctx, s+"/"+topic)
+		publishOpener: func(topic string) (*pubsub.Topic, error) {
+			return pubsub.OpenTopic(options.Context, s+"/"+topic)
 		},
-		subscribeOpener: func(ctx context.Context, topic string) (*pubsub.Subscription, error) {
-			return pubsub.OpenSubscription(ctx, s+"/"+topic)
+		subscribeOpener: func(topic string) (*pubsub.Subscription, error) {
+			return pubsub.OpenSubscription(options.Context, s+"/"+topic)
 		},
 		publishers: make(map[string]*pubsub.Topic),
 		Options:    newOptions(opts...),
@@ -114,16 +116,16 @@ type broker struct {
 	Options
 }
 
-type TopicOpener func(context.Context, string) (*pubsub.Topic, error)
-type SubscribeOpener func(context.Context, string) (*pubsub.Subscription, error)
+type TopicOpener func(string) (*pubsub.Topic, error)
+type SubscribeOpener func(string) (*pubsub.Subscription, error)
 
-func (b *broker) openTopic(ctx context.Context, topic string) (*pubsub.Topic, error) {
+func (b *broker) openTopic(topic string) (*pubsub.Topic, error) {
 	b.Lock()
 	defer b.Unlock()
 	publisher, ok := b.publishers[topic]
 	if !ok {
 		var err error
-		publisher, err = b.publishOpener(ctx, topic)
+		publisher, err = b.publishOpener(topic)
 		if err != nil {
 			return nil, err
 		}
@@ -134,7 +136,7 @@ func (b *broker) openTopic(ctx context.Context, topic string) (*pubsub.Topic, er
 }
 
 func (b *broker) PublishRaw(ctx context.Context, topic string, body []byte, header map[string]string, opts ...PublishOption) error {
-	publisher, err := b.openTopic(ctx, topic)
+	publisher, err := b.openTopic(topic)
 	if err != nil {
 		return err
 	}
@@ -163,7 +165,7 @@ func (b *broker) Publish(ctx context.Context, topic string, message proto.Messag
 		}
 	}
 
-	publisher, err := b.openTopic(ctx, topic)
+	publisher, err := b.openTopic(topic)
 	if err != nil {
 		return err
 	}
@@ -197,12 +199,12 @@ func (b *broker) Subscribe(ctx context.Context, topic string, handler Subscriber
 	}
 
 	// Making sure topic is opened
-	_, err := b.openTopic(ctx, topic)
+	_, err := b.openTopic(topic)
 	if err != nil {
 		return nil, err
 	}
 
-	sub, err := b.subscribeOpener(ctx, topic)
+	sub, err := b.subscribeOpener(topic)
 	if err != nil {
 		return nil, err
 	}

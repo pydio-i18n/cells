@@ -134,6 +134,7 @@ func (s *service) Start() (er error) {
 		})
 	}
 
+	// fmt.Println("Going through here ? for ", s.opts.Name)
 	log.Logger(s.opts.Context).Info("started")
 
 	return nil

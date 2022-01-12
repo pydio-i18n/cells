@@ -44,7 +44,7 @@ func init() {
 			service.Name(ServiceName),
 			service.Context(ctx),
 			service.Tag(common.ServiceTagScheduler),
-			//service.Fork(true),
+			service.Fork(true),
 			service.Description("Tasks are running jobs dispatched on multiple workers"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceJobs, []string{}),
 			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
