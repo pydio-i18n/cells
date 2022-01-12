@@ -49,7 +49,7 @@ func newClient(opts ...nodes.Option) *clientImpl {
 		o(&options)
 	}
 
-	options.Pool = nodes.NewClientsPool(options.Context, options.WatchRegistry, options.Registry)
+	options.Pool = nodes.NewClientsPool(options.Context, options.WatchRegistry)
 
 	var handler nodes.Handler
 

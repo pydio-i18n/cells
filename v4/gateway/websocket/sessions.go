@@ -56,9 +56,9 @@ const (
 const LimiterRate = 30
 const LimiterBurst = 20
 
-func updateSessionFromClaims(session *melody.Session, claims claim.Claims, pool nodes.SourcesPool) {
+func updateSessionFromClaims(ctx context.Context, session *melody.Session, claims claim.Claims, pool nodes.SourcesPool) {
 
-	ctx := context.WithValue(context.TODO(), claim.ContextKey, claims)
+	ctx = context.WithValue(ctx, claim.ContextKey, claims)
 	vNodeResolver := abstract.GetVirtualNodesManager(ctx).GetResolver(pool, true)
 	accessList, err := permissions.AccessListFromContextClaims(ctx)
 	if err != nil {

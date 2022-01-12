@@ -84,14 +84,14 @@ func NewWebSocketHandler(serviceCtx context.Context) *WebsocketHandler {
 	return w
 }
 
-func (w *WebsocketHandler) InitHandlers(serviceCtx context.Context) {
+func (w *WebsocketHandler) InitHandlers(ctx context.Context) {
 
 	w.Websocket = melody.New()
 	w.Websocket.Config.MaxMessageSize = 2048
 
 	w.Websocket.HandleError(func(session *melody.Session, i error) {
 		if !strings.Contains(i.Error(), "close 1000 (normal)") {
-			log.Logger(serviceCtx).Debug("HandleError", zap.Error(i))
+			log.Logger(ctx).Debug("HandleError", zap.Error(i))
 		}
 		ClearSession(session)
 	})
@@ -114,18 +114,17 @@ func (w *WebsocketHandler) InitHandlers(serviceCtx context.Context) {
 
 			if msg.JWT == "" {
 				session.CloseWithMsg(NewErrorMessageString("empty jwt"))
-				log.Logger(serviceCtx).Debug("empty jwt")
+				log.Logger(ctx).Debug("empty jwt")
 				return
 			}
-			ctx := context.Background()
 			verifier := auth.DefaultJWTVerifier()
 			_, claims, er := verifier.Verify(ctx, msg.JWT)
 			if er != nil {
-				log.Logger(serviceCtx).Error("invalid jwt received from websocket connection", zap.Any("msg", msg))
+				log.Logger(ctx).Error("invalid jwt received from websocket connection", zap.Any("msg", msg))
 				session.CloseWithMsg(NewErrorMessage(e))
 				return
 			}
-			updateSessionFromClaims(session, claims, w.EventRouter.GetClientsPool())
+			updateSessionFromClaims(ctx, session, claims, w.EventRouter.GetClientsPool())
 
 		case MsgUnsubscribe:
 

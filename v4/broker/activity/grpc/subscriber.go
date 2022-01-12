@@ -224,7 +224,7 @@ func (e *MicroEventsSubscriber) HandleNodeChange(ctx context.Context, msg *tree.
 }
 
 func (e *MicroEventsSubscriber) vNodeResolver(ctx context.Context, n *tree.Node) (*tree.Node, bool) {
-	pool := nodes.NewClientsPool(e.RuntimeCtx, false, nil)
+	pool := nodes.NewClientsPool(e.RuntimeCtx, false)
 	return abstract.GetVirtualNodesManager(e.RuntimeCtx).GetResolver(pool, false)(ctx, n)
 }
 
