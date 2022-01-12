@@ -257,7 +257,7 @@ func (s *SearchServer) ReindexFolder(c context.Context, node *tree.Node, exclude
 
 func (s *SearchServer) getTreeClient() tree.NodeProviderClient {
 	if s.TreeClient == nil {
-		s.TreeClient = tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceTree))
+		s.TreeClient = tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceTree))
 	}
 	return s.TreeClient
 }

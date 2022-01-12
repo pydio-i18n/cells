@@ -74,7 +74,7 @@ func (a *Handler) WriteAllowed(ctx context.Context, acl *idm.ACL) error {
 // in the current context
 func (a *Handler) CheckRole(ctx context.Context, roleID string) error {
 
-	cli := idm.NewRoleServiceClient(grpc.NewClientConn(common.ServiceRole))
+	cli := idm.NewRoleServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceRole))
 	q, _ := anypb.New(&idm.RoleSingleQuery{Uuid: []string{roleID}})
 	stream, err := cli.SearchRole(ctx, &idm.SearchRoleRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}})
 	if err != nil {
@@ -114,7 +114,7 @@ func (a *Handler) CheckNode(ctx context.Context, nodeID string, action *idm.ACLA
 		return err
 	}
 
-	treeClient := tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceTree))
+	treeClient := tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(a.ctx, common.ServiceTree))
 
 	ancestorStream, lErr := treeClient.ListNodes(ctx, &tree.ListNodesRequest{
 		Node:      &tree.Node{Uuid: nodeID},
@@ -144,8 +144,8 @@ func (a *Handler) CheckNode(ctx context.Context, nodeID string, action *idm.ACLA
 	}
 
 	// Update Access List with resolved virtual nodes
-	virtualManager := abstract.GetVirtualNodesManager()
-	cPool := nodes.NewClientsPool(false, nil)
+	virtualManager := abstract.GetVirtualNodesManager(a.ctx)
+	cPool := nodes.NewClientsPool(a.ctx, false, nil)
 	for _, vNode := range virtualManager.ListNodes() {
 		if aclNodeMask, has := accessList.GetNodesBitmasks()[vNode.Uuid]; has {
 			if resolvedRoot, err := virtualManager.ResolveInContext(ctx, vNode, cPool, false); err == nil {

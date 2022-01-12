@@ -38,7 +38,7 @@ func init() {
 			service.Description("RESTful gateway for editable metadata"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceUserMeta, []string{}),
 			service.WithWeb(func(c context.Context) service.WebHandler {
-				return NewUserMetaHandler()
+				return NewUserMetaHandler(c)
 			}),
 		)
 	})

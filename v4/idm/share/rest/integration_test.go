@@ -94,13 +94,13 @@ func TestShareLinks(t *testing.T) {
 		ctx = auth.WithImpersonate(ctx, u)
 
 		newNode := &tree.Node{Path: "pydiods1/file.ex", Type: tree.NodeType_LEAF, Size: 24}
-		nc := tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceTree))
+		nc := tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(ctx, common.ServiceTree))
 		cR, e := nc.CreateNode(ctx, &tree.CreateNodeRequest{Node: newNode})
 		So(e, ShouldBeNil)
 		newNode = cR.GetNode()
 		So(newNode.Uuid, ShouldNotBeEmpty)
 
-		h := rest2.NewSharesHandler()
+		h := rest2.NewSharesHandler(ctx)
 		payload := &rest.PutShareLinkRequest{
 			ShareLink: &rest.ShareLink{
 				Label:     "Link to File.ex",
@@ -155,7 +155,8 @@ func TestShareLinks(t *testing.T) {
 func TestBasicMocks(t *testing.T) {
 	bg := context.Background()
 	Convey("Test Basic Docstore Mock", t, func() {
-		e := share.StoreHashDocument(bg, &idm.User{Uuid: "uuid", Login: "login"}, &rest.ShareLink{
+		sc := share.NewClient(context.Background())
+		e := sc.StoreHashDocument(bg, &idm.User{Uuid: "uuid", Login: "login"}, &rest.ShareLink{
 			Uuid:             "link-uuid",
 			LinkHash:         "hash",
 			Label:            "My Link",
@@ -164,19 +165,19 @@ func TestBasicMocks(t *testing.T) {
 		})
 		So(e, ShouldBeNil)
 		loadLink := &rest.ShareLink{Uuid: "link-uuid"}
-		e = share.LoadHashDocumentData(bg, loadLink, []*idm.ACL{})
+		e = sc.LoadHashDocumentData(bg, loadLink, []*idm.ACL{})
 		So(e, ShouldBeNil)
 		So(loadLink.LinkHash, ShouldEqual, "hash")
 	})
 
 	Convey("Test Index Mock", t, func() {
-		cl := tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceDataIndex_ + "pydiods1"))
+		cl := tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceDataIndex_+"pydiods1"))
 		resp, e := cl.CreateNode(bg, &tree.CreateNodeRequest{Node: &tree.Node{Path: "/test", Type: tree.NodeType_COLLECTION, Size: 24, Etag: "etag"}})
 		So(e, ShouldBeNil)
 		So(resp, ShouldNotBeNil)
 		So(resp.Node.Uuid, ShouldNotBeEmpty)
 
-		cl2 := tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceDataIndex_ + "pydiods1"))
+		cl2 := tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceDataIndex_+"pydiods1"))
 		st, e := cl2.ListNodes(bg, &tree.ListNodesRequest{Node: &tree.Node{Path: "/"}})
 		So(e, ShouldBeNil)
 		var nn []*tree.Node
@@ -191,8 +192,8 @@ func TestBasicMocks(t *testing.T) {
 	})
 
 	Convey("Test Tree Mock", t, func() {
-		conn := grpc.NewClientConn(common.ServiceTree)
-		conn2 := grpc.NewClientConn(common.ServiceMeta)
+		conn := grpc.GetClientConnFromCtx(context.TODO(), common.ServiceTree)
+		conn2 := grpc.GetClientConnFromCtx(context.TODO(), common.ServiceMeta)
 		cl := tree.NewNodeReceiverClient(conn)
 		resp, e := cl.CreateNode(bg, &tree.CreateNodeRequest{Node: &tree.Node{Path: "/pydiods1/test", Type: tree.NodeType_COLLECTION, Size: 24, Etag: "etag"}})
 		So(e, ShouldBeNil)

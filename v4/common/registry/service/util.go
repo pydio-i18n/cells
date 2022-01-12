@@ -22,14 +22,19 @@ package service
 
 import (
 	"errors"
+	"strings"
+
 	"github.com/pydio/cells/v4/common"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
-	"strings"
 )
 
 type service struct {
 	s *pb.Service
+}
+
+func (s *service) ID() string {
+	return s.s.Id
 }
 
 func (s *service) Name() string {
@@ -90,6 +95,10 @@ func (s *service) As(i interface{}) bool {
 
 type node struct {
 	n *pb.Node
+}
+
+func (n *node) ID() string {
+	return n.n.Id
 }
 
 func (n *node) Name() string {
@@ -155,6 +164,7 @@ func ToProtoService(s registry.Service) *pb.Service {
 	}
 
 	return &pb.Service{
+		Id:       s.ID(),
 		Name:     s.Name(),
 		Version:  s.Version(),
 		Metadata: s.Metadata(),
@@ -176,6 +186,7 @@ func ToProtoNode(n registry.Node) *pb.Node {
 	}
 
 	return &pb.Node{
+		Id:        n.ID(),
 		Name:      n.Name(),
 		Address:   address,
 		Endpoints: n.Endpoints(),

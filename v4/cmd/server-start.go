@@ -67,6 +67,7 @@ EXAMPLE
 		}
 
 		reg.Start(&node{
+			id:   "testgrpc2",
 			name: "testgrpc2",
 			addr: ":0",
 			metadata: map[string]string{
@@ -81,11 +82,15 @@ EXAMPLE
 var _ registry.Node = (*node)(nil)
 
 type node struct {
+	id       string
 	name     string
 	addr     string
 	metadata map[string]string
 }
 
+func (n *node) ID() string {
+	return n.id
+}
 func (n *node) Name() string {
 	return n.name
 }

@@ -6,6 +6,7 @@ type Service interface {
 	Version() string
 	Nodes() []Node
 	Tags() []string
+	Metadata() map[string]string
 
 	Start() error
 	Stop() error

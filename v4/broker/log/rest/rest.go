@@ -21,6 +21,7 @@
 package rest
 
 import (
+	"context"
 	"github.com/emicklei/go-restful"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/client/grpc"
@@ -29,7 +30,9 @@ import (
 	"github.com/pydio/cells/v4/common/service"
 )
 
-type Handler struct{}
+type Handler struct {
+	RuntimeCtx context.Context
+}
 
 // SwaggerTags list the names of the service tags declared in the swagger json implemented by this service
 func (h *Handler) SwaggerTags() []string {
@@ -51,7 +54,7 @@ func (h *Handler) Syslog(req *restful.Request, rsp *restful.Response) {
 	}
 	ctx := req.Request.Context()
 
-	c := log.NewLogRecorderClient(grpc.NewClientConn(common.ServiceLog))
+	c := log.NewLogRecorderClient(grpc.GetClientConnFromCtx(h.RuntimeCtx, common.ServiceLog))
 
 	res, err := c.ListLogs(ctx, &input)
 	if err != nil {

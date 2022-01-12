@@ -22,10 +22,13 @@ package service
 
 import (
 	"context"
-	"google.golang.org/grpc"
+
+	pb "github.com/pydio/cells/v4/common/proto/broker"
 )
 
-type clientKey struct{}
+type publisherKey struct{}
+
+type subscriberKey struct{}
 
 type Option func(*Options)
 
@@ -34,14 +37,39 @@ type Options struct {
 	Queue   string
 }
 
-// WithClientConn sets the RPC client
-func WithClientConn(conn grpc.ClientConnInterface) Option {
+type Publisher interface {
+	Send(*pb.PublishRequest) error
+}
+
+type Subscriber interface {
+	Recv() (*pb.SubscribeResponse, error)
+}
+
+func WithContext(ctx context.Context) Option {
+	return func(o *Options) {
+		o.Context = ctx
+	}
+}
+
+// WithPublisher sets the RPC client
+func WithPublisher(pub Publisher) Option {
 	return func(o *Options) {
 		if o.Context == nil {
 			o.Context = context.Background()
 		}
 
-		o.Context = context.WithValue(o.Context, clientKey{}, conn)
+		o.Context = context.WithValue(o.Context, publisherKey{}, pub)
+	}
+}
+
+// WithSubscriber sets the RPC client
+func WithSubscriber(sub Subscriber) Option {
+	return func(o *Options) {
+		if o.Context == nil {
+			o.Context = context.Background()
+		}
+
+		o.Context = context.WithValue(o.Context, subscriberKey{}, sub)
 	}
 }
 

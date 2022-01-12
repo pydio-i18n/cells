@@ -153,5 +153,5 @@ func (a *LockFilter) WrappedCanApply(srcCtx context.Context, targetCtx context.C
 }
 
 func (a *LockFilter) virtualResolver(ctx context.Context, node *tree.Node) (*tree.Node, bool) {
-	return abstract.GetVirtualNodesManager().GetResolver(a.ClientsPool, false)(ctx, node)
+	return abstract.GetVirtualNodesManager(ctx).GetResolver(a.ClientsPool, false)(ctx, node)
 }

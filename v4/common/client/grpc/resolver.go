@@ -1,7 +1,6 @@
 package grpc
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"regexp"
@@ -27,10 +26,11 @@ var (
 )
 
 func init() {
-	resolver.Register(NewBuilder())
+	// resolver.Register(NewBuilder())
 }
 
 type cellsBuilder struct {
+	reg registry.Registry
 }
 
 type cellsResolver struct {
@@ -44,43 +44,43 @@ type cellsResolver struct {
 	disableServiceConfig bool
 }
 
-func NewBuilder() resolver.Builder {
-	return &cellsBuilder{}
+func NewBuilder(reg registry.Registry) resolver.Builder {
+	return &cellsBuilder{reg: reg}
 }
 
 func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opts resolver.BuildOptions) (resolver.Resolver, error) {
-	host, port, name, err := parseTarget(fmt.Sprintf("%s/%s", target.Authority, target.Endpoint))
+	// host, port, name, err := parseTarget(fmt.Sprintf("%s/%s", target.Authority, target.Endpoint))
+	_, _, name, err := parseTarget(fmt.Sprintf("%s/%s", target.Authority, target.Endpoint))
 	if err != nil {
 		return nil, err
-	}
-
-	reg, err := registry.OpenRegistry(context.Background(), fmt.Sprintf("grpc://%s%s", host, port))
-	if err != nil {
-		return nil, err
-	}
-
-	services, err := reg.List(registry.WithType(pb.ItemType_SERVICE))
-	if err != nil {
-		return nil, err
-	}
-	var m = map[string][]string{}
-	for _, s := range services {
-		for _, n := range s.(registry.Service).Nodes() {
-			m[n.Address()[0]] = append(m[n.Address()[0]], s.Name())
-		}
 	}
 
 	cr := &cellsResolver{
-		reg:                  reg,
+		reg:                  b.reg,
 		name:                 name,
 		cc:                   cc,
-		m:                    m,
+		m:                    map[string][]string{},
 		disableServiceConfig: opts.DisableServiceConfig,
 		updatedStateTimer:    time.NewTimer(100 * time.Millisecond),
 	}
 
 	go cr.updateState()
 	go cr.watch()
+
+	services, err := b.reg.List(registry.WithType(pb.ItemType_SERVICE))
+	if err != nil {
+		return nil, err
+	}
+
+	for _, s := range services {
+		for _, n := range s.(registry.Service).Nodes() {
+			for _, a := range n.Address() {
+				cr.m[a] = append(cr.m[a], s.Name())
+			}
+		}
+	}
+
+	cr.sendState()
 
 	return cr, nil
 }
@@ -91,6 +91,7 @@ func (cr *cellsResolver) watch() {
 		return
 	}
 
+	fmt.Println("Initial Registry watch done")
 	for {
 		r, err := w.Next()
 		if err != nil {
@@ -100,10 +101,13 @@ func (cr *cellsResolver) watch() {
 		var s registry.Service
 		if r.Item().As(&s) && (r.Action() == "create" || r.Action() == "update") {
 			for _, n := range s.Nodes() {
-				cr.m[n.Address()[0]] = append(cr.m[n.Address()[0]], s.Name())
+				for _, a := range n.Address() {
+					cr.m[a] = append(cr.m[a], s.Name())
+				}
+				// cr.m[n.Address()[0]] = append(cr.m[n.Address()[0]], s.Name())
 			}
 
-			cr.updatedStateTimer.Reset(100 * time.Millisecond)
+			cr.updatedStateTimer.Reset(1 * time.Second)
 		}
 	}
 }
@@ -126,11 +130,17 @@ func (cr *cellsResolver) sendState() {
 			Attributes: attributes.New("services", v),
 		})
 	}
-	//fmt.Printf("Update State with %d addresses\n", len(addresses))
-	cr.cc.UpdateState(resolver.State{
+	if len(addresses) == 0 {
+		// dont' bother sending yet
+		return
+	}
+
+	if err := cr.cc.UpdateState(resolver.State{
 		Addresses:     addresses,
 		ServiceConfig: cr.cc.ParseServiceConfig(`{"loadBalancingPolicy": "lb"}`),
-	})
+	}); err != nil {
+		fmt.Println("And the error is ? ", err)
+	}
 }
 
 func (b *cellsBuilder) Scheme() string {
@@ -156,8 +166,6 @@ func parseTarget(target string) (host, port, name string, err error) {
 	host = groups[1]
 	port = groups[2]
 	name = groups[3]
-	if port == "" {
-		port = defaultPort
-	}
+
 	return host, port, name, nil
 }

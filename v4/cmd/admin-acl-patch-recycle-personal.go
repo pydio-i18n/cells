@@ -55,13 +55,13 @@ DESCRIPTION
 
 		ctx := context.Background()
 
-		treeClient := tree.NewNodeProviderClient(grpc.NewClientConn(common.ServiceTree))
+		treeClient := tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(ctx, common.ServiceTree))
 		stream, e := treeClient.ListNodes(ctx, &tree.ListNodesRequest{Node: &tree.Node{Path: patchRecycleRoot}})
 		if e != nil {
 			return e
 		}
 
-		aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+		aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 
 		for {
 			resp, er := stream.Recv()

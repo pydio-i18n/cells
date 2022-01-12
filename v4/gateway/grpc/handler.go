@@ -19,8 +19,9 @@ type TreeHandler struct {
 	tree.UnimplementedNodeReceiverStreamServer
 	tree.UnimplementedNodeProviderStreamerServer
 
-	router nodes.Handler
-	name   string
+	runtimeCtx context.Context
+	router     nodes.Handler
+	name       string
 }
 
 func (t *TreeHandler) Name() string {
@@ -198,6 +199,7 @@ func (t *TreeHandler) getRouter() nodes.Handler {
 		return t.router
 	}
 	t.router = compose.PathClient(
+		nodes.WithContext(t.runtimeCtx),
 		nodes.WithRegistryWatch(),
 		nodes.WithSynchronousTasks(),
 	)

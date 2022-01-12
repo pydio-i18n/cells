@@ -21,8 +21,7 @@
 package rest
 
 import (
-	"github.com/emicklei/go-restful"
-
+	restful "github.com/emicklei/go-restful"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"
@@ -42,7 +41,7 @@ VERSIONING POLICIES MANAGEMENT
 // ListVersioningPolicies list all defined policies.
 func (s *Handler) ListVersioningPolicies(req *restful.Request, resp *restful.Response) {
 	T := lang.Bundle().GetTranslationFunc(i18n.UserLanguagesFromRestRequest(req, config.Get())...)
-	dc := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
+	dc := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(s.MainCtx, common.ServiceDocStore))
 	docs, er := dc.ListDocuments(req.Request.Context(), &docstore.ListDocumentsRequest{
 		StoreID: common.DocStoreIdVersioningPolicies,
 	})
@@ -70,7 +69,7 @@ func (s *Handler) ListVersioningPolicies(req *restful.Request, resp *restful.Res
 func (s *Handler) GetVersioningPolicy(req *restful.Request, resp *restful.Response) {
 	T := lang.Bundle().GetTranslationFunc(i18n.UserLanguagesFromRestRequest(req, config.Get())...)
 	policyId := req.PathParameter("Uuid")
-	dc := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
+	dc := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(s.MainCtx, common.ServiceDocStore))
 	if r, e := dc.GetDocument(req.Request.Context(), &docstore.GetDocumentRequest{
 		StoreID:    common.DocStoreIdVersioningPolicies,
 		DocumentID: policyId,

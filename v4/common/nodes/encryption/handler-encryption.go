@@ -45,12 +45,13 @@ import (
 
 func WithEncryption() nodes.Option {
 	return func(options *nodes.RouterOptions) {
-		options.Wrappers = append(options.Wrappers, &Handler{})
+		options.Wrappers = append(options.Wrappers, &Handler{ctx: options.Context})
 	}
 }
 
 //Handler encryption node middleware
 type Handler struct {
+	ctx context.Context
 	abstract.Handler
 	userKeyTool          UserKeyTool
 	nodeKeyManagerClient encryption.NodeKeyManagerClient
@@ -581,7 +582,7 @@ func (e *Handler) MultipartPutObjectPart(ctx context.Context, target *tree.Node,
 func (e *Handler) copyNodeEncryptionData(ctx context.Context, source *tree.Node, copy *tree.Node) error {
 	nodeEncryptionClient := e.nodeKeyManagerClient
 	if nodeEncryptionClient == nil {
-		nodeEncryptionClient = encryption.NewNodeKeyManagerClient(grpc.NewClientConn(common.ServiceEncKey))
+		nodeEncryptionClient = encryption.NewNodeKeyManagerClient(grpc.GetClientConnFromCtx(ctx, common.ServiceEncKey))
 	}
 
 	_, err := nodeEncryptionClient.CopyNodeInfo(ctx, &encryption.CopyNodeInfoRequest{
@@ -594,7 +595,7 @@ func (e *Handler) copyNodeEncryptionData(ctx context.Context, source *tree.Node,
 func (e *Handler) getNodeInfoForRead(ctx context.Context, node *tree.Node, requestData *models.GetRequestData) (*encryption.NodeInfo, int64, int64, int64, error) {
 	nodeEncryptionClient := e.nodeKeyManagerClient
 	if nodeEncryptionClient == nil {
-		nodeEncryptionClient = encryption.NewNodeKeyManagerClient(grpc.NewClientConn(common.ServiceEncKey))
+		nodeEncryptionClient = encryption.NewNodeKeyManagerClient(grpc.GetClientConnFromCtx(ctx, common.ServiceEncKey))
 	}
 
 	fullRead := requestData.StartOffset == 0 && (requestData.Length <= 0 || requestData.Length == node.Size)
@@ -615,7 +616,7 @@ func (e *Handler) getNodeInfoForRead(ctx context.Context, node *tree.Node, reque
 func (e *Handler) getNodeInfoForWrite(ctx context.Context, node *tree.Node) (*encryption.NodeInfo, error) {
 	nodeEncryptionClient := e.nodeKeyManagerClient
 	if nodeEncryptionClient == nil {
-		nodeEncryptionClient = encryption.NewNodeKeyManagerClient(grpc.NewClientConn(common.ServiceEncKey))
+		nodeEncryptionClient = encryption.NewNodeKeyManagerClient(grpc.GetClientConnFromCtx(ctx, common.ServiceEncKey))
 	}
 
 	dsName := node.GetStringMeta(common.MetaNamespaceDatasourceName)
@@ -670,7 +671,7 @@ func (e *Handler) getKeyProtectionTool(ctx context.Context) (UserKeyTool, error)
 func (e *Handler) getNodeKeyManagerClient() encryption.NodeKeyManagerClient {
 	nodeEncryptionClient := e.nodeKeyManagerClient
 	if nodeEncryptionClient == nil {
-		nodeEncryptionClient = encryption.NewNodeKeyManagerClient(grpc.NewClientConn(common.ServiceEncKey))
+		nodeEncryptionClient = encryption.NewNodeKeyManagerClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceEncKey))
 	}
 	return nodeEncryptionClient
 }

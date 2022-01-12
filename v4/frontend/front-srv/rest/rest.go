@@ -25,6 +25,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/pydio/cells/v4/common/nodes"
 	"io"
 	"io/ioutil"
 	"os"
@@ -65,11 +66,12 @@ var (
 )
 
 type FrontendHandler struct {
+	runtimeCtx context.Context
 	resources.ResourceProviderHandler
 }
 
-func NewFrontendHandler() *FrontendHandler {
-	f := &FrontendHandler{}
+func NewFrontendHandler(runtimeCtx context.Context) *FrontendHandler {
+	f := &FrontendHandler{runtimeCtx: runtimeCtx}
 	return f
 }
 
@@ -102,11 +104,17 @@ func (a *FrontendHandler) FrontState(req *restful.Request, rsp *restful.Response
 
 	rolesConfigs := user.FlattenedRolesConfigs()
 
+	c := config.Get()
+	aclParameters := rolesConfigs.Val("parameters")
+	aclActions := rolesConfigs.Val("actions")
+	scopes := user.GetActiveScopes()
+
 	status := frontend.RequestStatus{
-		Config:        config.Get(),
-		AclParameters: rolesConfigs.Val("parameters"),
-		AclActions:    rolesConfigs.Val("actions"),
-		WsScopes:      user.GetActiveScopes(),
+		RuntimeCtx:    a.runtimeCtx,
+		Config:        c,
+		AclParameters: aclParameters,
+		AclActions:    aclActions,
+		WsScopes:      scopes,
 		User:          user,
 		NoClaims:      !user.Logged,
 		Lang:          lang,
@@ -170,7 +178,7 @@ func (a *FrontendHandler) FrontPlugins(req *restful.Request, rsp *restful.Respon
 		lang = "en-us"
 	}
 
-	plugins := pool.AllPluginsManifests(req.Request.Context(), lang)
+	plugins := pool.AllPluginsManifests(a.runtimeCtx, lang)
 	rsp.WriteAsXml(plugins)
 }
 
@@ -241,7 +249,11 @@ func (a *FrontendHandler) FrontSession(req *restful.Request, rsp *restful.Respon
 	}
 
 	response := &rest.FrontSessionResponse{}
-	if e := frontend.ApplyAuthMiddlewares(req, rsp, &loginRequest, response, session); e != nil {
+	inReq := &frontend.FrontSessionWithRuntimeCtx{
+		RuntimeCtx:          a.runtimeCtx,
+		FrontSessionRequest: &loginRequest,
+	}
+	if e := frontend.ApplyAuthMiddlewares(req, rsp, inReq, response, session); e != nil {
 		if e := session.Save(req.Request, rsp.ResponseWriter); e != nil {
 			log.Logger(ctx).Error("Error saving session", zap.Error(e))
 		}
@@ -337,7 +349,7 @@ func (a *FrontendHandler) FrontServeBinary(req *restful.Request, rsp *restful.Re
 	binaryUuid := req.PathParameter("Uuid")
 	ctx := req.Request.Context()
 
-	router := compose.PathClient()
+	router := compose.PathClient(nodes.WithContext(a.runtimeCtx))
 	var readNode *tree.Node
 	var extension string
 
@@ -410,7 +422,7 @@ func (a *FrontendHandler) FrontPutBinary(req *restful.Request, rsp *restful.Resp
 	ctxUser, ctxClaims := permissions.FindUserNameInContext(ctx)
 
 	log.Logger(ctx).Debug("Upload Binary", zap.String("type", binaryType), zap.Any("header", f2))
-	router := compose.PathClient()
+	router := compose.PathClient(nodes.WithContext(a.runtimeCtx))
 	ctx = ctxWithoutCookies(ctx)
 
 	defer f1.Close()
@@ -479,7 +491,7 @@ func (a *FrontendHandler) FrontPutBinary(req *restful.Request, rsp *restful.Resp
 			user.Attributes = map[string]string{}
 		}
 		user.Attributes["avatar"] = binaryId
-		cli := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
+		cli := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUser))
 		_, e = cli.CreateUser(ctx, &idm.CreateUserRequest{User: user})
 		if e != nil {
 			service.RestError404(req, rsp, e)
@@ -487,7 +499,7 @@ func (a *FrontendHandler) FrontPutBinary(req *restful.Request, rsp *restful.Resp
 		}
 	} else if binaryType == "GLOBAL" {
 
-		router := compose.PathClient()
+		router := compose.PathClient(nodes.WithContext(a.runtimeCtx))
 		node := &tree.Node{
 			Path: common.PydioDocstoreBinariesNamespace + "/global_binaries." + binaryId,
 		}

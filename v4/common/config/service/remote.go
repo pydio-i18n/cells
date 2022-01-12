@@ -55,9 +55,10 @@ func New(service, id string) configx2.Entrypoint {
 
 	go func() {
 		for {
-			cli := pb.NewConfigClient(grpc.NewClientConn(service))
+			ctx := context.TODO()
+			cli := pb.NewConfigClient(grpc.GetClientConnFromCtx(ctx, service))
 
-			stream, err := cli.Watch(context.Background(), &pb.WatchRequest{
+			stream, err := cli.Watch(ctx, &pb.WatchRequest{
 				Namespace: id,
 				Path:      "/",
 			})
@@ -111,8 +112,9 @@ func (r *remote) Val(path ...string) configx2.Values {
 func (r *remote) Get() configx2.Value {
 	v := configx2.New(configx2.WithJSON())
 
-	cli := pb.NewConfigClient(grpc.NewClientConn(r.service))
-	rsp, err := cli.Get(context.TODO(), &pb.GetRequest{
+	ctx := context.TODO()
+	cli := pb.NewConfigClient(grpc.GetClientConnFromCtx(ctx, r.service))
+	rsp, err := cli.Get(ctx, &pb.GetRequest{
 		Namespace: r.id,
 		Path:      "",
 	})
@@ -138,9 +140,11 @@ func (r *remote) Set(data interface{}) error {
 		return err
 	}
 
-	cli := pb.NewConfigClient(grpc.NewClientConn(r.service))
+	ctx := context.TODO()
 
-	if _, err := cli.Set(context.TODO(), &pb.SetRequest{
+	cli := pb.NewConfigClient(grpc.GetClientConnFromCtx(ctx, r.service))
+
+	if _, err := cli.Set(ctx, &pb.SetRequest{
 		Namespace: r.id,
 		Path:      "",
 		Value:     &pb.Value{Data: string(b)},

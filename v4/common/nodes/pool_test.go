@@ -41,7 +41,7 @@ func BenchmarkClientsPoolWithoutRegistryWatch(b *testing.B) {
 
 	// run the Benchmark function b.N times
 	for n := 0; n < b.N; n++ {
-		pools = append(pools, NewClientsPool(false, nil))
+		pools = append(pools, NewClientsPool(context.TODO(), false, nil))
 	}
 }
 
@@ -51,7 +51,7 @@ func BenchmarkClientsPoolWithRegistryWatch(b *testing.B) {
 
 	// run the Benchmark function b.N times
 	for n := 0; n < b.N; n++ {
-		pools = append(pools, NewClientsPool(true, nil))
+		pools = append(pools, NewClientsPool(context.TODO(), true, nil))
 	}
 }
 

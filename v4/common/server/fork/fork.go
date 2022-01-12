@@ -16,6 +16,7 @@ import (
 )
 
 type Server struct {
+	id     string
 	name   string
 	ctx    context.Context
 	cancel context.CancelFunc
@@ -27,7 +28,8 @@ func NewServer(ctx context.Context) server.Server {
 	ctx, cancel := context.WithCancel(ctx)
 
 	return server.NewServer(ctx, &Server{
-		name:   "fork-" + uuid.New(),
+		id:     "fork-" + uuid.New(),
+		name:   "fork",
 		ctx:    ctx,
 		cancel: cancel,
 		s:      &ForkServer{},
@@ -83,8 +85,16 @@ func (s *Server) Stop() error {
 	return nil
 }
 
+func (s *Server) ID() string {
+	return s.id
+}
+
 func (s *Server) Name() string {
 	return s.name
+}
+
+func (s *Server) Type() server.ServerType {
+	return server.ServerType_FORK
 }
 
 func (s *Server) Metadata() map[string]string {
@@ -128,7 +138,7 @@ func buildForkStartParams(serviceName string) []string {
 		"--fork",
 		"--grpc.address", ":0",
 		"--http.address", ":0",
-		"--config", viper.GetString("config"),
+		// "--config", viper.GetString("config"),
 		"--registry", r,
 		"--broker", b,
 	}

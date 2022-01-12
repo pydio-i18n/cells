@@ -69,7 +69,7 @@ EXAMPLES
 			cmd.Help()
 			return
 		}
-		cli := sync.NewSyncEndpointClient(grpc.NewClientConn(syncService))
+		cli := sync.NewSyncEndpointClient(grpc.GetClientConnFromCtx(ctx, syncService))
 		c, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 		defer cancel()
 		c = metadata.WithUserNameMetadata(c, common.PydioSystemUsername)

@@ -38,7 +38,9 @@ func init() {
 			service.Description("REST send email service"),
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceMailer, []string{}),
 			service.WithWeb(func(c context.Context) service.WebHandler {
-				return new(MailerHandler)
+				return &MailerHandler{
+					RuntimeCtx: c,
+				}
 			}),
 		)
 	})

@@ -90,8 +90,8 @@ func TestSharesHandler_DiffAcls(t *testing.T) {
 				NodeID:      "2ebcf9cd-abc2-40fd-8fb8-f4b4e916c895",
 			},
 		}
-
-		add, remove := DiffAcls(context.Background(), current, target)
+		sc := NewClient(context.Background())
+		add, remove := sc.DiffAcls(context.Background(), current, target)
 		So(add, ShouldHaveLength, 2)
 		So(add[0].RoleID, ShouldEqual, "add-me")
 		So(add[1].RoleID, ShouldEqual, "add-me")
@@ -161,7 +161,8 @@ func TestSharesHandler_DiffAcls(t *testing.T) {
 			},
 		}
 
-		add, remove := DiffAcls(context.Background(), current, target)
+		sc := NewClient(context.Background())
+		add, remove := sc.DiffAcls(context.Background(), current, target)
 		So(add, ShouldHaveLength, 2)
 		So(add[0].RoleID, ShouldEqual, "add-me")
 		So(add[1].RoleID, ShouldEqual, "add-me")
@@ -235,7 +236,8 @@ func TestSharesHandler_DiffReadRoles(t *testing.T) {
 			},
 		}
 
-		add, remove := DiffReadRoles(context.Background(), current, target)
+		sc := NewClient(context.Background())
+		add, remove := sc.DiffReadRoles(context.Background(), current, target)
 		So(add, ShouldHaveLength, 1)
 		So(remove, ShouldHaveLength, 1)
 
@@ -329,7 +331,8 @@ func TestSharesHandler_DiffReadRoles(t *testing.T) {
 			},
 		}
 
-		add, remove := DiffReadRoles(context.Background(), current, target)
+		sc := NewClient(context.Background())
+		add, remove := sc.DiffReadRoles(context.Background(), current, target)
 		So(add, ShouldHaveLength, 0)
 		So(remove, ShouldHaveLength, 0)
 
@@ -367,7 +370,8 @@ func TestSharesHandler_AclsToRoomAcls(t *testing.T) {
 			},
 		}
 
-		roomAcls := AclsToCellAcls(context.Background(), acls)
+		sc := NewClient(context.Background())
+		roomAcls := sc.AclsToCellAcls(context.Background(), acls)
 		So(roomAcls, ShouldHaveLength, 2)
 
 	})

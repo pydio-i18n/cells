@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/server"
 
+	"github.com/pydio/cells/v4/common/server"
 	"github.com/pydio/cells/v4/common/server/generic"
 )
 

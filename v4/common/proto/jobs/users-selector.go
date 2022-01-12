@@ -22,6 +22,7 @@ package jobs
 
 import (
 	"context"
+
 	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"google.golang.org/protobuf/types/known/anypb"
@@ -63,7 +64,7 @@ func (m *UsersSelector) Select(ctx context.Context, input ActionMessage, objects
 	if query == nil {
 		return nil
 	}
-	userClient := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
+	userClient := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUser))
 	s, e := userClient.SearchUser(ctx, &idm.SearchUserRequest{Query: query})
 	if e != nil {
 		return e

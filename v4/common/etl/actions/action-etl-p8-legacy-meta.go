@@ -51,6 +51,7 @@ import (
 )
 
 type MigratePydioMetaAction struct {
+	common.RuntimeHolder
 	metaMapping map[string]string
 	cellAdmin   string
 	router      nodes.Client
@@ -93,7 +94,7 @@ func (c *MigratePydioMetaAction) GetName() string {
 // GetRouter returns an initialized router
 func (c *MigratePydioMetaAction) GetRouter() nodes.Client {
 	if c.router == nil {
-		c.router = compose.PathClient()
+		c.router = compose.PathClient(nodes.WithContext(c.GetRuntimeContext()))
 	}
 	return c.router
 }
@@ -131,7 +132,7 @@ func (c *MigratePydioMetaAction) Run(ctx context.Context, channels *actions.Runn
 	q, _ := anypb.New(&idm.WorkspaceSingleQuery{
 		Scope: idm.WorkspaceScope_ADMIN,
 	})
-	wsClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
+	wsClient := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(c.GetRuntimeContext(), common.ServiceWorkspace))
 	s, e := wsClient.SearchWorkspace(ctx, &idm.SearchWorkspaceRequest{
 		Query: &service.Query{SubQueries: []*anypb.Any{q}},
 	})
@@ -168,7 +169,7 @@ func (c *MigratePydioMetaAction) Run(ctx context.Context, channels *actions.Runn
 	}
 
 	// For those with Template Path, impersonate each user
-	uClient := idm.NewUserServiceClient(grpc.NewClientConn(common.ServiceUser))
+	uClient := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(c.GetRuntimeContext(), common.ServiceUser))
 	qU, _ := anypb.New(&idm.UserSingleQuery{
 		NodeType: idm.NodeType_USER,
 	})
@@ -214,7 +215,7 @@ func (c *MigratePydioMetaAction) Run(ctx context.Context, channels *actions.Runn
 func (c *MigratePydioMetaAction) BrowseNodesForMeta(ctx context.Context, slug string, channels *actions.RunnableChannels) []error {
 	router := c.GetRouter()
 	log.TasksLogger(ctx).Info("Browsing Workspace " + slug + " looking for legacy metadata files")
-	metaClient := tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceMeta))
+	metaClient := tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(c.GetRuntimeContext(), common.ServiceMeta))
 	s, e := router.ListNodes(ctx, &tree.ListNodesRequest{Node: &tree.Node{Path: slug}, Recursive: true, FilterType: tree.NodeType_LEAF})
 	if e != nil {
 		return []error{e}
@@ -303,7 +304,7 @@ func (c *MigratePydioMetaAction) WorkspaceHasTemplatePath(ctx context.Context, w
 		r, e := treeClient.ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{Uuid: a.NodeID}})
 		if e == nil && r != nil {
 			return false, nil
-		} else if _, ok := abstract.GetVirtualNodesManager().ByUuid(a.NodeID); ok {
+		} else if _, ok := abstract.GetVirtualNodesManager(c.GetRuntimeContext()).ByUuid(a.NodeID); ok {
 			return true, nil
 		} else {
 			return false, fmt.Errorf("cannot find root nodes")

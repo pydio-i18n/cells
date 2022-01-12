@@ -23,11 +23,12 @@ package images
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/client/grpc"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/rwcarlsen/goexif/exif"
 	"go.uber.org/zap"
@@ -54,6 +55,7 @@ var (
 )
 
 type ExifProcessor struct {
+	common.RuntimeHolder
 	metaClient tree.NodeReceiverClient
 }
 
@@ -86,7 +88,7 @@ func (e *ExifProcessor) GetName() string {
 func (e *ExifProcessor) Init(job *jobs.Job, action *jobs.Action) error {
 	//e.Router = views.NewStandardRouter(views.RouterOptions{AdminView: true, WatchRegistry: false})
 	if !nodes.IsUnitTestEnv {
-		e.metaClient = tree.NewNodeReceiverClient(grpc.NewClientConn(common.ServiceMeta))
+		e.metaClient = tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(e.GetRuntimeContext(), common.ServiceMeta))
 	}
 	return nil
 }
@@ -182,7 +184,7 @@ func (e *ExifProcessor) ExtractExif(ctx context.Context, node *tree.Node) (*exif
 		targetFileName := filepath.Join(localFolder, baseName)
 		reader, rer = os.Open(targetFileName)
 	} else {
-		reader, rer = getRouter().GetObject(ctx, proto.Clone(node).(*tree.Node), &models.GetRequestData{Length: -1})
+		reader, rer = getRouter(e.GetRuntimeContext()).GetObject(ctx, proto.Clone(node).(*tree.Node), &models.GetRequestData{Length: -1})
 	}
 
 	//reader, rer := node.ReadFile(ctx)

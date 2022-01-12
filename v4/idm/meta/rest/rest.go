@@ -23,6 +23,7 @@ package rest
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/nodes"
 	"path"
 	"strings"
 
@@ -50,8 +51,9 @@ import (
 
 const MetaTagsDocStoreId = "user_meta_tags"
 
-func NewUserMetaHandler() *UserMetaHandler {
+func NewUserMetaHandler(ctx context.Context) *UserMetaHandler {
 	handler := new(UserMetaHandler)
+	handler.ctx = ctx
 	handler.ServiceName = common.ServiceUserMeta
 	handler.ResourceName = "userMeta"
 	handler.PoliciesLoader = handler.PoliciesForMeta
@@ -59,6 +61,7 @@ func NewUserMetaHandler() *UserMetaHandler {
 }
 
 type UserMetaHandler struct {
+	ctx context.Context
 	resources.ResourceProviderHandler
 }
 
@@ -76,7 +79,7 @@ func (s *UserMetaHandler) Filter() func(string) string {
 func (s *UserMetaHandler) updateLock(ctx context.Context, meta *idm.UserMeta, operation idm.UpdateUserMetaRequest_UserMetaOp) error {
 	log.Logger(ctx).Debug("Should update content lock in ACLs", zap.Any("meta", meta), zap.Any("operation", operation))
 	nodeUuid := meta.NodeUuid
-	aclClient := idm.NewACLServiceClient(grpc.NewClientConn(common.ServiceAcl))
+	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 	q, _ := anypb.New(&idm.ACLSingleQuery{
 		NodeIDs: []string{nodeUuid},
 		Actions: []*idm.ACLAction{{Name: permissions.AclContentLock.Name}},
@@ -127,14 +130,14 @@ func (s *UserMetaHandler) UpdateUserMeta(req *restful.Request, rsp *restful.Resp
 		return
 	}
 	ctx := req.Request.Context()
-	userMetaClient := idm.NewUserMetaServiceClient(grpc.NewClientConn(common.ServiceUserMeta))
+	userMetaClient := idm.NewUserMetaServiceClient(grpc.GetClientConnFromCtx(s.ctx, common.ServiceUserMeta))
 	nsList, e := s.ListAllNamespaces(ctx, userMetaClient)
 	if e != nil {
 		service.RestError500(req, rsp, e)
 		return
 	}
 	var loadUuids []string
-	router := compose.NewClient(compose.UuidComposer()...)
+	router := compose.NewClient(compose.UuidComposer(nodes.WithContext(s.ctx))...)
 
 	// First check if the namespaces are globally accessible
 	for _, meta := range input.MetaDatas {
@@ -253,7 +256,7 @@ func (s *UserMetaHandler) UserBookmarks(req *restful.Request, rsp *restful.Respo
 	searchRequest := &idm.SearchUserMetaRequest{
 		Namespace: namespace.ReservedNamespaceBookmark,
 	}
-	router := compose.NewClient(compose.UuidComposer()...)
+	router := compose.NewClient(compose.UuidComposer(nodes.WithContext(s.ctx))...)
 	ctx := req.Request.Context()
 	output, e := s.PerformSearchMetaRequest(ctx, searchRequest)
 	if e != nil {
@@ -300,7 +303,7 @@ func (s *UserMetaHandler) UpdateUserMetaNamespace(req *restful.Request, rsp *res
 		}
 	}
 
-	nsClient := idm.NewUserMetaServiceClient(grpc.NewClientConn(common.ServiceUserMeta))
+	nsClient := idm.NewUserMetaServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUserMeta))
 	response, err := nsClient.UpdateUserMetaNamespace(ctx, &input)
 	if err != nil {
 		service.RestError500(req, rsp, err)
@@ -312,9 +315,11 @@ func (s *UserMetaHandler) UpdateUserMetaNamespace(req *restful.Request, rsp *res
 
 func (s *UserMetaHandler) ListUserMetaNamespace(req *restful.Request, rsp *restful.Response) {
 
-	nsClient := idm.NewUserMetaServiceClient(grpc.NewClientConn(common.ServiceUserMeta))
+	ctx := req.Request.Context()
+
+	nsClient := idm.NewUserMetaServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUserMeta))
 	output := &rest.UserMetaNamespaceCollection{}
-	if ns, err := s.ListAllNamespaces(req.Request.Context(), nsClient); err == nil {
+	if ns, err := s.ListAllNamespaces(ctx, nsClient); err == nil {
 		for _, n := range ns {
 			if n.Namespace == namespace.ReservedNamespaceBookmark {
 				continue
@@ -350,7 +355,7 @@ func (s *UserMetaHandler) PutUserMetaTag(req *restful.Request, rsp *restful.Resp
 }
 
 func (s *UserMetaHandler) listTagsForNamespace(ctx context.Context, namespace string) ([]string, *docstore.Document) {
-	docClient := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
+	docClient := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(ctx, common.ServiceDocStore))
 	var tags []string
 	var doc *docstore.Document
 	r, e := docClient.GetDocument(ctx, &docstore.GetDocumentRequest{
@@ -387,7 +392,7 @@ func (s *UserMetaHandler) putTagsIfNecessary(ctx context.Context, namespace stri
 	if changes {
 		// Now store back
 		jsonData, _ := json.Marshal(currentTags)
-		docClient := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
+		docClient := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(ctx, common.ServiceDocStore))
 		if storeDocument != nil {
 			storeDocument.Data = string(jsonData)
 		} else {
@@ -414,7 +419,7 @@ func (s *UserMetaHandler) DeleteUserMetaTags(req *restful.Request, rsp *restful.
 	ctx := req.Request.Context()
 	log.Logger(ctx).Debug("Delete tags for namespace "+ns, zap.String("tag", tag))
 	if tag == "*" {
-		docClient := docstore.NewDocStoreClient(grpc.NewClientConn(common.ServiceDocStore))
+		docClient := docstore.NewDocStoreClient(grpc.GetClientConnFromCtx(ctx, common.ServiceDocStore))
 		if _, e := docClient.DeleteDocuments(ctx, &docstore.DeleteDocumentsRequest{
 			StoreID:    MetaTagsDocStoreId,
 			DocumentID: ns,
@@ -440,7 +445,7 @@ func (s *UserMetaHandler) PerformSearchMetaRequest(ctx context.Context, request 
 		Subjects: subjects,
 	}
 
-	userMetaClient := idm.NewUserMetaServiceClient(grpc.NewClientConn(common.ServiceUserMeta))
+	userMetaClient := idm.NewUserMetaServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUserMeta))
 	stream, er := userMetaClient.SearchUserMeta(ctx, request)
 	if er != nil {
 		return nil, e

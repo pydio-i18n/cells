@@ -23,6 +23,7 @@ package scheduler
 import (
 	"context"
 	"fmt"
+
 	"github.com/pydio/cells/v4/common/client/grpc"
 
 	"github.com/pydio/cells/v4/common"
@@ -37,6 +38,7 @@ var (
 )
 
 type PruneJobsAction struct {
+	common.RuntimeHolder
 	maxTasksParam string
 }
 
@@ -95,7 +97,7 @@ func (c *PruneJobsAction) Run(ctx context.Context, channels *actions.RunnableCha
 	if e != nil {
 		return input.WithError(e), e
 	}
-	cli := jobs.NewJobServiceClient(grpc.NewClientConn(common.ServiceJobs))
+	cli := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(c.GetRuntimeContext(), common.ServiceJobs))
 	// Fix Stuck Tasks
 	resp, e := cli.DetectStuckTasks(ctx, &jobs.DetectStuckTasksRequest{
 		Since: 60 * 60 * 6,

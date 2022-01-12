@@ -5,6 +5,8 @@ import (
 	"path"
 	"time"
 
+	"github.com/pydio/cells/v4/common"
+
 	"github.com/pydio/cells/v4/common/utils/std"
 
 	"github.com/pydio/cells/v4/common/nodes/abstract"
@@ -25,6 +27,7 @@ var (
 )
 
 type CleanUserDataAction struct {
+	common.RuntimeHolder
 	targetParent string
 }
 
@@ -115,13 +118,14 @@ func (c *CleanUserDataAction) Run(ctx context.Context, channels *actions.Runnabl
 	}
 
 	router := compose.PathClient(
+		nodes.WithContext(c.GetRuntimeContext()),
 		nodes.AsAdmin(),
 		nodes.WithSynchronousTasks(),
 	)
 	clientsPool := router.GetClientsPool()
 	var cleaned bool
 	// For the moment, just rename personal folder to user UUID to collision with new user with same Login
-	vNodesManager := abstract.GetVirtualNodesManager()
+	vNodesManager := abstract.GetVirtualNodesManager(ctx)
 	for _, vNode := range vNodesManager.ListNodes() {
 		onDelete, ok := vNode.MetaStore["onDelete"]
 		if !ok || onDelete != "rename-uuid" {

@@ -30,6 +30,7 @@ import (
 
 // Options passes params and merge options when initializing stores
 type Options struct {
+	Runtime      context.Context
 	Params       map[string]string
 	MergeOptions *models.MergeOptions
 	ActionInput  jobs.ActionMessage
@@ -37,8 +38,9 @@ type Options struct {
 }
 
 // CreateOptions initialize an empty Options object
-func CreateOptions(ctx context.Context, param map[string]string, input jobs.ActionMessage) *Options {
+func CreateOptions(runtime, ctx context.Context, param map[string]string, input jobs.ActionMessage) *Options {
 	m := &Options{
+		Runtime:      runtime,
 		Context:      ctx,
 		Params:       param,
 		ActionInput:  input,

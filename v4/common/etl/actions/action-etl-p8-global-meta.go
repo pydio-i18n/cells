@@ -49,6 +49,7 @@ import (
 )
 
 type MigrateGlobalMetaAction struct {
+	common.RuntimeHolder
 	remoteUrl        *url.URL
 	remoteUser       string
 	remotePassword   string
@@ -91,7 +92,7 @@ func (c *MigrateGlobalMetaAction) GetName() string {
 // GetRouter returns an initialized router
 func (c *MigrateGlobalMetaAction) GetRouter() nodes.Client {
 	if c.router == nil {
-		c.router = compose.PathClient()
+		c.router = compose.PathClient(nodes.WithContext(c.GetRuntimeContext()))
 	}
 	return c.router
 }
@@ -145,8 +146,8 @@ func (c *MigrateGlobalMetaAction) loadMeta(ctx context.Context, conf *config.Sdk
 		log.TasksLogger(ctx).Error("Cannot load access list for user", zap.Any("login", c.cellAdmin), zap.Error(e))
 		return e
 	}
-	subClient := activity.NewActivityServiceClient(grpc.NewClientConn(common.ServiceActivity))
-	metaClient := idm.NewUserMetaServiceClient(grpc.NewClientConn(common.ServiceUserMeta))
+	subClient := activity.NewActivityServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceActivity))
+	metaClient := idm.NewUserMetaServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUserMeta))
 	log.TasksLogger(ctx).Info("Global Meta", zap.Any("data length", len(data)))
 	for wsId, users := range data {
 		slug := c.FindSlug(ctx, wsId)
@@ -307,7 +308,7 @@ func (c *MigrateGlobalMetaAction) FindSlug(ctx context.Context, p8WsId string) s
 		return ""
 	}
 
-	wsClient := idm.NewWorkspaceServiceClient(grpc.NewClientConn(common.ServiceWorkspace))
+	wsClient := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceWorkspace))
 	q, _ := anypb.New(&idm.WorkspaceSingleQuery{Uuid: mapped})
 	s, e := wsClient.SearchWorkspace(ctx, &idm.SearchWorkspaceRequest{Query: &service.Query{SubQueries: []*anypb.Any{q}}})
 	if e != nil {

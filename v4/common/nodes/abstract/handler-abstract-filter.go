@@ -24,10 +24,11 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
-	"github.com/pydio/cells/v4/common/utils/cache"
 	"io"
 	"strings"
 	"time"
+
+	"github.com/pydio/cells/v4/common/utils/cache"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -51,7 +52,9 @@ type BranchFilter struct {
 
 func (v *BranchFilter) LookupRoot(uuid string) (*tree.Node, error) {
 
-	if virtualNode, exists := GetVirtualNodesManager().ByUuid(uuid); exists {
+	ctx := context.TODO()
+
+	if virtualNode, exists := GetVirtualNodesManager(ctx).ByUuid(uuid); exists {
 		return virtualNode, nil
 	}
 
@@ -63,7 +66,7 @@ func (v *BranchFilter) LookupRoot(uuid string) (*tree.Node, error) {
 		return n.(*tree.Node), nil
 	}
 
-	resp, err := v.ClientsPool.GetTreeClient().ReadNode(context.Background(), &tree.ReadNodeRequest{Node: &tree.Node{
+	resp, err := v.ClientsPool.GetTreeClient().ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{
 		Uuid: uuid,
 	}})
 	if err != nil {
