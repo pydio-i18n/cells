@@ -4,12 +4,12 @@ import (
 	"context"
 	"net"
 
-	"github.com/pydio/cells/v4/common/server/middleware"
-
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/channelz/service"
 
 	"github.com/pydio/cells/v4/common/server"
+	"github.com/pydio/cells/v4/common/server/middleware"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/utils/uuid"
 )
@@ -45,6 +45,8 @@ func New(ctx context.Context, opt ...Option) server.Server {
 			servicecontext.ContextStreamServerInterceptor(middleware.RegistryIncomingContext(ctx)),
 		),
 	)
+
+	service.RegisterChannelzServiceToServer(s)
 
 	ctx, cancel := context.WithCancel(ctx)
 

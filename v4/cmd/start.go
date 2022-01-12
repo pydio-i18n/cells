@@ -23,9 +23,10 @@ package cmd
 import (
 	"log"
 
+	"github.com/pydio/cells/v4/common/broker"
+
 	clientcontext "github.com/pydio/cells/v4/common/client/context"
 
-	"github.com/pydio/cells/v4/common/broker"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 
@@ -100,11 +101,11 @@ to quickly create a Cobra application.`,
 			return err
 		}
 
-		broker.Register(broker.NewBroker(viper.GetString("broker")))
-
 		ctx = servercontext.WithRegistry(ctx, reg)
 		ctx = servicecontext.WithRegistry(ctx, pluginsReg)
 		ctx = clientcontext.WithClientConn(ctx, conn)
+
+		broker.Register(broker.NewBroker(viper.GetString("broker"), broker.WithContext(ctx)))
 
 		//localEndpointURI := "192.168.1.5:5454"
 		//reporterURI := "http://localhost:9411/api/v2/spans"

@@ -26,6 +26,7 @@ import (
 
 // Options to the broker
 type Options struct {
+	Context          context.Context
 	beforeDisconnect []func() error
 }
 
@@ -42,6 +43,12 @@ func newOptions(opts ...Option) Options {
 	return opt
 }
 
+func WithContext(ctx context.Context) Option {
+	return func(options *Options) {
+		options.Context = ctx
+	}
+}
+
 // BeforeDisconnect registers all functions to be triggered before the broker disconnect
 func BeforeDisconnect(f func() error) Option {
 	return func(o *Options) {
@@ -54,7 +61,7 @@ type PublishOptions struct {
 }
 type PublishOption func(options *PublishOptions)
 
-func WithContext(ctx context.Context) PublishOption {
+func PublishContext(ctx context.Context) PublishOption {
 	return func(options *PublishOptions) {
 		options.Context = ctx
 	}

@@ -64,6 +64,9 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 		updatedStateTimer:    time.NewTimer(100 * time.Millisecond),
 	}
 
+	// fmt.Println("Building much ? ")
+	// debug.PrintStack()
+
 	go cr.updateState()
 	go cr.watch()
 

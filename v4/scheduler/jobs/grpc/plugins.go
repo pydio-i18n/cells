@@ -56,7 +56,7 @@ func init() {
 			service.Tag(common.ServiceTagScheduler),
 			service.Description("Store for scheduler jobs description"),
 			service.Unique(true),
-			//service.Fork(true),
+			service.Fork(true),
 			service.Migrations([]*service.Migration{
 				{
 					TargetVersion: service.ValidVersion("1.4.0"),
