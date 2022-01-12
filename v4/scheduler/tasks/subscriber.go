@@ -23,6 +23,7 @@ package tasks
 import (
 	"context"
 	"fmt"
+	clientcontext "github.com/pydio/cells/v4/common/client/context"
 	"strings"
 	"sync"
 	"time"
@@ -251,6 +252,8 @@ func (s *Subscriber) prepareTaskContext(ctx context.Context, job *jobs.Job, addS
 
 	// Add service info
 	ctx = servicecontext.WithServiceName(ctx, servicecontext.GetServiceName(s.rootCtx))
+	ctx = servicecontext.WithRegistry(ctx, servicecontext.GetRegistry(s.rootCtx))
+	ctx = clientcontext.WithClientConn(ctx, clientcontext.GetClientConn(s.rootCtx))
 
 	// Inject evaluated job parameters
 	if len(job.Parameters) > 0 {
@@ -281,7 +284,7 @@ func (s *Subscriber) timerEvent(ctx context.Context, event *jobs.JobTriggerEvent
 	j, ok := s.definitions[jobId]
 	if !ok {
 		// Try to load definition directly for JobsService
-		jobClients := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceJobs))
+		jobClients := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(s.rootCtx, common.ServiceJobs))
 		resp, e := jobClients.GetJob(ctx, &jobs.GetJobRequest{JobID: jobId})
 		if e != nil || resp.Job == nil {
 			return nil
