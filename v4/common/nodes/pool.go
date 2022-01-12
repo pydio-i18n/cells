@@ -27,6 +27,8 @@ import (
 	"sync"
 	"time"
 
+	servercontext "github.com/pydio/cells/v4/common/server/context"
+
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -84,7 +86,7 @@ type ClientsPool struct {
 }
 
 // NewClientsPool creates a client Pool and initialises it by calling the registry.
-func NewClientsPool(ctx context.Context, watchRegistry bool, registry registry.Registry) *ClientsPool {
+func NewClientsPool(ctx context.Context, watchRegistry bool) *ClientsPool {
 
 	pool := &ClientsPool{
 		ctx:     ctx,
@@ -99,8 +101,9 @@ func NewClientsPool(ctx context.Context, watchRegistry bool, registry registry.R
 
 	pool.LoadDataSources()
 	if watchRegistry {
+		reg := servercontext.GetRegistry(ctx)
 		go func() {
-			e := pool.watchRegistry(registry)
+			e := pool.watchRegistry(reg)
 			if e != nil {
 				log.Logger(context.Background()).Warn("Cannot watch registry in client pool", zap.Error(e))
 			}
@@ -337,7 +340,7 @@ func (p *ClientsPool) CreateClientsForDataSource(dataSourceName string, dataSour
 
 func MakeFakeClientsPool(tc tree.NodeProviderClient, tw tree.NodeReceiverClient) *ClientsPool {
 	IsUnitTestEnv = true
-	c := NewClientsPool(context.TODO(), false, nil)
+	c := NewClientsPool(context.TODO(), false)
 
 	c.treeClient = tc
 	c.treeClientWrite = tw

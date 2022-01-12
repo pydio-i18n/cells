@@ -145,7 +145,7 @@ func (a *Handler) CheckNode(ctx context.Context, nodeID string, action *idm.ACLA
 
 	// Update Access List with resolved virtual nodes
 	virtualManager := abstract.GetVirtualNodesManager(a.ctx)
-	cPool := nodes.NewClientsPool(a.ctx, false, nil)
+	cPool := nodes.NewClientsPool(a.ctx, false)
 	for _, vNode := range virtualManager.ListNodes() {
 		if aclNodeMask, has := accessList.GetNodesBitmasks()[vNode.Uuid]; has {
 			if resolvedRoot, err := virtualManager.ResolveInContext(ctx, vNode, cPool, false); err == nil {

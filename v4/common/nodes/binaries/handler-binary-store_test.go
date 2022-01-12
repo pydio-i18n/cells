@@ -46,7 +46,7 @@ func getStoreTestMock() (nodes.Handler, *nodes.HandlerMock) {
 	handler.SetNextHandler(mock)
 
 	nodes.IsUnitTestEnv = true
-	cPool := nodes.NewClientsPool(context.TODO(), false, nil)
+	cPool := nodes.NewClientsPool(context.TODO(), false)
 	cPool.CreateClientsForDataSource(testBinaryStoreName, &object.DataSource{})
 	handler.SetClientsPool(cPool)
 	mock.Nodes["/test/file"] = &tree.Node{Path: "/test/file"}
