@@ -66,9 +66,15 @@ func (m *memory) Stop(item registry.Item) error {
 }
 
 func (m *memory) Register(item registry.Item) error {
+	var byName bool
+	if md := item.Metadata(); md != nil {
+		if _, ok := md["service-override"]; ok {
+			byName = true
+		}
+	}
 	// Then register all services
 	for k, v := range m.register {
-		if v.ID() == item.ID() {
+		if v.ID() == item.ID() || (byName && v.Name() == item.Name()) {
 			m.register[k] = item
 			go m.sendEvent(&result{action: "update", item: item})
 			return nil
