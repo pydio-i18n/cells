@@ -71,7 +71,7 @@ func Init(logDir string, ww ...LogContextWrapper) {
 		var logger *zap.Logger
 
 		serverCore := zapcore.NewNopCore()
-		if !skipServerSync && false {
+		if !skipServerSync {
 			// Create core for internal indexing service
 			// It forwards logs to the pydio.grpc.logs service to store them
 			// Format is always JSON + ProductionEncoderConfig
