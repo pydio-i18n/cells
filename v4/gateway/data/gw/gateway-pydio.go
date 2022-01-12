@@ -109,7 +109,6 @@ func (p *Pydio) Production() bool {
 
 // Handler for 'minio gateway azure' command line.
 func pydioGatewayMain(ctx *cli.Context) {
-	fmt.Println("STARTING PYDIO GATEWAY NOW")
 	minio.StartGateway(ctx, PydioGateway)
 }
 
