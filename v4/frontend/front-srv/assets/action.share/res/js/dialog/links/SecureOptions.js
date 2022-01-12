@@ -128,51 +128,51 @@ class PublicLinkSecureOptions extends React.Component {
         const auth = ShareHelper.getAuthorizations();
         let passwordField, resetPassword, updatePassword;
         if(link.PasswordRequired){
-            resetPassword = (
-                <IconButton
-                    iconClassName={"mdi mdi-close-circle"}
-                    disabled={this.props.isReadonly() || !linkModel.isEditable() || auth.password_mandatory}
-                    secondary={true}
-                    onClick={this.resetPassword}
-                    tooltip={this.props.getMessage('174')}
-                    {...globStyles.iconButton}
-                />
-            );
-            updatePassword = (
-                <div>
+            if (!this.props.isReadonly() && linkModel.isEditable() && !auth.password_mandatory) {
+                resetPassword = (
                     <IconButton
-                        iconClassName={"mdi mdi-pencil"}
-                        disabled={this.props.isReadonly() || !linkModel.isEditable()}
-                        secondary={true}
-                        onClick={(e)=> {this.setState({pwPop:true, pwAnchor:e.currentTarget})}}
-                        tooltip={this.props.getMessage('181')}
+                        iconClassName={"mdi mdi-close-circle"}
+                        onClick={this.resetPassword}
+                        tooltip={this.props.getMessage('174')}
                         {...globStyles.iconButton}
                     />
-                    <Popover
-                        open={this.state.pwPop}
-                        anchorEl={this.state.pwAnchor}
-                        anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                        targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                        onRequestClose={() => {this.setState({pwPop: false})}}
-                    >
-                        <div style={{width: 380, padding: 8}}>
-                            <ValidPassword
-                                name={"update"}
-                                ref={"pwdUpdate"}
-                                attributes={{label:this.props.getMessage('23')}}
-                                value={this.state.updatingPassword ? this.state.updatingPassword : ""}
-                                onChange={(v) => {this.setUpdatingPassword(v)}}
-                                onValidStatusChange={(s) => this.setState({updatingPasswordDiffer: !s})}
-                                variant={"v2"}
-                            />
-                            <div style={{paddingTop:20, textAlign:'right'}}>
-                                <FlatButton label={Pydio.getMessages()['54']} onClick={()=>{this.setState({pwPop:false,updatingPassword:''})}}/>
-                                <FlatButton style={{minWidth:60}} label={Pydio.getMessages()['48']} onClick={()=>{this.changePassword()}} disabled={!this.state.updatingPassword || !this.state.updatingPasswordValid || this.state.updatingPasswordDiffer}/>
+                );
+            }
+            if(!this.props.isReadonly() && linkModel.isEditable()){
+                updatePassword = (
+                    <div>
+                        <IconButton
+                            iconClassName={"mdi mdi-pencil"}
+                            onClick={(e)=> {this.setState({pwPop:true, pwAnchor:e.currentTarget})}}
+                            tooltip={this.props.getMessage('181')}
+                            {...globStyles.iconButton}
+                        />
+                        <Popover
+                            open={this.state.pwPop}
+                            anchorEl={this.state.pwAnchor}
+                            anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                            targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                            onRequestClose={() => {this.setState({pwPop: false})}}
+                        >
+                            <div style={{width: 380, padding: 8}}>
+                                <ValidPassword
+                                    name={"update"}
+                                    ref={"pwdUpdate"}
+                                    attributes={{label:this.props.getMessage('23')}}
+                                    value={this.state.updatingPassword ? this.state.updatingPassword : ""}
+                                    onChange={(v) => {this.setUpdatingPassword(v)}}
+                                    onValidStatusChange={(s) => this.setState({updatingPasswordDiffer: !s})}
+                                    variant={"v2"}
+                                />
+                                <div style={{paddingTop:20, textAlign:'right'}}>
+                                    <FlatButton label={Pydio.getMessages()['54']} onClick={()=>{this.setState({pwPop:false,updatingPassword:''})}}/>
+                                    <FlatButton style={{minWidth:60}} label={Pydio.getMessages()['48']} onClick={()=>{this.changePassword()}} disabled={!this.state.updatingPassword || !this.state.updatingPasswordValid || this.state.updatingPasswordDiffer}/>
+                                </div>
                             </div>
-                        </div>
-                    </Popover>
-                </div>
-            );
+                        </Popover>
+                    </div>
+                );
+            }
             passwordField = (
                 <ModernTextField
                     floatingLabelText={this.props.getMessage('23')}
@@ -201,7 +201,7 @@ class PublicLinkSecureOptions extends React.Component {
                     <div style={{width:'100%', display:'inline-block'}}>
                         {passwordField}
                     </div>
-                    {resetPassword &&
+                    {(resetPassword || updatePassword) &&
                         <div style={{position:'absolute', right: 0, bottom: 0, display: 'flex'}}>{updatePassword}{resetPassword}</div>
                     }
                 </div>

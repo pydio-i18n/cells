@@ -193,6 +193,7 @@ class PublicLinkPanel extends React.Component {
                             value={temporaryPassword}
                             onChange={this.updateTemporaryPassword.bind(this)}
                             onValidStatusChange={(s) => this.setState({temporaryPasswordState: s})}
+                            variant={"v2"}
                         />
                     </div>
                     <div style={{textAlign: 'center', marginTop: 20}}>
