@@ -24,7 +24,6 @@ type ServiceOptions struct {
 	Description string
 	Source      string
 
-	// TODO V4 - MUST BE FOUND IN REGISTRY
 	Metadata map[string]string
 
 	Context context.Context

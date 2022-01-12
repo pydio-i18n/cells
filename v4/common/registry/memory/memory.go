@@ -68,7 +68,7 @@ func (m *memory) Stop(item registry.Item) error {
 func (m *memory) Register(item registry.Item) error {
 	var byName bool
 	if md := item.Metadata(); md != nil {
-		if _, ok := md["service-override"]; ok {
+		if _, ok := md[registry.ServiceMetaOverride]; ok {
 			byName = true
 		}
 	}

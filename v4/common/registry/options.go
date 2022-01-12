@@ -6,6 +6,10 @@ import (
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 )
 
+const (
+	ServiceMetaOverride = "service-override"
+)
+
 type Option func(*Options) error
 
 type Options struct {
