@@ -32,7 +32,6 @@ func (h *WorkspaceHandler) loadRootNodesForWorkspaces(ctx context.Context, wsUUI
 	if e != nil {
 		return e
 	}
-	defer c.CloseSend()
 	vManager := abstract.GetVirtualNodesManager(ctx)
 	localCache := make(map[string]*tree.Node)
 	for uuid, ws := range wss {

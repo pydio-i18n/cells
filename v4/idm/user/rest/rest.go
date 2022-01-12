@@ -200,7 +200,6 @@ func (s *UserHandler) SearchUsers(req *restful.Request, rsp *restful.Response) {
 			service.RestError500(req, rsp, err)
 			return
 		}
-		defer streamer.CloseSend()
 		for {
 			resp, e := streamer.Recv()
 			if e != nil {
@@ -467,7 +466,7 @@ func (s *UserHandler) PutUser(req *restful.Request, rsp *restful.Response) {
 			continue
 		}
 		if strings.HasPrefix(k, "parameter:") {
-			if !allowedAclKey(k, true) {
+			if !allowedAclKey(ctx, k, true) {
 				continue
 			}
 			var acl = &idm.ACL{
@@ -846,7 +845,7 @@ func paramsAclsToAttributes(ctx context.Context, users []*idm.User) {
 	aa, _ := permissions.GetACLsForRoles(ctx, roles, &idm.ACLAction{Name: "parameter:*"})
 	for _, acl := range aa {
 		for _, user := range users {
-			if allowedAclKey(acl.Action.Name, user.PoliciesContextEditable) && user.Uuid == acl.RoleID {
+			if allowedAclKey(ctx, acl.Action.Name, user.PoliciesContextEditable) && user.Uuid == acl.RoleID {
 				user.Attributes[acl.Action.Name] = acl.Action.Value
 			}
 		}
@@ -856,7 +855,7 @@ func paramsAclsToAttributes(ctx context.Context, users []*idm.User) {
 
 var cachedParams cache.Short
 
-func allowedAclKey(k string, contextEditable bool) bool {
+func allowedAclKey(ctx context.Context, k string, contextEditable bool) bool {
 	var params []*front.ExposedParameter
 	if cachedParams == nil {
 		cachedParams = cache.NewShort(cache.WithEviction(20*time.Second), cache.WithCleanWindow(1*time.Minute))
@@ -864,8 +863,8 @@ func allowedAclKey(k string, contextEditable bool) bool {
 	if pp, ok := cachedParams.Get("params"); ok {
 		params = pp.([]*front.ExposedParameter)
 	} else {
-		mC := front.NewManifestServiceClient(grpc2.GetClientConnFromCtx(context.TODO(), common.ServiceFrontStatics))
-		resp, e := mC.ExposedParameters(context.Background(), &front.ExposedParametersRequest{
+		mC := front.NewManifestServiceClient(grpc2.GetClientConnFromCtx(ctx, common.ServiceFrontStatics))
+		resp, e := mC.ExposedParameters(ctx, &front.ExposedParametersRequest{
 			Scope:   "user",
 			Exposed: true,
 		})

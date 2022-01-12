@@ -106,7 +106,7 @@ func (sc *Client) ParseRootNodes(ctx context.Context, shareRequest *rest.PutCell
 	}
 	if shareRequest.CreateEmptyRoot {
 
-		manager := abstract.GetVirtualNodesManager(ctx)
+		manager := abstract.GetVirtualNodesManager(sc.RuntimeContext)
 		internalRouter := compose.PathClientAdmin(nodes.WithContext(sc.RuntimeContext))
 		if root, exists := manager.ByUuid("cells"); exists {
 			parentNode, err := manager.ResolveInContext(ctx, root, internalRouter.GetClientsPool(), true)
@@ -245,7 +245,7 @@ func (sc *Client) DetectInheritedPolicy(ctx context.Context, roots []*tree.Node,
 // .pydio hidden files when they are folders.
 func (sc *Client) DeleteRootNodeRecursively(ctx context.Context, ownerName string, roomNode *tree.Node) error {
 
-	manager := abstract.GetVirtualNodesManager(ctx)
+	manager := abstract.GetVirtualNodesManager(sc.RuntimeContext)
 	router := compose.PathClientAdmin(nodes.WithContext(sc.RuntimeContext))
 	if root, exists := manager.ByUuid("cells"); exists {
 		parentNode, err := manager.ResolveInContext(ctx, root, router.GetClientsPool(), true)

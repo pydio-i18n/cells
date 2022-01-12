@@ -51,7 +51,7 @@ func (h *SharesHandler) ListSharedResources(req *restful.Request, rsp *restful.R
 		service.RestError500(req, rsp, e)
 		return
 	}
-	if err := h.docStoreStatus(); err != nil {
+	if err := h.docStoreStatus(req.Request.Context()); err != nil {
 		service.RestErrorDetect(req, rsp, err)
 		return
 	}

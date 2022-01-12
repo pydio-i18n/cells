@@ -41,7 +41,14 @@ type ContextWrapper func(ctx context.Context) (context.Context, error)
 type Handler struct {
 	Next        nodes.Handler
 	ClientsPool nodes.SourcesPool
+	RuntimeCtx  context.Context
 	CtxWrapper  ContextWrapper
+}
+
+func (a *Handler) AdaptOptions(h nodes.Handler, options nodes.RouterOptions) {
+	a.Next = h
+	a.RuntimeCtx = options.Context
+	a.ClientsPool = options.Pool
 }
 
 func (a *Handler) WrapContext(ctx context.Context) (context.Context, error) {

@@ -95,7 +95,6 @@ func (m *VirtualNodesManager) Load(forceReload ...bool) {
 	if e != nil {
 		return
 	}
-	defer stream.CloseSend()
 	for {
 		resp, err := stream.Recv()
 		if err != nil {

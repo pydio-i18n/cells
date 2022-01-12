@@ -23,6 +23,7 @@ package bleve
 import (
 	"compress/gzip"
 	"context"
+	clientcontext "github.com/pydio/cells/v4/common/client/context"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -180,6 +181,7 @@ func (b *Batch) createBackgroundContext(parent context.Context) context.Context 
 	})
 	ctx = servicecontext.WithServiceName(ctx, common.ServiceGrpcNamespace_+common.ServiceSearch)
 	ctx = servicecontext.WithRegistry(ctx, servicecontext.GetRegistry(parent))
+	ctx = clientcontext.WithClientConn(ctx, clientcontext.GetClientConn(parent))
 	return ctx
 }
 

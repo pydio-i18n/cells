@@ -52,8 +52,7 @@ type WorkspaceHandler struct {
 }
 
 func (h *WorkspaceHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	h.Next = c
-	h.ClientsPool = options.Pool
+	h.AdaptOptions(c, options)
 	return h
 }
 
@@ -84,7 +83,7 @@ func (h *WorkspaceHandler) updateInputBranch(ctx context.Context, node *tree.Nod
 	}
 
 	// Update Access List with resolved virtual nodes
-	virtualManager := abstract.GetVirtualNodesManager(ctx)
+	virtualManager := abstract.GetVirtualNodesManager(h.RuntimeCtx)
 	cPool := h.ClientsPool
 	for _, vNode := range virtualManager.ListNodes() {
 		if aclNodeMask, has := accessList.GetNodesBitmasks()[vNode.Uuid]; has {

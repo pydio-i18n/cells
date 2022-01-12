@@ -45,7 +45,7 @@ import (
 type SearchServer struct {
 	tree.UnimplementedSearcherServer
 	protosync.UnimplementedSyncEndpointServer
-
+	RuntimeCtx       context.Context
 	Engine           dao.SearchEngine
 	eventsChannel    chan *cache.EventWithContext
 	TreeClient       tree.NodeProviderClient
@@ -257,7 +257,7 @@ func (s *SearchServer) ReindexFolder(c context.Context, node *tree.Node, exclude
 
 func (s *SearchServer) getTreeClient() tree.NodeProviderClient {
 	if s.TreeClient == nil {
-		s.TreeClient = tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceTree))
+		s.TreeClient = tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(s.RuntimeCtx, common.ServiceTree))
 	}
 	return s.TreeClient
 }

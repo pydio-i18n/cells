@@ -52,9 +52,7 @@ type BranchFilter struct {
 
 func (v *BranchFilter) LookupRoot(uuid string) (*tree.Node, error) {
 
-	ctx := context.TODO()
-
-	if virtualNode, exists := GetVirtualNodesManager(ctx).ByUuid(uuid); exists {
+	if virtualNode, exists := GetVirtualNodesManager(v.RuntimeCtx).ByUuid(uuid); exists {
 		return virtualNode, nil
 	}
 
@@ -66,7 +64,7 @@ func (v *BranchFilter) LookupRoot(uuid string) (*tree.Node, error) {
 		return n.(*tree.Node), nil
 	}
 
-	resp, err := v.ClientsPool.GetTreeClient().ReadNode(ctx, &tree.ReadNodeRequest{Node: &tree.Node{
+	resp, err := v.ClientsPool.GetTreeClient().ReadNode(context.Background(), &tree.ReadNodeRequest{Node: &tree.Node{
 		Uuid: uuid,
 	}})
 	if err != nil {

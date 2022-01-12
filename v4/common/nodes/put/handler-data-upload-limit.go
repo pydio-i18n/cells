@@ -53,8 +53,7 @@ type UploadLimitFilter struct {
 }
 
 func (a *UploadLimitFilter) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	a.Next = c
-	a.ClientsPool = options.Pool
+	a.AdaptOptions(c, options)
 	return a
 }
 

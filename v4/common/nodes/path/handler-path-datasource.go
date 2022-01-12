@@ -53,8 +53,7 @@ type DataSourceHandler struct {
 }
 
 func (v *DataSourceHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	v.Next = c
-	v.ClientsPool = options.Pool
+	v.AdaptOptions(c, options)
 	return v
 }
 

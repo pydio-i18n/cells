@@ -73,8 +73,7 @@ type CacheHandler struct {
 }
 
 func (s *CacheHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	s.Next = c
-	s.ClientsPool = options.Pool
+	s.AdaptOptions(c, options)
 	return s
 }
 

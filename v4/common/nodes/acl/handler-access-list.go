@@ -44,8 +44,7 @@ type AccessListHandler struct {
 }
 
 func (a *AccessListHandler) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	a.Next = h
-	a.ClientsPool = options.Pool
+	a.AdaptOptions(h, options)
 	return a
 }
 

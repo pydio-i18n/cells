@@ -212,7 +212,7 @@ func (s *JobsHandler) UserDeleteTasks(req *restful.Request, rsp *restful.Respons
 		return
 	}
 
-	cli := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceJobs))
+	cli := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(req.Request.Context(), common.ServiceJobs))
 	response, e := cli.DeleteTasks(req.Request.Context(), &request)
 	if e != nil {
 		service.RestErrorDetect(req, rsp, e)

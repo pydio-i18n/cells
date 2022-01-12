@@ -22,6 +22,8 @@ package nodes
 
 import (
 	"context"
+	clientcontext "github.com/pydio/cells/v4/common/client/context"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"io"
 	"math"
 
@@ -130,6 +132,8 @@ func WrapReaderForMime(ctx context.Context, clone *tree.Node, reader io.Reader) 
 		mimeMetaClient = tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(ctx, common.ServiceGrpcNamespace_+common.ServiceMeta))
 	}
 	bgCtx := metadata.NewBackgroundWithMetaCopy(ctx)
+	bgCtx = clientcontext.WithClientConn(bgCtx, clientcontext.GetClientConn(ctx))
+	bgCtx = servicecontext.WithRegistry(bgCtx, servicecontext.GetRegistry(ctx))
 	return NewTeeMimeReader(reader, func(result *MimeResult) {
 		if result.GetError() == nil && result.GetMime() != "" {
 			// Store in metadata service

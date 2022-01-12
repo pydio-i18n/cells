@@ -60,14 +60,16 @@ func newClient(opts ...nodes.Option) *clientImpl {
 		handler = options.Wrappers[i-1].Adapt(handler, options)
 	}
 	return &clientImpl{
-		handler: handler,
-		pool:    options.Pool,
+		handler:    handler,
+		pool:       options.Pool,
+		runtimeCtx: options.Context,
 	}
 }
 
 type clientImpl struct {
-	handler nodes.Handler
-	pool    nodes.SourcesPool
+	handler    nodes.Handler
+	runtimeCtx context.Context
+	pool       nodes.SourcesPool
 }
 
 func (v *clientImpl) WrapCallback(provider nodes.CallbackFunc) error {

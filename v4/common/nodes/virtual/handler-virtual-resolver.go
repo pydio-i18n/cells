@@ -43,8 +43,7 @@ type ResolverHandler struct {
 }
 
 func (v *ResolverHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	v.Next = c
-	v.ClientsPool = options.Pool
+	v.AdaptOptions(c, options)
 	return v
 }
 
@@ -60,7 +59,7 @@ func NewVirtualNodesHandler() *ResolverHandler {
 // updateInput Updates BranchInfo and AccessList in context with resolved values for virtual nodes
 func (v *ResolverHandler) updateInput(ctx context.Context, node *tree.Node, identifier string) (context.Context, *tree.Node, error) {
 
-	virtualManager := abstract.GetVirtualNodesManager(ctx)
+	virtualManager := abstract.GetVirtualNodesManager(v.RuntimeCtx)
 	if branchInfo, ok := nodes.GetBranchInfo(ctx, identifier); ok && !branchInfo.Binary && branchInfo.Root != nil {
 		originalUuid := branchInfo.Root.Uuid
 		if virtual, exists := virtualManager.ByUuid(branchInfo.Root.Uuid); exists {

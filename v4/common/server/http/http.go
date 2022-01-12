@@ -37,6 +37,7 @@ func New(ctx context.Context) server.Server {
 	srv := &http.Server{}
 	srv.Handler = registrymux.NewMiddleware(servercontext.GetRegistry(ctx), mux)
 	srv.Handler = ContextMiddlewareHandler(middleware.ClientConnIncomingContext(ctx))(srv.Handler)
+	srv.Handler = ContextMiddlewareHandler(middleware.RegistryIncomingContext(ctx))(srv.Handler)
 
 	ctx, cancel := context.WithCancel(ctx)
 

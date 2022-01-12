@@ -52,14 +52,13 @@ type Handler struct {
 }
 
 func (v *Handler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	v.Next = c
-	v.ClientsPool = options.Pool
+	v.AdaptOptions(c, options)
 	return v
 }
 
 func (v *Handler) getVersionClient() tree.NodeVersionerClient {
 	if v.versionClient == nil {
-		v.versionClient = tree.NewNodeVersionerClient(grpc2.GetClientConnFromCtx(context.TODO(), common.ServiceVersions))
+		v.versionClient = tree.NewNodeVersionerClient(grpc2.GetClientConnFromCtx(v.RuntimeCtx, common.ServiceVersions))
 	}
 	return v.versionClient
 }

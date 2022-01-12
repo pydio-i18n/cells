@@ -58,8 +58,7 @@ type Handler struct {
 }
 
 func (m *Handler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	m.Next = c
-	m.ClientsPool = options.Pool
+	m.AdaptOptions(c, options)
 	return m
 }
 

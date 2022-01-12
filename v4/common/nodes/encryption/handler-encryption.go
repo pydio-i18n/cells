@@ -45,21 +45,19 @@ import (
 
 func WithEncryption() nodes.Option {
 	return func(options *nodes.RouterOptions) {
-		options.Wrappers = append(options.Wrappers, &Handler{ctx: options.Context})
+		options.Wrappers = append(options.Wrappers, &Handler{})
 	}
 }
 
 //Handler encryption node middleware
 type Handler struct {
-	ctx context.Context
 	abstract.Handler
 	userKeyTool          UserKeyTool
 	nodeKeyManagerClient encryption.NodeKeyManagerClient
 }
 
 func (e *Handler) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	e.Next = h
-	e.ClientsPool = options.Pool
+	e.AdaptOptions(h, options)
 	return e
 }
 
@@ -580,12 +578,7 @@ func (e *Handler) MultipartPutObjectPart(ctx context.Context, target *tree.Node,
 }
 
 func (e *Handler) copyNodeEncryptionData(ctx context.Context, source *tree.Node, copy *tree.Node) error {
-	nodeEncryptionClient := e.nodeKeyManagerClient
-	if nodeEncryptionClient == nil {
-		nodeEncryptionClient = encryption.NewNodeKeyManagerClient(grpc.GetClientConnFromCtx(ctx, common.ServiceEncKey))
-	}
-
-	_, err := nodeEncryptionClient.CopyNodeInfo(ctx, &encryption.CopyNodeInfoRequest{
+	_, err := e.getNodeKeyManagerClient().CopyNodeInfo(ctx, &encryption.CopyNodeInfoRequest{
 		NodeUuid:     source.Uuid,
 		NodeCopyUuid: copy.Uuid,
 	})
@@ -593,11 +586,7 @@ func (e *Handler) copyNodeEncryptionData(ctx context.Context, source *tree.Node,
 }
 
 func (e *Handler) getNodeInfoForRead(ctx context.Context, node *tree.Node, requestData *models.GetRequestData) (*encryption.NodeInfo, int64, int64, int64, error) {
-	nodeEncryptionClient := e.nodeKeyManagerClient
-	if nodeEncryptionClient == nil {
-		nodeEncryptionClient = encryption.NewNodeKeyManagerClient(grpc.GetClientConnFromCtx(ctx, common.ServiceEncKey))
-	}
-
+	nodeEncryptionClient := e.getNodeKeyManagerClient()
 	fullRead := requestData.StartOffset == 0 && (requestData.Length <= 0 || requestData.Length == node.Size)
 	dsName := node.GetStringMeta(common.MetaNamespaceDatasourceName)
 	rsp, err := nodeEncryptionClient.GetNodeInfo(ctx, &encryption.GetNodeInfoRequest{
@@ -614,11 +603,7 @@ func (e *Handler) getNodeInfoForRead(ctx context.Context, node *tree.Node, reque
 }
 
 func (e *Handler) getNodeInfoForWrite(ctx context.Context, node *tree.Node) (*encryption.NodeInfo, error) {
-	nodeEncryptionClient := e.nodeKeyManagerClient
-	if nodeEncryptionClient == nil {
-		nodeEncryptionClient = encryption.NewNodeKeyManagerClient(grpc.GetClientConnFromCtx(ctx, common.ServiceEncKey))
-	}
-
+	nodeEncryptionClient := e.getNodeKeyManagerClient()
 	dsName := node.GetStringMeta(common.MetaNamespaceDatasourceName)
 	rsp, err := nodeEncryptionClient.GetNodeInfo(ctx, &encryption.GetNodeInfoRequest{
 		UserId:    fmt.Sprintf("ds:%s", dsName),
@@ -671,7 +656,7 @@ func (e *Handler) getKeyProtectionTool(ctx context.Context) (UserKeyTool, error)
 func (e *Handler) getNodeKeyManagerClient() encryption.NodeKeyManagerClient {
 	nodeEncryptionClient := e.nodeKeyManagerClient
 	if nodeEncryptionClient == nil {
-		nodeEncryptionClient = encryption.NewNodeKeyManagerClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceEncKey))
+		nodeEncryptionClient = encryption.NewNodeKeyManagerClient(grpc.GetClientConnFromCtx(e.RuntimeCtx, common.ServiceEncKey))
 	}
 	return nodeEncryptionClient
 }

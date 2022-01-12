@@ -121,6 +121,7 @@ func (g *gatewayDataServer) Start(ctx context.Context) error {
 	os.Setenv("MINIO_ROOT_PASSWORD", common.S3GatewayRootPassword)
 
 	minio.HookRegisterGlobalHandler(serverhttp.ContextMiddlewareHandler(middleware.ClientConnIncomingContext(ctx)))
+	minio.HookRegisterGlobalHandler(serverhttp.ContextMiddlewareHandler(middleware.RegistryIncomingContext(ctx)))
 	minio.HookRegisterGlobalHandler(hooks.GetPydioAuthHandlerFunc("gateway"))
 	pydio.PydioGateway = &pydio.Pydio{
 		RuntimeCtx: ctx,

@@ -92,25 +92,12 @@ func NewWsCleaner(ctx context.Context, h idm.WorkspaceServiceServer) *WsCleaner 
 	go func() {
 		for wsId := range listener {
 			if err := w.deleteEmptyWs(wsId); err != nil {
-				log.Logger(context.Background()).Info("Error while trying to delete workspace without ACLs (" + wsId + ")")
+				log.Logger(w.ctx).Info("Error while trying to delete workspace without ACLs (" + wsId + ")")
 			}
 			lock.Lock()
 			delete(w.batches, wsId)
 			lock.Unlock()
 		}
-		/*
-			for {
-				select {
-				case wsId := <-listener:
-					if err := w.deleteEmptyWs(wsId); err != nil {
-						log.Logger(context.Background()).Info("Error while trying to delete workspace without ACLs (" + wsId + ")")
-					}
-					lock.Lock()
-					delete(w.batches, wsId)
-					lock.Unlock()
-				}
-			}
-		*/
 	}()
 	return w
 }
@@ -140,7 +127,7 @@ func (c *WsCleaner) deleteEmptyWs(workspaceId string) error {
 	ctx := context.Background()
 
 	// Check if there are still some ACLs for this workspace
-	cl := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
+	cl := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(c.ctx, common.ServiceAcl))
 	q, _ := anypb.New(&idm.ACLSingleQuery{
 		WorkspaceIDs: []string{workspaceId},
 	})

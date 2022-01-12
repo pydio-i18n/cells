@@ -102,7 +102,7 @@ func (h *SharesHandler) PutCell(req *restful.Request, rsp *restful.Response) {
 	log.Logger(ctx).Debug("Received Share.Cell API request", zap.Any("input", &shareRequest))
 	ownerUser := h.IdmUserFromClaims(ctx)
 
-	if err := h.docStoreStatus(); err != nil {
+	if err := h.docStoreStatus(ctx); err != nil {
 		service.RestErrorDetect(req, rsp, err)
 		return
 	}
@@ -309,7 +309,7 @@ func (h *SharesHandler) PutShareLink(req *restful.Request, rsp *restful.Response
 		service.RestError500(req, rsp, err)
 		return
 	}
-	if err := h.docStoreStatus(); err != nil {
+	if err := h.docStoreStatus(ctx); err != nil {
 		service.RestErrorDetect(req, rsp, err)
 		return
 	}
@@ -512,7 +512,7 @@ func (h *SharesHandler) DeleteShareLink(req *restful.Request, rsp *restful.Respo
 	id := req.PathParameter("Uuid")
 	ownerUser := h.IdmUserFromClaims(ctx)
 
-	if err := h.docStoreStatus(); err != nil {
+	if err := h.docStoreStatus(ctx); err != nil {
 		service.RestErrorDetect(req, rsp, err)
 		return
 	}
@@ -568,11 +568,11 @@ func (h *SharesHandler) UpdateSharePolicies(req *restful.Request, rsp *restful.R
 		service.RestError500(req, rsp, e)
 		return
 	}
-	if err := h.docStoreStatus(); err != nil {
+	ctx := req.Request.Context()
+	if err := h.docStoreStatus(ctx); err != nil {
 		service.RestErrorDetect(req, rsp, err)
 		return
 	}
-	ctx := req.Request.Context()
 	cli := idm.NewWorkspaceServiceClient(grpc.GetClientConnFromCtx(h.ctx, common.ServiceWorkspace))
 	q, _ := anypb.New(&idm.WorkspaceSingleQuery{
 		Uuid: input.Uuid,
@@ -625,10 +625,10 @@ func (h *SharesHandler) UpdateSharePolicies(req *restful.Request, rsp *restful.R
 	rsp.WriteEntity(response)
 }
 
-func (h *SharesHandler) docStoreStatus() error {
+func (h *SharesHandler) docStoreStatus(ctx context.Context) error {
 	return nil
 	// TODO V4 - Not implemented by server yet
-	cli := grpc_health_v1.NewHealthClient(grpc.GetClientConnFromCtx(context.TODO(), common.ServiceDocStore))
+	cli := grpc_health_v1.NewHealthClient(grpc.GetClientConnFromCtx(ctx, common.ServiceDocStore))
 	_, er := cli.Check(context.Background(), &grpc_health_v1.HealthCheckRequest{})
 	return er
 }

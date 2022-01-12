@@ -52,8 +52,7 @@ type HandlerAudit struct {
 }
 
 func (h *HandlerAudit) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	h.Next = c
-	h.ClientsPool = options.Pool
+	h.AdaptOptions(c, options)
 	return h
 }
 

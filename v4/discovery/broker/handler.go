@@ -57,7 +57,7 @@ func (h *Handler) Subscribe(stream pb.Broker_SubscribeServer) error {
 			var target = &pb.Message{}
 			target.Header, target.Body = msg.RawData()
 
-			fmt.Println("And the message we've received is ? ", string(target.Body))
+			// fmt.Println("And the message we've received is ? ", string(target.Body))
 			// mm.Queue = queue
 			mm.Id = req.Id
 			mm.Messages = append(mm.Messages, target)

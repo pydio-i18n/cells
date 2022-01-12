@@ -50,8 +50,7 @@ type FolderTasksHandler struct {
 }
 
 func (h *FolderTasksHandler) Adapt(c nodes.Handler, options nodes.RouterOptions) nodes.Handler {
-	h.Next = c
-	h.ClientsPool = options.Pool
+	h.AdaptOptions(c, options)
 	return h
 }
 

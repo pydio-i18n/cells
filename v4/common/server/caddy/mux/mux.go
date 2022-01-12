@@ -11,13 +11,12 @@ import (
 
 	"google.golang.org/grpc"
 
-	clientcontext "github.com/pydio/cells/v4/common/client/context"
-
 	caddy "github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/pydio/cells/v4/common"
+	clientcontext "github.com/pydio/cells/v4/common/client/context"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
 	servercontext "github.com/pydio/cells/v4/common/server/context"
@@ -75,7 +74,11 @@ func (m Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 		proxy.ErrorHandler = func(writer http.ResponseWriter, request *http.Request, err error) {
 			fmt.Println("Got Error in Grpc Reverse Proxy:", err.Error())
 		}
-		proxy.ServeHTTP(w, r)
+
+		ctx := clientcontext.WithClientConn(r.Context(), m.c)
+		ctx = servercontext.WithRegistry(ctx, m.r)
+
+		proxy.ServeHTTP(w, r.WithContext(ctx))
 		return nil
 	}
 
@@ -83,6 +86,7 @@ func (m Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 	_, pattern := m.s.Handler(r)
 	if len(pattern) > 0 && (pattern != "/" || r.URL.Path == "/") {
 		ctx := clientcontext.WithClientConn(r.Context(), m.c)
+		ctx = servercontext.WithRegistry(ctx, m.r)
 
 		m.s.ServeHTTP(w, r.WithContext(ctx))
 		return nil

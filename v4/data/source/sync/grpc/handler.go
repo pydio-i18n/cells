@@ -378,7 +378,7 @@ func (s *Handler) initSync(syncConfig *object.DataSource) error {
 
 	var target model.Endpoint
 	if syncMetas {
-		target = index.NewClientWithMeta(dataSource, s.indexClientRead, s.indexClientWrite, s.indexClientSession)
+		target = index.NewClientWithMeta(ctx, dataSource, s.indexClientRead, s.indexClientWrite, s.indexClientSession)
 	} else {
 		target = index.NewClient(dataSource, s.indexClientRead, s.indexClientWrite, s.indexClientSession)
 	}

@@ -83,7 +83,7 @@ func (h *Handler) GetMeta(req *restful.Request, resp *restful.Response) {
 	}
 
 	//log.Logger(ctx).Debug("BEFORE META PROVIDERS", zap.String("NodePath", p), zap.Any("n", node))
-	loader := meta.NewStreamLoader(h.RuntimeCtx)
+	loader := meta.NewStreamLoader(ctx)
 	defer loader.Close()
 	loader.LoadMetas(ctx, node)
 
@@ -142,7 +142,7 @@ func (h *Handler) GetBulkMeta(req *restful.Request, resp *restful.Response) {
 		}
 	}
 
-	metaLoader := meta.NewStreamLoader(h.RuntimeCtx)
+	metaLoader := meta.NewStreamLoader(ctx)
 	defer metaLoader.Close()
 
 	if len(output.Nodes) > 0 {

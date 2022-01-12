@@ -84,6 +84,7 @@ func init() {
 				}
 
 				searcher := &SearchServer{
+					RuntimeCtx:       c,
 					Engine:           bleveEngine,
 					NsProvider:       nsProvider,
 					ReIndexThrottler: make(chan struct{}, 5),
