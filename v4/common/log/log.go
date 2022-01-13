@@ -24,6 +24,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/plugins"
 	"io"
 	"os"
 	"path/filepath"
@@ -53,6 +54,8 @@ var (
 	tasksLogger    = newLogger()
 	contextWrapper = basicContextWrapper
 
+	mainLogSyncerClient *LogSyncer
+
 	StdOut *os.File
 
 	skipServerSync bool
@@ -71,13 +74,13 @@ func Init(logDir string, ww ...LogContextWrapper) {
 		var logger *zap.Logger
 
 		serverCore := zapcore.NewNopCore()
-		if !skipServerSync {
+		if !skipServerSync && mainLogSyncerClient != nil {
 			// Create core for internal indexing service
 			// It forwards logs to the pydio.grpc.logs service to store them
 			// Format is always JSON + ProductionEncoderConfig
 			srvConfig := zap.NewProductionEncoderConfig()
 			srvConfig.EncodeTime = RFC3369TimeEncoder
-			serverSync := zapcore.AddSync(NewLogSyncer(context.Background(), common.ServiceLog))
+			serverSync := zapcore.AddSync(mainLogSyncerClient)
 			serverCore = zapcore.NewCore(
 				zapcore.NewJSONEncoder(srvConfig),
 				serverSync,
@@ -168,6 +171,10 @@ func Init(logDir string, ww ...LogContextWrapper) {
 		}
 
 		return logger
+	}, func(ctx context.Context) {
+		if !skipServerSync {
+			mainLogSyncerClient = NewLogSyncer(ctx, common.ServiceLog)
+		}
 	})
 	if len(ww) > 0 {
 		contextWrapper = ww[0]
@@ -187,9 +194,20 @@ func SetSkipServerSync() {
 	skipServerSync = true
 }
 
+// initLogger sets the initializer and eventually registers a GlobalConnConsumer function.
+func initLogger(l *logger, f func() *zap.Logger, globalConnInit func(ctx context.Context)) {
+	l.set(f)
+	if globalConnInit != nil {
+		plugins.RegisterGlobalConnConsumer("main", func(ctx context.Context) {
+			globalConnInit(ctx)
+			l.forceReset()
+		})
+	}
+}
+
 // SetLoggerInit defines what function to use to init the logger
-func SetLoggerInit(f func() *zap.Logger) {
-	mainLogger.set(f)
+func SetLoggerInit(f func() *zap.Logger, globalConnInit func(ctx context.Context)) {
+	initLogger(mainLogger, f, globalConnInit)
 }
 
 // Logger returns a zap logger with as much context as possible.
@@ -203,8 +221,8 @@ func Logger(ctx context.Context) *zap.Logger {
 }
 
 // SetAuditerInit defines what function to use to init the auditer
-func SetAuditerInit(f func() *zap.Logger) {
-	auditLogger.set(f)
+func SetAuditerInit(f func() *zap.Logger, globalConnInit func(ctx context.Context)) {
+	initLogger(auditLogger, f, globalConnInit)
 }
 
 // Auditer returns a zap logger with as much context as possible
@@ -213,8 +231,8 @@ func Auditer(ctx context.Context) *zap.Logger {
 }
 
 // SetTasksLoggerInit defines what function to use to init the tasks logger
-func SetTasksLoggerInit(f func() *zap.Logger) {
-	tasksLogger.set(f)
+func SetTasksLoggerInit(f func() *zap.Logger, globalConnInit func(ctx context.Context)) {
+	initLogger(tasksLogger, f, globalConnInit)
 }
 
 // TasksLogger returns a zap logger with as much context as possible.
