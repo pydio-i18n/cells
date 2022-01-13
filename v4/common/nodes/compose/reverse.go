@@ -22,6 +22,7 @@ package compose
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/nodes/virtual"
 	"strings"
 	"time"
 
@@ -60,6 +61,7 @@ func ReverseClient(oo ...nodes.Option) *Reverse {
 		acl.WithAccessList(),
 		path.WithWorkspace(),
 		path.WithMultipleRoots(),
+		virtual.WithResolver(),
 		path.WithRootResolver(),
 		path.WithDatasource(),
 		archive.WithArchives(),
