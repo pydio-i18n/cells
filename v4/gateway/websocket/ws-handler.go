@@ -50,6 +50,7 @@ import (
 )
 
 type WebsocketHandler struct {
+	runtimeCtx  context.Context
 	Websocket   *melody.Melody
 	EventRouter *compose.Reverse
 
@@ -62,6 +63,7 @@ type WebsocketHandler struct {
 
 func NewWebSocketHandler(serviceCtx context.Context) *WebsocketHandler {
 	w := &WebsocketHandler{
+		runtimeCtx:    serviceCtx,
 		batchers:      make(map[string]*NodeEventsBatcher),
 		dispatcher:    make(chan *NodeChangeEventWithInfo),
 		done:          make(chan string),
@@ -247,7 +249,7 @@ func (w *WebsocketHandler) BroadcastNodeChangeEvent(ctx context.Context, event *
 			hasData bool
 		)
 
-		metaCtx, err := prepareRemoteContext(session)
+		metaCtx, err := prepareRemoteContext(w.runtimeCtx, session)
 		if err != nil {
 			log.Logger(ctx).Warn("WebSocket error", zap.Error(err))
 			return false

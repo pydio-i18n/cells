@@ -176,7 +176,7 @@ func (c *ChatHandler) initHandlers(ctx context.Context) {
 			}
 		}
 
-		chatClient := chat.NewChatServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceChat))
+		chatClient := chat.NewChatServiceClient(grpc.GetClientConnFromCtx(c.ctx, common.ServiceChat))
 
 		switch chatMsg.Type {
 
@@ -425,7 +425,7 @@ var uuidRouter nodes.Client
 func (c *ChatHandler) auth(session *melody.Session, room *chat.ChatRoom) (bool, error) {
 
 	var readonly bool
-	ctx, err := prepareRemoteContext(session)
+	ctx, err := prepareRemoteContext(c.ctx, session)
 	if err != nil {
 		return false, err
 	}

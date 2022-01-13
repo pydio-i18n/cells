@@ -46,7 +46,7 @@ func init() {
 			service.WithStorage(chat.NewDAO, "broker_chat"),
 			service.Unique(true),
 			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
-				proto.RegisterChatServiceEnhancedServer(server, &ChatHandler{dao: servicecontext.GetDAO(c).(chat.DAO)})
+				proto.RegisterChatServiceEnhancedServer(server, &ChatHandler{RuntimeCtx: c, dao: servicecontext.GetDAO(c).(chat.DAO)})
 				return nil
 			}),
 		)

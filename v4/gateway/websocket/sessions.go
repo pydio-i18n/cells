@@ -109,12 +109,12 @@ func ClearSession(session *melody.Session) {
 
 }
 
-func prepareRemoteContext(session *melody.Session) (context.Context, error) {
+func prepareRemoteContext(parent context.Context, session *melody.Session) (context.Context, error) {
 	claims, o1 := session.Get(SessionClaimsKey)
 	if !o1 {
 		return nil, fmt.Errorf("unexpected error: websocket session has no claims")
 	}
-	metaCtx := auth.ContextFromClaims(context.Background(), claims.(claim.Claims))
+	metaCtx := auth.ContextFromClaims(parent, claims.(claim.Claims))
 	metaCtx = servicecontext.WithServiceName(metaCtx, common.ServiceGatewayNamespace_+common.ServiceWebSocket)
 	if md, o := session.Get(SessionMetaContext); o {
 		if meta, ok := md.(metadata.Metadata); ok {
