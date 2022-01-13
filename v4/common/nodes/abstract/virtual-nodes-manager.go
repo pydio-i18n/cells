@@ -52,7 +52,7 @@ import (
 var (
 	vManager            *VirtualNodesManager
 	vManagerCache       cache.Short
-	AdminClientProvider func() nodes.Client
+	AdminClientProvider func(runtime context.Context) nodes.Client
 )
 
 // VirtualNodesManager keeps an internal list of virtual nodes.
@@ -194,7 +194,7 @@ func (m *VirtualNodesManager) ResolveInContext(ctx context.Context, vNode *tree.
 			}
 			resolved = createResp.GetNode()
 			isFlat := false
-			client := AdminClientProvider()
+			client := AdminClientProvider(clientsPool.GetRuntimeCtx())
 			if bI, e := client.BranchInfoForNode(ctx, resolved); e == nil {
 				isFlat = bI.FlatStorage
 			}

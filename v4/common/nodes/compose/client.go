@@ -34,8 +34,8 @@ import (
 )
 
 func init() {
-	abstract.AdminClientProvider = func() nodes.Client {
-		return NewClient(PathComposer(nodes.AsAdmin(), nodes.WithRegistryWatch())...)
+	abstract.AdminClientProvider = func(runtime context.Context) nodes.Client {
+		return NewClient(PathComposer(nodes.WithContext(runtime), nodes.AsAdmin(), nodes.WithRegistryWatch())...)
 	}
 }
 

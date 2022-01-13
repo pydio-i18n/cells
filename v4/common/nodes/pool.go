@@ -23,6 +23,7 @@ package nodes
 import (
 	"context"
 	"fmt"
+	"runtime/debug"
 	"strings"
 	"sync"
 	"time"
@@ -57,6 +58,7 @@ type LoadedSource struct {
 
 type SourcesPool interface {
 	Close()
+	GetRuntimeCtx() context.Context
 	GetTreeClient() tree.NodeProviderClient
 	GetTreeClientWrite() tree.NodeReceiverClient
 	GetDataSourceInfo(dsName string, retries ...int) (LoadedSource, error)
@@ -102,6 +104,10 @@ func NewClientsPool(ctx context.Context, watchRegistry bool) *ClientsPool {
 	pool.LoadDataSources()
 	if watchRegistry {
 		reg := servercontext.GetRegistry(ctx)
+		if reg == nil {
+			debug.PrintStack()
+			log.Logger(context.Background()).Warn("Starting clients pool registry watcher with empty registry, will use default")
+		}
 		go func() {
 			e := pool.watchRegistry(reg)
 			if e != nil {
@@ -122,6 +128,10 @@ func (p *ClientsPool) Close() {
 	if p.confWatcher != nil {
 		p.confWatcher.Stop()
 	}
+}
+
+func (p *ClientsPool) GetRuntimeCtx() context.Context {
+	return p.ctx
 }
 
 // GetTreeClient returns the internal NodeProviderClient pointing to the TreeService.
@@ -256,7 +266,6 @@ func (p *ClientsPool) watchRegistry(reg registry.Registry) error {
 			return err
 		}
 		reg = defaultReg
-		log.Logger(context.Background()).Warn("Starting clients pool registry watcher with empty registry, will use default")
 	}
 
 	w, err := reg.Watch(registry.WithType(pb.ItemType_SERVICE))
