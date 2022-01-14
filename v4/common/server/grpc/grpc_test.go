@@ -175,7 +175,7 @@ func TestServiceRegistry(t *testing.T) {
 	//}()
 
 	conn2 := cgrpc.GetClientConnFromCtx(ctx, "test.service", cgrpc.WithDialOptions(
-		grpc.WithResolvers(NewBuilder(reg)),
+		grpc.WithResolvers(cgrpc.NewBuilder(reg)),
 	))
 
 	cli1 := helloworld.NewGreeterClient(conn2)

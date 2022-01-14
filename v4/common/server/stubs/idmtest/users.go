@@ -43,7 +43,7 @@ func NewUsersService(users ...*idm.User) (grpc.ClientConnInterface, error) {
 	mockDAO := user.NewDAO(sqlDao)
 	var options = configx.New()
 	if err := mockDAO.Init(options); err != nil {
-		return nil, fmt.Errorf("could not start test: unable to initialise Users DAO, error: ", err)
+		return nil, fmt.Errorf("could not start test: unable to initialise Users DAO, error: %v", err)
 	}
 
 	serv := &idm.UserServiceStub{

@@ -22,6 +22,7 @@ package archive
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/config/mock"
 	"io"
 	"io/ioutil"
 	"os"
@@ -401,6 +402,7 @@ func TestReader_ExtractAll(t *testing.T) {
 
 	Convey("ExtractAllZip", t, func() {
 
+		So(mock.RegisterMockConfig(), ShouldBeNil)
 		archiveNode, tmpArchive, e := getTempArchive("zip")
 		So(e, ShouldBeNil)
 		defer os.Remove(tmpArchive)

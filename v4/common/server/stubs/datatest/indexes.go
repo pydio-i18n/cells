@@ -49,7 +49,7 @@ func NewIndexService(dsName string, nodes ...*tree.Node) (grpc.ClientConnInterfa
 	mockDAO := index.NewDAO(sqlDao)
 	var options = configx.New()
 	if err := mockDAO.Init(options); err != nil {
-		return nil, fmt.Errorf("could not start test: unable to initialise index DAO, error: ", err)
+		return nil, fmt.Errorf("could not start test: unable to initialise index DAO, error: %v", err)
 	}
 
 	ts := srv.NewTreeServer(&object.DataSource{Name: dsName}, common.ServiceGrpcNamespace_+common.ServiceTree, mockDAO.(index.DAO), log.Logger(context.Background()))

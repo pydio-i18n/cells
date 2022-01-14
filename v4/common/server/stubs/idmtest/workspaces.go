@@ -43,7 +43,7 @@ func NewWorkspacesService(ww ...*idm.Workspace) (grpc.ClientConnInterface, error
 	mockDAO := workspace.NewDAO(sqlDao)
 	var options = configx.New()
 	if err := mockDAO.Init(options); err != nil {
-		return nil, fmt.Errorf("could not start test: unable to initialise WS DAO, error: ", err)
+		return nil, fmt.Errorf("could not start test: unable to initialise WS DAO, error: %v", err)
 	}
 
 	serv := &idm.WorkspaceServiceStub{

@@ -43,7 +43,7 @@ func NewACLService(acls ...*idm.ACL) (grpc.ClientConnInterface, error) {
 	mockDAO := acl.NewDAO(sqlDao)
 	var options = configx.New()
 	if err := mockDAO.Init(options); err != nil {
-		return nil, fmt.Errorf("could not start test: unable to initialise DAO, error: ", err)
+		return nil, fmt.Errorf("could not start test: unable to initialise DAO, error: %v", err)
 	}
 
 	h := srv.NewHandler(nil, mockDAO.(acl.DAO))

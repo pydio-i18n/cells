@@ -44,7 +44,7 @@ func NewMetaService(nodes ...*tree.Node) (grpc.ClientConnInterface, error) {
 	mockDAO := meta.NewDAO(sqlDao)
 	var options = configx.New()
 	if err := mockDAO.Init(options); err != nil {
-		return nil, fmt.Errorf("could not start test: unable to initialise index DAO, error: ", err)
+		return nil, fmt.Errorf("could not start test: unable to initialise index DAO, error: %v", err)
 	}
 
 	ts := srv.NewMetaServer(context.Background(), mockDAO.(meta.DAO))

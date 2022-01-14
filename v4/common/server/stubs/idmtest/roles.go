@@ -43,7 +43,7 @@ func NewRolesService(roles ...*idm.Role) (grpc.ClientConnInterface, error) {
 	mockRDAO := role.NewDAO(sqlDao2)
 	var options = configx.New()
 	if err := mockRDAO.Init(options); err != nil {
-		return nil, fmt.Errorf("could not start test: unable to initialise roles DAO, error: ", err)
+		return nil, fmt.Errorf("could not start test: unable to initialise roles DAO, error: %v", err)
 	}
 
 	serv := &idm.RoleServiceStub{

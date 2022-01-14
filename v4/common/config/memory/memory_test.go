@@ -6,12 +6,17 @@ import (
 	"testing"
 
 	"github.com/pydio/cells/v4/common/config"
+	c "github.com/smartystreets/goconvey/convey"
 )
 
 func TestInit(t *testing.T) {
-	ctx := context.Background()
-	conf, err := config.OpenStore(ctx, "memory:///")
+	c.Convey("Test memory config", t, func() {
 
-	conf.Set("")
-	fmt.Println(conf)
+		ctx := context.Background()
+		conf, err := config.OpenStore(ctx, "memory:///")
+		c.So(err, c.ShouldBeNil)
+
+		conf.Set("")
+		fmt.Println(conf)
+	})
 }

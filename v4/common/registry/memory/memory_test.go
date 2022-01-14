@@ -1,10 +1,13 @@
+// +build ignore
+
 package memory
 
 import (
 	"fmt"
-	"github.com/pydio/cells/v4/common/registry"
 	"runtime"
 	"testing"
+
+	"github.com/pydio/cells/v4/common/registry"
 )
 
 func TestMemory(t *testing.T) {

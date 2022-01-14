@@ -150,10 +150,11 @@ func NewS3Mock(bucketName ...string) *Client {
 		bName = bucketName[0]
 	}
 	client := &Client{
-		Mc:       mock,
-		Bucket:   bName,
-		RootPath: "",
-		options:  model.EndpointOptions{BrowseOnly: true},
+		globalContext: context.Background(),
+		Mc:            mock,
+		Bucket:        bName,
+		RootPath:      "",
+		options:       model.EndpointOptions{BrowseOnly: true},
 	}
 	return client
 }
