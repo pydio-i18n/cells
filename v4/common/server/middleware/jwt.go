@@ -25,48 +25,16 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/pydio/cells/v4/common/service/errors"
-
-	"github.com/micro/micro/v3/service/server"
-
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth"
-	"github.com/pydio/cells/v4/common/auth/claim"
 	"github.com/pydio/cells/v4/common/log"
+	"github.com/pydio/cells/v4/common/service/errors"
 )
 
 func isRestApiPublicMethod(r *http.Request) bool {
 	return r.Method == "GET" && strings.HasPrefix(r.RequestURI, "/frontend/state")
-}
-
-/*
-func newClaimsProvider(service micro.Service) error {
-
-	var options []micro.Option
-
-	options = append(options, micro.WrapHandler(NewClaimsHandlerWrapper()))
-
-	service.Init(options...)
-
-	return nil
-}
-*/
-
-// NewClaimsHandlerWrapper decodes json claims passed via context metadata ( = headers ) and
-// sets Claims as a proper value in the context
-func NewClaimsHandlerWrapper() server.HandlerWrapper {
-	return func(h server.HandlerFunc) server.HandlerFunc {
-		return func(ctx context.Context, req server.Request, rsp interface{}) error {
-			if claims, exists := auth.ClaimsFromMetadata(ctx); exists {
-				ctx = context.WithValue(ctx, claim.ContextKey, claims)
-			}
-			err := h(ctx, req, rsp)
-
-			return err
-		}
-	}
 }
 
 // HttpWrapperJWT captures and verifies a JWT token if it's present in the headers.

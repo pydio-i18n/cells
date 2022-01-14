@@ -22,17 +22,29 @@ package service
 
 import (
 	"context"
+	"crypto/tls"
+	"time"
 
 	"google.golang.org/grpc"
-
-	"github.com/micro/micro/v3/service/registry"
 )
+
+type Options struct {
+	Addrs     []string
+	Timeout   time.Duration
+	Secure    bool
+	TLSConfig *tls.Config
+	// Other options for implementations of the interface
+	// can be stored in a context
+	Context context.Context
+}
+
+type Option func(*Options)
 
 type connKey struct{}
 
 // WithConn sets the gRPC connection
-func WithConn(c grpc.ClientConnInterface) registry.Option {
-	return func(o *registry.Options) {
+func WithConn(c grpc.ClientConnInterface) Option {
+	return func(o *Options) {
 		if o.Context == nil {
 			o.Context = context.Background()
 		}

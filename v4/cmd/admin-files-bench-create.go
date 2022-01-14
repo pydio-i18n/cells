@@ -24,10 +24,10 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 	"path"
 	"time"
 
-	"github.com/pborman/uuid"
 	"github.com/spf13/cobra"
 
 	"github.com/pydio/cells/v4/common/auth"

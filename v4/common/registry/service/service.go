@@ -29,7 +29,6 @@ import (
 
 	"google.golang.org/grpc"
 
-	mregistry "github.com/micro/micro/v3/service/registry"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/utils/std"
@@ -90,7 +89,7 @@ var (
 )
 
 type serviceRegistry struct {
-	opts mregistry.Options
+	opts Options
 	// name of the registry
 	name string
 	// address
@@ -119,7 +118,7 @@ func (s *serviceRegistry) callOpts() []grpc.CallOption {
 	return opts
 }
 
-func (s *serviceRegistry) Init(opts ...mregistry.Option) error {
+func (s *serviceRegistry) Init(opts ...Option) error {
 	for _, o := range opts {
 		o(&s.opts)
 	}
@@ -141,7 +140,7 @@ func (s *serviceRegistry) Init(opts ...mregistry.Option) error {
 	return nil
 }
 
-func (s *serviceRegistry) Options() mregistry.Options {
+func (s *serviceRegistry) Options() Options {
 	return s.opts
 }
 
@@ -262,8 +261,8 @@ func (s *serviceRegistry) String() string {
 }
 
 // NewRegistry returns a new registry service client
-func NewRegistry(opts ...mregistry.Option) registry.Registry {
-	var options mregistry.Options
+func NewRegistry(opts ...Option) registry.Registry {
+	var options Options
 	for _, o := range opts {
 		o(&options)
 	}

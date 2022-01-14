@@ -57,7 +57,6 @@ require (
 	github.com/manifoldco/promptui v0.8.0
 	github.com/matcornic/hermes/v2 v2.1.0
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
-	github.com/micro/micro/v3 v3.6.0
 	github.com/minio/cli v1.22.0
 	github.com/minio/madmin-go v1.1.12
 	github.com/minio/minio v0.0.0-20211121184130-c791de0e1eae
@@ -72,7 +71,6 @@ require (
 	github.com/ory/ladon v1.2.0
 	github.com/ory/x v0.0.303
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/pborman/uuid v1.2.1
 	github.com/philopon/go-toposort v0.0.0-20170620085441-9be86dbd762f
 	github.com/pkg/errors v0.9.1
 	github.com/pydio/go v0.0.0-20191211170306-d00ac19450ef

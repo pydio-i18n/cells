@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	clientcontext "github.com/pydio/cells/v4/common/client/context"
 	"strings"
 	"time"
 
@@ -95,19 +96,20 @@ func init() {
 
 func createServerProvider(tls bool) service.ServerProvider {
 	return func(ctx context.Context) (server.Server, error) {
+		jwtModifier := createJwtCtxModifier(ctx)
 		grpcOptions := []grpc.ServerOption{
 			grpc.ChainUnaryInterceptor(
 				servicecontext.ContextUnaryServerInterceptor(servicecontext.SpanIncomingContext),
 				servicecontext.MetricsUnaryServerInterceptor(),
 				servicecontext.ContextUnaryServerInterceptor(servicecontext.MetaIncomingContext),
-				servicecontext.ContextUnaryServerInterceptor(jwtCtxModifier),
+				servicecontext.ContextUnaryServerInterceptor(jwtModifier),
 				servicecontext.ContextUnaryServerInterceptor(grpcMetaCtxModifier),
 			),
 			grpc.ChainStreamInterceptor(
 				servicecontext.ContextStreamServerInterceptor(servicecontext.SpanIncomingContext),
 				servicecontext.MetricsStreamServerInterceptor(),
 				servicecontext.ContextStreamServerInterceptor(servicecontext.MetaIncomingContext),
-				servicecontext.ContextStreamServerInterceptor(jwtCtxModifier),
+				servicecontext.ContextStreamServerInterceptor(jwtModifier),
 				servicecontext.ContextStreamServerInterceptor(grpcMetaCtxModifier),
 			),
 		}
@@ -140,24 +142,30 @@ func createServerProvider(tls bool) service.ServerProvider {
 }
 
 // jwtCtxModifier extracts x-pydio-bearer metadata to validate authentication
-func jwtCtxModifier(ctx context.Context) (context.Context, bool, error) {
+func createJwtCtxModifier(runtime context.Context) servicecontext.IncomingContextModifier {
 
-	jwtVerifier := auth.DefaultJWTVerifier()
-	meta, ok := metadata2.FromIncomingContext(ctx)
-	if !ok {
-		return ctx, false, nil
-	}
-	bearer := strings.Join(meta.Get("x-pydio-bearer"), "")
-	if bearer == "" {
-		return ctx, false, nil
-	}
+	return func(ctx context.Context) (context.Context, bool, error) {
 
-	if ct, _, err := jwtVerifier.Verify(ctx, bearer); err != nil {
-		log.Auditer(ctx).Error("Blocked invalid JWT", log.GetAuditId(common.AuditInvalidJwt))
-		return ctx, false, err
-	} else {
-		log.Logger(ctx).Debug("Got valid Claims from Bearer!")
-		return ct, true, nil
+		ctx = clientcontext.WithClientConn(ctx, clientcontext.GetClientConn(runtime))
+
+		jwtVerifier := auth.DefaultJWTVerifier()
+		meta, ok := metadata2.FromIncomingContext(ctx)
+		if !ok {
+			return ctx, false, nil
+		}
+		bearer := strings.Join(meta.Get("x-pydio-bearer"), "")
+		if bearer == "" {
+			return ctx, false, nil
+		}
+
+		if ct, _, err := jwtVerifier.Verify(ctx, bearer); err != nil {
+			log.Auditer(ctx).Error("Blocked invalid JWT", log.GetAuditId(common.AuditInvalidJwt))
+			return ctx, false, err
+		} else {
+			log.Logger(ctx).Debug("Got valid Claims from Bearer!")
+			return ct, true, nil
+		}
+
 	}
 
 }

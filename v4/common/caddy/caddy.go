@@ -25,14 +25,12 @@ import (
 	"context"
 	"fmt"
 	"html/template"
-	"strings"
 	"sync"
 	"time"
 
 	caddy "github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig"
 	_ "github.com/caddyserver/caddy/v2/modules/caddyhttp/standard"
-	"github.com/micro/micro/v3/service/registry"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -47,10 +45,8 @@ const (
 )
 
 var (
-	mainCaddy = &Caddy{}
-	FuncMap   = template.FuncMap{
-		"urls": internalURLFromServices,
-	}
+	mainCaddy          = &Caddy{}
+	FuncMap            = template.FuncMap{}
 	restartRequired    bool
 	gatewayCtx         = servicecontext.WithServiceName(context.Background(), common.ServiceGatewayProxy)
 	LastKnownCaddyFile string
@@ -234,33 +230,7 @@ func (c *Caddy) GetTemplate() *template.Template {
 	return c.caddytemplate
 }
 
+// TODO v4
 func ServiceReady(name string) bool {
-	services, _ := registry.GetService(name)
-	for _, service := range services {
-		if len(service.Nodes) > 0 {
-			return true
-		}
-	}
-	return false
-}
-
-func internalURLFromServices(name string, uri ...string) string {
-	var res []string
-
-	services, _ := registry.GetService(name)
-
-	for _, service := range services {
-		for _, node := range service.Nodes {
-			res = append(res, fmt.Sprintf("%s%s", node.Address, strings.Join(uri, "")))
-		}
-	}
-
-	if len(res) == 0 {
-		go func() {
-			hooks.RestartChan <- true
-		}()
-		return "PENDING"
-	}
-
-	return strings.Join(res, " ")
+	return true
 }
