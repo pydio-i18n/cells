@@ -94,13 +94,17 @@ func (cc *clientConn) Invoke(ctx context.Context, method string, args interface{
 		}
 	}
 	md.Set(ckeys.TargetServiceName, cc.serviceName)
+	var cancel context.CancelFunc
 	if cc.callTimeout > 0 {
-		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, cc.callTimeout)
-		defer cancel()
+		// Todo v4: can we simply defer cancel() for Invoke ?
 	}
 	ctx = metadata.NewOutgoingContext(ctx, md)
-	return cc.ClientConnInterface.Invoke(ctx, method, args, reply, opts...)
+	er := cc.ClientConnInterface.Invoke(ctx, method, args, reply, opts...)
+	if er != nil && cancel != nil {
+		cancel()
+	}
+	return er
 }
 
 // NewStream begins a streaming RPC.
@@ -115,13 +119,16 @@ func (cc *clientConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, meth
 		}
 	}
 	md.Set(ckeys.TargetServiceName, cc.serviceName)
+	var cancel context.CancelFunc
 	if cc.callTimeout > 0 {
-		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, cc.callTimeout)
-		defer cancel()
 	}
 	ctx = metadata.NewOutgoingContext(ctx, md)
-	return cc.ClientConnInterface.NewStream(ctx, desc, method, opts...)
+	s, e := cc.ClientConnInterface.NewStream(ctx, desc, method, opts...)
+	if e != nil && cancel != nil {
+		cancel()
+	}
+	return s, e
 }
 
 // RegisterMock registers a stubbed ClientConnInterface for a given service

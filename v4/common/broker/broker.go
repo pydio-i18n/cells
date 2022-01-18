@@ -189,6 +189,7 @@ func (b *broker) Subscribe(ctx context.Context, topic string, handler Subscriber
 	if so.Context != nil {
 		mopts = append(mopts, SubscribeContext(so.Context))
 	}
+	// todo v4
 	if so.Queue != "" {
 		mopts = append(mopts, Queue(so.Queue))
 	}

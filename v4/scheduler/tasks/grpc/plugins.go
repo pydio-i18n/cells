@@ -49,7 +49,7 @@ func init() {
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceJobs, []string{}),
 			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
 				jobs.RegisterTaskServiceEnhancedServer(server, new(Handler))
-				multiplexer := tasks.NewSubscriber(ctx)
+				multiplexer := tasks.NewSubscriber(c)
 				multiplexer.Init()
 				go func() {
 					<-c.Done()
