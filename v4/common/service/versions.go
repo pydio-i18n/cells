@@ -65,7 +65,7 @@ func UpdateServiceVersion(opts *ServiceOptions) error {
 	newVersion, _ := version.NewVersion(opts.Version)
 	lastVersion, e := lastKnownVersion(opts.Name)
 	if e != nil {
-		return e
+		return fmt.Errorf("cannot update service version for %s (%v)", opts.Name, e)
 	}
 
 	writeVersion, err := applyMigrations(opts.Context, lastVersion, newVersion, opts.Migrations)
@@ -74,7 +74,10 @@ func UpdateServiceVersion(opts *ServiceOptions) error {
 			log.Logger(opts.Context).Error("could not write version file", zap.Error(e))
 		}
 	}
-	return err
+	if err != nil {
+		return fmt.Errorf("cannot update service version for %s (%v)", opts.Name, err)
+	}
+	return nil
 }
 
 // lastKnownVersion looks on this server if there was a previous version of this service

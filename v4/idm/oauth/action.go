@@ -23,6 +23,8 @@ package oauth
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/service/errors"
+	"go.uber.org/zap"
 	"time"
 
 	"github.com/pydio/cells/v4/common"
@@ -55,7 +57,8 @@ func InsertPruningJob(ctx context.Context) error {
 		cli := jobs.NewJobServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceJobs, grpc.WithCallTimeout(grpc.CallTimeoutShort)))
 		if resp, e := cli.GetJob(ctx, &jobs.GetJobRequest{JobID: pruneTokensActionName}); e == nil && resp.Job != nil {
 			return nil // Already exists
-		} else if e != nil {
+		} else if e != nil && errors.FromError(e).Code != 404 {
+			log.Logger(ctx).Info("Insert pruning job: jobs service not ready yet :"+e.Error(), zap.Any("err", errors.FromError(e)))
 			return e // not ready yet, retry
 		}
 		log.Logger(ctx).Info("Inserting pruning job for revoked token and reset password tokens")
@@ -74,7 +77,7 @@ func InsertPruningJob(ctx context.Context) error {
 		}})
 
 		return e
-	}, 5*time.Second)
+	}, 5*time.Second, 1*time.Minute)
 }
 
 var (
