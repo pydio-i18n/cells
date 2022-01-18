@@ -79,7 +79,9 @@ func FirstRun(ctx context.Context) error {
 			Description: "User personal data",
 			Slug:        "personal-files",
 		}
-		createWs(ctx, wsClient, ws, "my-files", "my-files")
+		if er := createWs(ctx, wsClient, ws, "my-files", "my-files"); er != nil {
+			return er
+		}
 	}
 
 	if commonDS != "" {
@@ -90,7 +92,9 @@ func FirstRun(ctx context.Context) error {
 			Description: "Data shared by all users",
 			Slug:        "common-files",
 		}
-		createWs(ctx, wsClient, ws, "DATASOURCE:"+commonDS, commonDS)
+		if er := createWs(ctx, wsClient, ws, "DATASOURCE:"+commonDS, commonDS); er != nil {
+			return er
+		}
 
 	}
 
@@ -111,7 +115,6 @@ func createWs(ctx context.Context, wsClient idm.WorkspaceServiceClient, ws *idm.
 		Limit:      1,
 	}})
 	if e == nil {
-		defer rC.CloseSend()
 		for {
 			resp, er := rC.Recv()
 			if er != nil {
@@ -134,7 +137,7 @@ func createWs(ctx context.Context, wsClient idm.WorkspaceServiceClient, ws *idm.
 		{NodeID: rootUuid, Action: &idm.ACLAction{Name: permissions.AclWsrootActionName, Value: rootPath}, WorkspaceID: ws.UUID},
 		{NodeID: rootUuid, Action: permissions.AclRecycleRoot, WorkspaceID: ws.UUID},
 	}
-	std.Retry(ctx, func() error {
+	return std.Retry(ctx, func() error {
 		log.Logger(ctx).Info("Settings ACLS for workspace")
 		aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 		for _, acl := range acls {
@@ -146,5 +149,4 @@ func createWs(ctx context.Context, wsClient idm.WorkspaceServiceClient, ws *idm.
 		return nil
 	}, 9*time.Second, 30*time.Second)
 
-	return nil
 }
