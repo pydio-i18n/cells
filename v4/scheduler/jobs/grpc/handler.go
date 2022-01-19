@@ -35,14 +35,9 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	proto "github.com/pydio/cells/v4/common/proto/jobs"
 	log2 "github.com/pydio/cells/v4/common/proto/log"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/scheduler/jobs"
 	"github.com/pydio/cells/v4/scheduler/lang"
-)
-
-var (
-	bgContext = servicecontext.WithServiceName(context.Background(), common.ServiceGrpcNamespace_+common.ServiceJobs)
 )
 
 // JobsHandler implements the JobService API
@@ -61,7 +56,7 @@ type JobsHandler struct {
 }
 
 // NewJobsHandler creates a new JobsHandler
-func NewJobsHandler(store jobs.DAO, messageRepository log3.MessageRepository) *JobsHandler {
+func NewJobsHandler(runtime context.Context, store jobs.DAO, messageRepository log3.MessageRepository) *JobsHandler {
 	j := &JobsHandler{
 		store:        store,
 		putTaskChan:  make(chan *proto.Task),
@@ -69,6 +64,7 @@ func NewJobsHandler(store jobs.DAO, messageRepository log3.MessageRepository) *J
 		jobsBuffLock: &sync.Mutex{},
 		stop:         make(chan bool),
 	}
+	j.RuntimeCtx = runtime
 	j.Handler.Repo = messageRepository
 	j.Handler.HandlerName = ServiceName
 	go j.watchPutTaskChan()
@@ -95,11 +91,11 @@ func (j *JobsHandler) PutJob(ctx context.Context, request *proto.PutJobRequest) 
 	}
 	response := &proto.PutJobResponse{}
 	response.Job = request.Job
-	broker.MustPublish(bgContext, common.TopicJobConfigEvent, &proto.JobChangeEvent{
+	broker.MustPublish(j.RuntimeCtx, common.TopicJobConfigEvent, &proto.JobChangeEvent{
 		JobUpdated: request.Job,
 	})
 	if request.Job.AutoStart && !request.Job.Inactive {
-		broker.MustPublish(bgContext, common.TopicTimerEvent, &proto.JobTriggerEvent{
+		broker.MustPublish(j.RuntimeCtx, common.TopicTimerEvent, &proto.JobTriggerEvent{
 			JobID:  response.Job.ID,
 			RunNow: true,
 		})
@@ -129,11 +125,11 @@ func (j *JobsHandler) DeleteJob(ctx context.Context, request *proto.DeleteJobReq
 			response.Success = false
 			return nil, err
 		}
-		broker.MustPublish(bgContext, common.TopicJobConfigEvent, &proto.JobChangeEvent{
+		broker.MustPublish(j.RuntimeCtx, common.TopicJobConfigEvent, &proto.JobChangeEvent{
 			JobRemoved: request.JobID,
 		})
 		go func() {
-			j.DeleteLogsFor(bgContext, request.JobID)
+			j.DeleteLogsFor(j.RuntimeCtx, request.JobID)
 		}()
 		response.Success = true
 
@@ -181,11 +177,11 @@ func (j *JobsHandler) DeleteJob(ctx context.Context, request *proto.DeleteJobReq
 			if e := j.store.DeleteJob(id); e == nil {
 				deleted++
 				log.Logger(ctx).Info("Deleting AutoClean Job " + id)
-				broker.MustPublish(bgContext, common.TopicJobConfigEvent, &proto.JobChangeEvent{
+				broker.MustPublish(j.RuntimeCtx, common.TopicJobConfigEvent, &proto.JobChangeEvent{
 					JobRemoved: id,
 				})
 				go func() {
-					j.DeleteLogsFor(bgContext, id)
+					j.DeleteLogsFor(j.RuntimeCtx, id)
 				}()
 
 			}
@@ -240,7 +236,7 @@ func (j *JobsHandler) PutTask(ctx context.Context, request *proto.PutTaskRequest
 	T := lang.Bundle().GetTranslationFunc()
 	job.Label = T(job.Label)
 	if !job.TasksSilentUpdate {
-		broker.MustPublish(bgContext, common.TopicJobTaskEvent, &proto.TaskChangeEvent{
+		broker.MustPublish(j.RuntimeCtx, common.TopicJobTaskEvent, &proto.TaskChangeEvent{
 			TaskUpdated: request.Task,
 			Job:         job,
 		})
@@ -329,7 +325,7 @@ func (j *JobsHandler) PutTaskStream(streamer proto.JobService_PutTaskStreamServe
 		T := lang.Bundle().GetTranslationFunc()
 		tJob.Label = T(tJob.Label)
 		if !tJob.TasksSilentUpdate {
-			broker.MustPublish(bgContext, common.TopicJobTaskEvent, &proto.TaskChangeEvent{
+			broker.MustPublish(j.RuntimeCtx, common.TopicJobTaskEvent, &proto.TaskChangeEvent{
 				TaskUpdated: request.Task,
 				Job:         tJob,
 			})
@@ -403,7 +399,7 @@ func (j *JobsHandler) DeleteTasks(ctx context.Context, request *proto.DeleteTask
 			}
 			response.Deleted = append(response.Deleted, tasks...)
 			go func(jI string, tt ...string) {
-				j.DeleteLogsFor(bgContext, jI, tt...)
+				j.DeleteLogsFor(j.RuntimeCtx, jI, tt...)
 			}(jId, tasks...)
 		}
 		return response, nil
@@ -413,7 +409,7 @@ func (j *JobsHandler) DeleteTasks(ctx context.Context, request *proto.DeleteTask
 		if e := j.store.DeleteTasks(request.JobId, request.TaskID); e == nil {
 			response.Deleted = append(response.Deleted, request.TaskID...)
 			go func() {
-				j.DeleteLogsFor(bgContext, request.JobId, request.TaskID...)
+				j.DeleteLogsFor(j.RuntimeCtx, request.JobId, request.TaskID...)
 			}()
 			return response, nil
 		} else {

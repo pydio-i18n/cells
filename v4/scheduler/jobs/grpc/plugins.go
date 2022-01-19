@@ -97,7 +97,7 @@ func init() {
 				if err != nil {
 					return err
 				}
-				handler := NewJobsHandler(store, logStore)
+				handler := NewJobsHandler(c, store, logStore)
 				proto.RegisterJobServiceEnhancedServer(server, handler)
 				log2.RegisterLogRecorderEnhancedServer(server, handler)
 				sync.RegisterSyncEndpointEnhancedServer(server, handler)
