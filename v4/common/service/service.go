@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -168,6 +169,9 @@ func buildForkStartParams(serviceName string) []string {
 
 	r := fmt.Sprintf("grpc://%s", viper.GetString("grpc.address"))
 	b := fmt.Sprintf("grpc://%s", viper.GetString("grpc.address"))
+	if !strings.HasPrefix(viper.GetString("broker"), "mem://") {
+		b = viper.GetString("broker")
+	}
 
 	params := []string{
 		"start",

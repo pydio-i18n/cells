@@ -173,8 +173,6 @@ ENVIRONMENT
 			return err
 		}
 
-		initConfig()
-
 		replaceKeys := map[string]string{
 			"yaml": "install_yaml",
 			"json": "install_json",
@@ -188,6 +186,8 @@ ENVIRONMENT
 			}
 			viper.BindPFlag(key, flag)
 		})
+
+		initConfig()
 
 		// Manually bind to viper instead of flags.StringVar, flags.BoolVar, etc
 		niBindUrl = viper.GetString("bind")

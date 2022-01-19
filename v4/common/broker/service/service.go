@@ -331,17 +331,6 @@ func NewSubscription(path string, opts ...Option) (*pubsub.Subscription, error) 
 		if err := cli.Send(req); err != nil {
 			return nil, err
 		}
-
-		go func() {
-			for {
-				resp, err := cli.Recv()
-				if err != nil {
-					return
-				}
-
-				ch <- resp.Messages
-			}
-		}()
 	}
 
 	return pubsub.NewSubscription(&subscription{

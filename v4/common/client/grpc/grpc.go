@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"runtime/debug"
 	"strings"
 	"time"
 
@@ -50,8 +49,6 @@ func NewClientConn(serviceName string, opt ...Option) grpc.ClientConnInterface {
 
 	if opts.ClientConn == nil || opts.DialOptions != nil {
 		if opts.Registry == nil {
-			debug.PrintStack()
-
 			reg, err := registry.OpenRegistry(context.Background(), viper.GetString("registry"))
 			if err != nil {
 				return nil

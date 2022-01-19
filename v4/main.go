@@ -59,7 +59,8 @@ import (
 	// Gateways
 	_ "github.com/pydio/cells/v4/gateway/data"
 	_ "github.com/pydio/cells/v4/gateway/dav"
-	_ "github.com/pydio/cells/v4/gateway/grpc"
+
+	// _ "github.com/pydio/cells/v4/gateway/grpc"
 	_ "github.com/pydio/cells/v4/gateway/websocket/api"
 	_ "github.com/pydio/cells/v4/gateway/wopi"
 
@@ -88,7 +89,7 @@ import (
 	_ "github.com/pydio/cells/v4/scheduler/jobs/rest"
 	_ "github.com/pydio/cells/v4/scheduler/tasks/grpc"
 
-	// _ "github.com/pydio/cells/v4/scheduler/timer/grpc"
+	_ "github.com/pydio/cells/v4/scheduler/timer/grpc"
 
 	// Scheduler Actions
 	_ "github.com/pydio/cells/v4/broker/activity/actions"
@@ -105,6 +106,8 @@ import (
 	// Brokers
 	_ "github.com/pydio/cells/v4/common/broker/service"
 	_ "gocloud.dev/pubsub/mempubsub"
+	_ "gocloud.dev/pubsub/natspubsub"
+	_ "gocloud.dev/pubsub/rabbitpubsub"
 )
 
 func main() {

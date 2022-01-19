@@ -61,7 +61,7 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 		cc:                   cc,
 		m:                    map[string][]string{},
 		disableServiceConfig: opts.DisableServiceConfig,
-		updatedStateTimer:    time.NewTimer(100 * time.Millisecond),
+		updatedStateTimer:    time.NewTimer(50 * time.Millisecond),
 	}
 
 	// fmt.Println("Building much ? ")
@@ -94,7 +94,6 @@ func (cr *cellsResolver) watch() {
 		return
 	}
 
-	fmt.Println("Initial Registry watch done")
 	for {
 		r, err := w.Next()
 		if err != nil {
@@ -110,7 +109,7 @@ func (cr *cellsResolver) watch() {
 				// cr.m[n.Address()[0]] = append(cr.m[n.Address()[0]], s.Name())
 			}
 
-			cr.updatedStateTimer.Reset(1 * time.Second)
+			cr.updatedStateTimer.Reset(50 * time.Millisecond)
 		}
 	}
 }

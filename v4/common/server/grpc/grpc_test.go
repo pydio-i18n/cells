@@ -3,6 +3,9 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"time"
+
+	clientcontext "github.com/pydio/cells/v4/common/client/context"
 
 	"log"
 	"net"
@@ -15,7 +18,6 @@ import (
 	cgrpc "github.com/pydio/cells/v4/common/client/grpc"
 	pbregistry "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
-	registryservice "github.com/pydio/cells/v4/common/registry/service"
 	servercontext "github.com/pydio/cells/v4/common/server/context"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
@@ -115,18 +117,28 @@ func TestServiceRegistry(t *testing.T) {
 		log.Fatal("could not create memory registry", err)
 	}
 
-	listenerApp1 := createApp1(mem)
+	listenerApp1 := createApp1(&delayedRegistry{mem})
 
-	conn := cgrpc.GetClientConnFromCtx(ctx, "test.registry", cgrpc.WithDialOptions(
-		grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
-			fmt.Println("And the address is ? ", addr)
-			return listenerApp1.Dial()
-		})))
-	reg := registryservice.NewRegistry(registryservice.WithConn(conn))
+	conn, err := grpc.Dial("cells:///", grpc.WithInsecure(), grpc.WithResolvers(cgrpc.NewBuilder(mem)), grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
+		fmt.Println("And the address is ? ", addr)
+		return listenerApp1.Dial()
+	}))
+	if err != nil {
+		log.Fatal("no conn", err)
+	}
 
-	createApp2(reg)
+	ctx = clientcontext.WithClientConn(ctx, conn)
 
-	fmt.Println(listenerApp1, reg)
+	cli1 := helloworld.NewGreeterClient(cgrpc.GetClientConnFromCtx(ctx, "test.registry"))
+	resp1, err1 := cli1.SayHello(ctx, &helloworld.HelloRequest{Name: "test"})
+
+	fmt.Println(resp1, err1)
+
+	//reg := registryservice.NewRegistry(registryservice.WithConn(conn))
+	//
+	//createApp2(reg)
+	//
+	//fmt.Println(listenerApp1, reg)
 
 	//cgrpc.RegisterMock("test.registry", discoverytest.NewRegistryService())
 	//ctx := context.Background()
@@ -174,17 +186,32 @@ func TestServiceRegistry(t *testing.T) {
 	//	}
 	//}()
 
+<<<<<<< Updated upstream
 	conn2 := cgrpc.GetClientConnFromCtx(ctx, "test.service", cgrpc.WithDialOptions(
 		grpc.WithResolvers(cgrpc.NewBuilder(reg)),
 	))
+=======
+	//conn2 := cgrpc.GetClientConnFromCtx(ctx, "test.service", cgrpc.WithDialOptions(
+	//	grpc.WithResolvers(cgrpc.NewBuilder(reg)),
+	//))
+>>>>>>> Stashed changes
 
-	cli1 := helloworld.NewGreeterClient(conn2)
-	resp1, err1 := cli1.SayHello(ctx, &helloworld.HelloRequest{Name: "test"})
-
-	fmt.Println(resp1, err1)
 	//
 	//cli2 := helloworld.NewGreeterClient(conn)
 	//resp2, err2 := cli2.SayHello(ctx, &helloworld.HelloRequest{Name: "test2"})
 	//
 	//fmt.Println(resp2, err2)
+}
+
+type delayedRegistry struct {
+	registry.Registry
+}
+
+func (r *delayedRegistry) Register(i registry.Item) error {
+	go func() {
+		<-time.After(5 * time.Second)
+		r.Registry.Register(i)
+	}()
+
+	return nil
 }

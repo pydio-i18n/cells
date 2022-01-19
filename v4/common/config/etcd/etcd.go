@@ -1,5 +1,3 @@
-// +build ignore
-
 /*
  * Copyright (c) 2019-2021. Abstrium SAS <team (at) pydio.com>
  * This file is part of Pydio Cells.
@@ -23,46 +21,78 @@
 package etcd
 
 import (
+	"bytes"
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/utils/configx"
 
-	"go.etcd.io/etcd/clientv3"
+	clientv3 "go.etcd.io/etcd/client/v3"
+
+	configx "github.com/pydio/cells/v4/common/utils/configx"
 )
 
 type etcd struct {
-	clientv3.Config
+	v configx.Values
+
+	path string
+	cli  *clientv3.Client
+
+	updates []chan struct{}
 }
 
-func NewSource(config clientv3.Config) configx.KVStore {
-	return &etcd{
-		Config: config,
+func NewSource(ctx context.Context, cli *clientv3.Client, path string) configx.Entrypoint {
+	v := configx.New(configx.WithJSON())
+
+	m := &etcd{
+		v:    v,
+		cli:  cli,
+		path: path,
+	}
+
+	go m.watch(ctx)
+
+	return m
+}
+
+func (m *etcd) watch(ctx context.Context) {
+	watcher := m.cli.Watch(ctx, m.path)
+
+	for {
+		select {
+		case resp, ok := <-watcher:
+			if !ok {
+				return
+			}
+			for _, ev := range resp.Events {
+				if err := m.v.Set(ev.Kv.Value); err != nil {
+					continue
+				}
+
+				for _, ch := range m.updates {
+					ch <- struct{}{}
+				}
+			}
+		}
 	}
 }
 
 func (m *etcd) Get() configx.Value {
-	v := configx.New()
+	v := configx.New(configx.WithJSON())
 
-	cli, err := clientv3.New(m.Config)
-	if err != nil {
-		return v
+	resp, _ := m.cli.Get(context.Background(), m.path, clientv3.WithLimit(1))
+
+	for _, kv := range resp.Kvs {
+		v.Set(kv.Value)
 	}
-	defer cli.Close()
-
-	resp, _ := cli.Get(context.Background(), "")
-	fmt.Println(resp)
 
 	return v
 }
 
-func (m *etcd) Set(data interface{}) error {
-	cli, err := clientv3.New(m.Config)
-	if err != nil {
-		return err
-	}
-	defer cli.Close()
+func (m *etcd) Val(path ...string) configx.Values {
+	return &values{Values: m.v.Val(path...), rootPath: m.path, cli: m.cli}
+}
 
-	resp, err := cli.Put(context.Background(), "", data.(string))
+func (m *etcd) Set(data interface{}) error {
+	resp, err := m.cli.Put(context.Background(), m.path, data.(string))
 	if err != nil {
 		return err
 	}
@@ -77,17 +107,57 @@ func (m *etcd) Del() error {
 }
 
 func (m *etcd) Watch(path ...string) (configx.Receiver, error) {
+	ch := make(chan struct{})
+
+	m.updates = append(m.updates, ch)
+
 	// For the moment do nothing
-	return &receiver{}, nil
+	return &receiver{
+		ch: ch,
+		p:  path,
+		v:  m.v.Val(path...),
+	}, nil
 }
 
-type receiver struct{}
-
-func (*receiver) Next() (configx.Values, error) {
-	select {}
-
-	return nil, nil
+type receiver struct {
+	ch chan struct{}
+	p  []string
+	v  configx.Values
 }
 
-func (*receiver) Stop() {
+func (r *receiver) Next() (configx.Values, error) {
+	select {
+	case <-r.ch:
+		v := r.v.Val(r.p...)
+		if bytes.Compare(v.Bytes(), r.v.Bytes()) != 0 {
+			r.v = v
+			return v, nil
+		}
+	}
+
+	return nil, fmt.Errorf("could not retrieve data")
+}
+
+func (r *receiver) Stop() {
+	close(r.ch)
+}
+
+type values struct {
+	cli *clientv3.Client
+
+	configx.Values
+	rootPath string
+}
+
+func (v *values) Set(data interface{}) error {
+	if err := v.Values.Set(data); err != nil {
+		return err
+	}
+
+	_, err := v.cli.Put(context.Background(), v.rootPath, v.Values.Val("#").String())
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
