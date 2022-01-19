@@ -4,19 +4,16 @@ go 1.16
 
 require (
 	cloud.google.com/go/kms v1.1.0 // indirect
-	cloud.google.com/go/pubsub v1.16.0 // indirect
-	cloud.google.com/go/storage v1.15.0 // indirect
-	github.com/Azure/azure-pipeline-go v0.2.3 // indirect
-	github.com/Azure/go-autorest/autorest/adal v0.9.15 // indirect
+	cloud.google.com/go/storage v1.18.2 // indirect
 	github.com/ajvb/kala v0.8.4
 	github.com/allegro/bigcache v1.2.1
-	github.com/aws/aws-sdk-go v1.40.34 // indirect
 	github.com/beevik/ntp v0.3.0
 	github.com/blevesearch/bleve v1.0.14
 	github.com/c2fo/testify v0.0.0-20150827203832-fba96363964a // indirect
 	github.com/caddyserver/caddy/v2 v2.4.5
 	github.com/cskr/pubsub v1.0.2
 	github.com/disintegration/imaging v1.6.2
+	github.com/docker/docker v20.10.12+incompatible // indirect
 	github.com/dustin/go-humanize v1.0.1-0.20200219035652-afde56e7acac
 	github.com/emicklei/go-restful v2.15.0+incompatible
 	github.com/fatih/color v1.13.0
@@ -102,9 +99,11 @@ require (
 	github.com/yvasiyarov/php_session_decoder v0.0.0-20180803065642-a065a3b0b7d1
 	github.com/zalando/go-keyring v0.1.1
 	go.etcd.io/bbolt v1.3.6
-	go.etcd.io/etcd/client/v3 v3.5.1 // indirect
+	go.etcd.io/etcd/client/v3 v3.5.0
 	go.uber.org/zap v1.19.1
 	gocloud.dev v0.20.0
+	gocloud.dev/pubsub/natspubsub v0.20.0
+	gocloud.dev/pubsub/rabbitpubsub v0.20.0
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
 	golang.org/x/net v0.0.0-20211020060615-d418f374d309

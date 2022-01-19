@@ -29,6 +29,8 @@ import (
 	"strconv"
 	"time"
 
+	"go.etcd.io/etcd/client/v3"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -40,7 +42,9 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	context_wrapper "github.com/pydio/cells/v4/common/log/context-wrapper"
 	"github.com/pydio/cells/v4/common/utils/filex"
+
 	// "github.com/pydio/cells/v4/common/config/remote"
+	"github.com/pydio/cells/v4/common/config/etcd"
 	"github.com/pydio/cells/v4/common/config/file"
 	"github.com/pydio/cells/v4/common/config/sql"
 )
@@ -152,6 +156,22 @@ func initConfig() (new bool) {
 	var versionsConfig config.Store
 
 	switch viper.GetString("config") {
+	case "etcd":
+		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile))
+		localConfig = config.New(localSource)
+
+		conn, err := clientv3.New(clientv3.Config{
+			Endpoints:   []string{"http://192.168.1.92:2379"},
+			DialTimeout: 2 * time.Second,
+		})
+		if err != nil {
+			log.Fatal("could not start etcd", zap.Error(err))
+		}
+
+		vaultConfig = config.New(etcd.NewSource(context.Background(), conn, "vault"))
+		defaultConfig = config.New(etcd.NewSource(context.Background(), conn, "config"))
+
+		config.RegisterLocal(localConfig)
 	case "mysql":
 		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile))
 

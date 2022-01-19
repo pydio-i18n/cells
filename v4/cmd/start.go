@@ -21,7 +21,13 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
+	"os"
+	"runtime/trace"
+	"time"
+
+	"github.com/pydio/cells/v4/common/server/caddy"
 
 	"github.com/pydio/cells/v4/common/broker"
 
@@ -36,7 +42,6 @@ import (
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/server"
-	"github.com/pydio/cells/v4/common/server/caddy"
 	servercontext "github.com/pydio/cells/v4/common/server/context"
 	"github.com/pydio/cells/v4/common/server/fork"
 	"github.com/pydio/cells/v4/common/server/generic"
@@ -83,6 +88,25 @@ to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
 
+		if !runtime.IsFork() {
+			f, err := os.Create("trace.out")
+			if err != nil {
+				panic(err)
+			}
+
+			err = trace.Start(f)
+			if err != nil {
+				panic(err)
+			}
+
+			go func() {
+				<-time.After(30 * time.Second)
+
+				fmt.Println("Finishing trace")
+				trace.Stop()
+				f.Close()
+			}()
+		}
 		// broker.Connect()
 
 		pluginsReg, err := registry.OpenRegistry(ctx, "memory:///?cache=shared")
