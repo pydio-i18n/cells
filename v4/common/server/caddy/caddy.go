@@ -3,34 +3,43 @@ package caddy
 import (
 	"bytes"
 	"context"
+	"fmt"
+	"go.uber.org/zap"
 	"html/template"
 	"net/http"
 	"net/http/pprof"
 	"os"
 	"path/filepath"
 	"reflect"
+	"time"
 
 	caddy "github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig"
 	_ "github.com/caddyserver/caddy/v2/modules/standard"
 
 	"github.com/pydio/cells/v4/common/config"
-	"github.com/pydio/cells/v4/common/proto/install"
+	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/server"
+	"github.com/pydio/cells/v4/common/server/caddy/hooks"
 	"github.com/pydio/cells/v4/common/server/caddy/mux"
 	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 const (
-	caddyfile = `
+	caddyRestartDebounce = 5 * time.Second
+	caddyfile            = `
 {
   auto_https disable_redirects
+  admin off
 }
 
 {{range .Sites}}
 {{$SiteWebRoot := .WebRoot}}
 {{$ExternalHost := .ExternalHost}}
+{{$Maintenance := .Maintenance}}
+{{$MaintenanceConditions := .MaintenanceConditions}}
 {{range .Binds}}{{.}} {{end}} {
+
 	root * "{{if $SiteWebRoot}}{{$SiteWebRoot}}{{else}}{{$.WebRoot}}{{end}}"
 
 	@list_buckets {
@@ -43,6 +52,17 @@ const (
 		request_header X-Real-IP {http.request.remote}
 		request_header X-Forwarded-Proto {http.request.scheme}
 
+		{{if $Maintenance}}
+		# Special redir for maintenance mode
+		@rmatcher {
+			{{range $MaintenanceConditions}}{{.}}
+			{{end}}
+			not path /maintenance.html
+		}
+		request_header X-Maintenance-Redirect "true"
+		redir @rmatcher /maintenance.html
+		{{end}}
+
 		# Special rewrite for s3 list buckets (always sent on root path)
 		# rewrite @list_buckets /io{path}
 
@@ -54,7 +74,6 @@ const (
 		mux
 	}
 
-
 	{{if .TLS}}tls {{.TLS}}{{end}}
 	{{if .TLSCert}}tls "{{.TLSCert}}" "{{.TLSKey}}"{{end}}
 }
@@ -63,22 +82,16 @@ const (
 )
 
 type Server struct {
-	id   string
-	name string
 	*http.ServeMux
-	Confs []byte
-}
+	id       string
+	name     string
+	serveDir string
+	rootCtx  context.Context
 
-type SiteConf struct {
-	*install.ProxyConfig
-	// Parsed values from proto oneOf
-	TLS     string
-	TLSCert string
-	TLSKey  string
-	// Parsed External host if any
-	ExternalHost string
-	// Custom Root for this site
-	WebRoot string
+	restartRequired bool
+	watchDone       chan struct{}
+
+	Confs []byte
 }
 
 func New(ctx context.Context, dir string) (server.Server, error) {
@@ -98,52 +111,72 @@ func New(ctx context.Context, dir string) (server.Server, error) {
 		caddy.ConfigAutosavePath = filepath.Join(caddyStorePath, "autosave.json")
 	}
 
-	// Creating temporary caddy file
-	sites, err := config.LoadSites()
-	if err != nil {
+	srv := &Server{
+		rootCtx:   ctx,
+		serveDir:  dir,
+		watchDone: make(chan struct{}, 1),
+		id:        "caddy-" + uuid.New(),
+		name:      "caddy",
+		ServeMux:  srvMUX,
+	}
+	if err := srv.ComputeConfs(); err != nil {
 		return nil, err
 	}
 
-	caddySites, err := SitesToCaddyConfigs(sites)
-	if err != nil {
-		return nil, err
-	}
+	go srv.watchReload()
 
-	tmpl, err := template.New("pydiocaddy").Parse(caddyfile)
-	if err != nil {
-		return nil, err
-	}
-
-	buf := bytes.NewBuffer([]byte{})
-	if err := tmpl.Execute(buf, struct {
-		Sites   []SiteConf
-		WebRoot string
-	}{
-		caddySites,
-		dir,
-	}); err != nil {
-		return nil, err
-	}
-
-	b := buf.Bytes()
-
-	// Load config directly from memory
-	adapter := caddyconfig.GetAdapter("caddyfile")
-	confs, _, err := adapter.Adapt(b, map[string]interface{}{})
-	if err != nil {
-		return nil, err
-	}
-
-	return server.NewServer(ctx, &Server{
-		id:       "caddy-" + uuid.New(),
-		name:     "caddy",
-		ServeMux: srvMUX,
-		Confs:    confs,
-	}), nil
+	return server.NewServer(ctx, srv), nil
 }
 
 func (s *Server) Serve() error {
 	return caddy.Load(s.Confs, true)
+}
+
+func (s *Server) ComputeConfs() error {
+	// Creating temporary caddy file
+	sites, err := config.LoadSites()
+	if err != nil {
+		return err
+	}
+
+	caddySites, err := SitesToCaddyConfigs(sites)
+	if err != nil {
+		return err
+	}
+
+	tmpl, err := template.New("pydiocaddy").Parse(caddyfile)
+	if err != nil {
+		return err
+	}
+
+	type TplData struct {
+		Sites   []SiteConf
+		WebRoot string
+	}
+	tplData := TplData{Sites: caddySites}
+	if s.serveDir != "" {
+		tplData.WebRoot = s.serveDir
+	}
+
+	buf := bytes.NewBuffer([]byte{})
+	if err := tmpl.Execute(buf, tplData); err != nil {
+		return err
+	}
+
+	b := buf.Bytes()
+	fmt.Println(string(b))
+
+	// Load config directly from memory
+	adapter := caddyconfig.GetAdapter("caddyfile")
+	confs, ww, err := adapter.Adapt(b, map[string]interface{}{})
+	if err != nil {
+		return err
+	}
+	for _, w := range ww {
+		log.Logger(s.rootCtx).Warn(w.String())
+	}
+	s.Confs = confs
+	return nil
 }
 
 func (s *Server) Type() server.ServerType {
@@ -151,6 +184,7 @@ func (s *Server) Type() server.ServerType {
 }
 
 func (s *Server) Stop() error {
+	close(s.watchDone)
 	return caddy.Stop()
 }
 
@@ -187,4 +221,30 @@ func (s *Server) As(i interface{}) bool {
 
 	*p = s.ServeMux
 	return true
+}
+
+func (s *Server) watchReload() {
+	for {
+		select {
+		case <-hooks.RestartChan:
+			log.Logger(context.Background()).Debug("Received Proxy Restart Event")
+			s.restartRequired = true
+		case <-time.After(caddyRestartDebounce):
+			if s.restartRequired {
+				log.Logger(context.Background()).Debug("Restarting Proxy Now")
+				s.restartRequired = false
+				e := s.ComputeConfs()
+				if e == nil {
+					e = caddy.Load(s.Confs, true)
+				}
+				if e != nil {
+					log.Logger(s.rootCtx).Error("Could not restart caddy", zap.Error(e))
+				}
+			}
+		case <-s.watchDone:
+			fmt.Println("Stopping hooks watcher for caddy confs")
+			return
+		}
+	}
+
 }

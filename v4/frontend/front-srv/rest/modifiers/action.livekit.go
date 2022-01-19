@@ -27,11 +27,7 @@ import (
 	"net/url"
 	"os"
 
-	"go.uber.org/zap"
-
-	"github.com/pydio/cells/v4/common/caddy/hooks"
 	"github.com/pydio/cells/v4/common/config"
-	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
 )
 
@@ -58,18 +54,22 @@ type actionLivekitData struct {
 func init() {
 	if os.Getenv("CELLS_ENABLE_LIVEKIT") != "" {
 		plugins.Register("main", func(ctx context.Context) {
-			hooks.RegisterPluginTemplate(
-				playLK,
-				[]string{"frontend", "plugin", "action.livekit"},
-				"/rtc",
-			)
+			/*
+				// TODO V4
+				hooks.RegisterPluginTemplate(
+					playLK,
+					[]string{"frontend", "plugin", "action.livekit"},
+					"/rtc",
+				)
 
-			tmpl, err := template.New("caddyfile").Parse(actionLivekitTemplateStr)
-			if err != nil {
-				log.Fatal("Could not read template ", zap.Error(err))
-			}
+				tmpl, err := template.New("caddyfile").Parse(actionLivekitTemplateStr)
+				if err != nil {
+					log.Fatal("Could not read template ", zap.Error(err))
+				}
 
-			actionLivekitTemplate = tmpl
+				actionLivekitTemplate = tmpl
+
+			*/
 		})
 	}
 }

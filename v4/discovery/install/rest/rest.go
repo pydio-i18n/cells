@@ -25,14 +25,13 @@ import (
 	"github.com/pydio/cells/v4/common/config"
 	"time"
 
-
 	"github.com/emicklei/go-restful"
 	"github.com/jcuga/golongpoll"
 	"go.uber.org/zap"
 
-	"github.com/pydio/cells/v4/common/caddy/hooks"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/install"
+	"github.com/pydio/cells/v4/common/server/caddy/hooks"
 	"github.com/pydio/cells/v4/common/service"
 	"github.com/pydio/cells/v4/discovery/install/lib"
 )

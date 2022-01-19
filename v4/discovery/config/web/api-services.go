@@ -378,6 +378,7 @@ func (h *Handler) serviceToRest(srv registry.Service, running bool) *ctl.Service
 		Status: status,
 		Tag:    strings.Join(srv.Tags(), ", "),
 		//Description:  srv.Description(), // TODO v4
+		// Description: srv.Metadata()["description"], ???
 		Controllable: controllable,
 		Version:      srv.Version(),
 		RunningPeers: []*ctl.Peer{},

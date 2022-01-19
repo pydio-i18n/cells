@@ -26,6 +26,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/lpar/gzipped"
 	"go.uber.org/zap"
@@ -37,6 +38,7 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/front"
+	"github.com/pydio/cells/v4/common/server/caddy/hooks"
 	"github.com/pydio/cells/v4/common/service"
 	"github.com/pydio/cells/v4/common/service/frontend"
 	"github.com/pydio/cells/v4/frontend/front-srv/web/index"
@@ -73,14 +75,23 @@ func init() {
 					Up:            DropLegacyStatics,
 				},
 			}),
+			service.AfterStart(func(ctx context.Context) error {
+				return nil
+				// TODO V4 - Is this finally required ?
+				return hooks.Restart()
+			}),
 			service.WithHTTP(func(ctx context.Context, mux *http.ServeMux) error {
 				httpFs := http.FS(frontend.GetPluginsFS())
 
 				fs := gzipped.FileServer(httpFs)
+				wrap := func(handler http.Handler) http.Handler {
+					return http.TimeoutHandler(handler, 15*time.Second, "There was a timeout while serving the frontend resources...")
+				}
+				wfs := wrap(fs)
 
-				mux.Handle("/index.json", fs)
-				mux.Handle("/plug/", http.StripPrefix("/plug/", fs))
-				indexHandler := index.NewIndexHandler(ctx)
+				mux.Handle("/index.json", wfs)
+				mux.Handle("/plug/", http.StripPrefix("/plug/", wfs))
+				indexHandler := wrap(index.NewIndexHandler(ctx))
 				mux.HandleFunc("/robots.txt", func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(200)
 					w.Header().Set("Content-Type", "text/plain")
@@ -91,15 +102,8 @@ func init() {
 				mux.Handle("/user/reset-password/{resetPasswordKey}", indexHandler)
 
 				// /public endpoint : special handler for index, redirect to /plug/ for the rest
-				mux.Handle(config.GetPublicBaseUri()+"/", index.NewPublicHandler())
-				mux.Handle(config.GetPublicBaseUri()+"/plug/", http.StripPrefix(config.GetPublicBaseUri()+"/plug/", fs))
-
-				// TODO v4 ?
-				//routerWithTimeout := http.TimeoutHandler(
-				//	mux,
-				//	15*time.Second,
-				//	"There was a timeout while serving the request...",
-				//)
+				mux.Handle(config.GetPublicBaseUri()+"/", wrap(index.NewPublicHandler()))
+				mux.Handle(config.GetPublicBaseUri()+"/plug/", http.StripPrefix(config.GetPublicBaseUri()+"/plug/", wfs))
 
 				// Adding subscriber
 				_ = broker.SubscribeCancellable(ctx, common.TopicReloadAssets, func(message broker.Message) error {

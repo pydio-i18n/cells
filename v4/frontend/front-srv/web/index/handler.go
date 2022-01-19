@@ -10,7 +10,9 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/frontend"
 )
 
@@ -127,16 +129,13 @@ func (h *IndexHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (h *IndexHandler) detectFrontendService() bool {
 
-	return true
-	//if h.frontendDetected {
-	//return true
-	//}
-	// TODO v4 ?
-	//if s, e := defaults.Registry().GetService(common.ServiceRestNamespace_ + common.ServiceFrontend); e == nil && len(s) > 0 {
-	//	h.frontendDetected = true
-	//	return true
-	//}
-	//log.Logger(context.Background()).Error("Frontend Service Not Detected")
-	// return false
+	if h.frontendDetected {
+		return true
+	}
+	reg := servicecontext.GetRegistry(h.runtimeCtx)
+	if s, e := reg.Get(common.ServiceRestNamespace_ + common.ServiceFrontend); e == nil && s != nil {
+		h.frontendDetected = true
+	}
+	return h.frontendDetected
 
 }

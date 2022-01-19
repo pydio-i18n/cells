@@ -30,7 +30,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/caddy/hooks"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
@@ -77,21 +76,24 @@ type EditorLibreOffice struct {
 
 func init() {
 	plugins.Register("main", func(ctx context.Context) {
-		hooks.RegisterPluginTemplate(
-			play,
-			[]string{"frontend", "plugin", "editor.libreoffice"},
-			"/wopi/",
-			"/loleaflet/",
-			"/hosting/discovery",
-			"/lool/",
-		)
+		/*
+			// TODO V4
+			hooks.RegisterPluginTemplate(
+				play,
+				[]string{"frontend", "plugin", "editor.libreoffice"},
+				"/wopi/",
+				"/loleaflet/",
+				"/hosting/discovery",
+				"/lool/",
+			)
 
-		tmpl, err := template.New("caddyfile").Parse(editorLibreOfficeTemplateStr)
-		if err != nil {
-			log.Fatal("Could not read template ", zap.Error(err))
-		}
+			tmpl, err := template.New("caddyfile").Parse(editorLibreOfficeTemplateStr)
+			if err != nil {
+				log.Fatal("Could not read template ", zap.Error(err))
+			}
 
-		editorLibreOfficeTemplate = tmpl
+			editorLibreOfficeTemplate = tmpl
+		*/
 	})
 }
 

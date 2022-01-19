@@ -22,14 +22,9 @@ package maintenance
 
 import (
 	"embed"
-
-	"github.com/pydio/cells/v4/common/utils/statics"
 )
 
 var (
-	//go:embed src/*
-	src embed.FS
-
-	// PydioMaintenanceBox holds the root of the pydio maintenance static page
-	PydioMaintenanceBox = statics.AsFS(src, "src")
+	//go:embed maintenance.html starting.html
+	Assets embed.FS
 )

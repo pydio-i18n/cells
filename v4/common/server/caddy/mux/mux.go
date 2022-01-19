@@ -3,6 +3,7 @@ package mux
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/server/caddy/maintenance"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -55,6 +56,7 @@ func (m Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 
 	// Special case for application/grpc
 	if strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
+		// TODO V4 ?
 		gserv, e := m.r.Get(common.ServiceGatewayGrpc, registry.WithType(pb.ItemType_SERVICE))
 		if e != nil || gserv == nil {
 			http.NotFound(w, r)
@@ -79,6 +81,15 @@ func (m Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddy
 		ctx = servercontext.WithRegistry(ctx, m.r)
 
 		proxy.ServeHTTP(w, r.WithContext(ctx))
+		return nil
+	}
+
+	if r.RequestURI == "/maintenance.html" && r.Header.Get("X-Maintenance-Redirect") != "" {
+		bb, _ := maintenance.Assets.ReadFile("maintenance.html")
+		w.Header().Set("Content-Type", "text/html")
+		w.Header().Set("Content-Length", fmt.Sprintf("%d", len(bb)))
+		w.WriteHeader(303)
+		w.Write(bb)
 		return nil
 	}
 

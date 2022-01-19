@@ -2,20 +2,27 @@ package caddy
 
 import (
 	"net/url"
-	"path/filepath"
+	"strings"
 
-	"github.com/pkg/errors"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/caddy/maintenance"
-	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/crypto/providers"
 	"github.com/pydio/cells/v4/common/proto/install"
-	"github.com/pydio/cells/v4/common/utils/statics"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
-var maintenanceDir string
+type SiteConf struct {
+	*install.ProxyConfig
+	// Parsed values from proto oneOf
+	TLS     string
+	TLSCert string
+	TLSKey  string
+	// Parsed External host if any
+	ExternalHost string
+	// Custom Root for this site
+	WebRoot string
+}
 
 // SitesToCaddyConfigs computes all SiteConf from all *install.ProxyConfig by analyzing
 // TLSConfig, ReverseProxyURL and Maintenance fields values
@@ -28,22 +35,6 @@ func SitesToCaddyConfigs(sites []*install.ProxyConfig) (caddySites []SiteConf, e
 		}
 	}
 	return caddySites, nil
-}
-
-// GetMaintenanceRoot provides a static root folder for serving maintenance page
-func GetMaintenanceRoot() (string, error) {
-	if maintenanceDir != "" {
-		return maintenanceDir, nil
-	}
-	dir, err := statics.GetAssets("./maintenance/src")
-	if err != nil {
-		dir = filepath.Join(config.ApplicationWorkingDir(), "static", "maintenance")
-		if _, _, err := statics.RestoreAssets(dir, maintenance.PydioMaintenanceBox, nil); err != nil {
-			return "", errors.Wrap(err, "could not restore maintenance package")
-		}
-	}
-	maintenanceDir = dir
-	return dir, nil
 }
 
 func computeSiteConf(pc *install.ProxyConfig) (SiteConf, error) {
@@ -60,6 +51,9 @@ func computeSiteConf(pc *install.ProxyConfig) (SiteConf, error) {
 			bc.Binds[i] = "http://" + b
 		}
 	} else {
+		for i, b := range bc.Binds {
+			bc.Binds[i] = strings.Replace(b, "0.0.0.0", "", 1)
+		}
 		switch v := bc.TLSConfig.(type) {
 		case *install.ProxyConfig_Certificate, *install.ProxyConfig_SelfSigned:
 			certFile, keyFile, err := providers.LoadCertificates(pc)
@@ -79,12 +73,6 @@ func computeSiteConf(pc *install.ProxyConfig) (SiteConf, error) {
 			}`
 		}
 	}
-	if bc.Maintenance {
-		mDir, e := GetMaintenanceRoot()
-		if e != nil {
-			return bc, e
-		}
-		bc.WebRoot = mDir
-	}
+	bc.WebRoot = uuid.New()
 	return bc, nil
 }
