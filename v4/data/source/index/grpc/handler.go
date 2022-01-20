@@ -670,9 +670,10 @@ func (s *TreeServer) DeleteNode(ctx context.Context, req *tree.DeleteNodeRequest
 func (s *TreeServer) OpenSession(ctx context.Context, req *tree.OpenSessionRequest) (resp *tree.OpenSessionResponse, err error) {
 	s.logger.Info("Opening Indexation Session " + req.GetSession().GetUuid())
 
-	s.sessionStore.PutSession(req.GetSession())
-	resp.Session = req.GetSession()
-	return resp, nil
+	if er := s.sessionStore.PutSession(req.GetSession()); er != nil {
+		return nil, er
+	}
+	return &tree.OpenSessionResponse{Session: req.GetSession()}, nil
 
 }
 
@@ -690,8 +691,7 @@ func (s *TreeServer) FlushSession(ctx context.Context, req *tree.FlushSessionReq
 		}
 	}
 
-	resp.Session = req.GetSession()
-	return resp, nil
+	return &tree.FlushSessionResponse{Session: req.GetSession()}, nil
 }
 
 // CloseSession closes an indexer session.
@@ -704,21 +704,25 @@ func (s *TreeServer) CloseSession(ctx context.Context, req *tree.CloseSessionReq
 		dao := s.getDAO(session.GetUuid())
 
 		err := dao.Flush(true)
-		batcher.Flush(ctx, dao)
-
-		s.sessionStore.DeleteSession(req.GetSession())
 		if err != nil {
 			s.logger.Error("Error while closing (flush) indexation Session "+req.GetSession().GetUuid(), zap.Error(err))
 			return nil, err
 		}
+		batcher.Flush(ctx, dao)
+
+		err = s.sessionStore.DeleteSession(req.GetSession())
+		if err != nil {
+			s.logger.Error("Error while closing (DeleteSession) indexation Session "+req.GetSession().GetUuid(), zap.Error(err))
+			return nil, err
+		}
 	}
-	resp.Session = req.GetSession()
-	return resp, nil
+	return &tree.CloseSessionResponse{Session: req.GetSession()}, nil
 
 }
 
 // CleanResourcesBeforeDelete ensure all resources are cleant before deleting.
 func (s *TreeServer) CleanResourcesBeforeDelete(ctx context.Context, request *object.CleanResourcesRequest) (resp *object.CleanResourcesResponse, err error) {
+	resp = &object.CleanResourcesResponse{}
 	msg, err := s.getDAO("").CleanResourcesOnDeletion()
 	if err != nil {
 		resp.Success = false
