@@ -3,17 +3,29 @@ package grpc
 import (
 	"time"
 
-	"github.com/pydio/cells/v4/common/registry"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/balancer/base"
+
+	"github.com/pydio/cells/v4/common/registry"
 )
 
 type Option func(*Options)
+type subConnInfoFilter func(info base.SubConnInfo) bool
 
 type Options struct {
-	ClientConn  grpc.ClientConnInterface
-	Registry    registry.Registry
-	CallTimeout time.Duration
-	DialOptions []grpc.DialOption
+	ClientConn      grpc.ClientConnInterface
+	Registry        registry.Registry
+	CallTimeout     time.Duration
+	DialOptions     []grpc.DialOption
+	SubConnSelector subConnInfoFilter
+}
+
+func WithPeerSelector(host string) Option {
+	return func(o *Options) {
+		o.SubConnSelector = func(info base.SubConnInfo) bool {
+			return info.Address.Addr == host
+		}
+	}
 }
 
 func WithClientConn(c grpc.ClientConnInterface) Option {

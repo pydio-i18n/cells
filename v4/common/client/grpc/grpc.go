@@ -19,7 +19,8 @@ import (
 )
 
 var (
-	mox = map[string]grpc.ClientConnInterface{}
+	mox                   = map[string]grpc.ClientConnInterface{}
+	ctxSubconnSelectorKey = struct{}{}
 
 	CallTimeoutDefault = 10 * time.Minute
 	CallTimeoutShort   = 1 * time.Second
@@ -68,14 +69,16 @@ func NewClientConn(serviceName string, opt ...Option) grpc.ClientConnInterface {
 	return &clientConn{
 		callTimeout:         opts.CallTimeout,
 		ClientConnInterface: opts.ClientConn,
+		subConnSelector:     opts.SubConnSelector,
 		serviceName:         common.ServiceGrpcNamespace_ + strings.TrimPrefix(serviceName, common.ServiceGrpcNamespace_),
 	}
 }
 
 type clientConn struct {
 	grpc.ClientConnInterface
-	serviceName string
-	callTimeout time.Duration
+	serviceName     string
+	callTimeout     time.Duration
+	subConnSelector subConnInfoFilter
 }
 
 // Invoke performs a unary RPC and returns after the response is received
@@ -95,6 +98,9 @@ func (cc *clientConn) Invoke(ctx context.Context, method string, args interface{
 	if cc.callTimeout > 0 {
 		ctx, cancel = context.WithTimeout(ctx, cc.callTimeout)
 		// Todo v4: can we simply defer cancel() for Invoke ?
+	}
+	if cc.subConnSelector != nil {
+		ctx = context.WithValue(ctx, ctxSubconnSelectorKey, cc.subConnSelector)
 	}
 	ctx = metadata.NewOutgoingContext(ctx, md)
 	er := cc.ClientConnInterface.Invoke(ctx, method, args, reply, opts...)
@@ -119,6 +125,9 @@ func (cc *clientConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, meth
 	var cancel context.CancelFunc
 	if cc.callTimeout > 0 {
 		ctx, cancel = context.WithTimeout(ctx, cc.callTimeout)
+	}
+	if cc.subConnSelector != nil {
+		ctx = context.WithValue(ctx, ctxSubconnSelectorKey, cc.subConnSelector)
 	}
 	ctx = metadata.NewOutgoingContext(ctx, md)
 	s, e := cc.ClientConnInterface.NewStream(ctx, desc, method, opts...)

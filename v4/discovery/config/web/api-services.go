@@ -23,21 +23,28 @@ package rest
 import (
 	"context"
 	"net"
+	"path"
 	"sort"
 	"strconv"
 	"strings"
 
 	restful "github.com/emicklei/go-restful"
+	"go.uber.org/zap"
 
+	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/ctl"
 	"github.com/pydio/cells/v4/common/proto/object"
 	rpb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/proto/rest"
+	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/common/service/errors"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 /*********************
@@ -139,21 +146,24 @@ func (h *Handler) ListServices(req *restful.Request, resp *restful.Response) {
 // ListPeersAddresses lists all Peers (servers) on which any pydio service is running
 func (h *Handler) ListPeersAddresses(req *restful.Request, resp *restful.Response) {
 
-	response := &rest.ListPeersAddressesResponse{}
+	response := &rest.ListPeersAddressesResponse{
+		PeerAddresses: []string{},
+	}
 	/*
-		accu := make(map[string]string)
+		// TODO V4
+			accu := make(map[string]string)
 
-		for _, p := range registry.GetPeers() {
-			accu[p.GetAddress()] = p.GetAddress()
-			if h := p.GetHostname(); h != "" {
-				// Replace value with "HostName|IP"
-				accu[p.GetAddress()] = h + "|" + p.GetAddress()
+			for _, p := range registry.GetPeers() {
+				accu[p.GetAddress()] = p.GetAddress()
+				if h := p.GetHostname(); h != "" {
+					// Replace value with "HostName|IP"
+					accu[p.GetAddress()] = h + "|" + p.GetAddress()
+				}
 			}
-		}
 
-		for _, v := range accu {
-			response.PeerAddresses = append(response.PeerAddresses, v)
-		}
+			for _, v := range accu {
+				response.PeerAddresses = append(response.PeerAddresses, v)
+			}
 	*/
 	resp.WriteEntity(response)
 
@@ -168,37 +178,30 @@ func (h *Handler) ListPeerFolders(req *restful.Request, resp *restful.Response) 
 		return
 	}
 
+	var opts []grpc.Option
+	if listReq.PeerAddress != "" {
+		opts = append(opts, grpc.WithPeerSelector(listReq.PeerAddress))
+	}
+	cl := tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(req.Request.Context(), common.ServiceDataObjectsPeer, opts...))
+
+	// Use a selector to make sure to we call the service that is running on the specific node
+	streamer, e := cl.ListNodes(req.Request.Context(), &tree.ListNodesRequest{
+		Node: &tree.Node{Path: listReq.Path},
+	})
+	if e != nil {
+		service.RestError500(req, resp, e)
+		return
+	}
 	coll := &rest.NodesCollection{}
-	resp.WriteEntity(coll)
-	/*
-		srvName := common.ServiceGrpcNamespace_ + common.ServiceDataObjects
-		cl := tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(srvName))
-		var opts []client.CallOption
-		if listReq.PeerAddress != "" {
-			selectorOption := client.WithSelectOption(registry.PeerClientSelector(srvName, listReq.PeerAddress))
-			opts = append(opts, selectorOption)
-		}
-
-		// Use a selector to make sure to we call the service that is running on the specific node
-		streamer, e := cl.ListNodes(req.Request.Context(), &tree.ListNodesRequest{
-			Node: &tree.Node{Path: listReq.Path},
-		}, opts...)
+	for {
+		r, e := streamer.Recv()
 		if e != nil {
-			service.RestError500(req, resp, e)
-			return
+			break
 		}
-		defer streamer.Close()
-		coll := &rest.NodesCollection{}
-		for {
-			r, e := streamer.Recv()
-			if e != nil {
-				break
-			}
-			coll.Children = append(coll.Children, r.Node)
-		}
+		coll.Children = append(coll.Children, r.Node)
+	}
 
-			resp.WriteEntity(coll)
-	*/
+	resp.WriteEntity(coll)
 
 }
 
@@ -210,22 +213,17 @@ func (h *Handler) CreatePeerFolder(req *restful.Request, resp *restful.Response)
 		service.RestError500(req, resp, e)
 		return
 	}
-	/*
-		srvName := common.ServiceGrpcNamespace_ + common.ServiceDataObjects
-		cl := tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(srvName))
-		var opts []client.CallOption
-		if createReq.PeerAddress != "" {
-			selectorOption := client.WithSelectOption(registry.PeerClientSelector(srvName, createReq.PeerAddress))
-			opts = append(opts, selectorOption)
-		}
-		cr, e := cl.CreateNode(req.Request.Context(), &tree.CreateNodeRequest{Node: &tree.Node{Path: createReq.Path}}, opts...)
-		if e != nil {
-			service.RestErrorDetect(req, resp, e)
-			return
-		}
-		resp.WriteEntity(&rest.CreatePeerFolderResponse{Success: true, Node: cr.Node})
-
-	*/
+	var opts []grpc.Option
+	if createReq.PeerAddress != "" {
+		opts = append(opts, grpc.WithPeerSelector(createReq.PeerAddress))
+	}
+	cl := tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(req.Request.Context(), common.ServiceDataObjectsPeer, opts...))
+	cr, e := cl.CreateNode(req.Request.Context(), &tree.CreateNodeRequest{Node: &tree.Node{Path: createReq.Path}})
+	if e != nil {
+		service.RestErrorDetect(req, resp, e)
+		return
+	}
+	resp.WriteEntity(&rest.CreatePeerFolderResponse{Success: true, Node: cr.Node})
 
 }
 
@@ -284,62 +282,58 @@ func (h *Handler) ListProcesses(req *restful.Request, resp *restful.Response) {
 // ValidateLocalDSFolderOnPeer sends a couple of stat/create requests to the target Peer to make sure folder is valid
 func (h *Handler) ValidateLocalDSFolderOnPeer(ctx context.Context, newSource *object.DataSource) error {
 
-	return nil
-	/*
-		folder := newSource.StorageConfiguration[object.StorageKeyFolder]
-		srvName := common.ServiceGrpcNamespace_ + common.ServiceDataObjects
-		var opts []client.CallOption
-		if newSource.PeerAddress != "" && newSource.PeerAddress != "0.0.0.0" {
-			selectorOption := client.WithSelectOption(registry.PeerClientSelector(srvName, newSource.PeerAddress))
-			opts = append(opts, selectorOption)
-		}
+	folder := newSource.StorageConfiguration[object.StorageKeyFolder]
+	srvName := common.ServiceGrpcNamespace_ + common.ServiceDataObjectsPeer
+	var opts []grpc.Option
+	if newSource.PeerAddress != "" {
+		opts = append(opts, grpc.WithPeerSelector(newSource.PeerAddress))
+	}
+	conn := grpc.GetClientConnFromCtx(ctx, srvName, opts...)
 
-		cl := tree.NewNodeProviderClient(grpc.GetClientConnFromCtx(srvName))
-		wCl := tree.NewNodeReceiverClient(grpc.GetClientConnFromCtx(srvName))
+	cl := tree.NewNodeProviderClient(conn)
+	wCl := tree.NewNodeReceiverClient(conn)
 
-		// Check it's two level deep
-		parentName := path.Dir(folder)
-		if strings.Trim(parentName, "/") == "" {
-			return errors.BadRequest("ds.folder.invalid", "please use at least a two-levels deep folder")
-		}
+	// Check it's two level deep
+	parentName := path.Dir(folder)
+	if strings.Trim(parentName, "/") == "" {
+		return errors.BadRequest("ds.folder.invalid", "please use at least a two-levels deep folder")
+	}
 
-		// Stat node to make sure it exists - Create it otherwise
-		_, e := cl.ReadNode(ctx, &tree.ReadNodeRequest{
-			Node: &tree.Node{Path: folder},
-		}, opts...)
+	// Stat node to make sure it exists - Create it otherwise
+	_, e := cl.ReadNode(ctx, &tree.ReadNodeRequest{
+		Node: &tree.Node{Path: folder},
+	})
 
-		if e != nil {
-			if create, ok := newSource.StorageConfiguration[object.StorageKeyFolderCreate]; ok && create == "true" {
-				// Create Node Now
-				if _, err := wCl.CreateNode(ctx, &tree.CreateNodeRequest{Node: &tree.Node{
-					Type: tree.NodeType_COLLECTION,
-					Path: folder,
-				}}, opts...); err != nil {
-					return errors.Forbidden("ds.folder.cannot.create", err.Error())
-				}
-			} else {
-				return errors.NotFound("ds.folder.cannot.stat", e.Error())
+	if e != nil {
+		if create, ok := newSource.StorageConfiguration[object.StorageKeyFolderCreate]; ok && create == "true" {
+			// Create Node Now
+			if _, err := wCl.CreateNode(ctx, &tree.CreateNodeRequest{Node: &tree.Node{
+				Type: tree.NodeType_COLLECTION,
+				Path: folder,
+			}}); err != nil {
+				return errors.Forbidden("ds.folder.cannot.create", err.Error())
 			}
-		}
-
-		log.Logger(ctx).Info("Checking parent folder is writable before creating datasource", zap.Any("ds", newSource))
-		// Finally try to write a tmp file inside parent folder to make sure it's writable, then remove it
-		touchFile := &tree.Node{
-			Type: tree.NodeType_LEAF,
-			Path: path.Join(parentName, uuid.New()),
-		}
-		touched, e := wCl.CreateNode(ctx, &tree.CreateNodeRequest{Node: touchFile}, opts...)
-		if e != nil {
-			return errors.Forbidden("ds.folder.parent.not.writable", "Please make sure that parent folder (%s) is writeable by the application", parentName)
 		} else {
-			if _, er := wCl.DeleteNode(ctx, &tree.DeleteNodeRequest{Node: touched.Node}, opts...); er != nil {
-				log.Logger(ctx).Error("Could not delete tmp file written when creating datasource on peer " + newSource.PeerAddress)
-			}
+			return errors.NotFound("ds.folder.cannot.stat", e.Error())
 		}
+	}
 
-		return nil
+	log.Logger(ctx).Info("Checking parent folder is writable before creating datasource", zap.Any("ds", newSource))
+	// Finally try to write a tmp file inside parent folder to make sure it's writable, then remove it
+	touchFile := &tree.Node{
+		Type: tree.NodeType_LEAF,
+		Path: path.Join(parentName, uuid.New()),
+	}
+	touched, e := wCl.CreateNode(ctx, &tree.CreateNodeRequest{Node: touchFile})
+	if e != nil {
+		return errors.Forbidden("ds.folder.parent.not.writable", "Please make sure that parent folder (%s) is writeable by the application", parentName)
+	} else {
+		if _, er := wCl.DeleteNode(ctx, &tree.DeleteNodeRequest{Node: touched.Node}); er != nil {
+			log.Logger(ctx).Error("Could not delete tmp file written when creating datasource on peer " + newSource.PeerAddress)
+		}
+	}
 
-	*/
+	return nil
 }
 
 // ControlService is sends a command to a specific service - Not used for the moment.

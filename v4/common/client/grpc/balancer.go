@@ -31,35 +31,37 @@ func (*rrPickerBuilder) Build(info base.PickerBuildInfo) balancer.Picker {
 		return base.NewErrPicker(balancer.ErrNoSubConnAvailable)
 	}
 
-	scs := make(map[string]*rrPickerConns)
+	pcs := make(map[string]*rrPickerConns)
 	for sc, sci := range info.ReadySCs {
 		for _, s := range sci.Address.Attributes.Value("services").([]string) {
-			v, ok := scs[s]
+			v, ok := pcs[s]
 			if !ok {
 				v = &rrPickerConns{}
-				scs[s] = v
+				pcs[s] = v
 			}
 
 			v.subConns = append(v.subConns, sc)
+			v.subConnsInfos = append(v.subConnsInfos, sci)
 		}
 	}
 
-	for _, sc := range scs {
+	for _, sc := range pcs {
 		sc.next = rand.Intn(len(sc.subConns))
 	}
 	return &rrPicker{
-		subConns: scs,
+		pConns: pcs,
 	}
 }
 
 type rrPicker struct {
-	subConns map[string]*rrPickerConns
+	pConns map[string]*rrPickerConns
 }
 
 type rrPickerConns struct {
-	subConns []balancer.SubConn
-	mu       sync.Mutex
-	next     int
+	subConns      []balancer.SubConn
+	subConnsInfos []base.SubConnInfo
+	mu            sync.Mutex
+	next          int
 }
 
 func (p *rrPicker) Pick(i balancer.PickInfo) (balancer.PickResult, error) {
@@ -70,9 +72,13 @@ func (p *rrPicker) Pick(i balancer.PickInfo) (balancer.PickResult, error) {
 	if serviceName == "" {
 		return balancer.PickResult{}, fmt.Errorf("cannot find targetName in context")
 	}
-	pc, ok := p.subConns[serviceName]
+	pc, ok := p.pConns[serviceName]
 	if !ok {
 		return balancer.PickResult{}, balancer.ErrNoSubConnAvailable
+	}
+	if val := i.Ctx.Value(ctxSubconnSelectorKey); val != nil {
+		selector := val.(subConnInfoFilter)
+		fmt.Println("Found a subConnInfo selector in context!", selector)
 	}
 	pc.mu.Lock()
 	sc := pc.subConns[pc.next]
