@@ -154,7 +154,10 @@ func (s *Server) watchOperations() {
 		case <-time.After(3 * time.Second):
 			batch.Flush(s.Engine)
 		case <-s.Ctx.Done():
-			s.Close()
+			batch.Flush(s.Engine)
+			s.Engine.Close()
+			close(s.done)
+			return
 		case <-s.done:
 			batch.Flush(s.Engine)
 			s.Engine.Close()
