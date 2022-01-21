@@ -157,8 +157,7 @@ func initConfig() (new bool) {
 
 	switch viper.GetString("config") {
 	case "etcd":
-		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile))
-		localConfig = config.New(localSource)
+		localConfig := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile))
 
 		conn, err := clientv3.New(clientv3.Config{
 			Endpoints:   []string{"http://192.168.1.92:2379"},
@@ -168,9 +167,10 @@ func initConfig() (new bool) {
 			log.Fatal("could not start etcd", zap.Error(err))
 		}
 
-		vaultConfig = config.New(etcd.NewSource(context.Background(), conn, "vault"))
-		defaultConfig = config.New(etcd.NewSource(context.Background(), conn, "config"))
+		vaultConfig = etcd.NewSource(context.Background(), conn, "vault")
+		defaultConfig = etcd.NewSource(context.Background(), conn, "config")
 
+		config.Register(localConfig)
 		config.RegisterLocal(localConfig)
 	case "mysql":
 		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile))
@@ -228,9 +228,9 @@ func initConfig() (new bool) {
 			service.New(common.ServiceStorageNamespace_+common.ServiceConfig, "config"),
 		)
 	default:
-		source := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile))
+		defaultConfig = file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile))
 
-		vaultConfig = config.New(file.New(filepath.Join(config.PydioConfigDir, "pydio-vault.json")))
+		vaultConfig = file.New(filepath.Join(config.PydioConfigDir, "pydio-vault.json"))
 		/*vaultConfig = config.New(
 		micro.New(
 			microconfig.NewConfig(
@@ -245,9 +245,9 @@ func initConfig() (new bool) {
 			),
 		))*/
 
-		defaultConfig = config.New(
-			source,
-		)
+		//defaultConfig = config.New(
+		//	source,
+		//)
 
 		defaultConfig = config.NewVersionStore(versionsStore, defaultConfig)
 		defaultConfig = config.NewVault(vaultConfig, defaultConfig)

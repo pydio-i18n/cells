@@ -25,8 +25,12 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/pydio/cells/v4/common/registry"
+	servercontext "github.com/pydio/cells/v4/common/server/context"
+
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
@@ -73,15 +77,21 @@ EXAMPLES
 
 		return nil
 	},
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
+
+		reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
+		if err != nil {
+			return err
+		}
+
+		ctx = servercontext.WithRegistry(ctx, reg)
 
 		if userCreatePassword == "" {
 			prompt := promptui.Prompt{Label: "Please provide a password", Mask: '*', Validate: notEmpty}
 			pwd, e := prompt.Run()
 			if e != nil {
-				cmd.Println(e)
-				return
+				return e
 			}
 			userCreatePassword = pwd
 		}
@@ -107,8 +117,7 @@ EXAMPLES
 		sQ, _ := anypb.New(&idm.UserSingleQuery{Login: userCreateLogin})
 		st, e := userClient.SearchUser(ctx, &idm.SearchUserRequest{Query: &service.Query{SubQueries: []*anypb.Any{sQ}}})
 		if e != nil {
-			cmd.Println(promptui.IconBad + e.Error())
-			return
+			return e
 		}
 		exists := false
 		for {
@@ -120,13 +129,13 @@ EXAMPLES
 		}
 		if exists {
 			cmd.Println(promptui.IconBad + " User with login " + userCreateLogin + " already exists!")
-			return
+			return nil
 		}
 
 		response, err := userClient.CreateUser(ctx, &idm.CreateUserRequest{User: newUser})
 		if err != nil {
 			cmd.Println(err.Error())
-			return
+			return nil
 		}
 		u := response.GetUser()
 
@@ -145,11 +154,11 @@ EXAMPLES
 			Role: &newRole,
 		}); err != nil {
 			cmd.Println(err.Error())
-			return
+			return nil
 		}
 
 		cmd.Println("Successfully inserted associated role with UUID " + newRole.Uuid)
-
+		return nil
 	},
 }
 

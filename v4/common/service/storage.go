@@ -49,7 +49,7 @@ func WithStorage(fd func(dao.DAO) dao.DAO, prefix ...interface{}) ServiceOption 
 					d = fd(c)
 				}
 			default:
-				return fmt.Errorf("unsupported driver type: %s", driver)
+				return fmt.Errorf("unsupported driver type %s for service %s", driver, o.Name)
 			}
 
 			if d == nil {

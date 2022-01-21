@@ -100,18 +100,18 @@ func New(opts ...Option) Values {
 	}
 }
 
-func (v *config) get() interface{} {
-	if v == nil {
+func (c *config) get() interface{} {
+	if c == nil {
 		return nil
 	}
 
-	if v.v != nil {
+	if c.v != nil {
 		useDefault := false
 
-		switch vv := v.v.(type) {
+		switch vv := c.v.(type) {
 		case map[interface{}]interface{}:
 			if ref, ok := vv["$ref"]; ok {
-				vvv := v.r.Val(ref.(string)).Get()
+				vvv := c.r.Val(ref.(string)).Get()
 				switch vvvv := vvv.(type) {
 				case *config:
 					return vvvv.get()
@@ -121,7 +121,7 @@ func (v *config) get() interface{} {
 			}
 		case map[string]interface{}:
 			if ref, ok := vv["$ref"]; ok {
-				vvv := v.r.Val(ref.(string)).Get()
+				vvv := c.r.Val(ref.(string)).Get()
 				switch vvvv := vvv.(type) {
 				case *config:
 					return vvvv.get()
@@ -136,25 +136,25 @@ func (v *config) get() interface{} {
 		}
 
 		if !useDefault {
-			str, ok := v.v.(string)
+			str, ok := c.v.(string)
 			if ok {
-				if d := v.opts.Decrypter; d != nil {
+				if d := c.opts.Decrypter; d != nil {
 					b, err := d.Decrypt(str)
 					if err != nil {
-						return v.v
+						return c.v
 					}
 					return string(b)
 				}
 			}
-			return v.v
+			return c.v
 		}
 	}
 
-	if v.d != nil {
-		switch vv := v.d.(type) {
+	if c.d != nil {
+		switch vv := c.d.(type) {
 		case map[string]interface{}:
 			if ref, ok := vv["$ref"]; ok {
-				vvv := v.r.Val(ref.(string)).Get()
+				vvv := c.r.Val(ref.(string)).Get()
 				switch vvvv := vvv.(type) {
 				case *config:
 					return vvvv.get()
@@ -163,7 +163,7 @@ func (v *config) get() interface{} {
 				}
 			}
 		case *ref:
-			vvv := v.r.Val(vv.Get()).Get()
+			vvv := c.r.Val(vv.Get()).Get()
 			switch vvvv := vvv.(type) {
 			case *config:
 				return vvvv.get()
@@ -171,57 +171,63 @@ func (v *config) get() interface{} {
 				return vvvv
 			}
 		}
-		return v.d
+		return c.d
 	}
 
 	return nil
 }
 
 // Get retrieve interface
-func (v *config) Get() Value {
-	if v.v == nil && v.d == nil {
+func (c *config) Get() Value {
+	if mtx := c.opts.RWMutex; mtx != nil {
+		mtx.RLock()
+		defer mtx.RUnlock()
+	}
+
+	if c.v == nil && c.d == nil {
 		return nil
 	}
 
-	switch vv := v.v.(type) {
+	switch vv := c.v.(type) {
 	case map[string]interface{}:
 		if ref, ok := vv["$ref"]; ok {
-			return v.r.Val(ref.(string)).Get()
+			return c.r.Val(ref.(string)).Get()
 		}
 	case *ref:
-		return v.r.Val(vv.Get()).Get()
+		return c.r.Val(vv.Get()).Get()
 	}
 
-	return v
+	return c
 }
 
 // Default value set
-func (v *config) Default(i interface{}) Value {
-	if v.d == nil {
-		v.d = i
+func (c *config) Default(i interface{}) Value {
+	if c.d == nil {
+		c.d = i
 	}
 
-	switch vv := v.v.(type) {
+	switch vv := c.v.(type) {
 	case string:
 		if vv == "default" {
-			v.v = nil
+			c.v = nil
 		}
 	}
 
-	return v.Get()
+	return c.Get()
 }
 
 // Set data in interface
-func (v *config) Set(data interface{}) error {
-	if v == nil {
+func (c *config) Set(data interface{}) error {
+
+	if c == nil {
 		return fmt.Errorf("value doesn't exist")
 	}
 
-	if v.opts.Unmarshaler != nil {
+	if c.opts.Unmarshaler != nil {
 		switch vv := data.(type) {
 		case []byte:
 			if len(vv) > 0 {
-				if err := v.opts.Unmarshaler.Unmarshal(vv, &data); err != nil {
+				if err := c.opts.Unmarshaler.Unmarshal(vv, &data); err != nil {
 					return err
 				}
 			}
@@ -233,21 +239,21 @@ func (v *config) Set(data interface{}) error {
 		data = d.v
 	}
 
-	if len(v.k) == 0 {
-		v.v = data
+	if len(c.k) == 0 {
+		c.v = data
 		return nil
 	}
 
-	k := v.k[len(v.k)-1]
-	pk := v.k[0 : len(v.k)-1]
+	k := c.k[len(c.k)-1]
+	pk := c.k[0 : len(c.k)-1]
 
 	// Retrieve parent value
-	p := v.r.Val(pk...)
+	p := c.r.Val(pk...)
 	m := p.Map()
 	if data == nil {
 		delete(m, k)
 	} else {
-		if enc := v.opts.Encrypter; enc != nil {
+		if enc := c.opts.Encrypter; enc != nil {
 			switch vv := data.(type) {
 			case []byte:
 				// Encrypting value
@@ -273,42 +279,52 @@ func (v *config) Set(data interface{}) error {
 
 	p.Set(m)
 
-	v.v = data
+	if mtx := c.opts.RWMutex; mtx != nil {
+		mtx.Lock()
+		defer mtx.Unlock()
+	}
+
+	c.v = data
 
 	return nil
 }
 
-func (v *config) Del() error {
-	if v == nil {
+func (c *config) Del() error {
+	if c == nil {
 		return fmt.Errorf("value doesn't exist")
 	}
 
-	return v.Set(nil)
+	return c.Set(nil)
 }
 
 // Val values cannot retrieve lower values as it is final
-func (v *config) Val(s ...string) Values {
+func (c *config) Val(s ...string) Values {
+	if mtx := c.opts.RWMutex; mtx != nil {
+		mtx.RLock()
+		defer mtx.RUnlock()
+	}
+
 	keys := StringToKeys(s...)
 
 	// Need to do something for reference
 	if len(keys) == 1 && keys[0] == "#" {
-		if v.r != nil {
-			return v.r
+		if c.r != nil {
+			return c.r
 		}
-		return v
+		return c
 	} else if len(keys) > 0 && keys[0] == "#" {
 		keys = keys[1:]
 	} else {
-		keys = append(v.k, keys...)
+		keys = append(c.k, keys...)
 	}
 
-	root := v.r
-	if v.r == nil {
-		root = v
+	root := c.r
+	if c.r == nil {
+		root = c
 	}
 
 	if len(keys) == 0 {
-		return v
+		return c
 	}
 
 	pk := keys
@@ -319,40 +335,45 @@ func (v *config) Val(s ...string) Values {
 	for _, pkk := range pk {
 		switch cv := current.(type) {
 		case map[interface{}]interface{}:
-			c, ok := cv[pkk]
+			cvv, ok := cv[pkk]
 			if !ok {
 				// The parent doesn't actually exist here, we return the nil value
-				return &config{nil, nil, root, keys, v.opts}
+				return &config{nil, nil, root, keys, c.opts}
 			}
 
-			current = c
+			current = cvv
 		case map[string]interface{}:
-			c, ok := cv[pkk]
+			cvv, ok := cv[pkk]
 			if !ok {
 				// The parent doesn't actually exist here, we return the nil value
-				return &config{nil, nil, root, keys, v.opts}
+				return &config{nil, nil, root, keys, c.opts}
 			}
 
-			current = c
+			current = cvv
 		case []interface{}:
 			i, err := strconv.Atoi(pkk)
 			if err != nil || i < 0 || i >= len(cv) {
-				return &config{nil, nil, root, keys, v.opts}
+				return &config{nil, nil, root, keys, c.opts}
 			}
 
-			c := cv[i]
+			cvv := cv[i]
 
-			current = c
+			current = cvv
 		default:
-			return &config{nil, nil, root, keys, v.opts}
+			return &config{nil, nil, root, keys, c.opts}
 		}
 	}
 
-	return &config{current, nil, root, keys, v.opts}
+	return &config{current, nil, root, keys, c.opts}
 }
 
 // Scan to interface
 func (c *config) Scan(val interface{}) error {
+	if mtx := c.opts.RWMutex; mtx != nil {
+		mtx.RLock()
+		defer mtx.RUnlock()
+	}
+
 	v := c.get()
 	if v == nil {
 		return nil
@@ -377,6 +398,11 @@ func (c *config) Scan(val interface{}) error {
 }
 
 func (c *config) Bool() bool {
+	if mtx := c.opts.RWMutex; mtx != nil {
+		mtx.RLock()
+		defer mtx.RUnlock()
+	}
+
 	v := c.get()
 	if v == nil {
 		return false
@@ -384,6 +410,11 @@ func (c *config) Bool() bool {
 	return cast.ToBool(v)
 }
 func (c *config) Bytes() []byte {
+	if mtx := c.opts.RWMutex; mtx != nil {
+		mtx.RLock()
+		defer mtx.RUnlock()
+	}
+
 	v := c.get()
 	if v == nil {
 		return []byte{}
@@ -409,6 +440,11 @@ func (c *config) Bytes() []byte {
 	return []byte(cast.ToString(v))
 }
 func (c *config) Int() int {
+	if mtx := c.opts.RWMutex; mtx != nil {
+		mtx.RLock()
+		defer mtx.RUnlock()
+	}
+
 	v := c.get()
 	if v == nil {
 		return 0
@@ -416,6 +452,11 @@ func (c *config) Int() int {
 	return cast.ToInt(v)
 }
 func (c *config) Int64() int64 {
+	if mtx := c.opts.RWMutex; mtx != nil {
+		mtx.RLock()
+		defer mtx.RUnlock()
+	}
+
 	v := c.get()
 	if v == nil {
 		return 0
@@ -423,6 +464,11 @@ func (c *config) Int64() int64 {
 	return cast.ToInt64(v)
 }
 func (c *config) Duration() time.Duration {
+	if mtx := c.opts.RWMutex; mtx != nil {
+		mtx.RLock()
+		defer mtx.RUnlock()
+	}
+
 	v := c.get()
 	if v == nil {
 		return 0 * time.Second
@@ -430,6 +476,11 @@ func (c *config) Duration() time.Duration {
 	return cast.ToDuration(v)
 }
 func (c *config) String() string {
+	if mtx := c.opts.RWMutex; mtx != nil {
+		mtx.RLock()
+		defer mtx.RUnlock()
+	}
+
 	v := c.get()
 
 	switch v := c.v.(type) {
@@ -454,6 +505,11 @@ func (c *config) String() string {
 	return cast.ToString(v)
 }
 func (c *config) StringMap() map[string]string {
+	if mtx := c.opts.RWMutex; mtx != nil {
+		mtx.RLock()
+		defer mtx.RUnlock()
+	}
+
 	v := c.get()
 	if v == nil {
 		return map[string]string{}
@@ -461,6 +517,11 @@ func (c *config) StringMap() map[string]string {
 	return cast.ToStringMapString(v)
 }
 func (c *config) StringArray() []string {
+	if mtx := c.opts.RWMutex; mtx != nil {
+		mtx.RLock()
+		defer mtx.RUnlock()
+	}
+
 	v := c.get()
 	if v == nil {
 		return []string{}
@@ -468,6 +529,11 @@ func (c *config) StringArray() []string {
 	return cast.ToStringSlice(c.get())
 }
 func (c *config) Slice() []interface{} {
+	if mtx := c.opts.RWMutex; mtx != nil {
+		mtx.RLock()
+		defer mtx.RUnlock()
+	}
+
 	v := c.get()
 	if v == nil {
 		return []interface{}{}
@@ -475,6 +541,11 @@ func (c *config) Slice() []interface{} {
 	return cast.ToSlice(c.get())
 }
 func (c *config) Map() map[string]interface{} {
+	if mtx := c.opts.RWMutex; mtx != nil {
+		mtx.RLock()
+		defer mtx.RUnlock()
+	}
+
 	v := c.get()
 	if v == nil {
 		return map[string]interface{}{}

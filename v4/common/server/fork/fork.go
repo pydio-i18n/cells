@@ -141,10 +141,14 @@ func buildForkStartParams(serviceName string) []string {
 		"--fork",
 		"--grpc.address", ":0",
 		"--http.address", ":0",
-		// "--config", viper.GetString("config"),
 		"--registry", r,
 		"--broker", b,
 	}
+
+	if viper.IsSet("config") {
+		params = append(params, "--config", viper.GetString("config"))
+	}
+
 	if viper.GetBool("enable_metrics") {
 		params = append(params, "--enable_metrics")
 	}

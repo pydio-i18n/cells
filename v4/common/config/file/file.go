@@ -2,28 +2,42 @@ package file
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
+	"os"
+	"sync"
+
 	"github.com/fsnotify/fsnotify"
 
+	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/utils/configx"
 	"github.com/pydio/cells/v4/common/utils/filex"
 )
+
+var errClosedChannel = errors.New("channel is closed")
 
 type file struct {
 	v       configx.Values
 	path    string
 	watcher *fsnotify.Watcher
+	mtx     *sync.RWMutex
 
-	updates []chan struct{}
+	dirty bool
+
+	receivers []*receiver
 }
 
-func New(path string) configx.Entrypoint {
+func New(path string) config.Store {
 	data, err := filex.Read(path)
 	if err != nil {
 		return nil
 	}
 
-	v := configx.New(configx.WithJSON())
+	mtx := &sync.RWMutex{}
+	v := configx.New(
+		configx.WithJSON(),
+	)
+
 	if err := v.Set(data); err != nil {
 		return nil
 	}
@@ -39,13 +53,20 @@ func New(path string) configx.Entrypoint {
 		return nil
 	}
 
-	return &file{
+	f := &file{
 		v:       v,
 		path:    path,
 		watcher: watcher,
+		dirty:   false,
+		mtx:     mtx,
 	}
+
+	go f.watch()
+
+	return f
 }
 
+// TODO - error handling
 func (f *file) watch() {
 	for {
 		select {
@@ -53,7 +74,22 @@ func (f *file) watch() {
 			if !ok {
 				return
 			}
-			if event.Op&fsnotify.Write == fsnotify.Write {
+
+			// Do something ?
+			if event.Op == fsnotify.Remove {
+				return
+			}
+
+			if event.Op&fsnotify.Rename == fsnotify.Rename {
+				// check existence of file, and add watch again
+				_, err := os.Stat(event.Name)
+				if err == nil || os.IsExist(err) {
+					f.watcher.Add(event.Name)
+				}
+			}
+
+			if event.Op&fsnotify.Write == fsnotify.Write || event.Op&fsnotify.Rename == fsnotify.Rename {
+				f.mtx.Lock()
 				data, err := filex.Read(event.Name)
 				if err != nil {
 					continue
@@ -63,75 +99,125 @@ func (f *file) watch() {
 					continue
 				}
 
-				for _, ch := range f.updates {
-					ch <- struct{}{}
+				f.mtx.Unlock()
+
+				f.dirty = false
+
+				updated := f.receivers[:0]
+				for _, r := range f.receivers {
+					if err := r.call(); err == nil {
+						updated = append(updated, r)
+					}
 				}
+
+				f.receivers = updated
 			}
+		case err := <-f.watcher.Errors:
+			fmt.Println(err)
 		}
+
 	}
 }
 
 func (f *file) Get() configx.Value {
+	f.mtx.RLock()
+	defer f.mtx.RUnlock()
+
 	return f.v.Get()
 }
 
 func (f *file) Set(data interface{}) error {
-	return filex.Save(f.path, data)
+	f.mtx.RLock()
+	defer f.mtx.RUnlock()
+
+	return f.v.Set(data)
 }
 
 func (f *file) Val(path ...string) configx.Values {
-	return &values{Values: f.v.Val(path...), path: f.path}
+	f.mtx.RLock()
+	defer f.mtx.RUnlock()
+
+	return &values{f.v.Val(path...), f.mtx}
 }
 
 func (f *file) Del() error {
+	f.mtx.RLock()
+	defer f.mtx.RUnlock()
+
 	return fmt.Errorf("not implemented")
 }
 
-func (f *file) Watch(path ...string) (configx.Receiver, error) {
-	ch := make(chan struct{})
+func (f *file) Save(ctxUser string, ctxMessage string) error {
+	f.mtx.RLock()
+	defer f.mtx.RUnlock()
 
-	f.updates = append(f.updates, ch)
+	return filex.Save(f.path, f.v.Get())
+}
+
+func (f *file) Watch(path ...string) (configx.Receiver, error) {
+
+	r := &receiver{
+		closed:  false,
+		ch:      make(chan struct{}),
+		p:       path,
+		v:       f.v,
+		current: f.v.Val(path...).Bytes(),
+	}
+
+	f.receivers = append(f.receivers, r)
 
 	// For the moment do nothing
-	return &receiver{
-		ch: ch,
-		p:  path,
-		v:  f.v.Val(path...),
-	}, nil
+	return r, nil
 }
 
 type receiver struct {
-	ch chan struct{}
-	p  []string
-	v  configx.Values
+	closed  bool
+	ch      chan struct{}
+	p       []string
+	v       configx.Values
+	current []byte
+}
+
+func (r *receiver) call() error {
+	if r.closed {
+		return errClosedChannel
+	}
+	r.ch <- struct{}{}
+	return nil
 }
 
 func (r *receiver) Next() (configx.Values, error) {
 	select {
 	case <-r.ch:
-		v := r.v.Val(r.p...)
-		if bytes.Compare(v.Bytes(), r.v.Bytes()) != 0 {
-			r.v = v
-			return v, nil
+		neu := r.v.Val(r.p...)
+		neuB := neu.Bytes()
+		if bytes.Compare(r.current, neuB) != 0 {
+			r.current = neuB
+			return neu, nil
 		}
 	}
 
-	return nil, fmt.Errorf("could not retrieve data")
+	return r.Next()
+
 }
 
 func (r *receiver) Stop() {
+	r.closed = true
 	close(r.ch)
 }
 
 type values struct {
 	configx.Values
-	path string
+	lock sync.Locker
 }
 
 func (v *values) Set(data interface{}) error {
+	v.lock.Lock()
+	defer v.lock.Unlock()
+
 	if err := v.Values.Set(data); err != nil {
 		return err
 	}
 
-	return filex.Save(v.path, v.Values.Val("#").Map())
+	return nil
 }
