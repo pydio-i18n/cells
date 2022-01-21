@@ -303,9 +303,20 @@ func Version() *hashiversion.Version {
 	return v
 }
 
+// MustLogFileDefaultValue parses associated variable to boolean.
 func MustLogFileDefaultValue() bool {
 	if v, e := strconv.ParseBool(LogFileDefaultValue); e == nil {
 		return v
 	}
 	return true
+}
+
+// IsXSpecialPydioHeader checks if headerName is in XSpecialPydioHeaders slice.
+func IsXSpecialPydioHeader(headerName string) bool {
+	for _, hh := range XSpecialPydioHeaders {
+		if hh == headerName {
+			return true
+		}
+	}
+	return false
 }

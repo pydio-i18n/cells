@@ -26,25 +26,33 @@ import (
 	minio "github.com/minio/minio-go/v7"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 )
 
-func newUsernameHeader(secure bool) (http.RoundTripper, error) {
+func customHeadersTransport(secure bool) (http.RoundTripper, error) {
 	if def, e := minio.DefaultTransport(secure); e != nil {
 		return nil, e
 	} else {
-		return &usernameHeader{w: def}, nil
+		return &customHeadersRoundTripper{w: def}, nil
 	}
 }
 
-type usernameHeader struct {
+type customHeadersRoundTripper struct {
 	w http.RoundTripper
 }
 
-func (r *usernameHeader) RoundTrip(request *http.Request) (*http.Response, error) {
+func (r *customHeadersRoundTripper) RoundTrip(request *http.Request) (*http.Response, error) {
 	ctx := request.Context()
 	if u, _ := permissions.FindUserNameInContext(ctx); u != "" {
 		request.Header.Set(common.PydioContextUserKey, u)
+	}
+	if meta, ok := metadata.FromContext(ctx); ok {
+		for k, v := range meta {
+			if common.IsXSpecialPydioHeader(k) && request.Header.Get(k) == "" {
+				request.Header.Set(k, v)
+			}
+		}
 	}
 	return r.w.RoundTrip(request)
 }

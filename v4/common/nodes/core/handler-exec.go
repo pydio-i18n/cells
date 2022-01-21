@@ -544,15 +544,6 @@ func (e *Executor) WrappedCanApply(_ context.Context, _ context.Context, _ *tree
 	return nil
 }
 
-func (e *Executor) isXSpecialPydioHeader(hname string) bool {
-	for _, hh := range common.XSpecialPydioHeaders {
-		if hh == hname {
-			return true
-		}
-	}
-	return false
-}
-
 func (e *Executor) putOptionsFromRequestMeta(metadata map[string]string) models.PutMeta {
 	opts := models.PutMeta{UserMetadata: make(map[string]string)}
 	for k, v := range metadata {
@@ -562,7 +553,7 @@ func (e *Executor) putOptionsFromRequestMeta(metadata map[string]string) models.
 			opts.ContentEncoding = v
 		} else if k == "X-Amz-Storage-Class" || k == "x-amz-storage-class" {
 			opts.StorageClass = v
-		} else if strings.HasPrefix(k, "X-Amz-Meta-") || e.isXSpecialPydioHeader(k) {
+		} else if strings.HasPrefix(k, "X-Amz-Meta-") || common.IsXSpecialPydioHeader(k) {
 			opts.UserMetadata[k] = v
 		}
 	}

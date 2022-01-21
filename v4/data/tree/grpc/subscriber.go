@@ -25,8 +25,11 @@ import (
 	"sync"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
+	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
 )
@@ -115,7 +118,7 @@ func (s *EventSubscriber) enqueueMoves(ctx context.Context, moveUuid string, eve
 func (s *EventSubscriber) Handle(ctx context.Context, msg *tree.NodeChangeEvent) error {
 	source, target := msg.Source, msg.Target
 	if meta, ok := metadata.FromContext(ctx); ok && (msg.Type == tree.NodeChangeEvent_CREATE || msg.Type == tree.NodeChangeEvent_DELETE) {
-		if move, o := meta["x-pydio-move"]; o {
+		if move, o := meta[common.XPydioMoveUuid]; o {
 			var uuid = move
 			if source != nil {
 				uuid = source.Uuid
@@ -125,7 +128,7 @@ func (s *EventSubscriber) Handle(ctx context.Context, msg *tree.NodeChangeEvent)
 				uuid = target.Uuid
 				s.TreeServer.updateDataSourceNode(target, target.GetStringMeta(common.MetaNamespaceDatasourceName))
 			}
-			//log.Logger(ctx).Info("Got move metadata from context - Skip event", zap.Any("uuid", uuid), zap.Any("event", msg))
+			log.Logger(ctx).Info("Got move metadata from context - Skip event", zap.Any("uuid", uuid), zap.Any("event", msg))
 			s.enqueueMoves(ctx, uuid, msg)
 			return nil
 		}

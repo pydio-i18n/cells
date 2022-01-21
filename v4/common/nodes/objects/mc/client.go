@@ -52,7 +52,7 @@ func init() {
 
 // New creates a new minio.Core with the most standard options
 func New(endpoint, accessKey, secretKey string, secure bool, customRegion ...string) (*Client, error) {
-	rt, e := newUsernameHeader(secure)
+	rt, e := customHeadersTransport(secure)
 	if e != nil {
 		return nil, e
 	}

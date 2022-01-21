@@ -101,7 +101,7 @@ func init() {
 					}
 					return nil
 				}); e != nil {
-					_ = bleveEngine.Close()
+					//_ = bleveEngine.Close()
 					return e
 				}
 

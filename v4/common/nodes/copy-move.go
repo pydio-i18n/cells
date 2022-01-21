@@ -396,26 +396,27 @@ func CopyMoveNodes(ctx context.Context, router Handler, sourceNode *tree.Node, t
 		// Prepare Meta for Copy/Delete operations. If Move across DS or Copy, we send directly the close- session
 		// as this will be a one shot operation on each datasource.
 		copyMeta := make(map[string]string)
+		copyCtxMeta := make(map[string]string)
 		deleteMeta := make(map[string]string)
 		closeSession := common.SyncSessionClose_ + session
 		if move {
 			copyMeta[common.XAmzMetaDirective] = "COPY"
 			deleteMeta[common.XPydioSessionUuid] = closeSession
 			if crossDs {
-				copyMeta[common.XPydioSessionUuid] = closeSession
+				copyCtxMeta[common.XPydioSessionUuid] = closeSession
 				// Identify copy/delete across 2 datasources
-				copyMeta[common.XPydioMoveUuid] = sourceNode.Uuid
+				copyCtxMeta[common.XPydioMoveUuid] = sourceNode.Uuid
 				deleteMeta[common.XPydioMoveUuid] = sourceNode.Uuid
 			} else {
-				copyMeta[common.XPydioSessionUuid] = session
+				copyCtxMeta[common.XPydioSessionUuid] = session
 			}
 		} else {
 			copyMeta[common.XAmzMetaDirective] = "REPLACE"
-			copyMeta[common.XPydioSessionUuid] = closeSession
+			copyCtxMeta[common.XPydioSessionUuid] = closeSession
 		}
 		statusChan <- copyMoveStatusKey(sourceNode.Path, move, tFunc...)
 
-		_, e := router.CopyObject(ctx, sourceNode, targetNode, &models.CopyRequestData{
+		_, e := router.CopyObject(metadata.WithAdditionalMetadata(ctx, copyCtxMeta), sourceNode, targetNode, &models.CopyRequestData{
 			Metadata: copyMeta,
 			Progress: &copyPgReader{offset: 0, total: sourceNode.Size, progressChan: progressChan},
 		})
@@ -515,12 +516,13 @@ func processCopyMove(ctx context.Context, handler Handler, session string, move,
 		statusChan <- copyMoveStatusKey(relativePath, move, tFunc...)
 
 		meta := make(map[string]string, 1)
+		ctxMeta := make(map[string]string)
 		if move {
 			meta[common.XAmzMetaDirective] = "COPY"
 		} else {
 			meta[common.XAmzMetaDirective] = "REPLACE"
 		}
-		meta[common.XPydioSessionUuid] = session
+		ctxMeta[common.XPydioSessionUuid] = session
 		if crossDs {
 			/*
 				if idx == len(children)-1 {
@@ -528,13 +530,13 @@ func processCopyMove(ctx context.Context, handler Handler, session string, move,
 				}
 			*/
 			if closeSession {
-				meta[common.XPydioSessionUuid] = common.SyncSessionClose_ + session
+				ctxMeta[common.XPydioSessionUuid] = common.SyncSessionClose_ + session
 			}
 			if move {
-				meta[common.XPydioMoveUuid] = childNode.Uuid
+				ctxMeta[common.XPydioMoveUuid] = childNode.Uuid
 			}
 		}
-		_, e := handler.CopyObject(ctx, childNode, targetNode, &models.CopyRequestData{
+		_, e := handler.CopyObject(metadata.WithAdditionalMetadata(ctx, ctxMeta), childNode, targetNode, &models.CopyRequestData{
 			Metadata: meta,
 			Progress: progress,
 		})
