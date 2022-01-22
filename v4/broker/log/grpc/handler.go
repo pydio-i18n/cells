@@ -117,7 +117,7 @@ func (h *Handler) AggregatedLogs(req *proto.TimeRangeRequest, stream proto.LogRe
 // reconstructs a new index entirely. If truncate/{int64} is passed, it truncates the log to the given size (or closer)
 func (h *Handler) TriggerResync(ctx context.Context, request *sync.ResyncRequest) (*sync.ResyncResponse, error) {
 
-	var l *zap.Logger
+	var l log2.ZapLogger
 	var closeTask func(e error)
 	if request.Task != nil {
 		l = log2.TasksLogger(ctx)

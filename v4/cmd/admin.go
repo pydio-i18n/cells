@@ -50,6 +50,6 @@ DESCRIPTION
 
 func init() {
 	// Registry / Broker Flags
-	addRegistryFlags(AdminCmd.PersistentFlags())
+	addExternalCmdRegistryFlags(AdminCmd.PersistentFlags())
 	RootCmd.AddCommand(AdminCmd)
 }

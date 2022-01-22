@@ -124,7 +124,7 @@ EXAMPLE
 
 func init() {
 
-	addRegistryFlags(psCmd.Flags())
+	addExternalCmdRegistryFlags(psCmd.Flags())
 
 	RootCmd.AddCommand(psCmd)
 

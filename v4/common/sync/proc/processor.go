@@ -410,6 +410,6 @@ func (pr *Processor) dataForOperation(p merger.Patch, op merger.Operation) (cb P
 }
 
 // Logger is a shortcut for log.Logger(pr.globalContext) function
-func (pr *Processor) Logger() *zap.Logger {
+func (pr *Processor) Logger() log.ZapLogger {
 	return log.Logger(pr.GlobalContext)
 }

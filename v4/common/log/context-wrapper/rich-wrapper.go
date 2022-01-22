@@ -28,21 +28,20 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/auth/claim"
+	"github.com/pydio/cells/v4/common/log"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 // RichContext enriches the passed logger with as much info as possible
-func RichContext(ctx context.Context, logger *zap.Logger, fields ...zapcore.Field) *zap.Logger {
+func RichContext(ctx context.Context, logger log.ZapLogger, fields ...zapcore.Field) log.ZapLogger {
 
 	if ctx == nil {
 		return logger
 	}
 
 	// Name Logger
-	if serviceName := servicecontext.GetServiceName(ctx); serviceName != "" {
-		logger = logger.Named(serviceName)
-	}
+	logger = log.BasicContextWrapper(ctx, logger, fields...)
 
 	// Compute all fields
 	if span, ok := servicecontext.SpanFromContext(ctx); ok {

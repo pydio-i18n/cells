@@ -93,7 +93,7 @@ EXAMPLE
 }
 
 func init() {
-	addRegistryFlags(serverPsCmd.Flags())
+	addExternalCmdRegistryFlags(serverPsCmd.Flags())
 
 	serverCmd.AddCommand(serverPsCmd)
 }

@@ -25,8 +25,7 @@ import (
 	"context"
 
 	"github.com/pkg/errors"
-	"go.uber.org/zap"
-
+	
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/server"
@@ -70,7 +69,7 @@ func WithDAO(ctx context.Context, dao dao.DAO) context.Context {
 }
 
 // WithLogger links a logger to the context
-func WithLogger(ctx context.Context, logger *zap.Logger) context.Context {
+func WithLogger(ctx context.Context, logger interface{}) context.Context {
 	return context.WithValue(ctx, loggerKey, logger)
 }
 
@@ -120,12 +119,8 @@ func GetDAO(ctx context.Context) dao.DAO {
 	return nil
 }
 
-func GetLogger(ctx context.Context) *zap.Logger {
-	if logger, ok := ctx.Value(loggerKey).(*zap.Logger); ok {
-		return logger
-	}
-
-	return nil
+func GetLogger(ctx context.Context) interface{} {
+	return ctx.Value(loggerKey)
 }
 
 // GetConfig returns the config from the context in argument

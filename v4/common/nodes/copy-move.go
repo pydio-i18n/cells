@@ -31,9 +31,6 @@ import (
 	"time"
 
 	"github.com/nicksnyder/go-i18n/i18n"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/log"
@@ -43,6 +40,7 @@ import (
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/permissions"
 	"github.com/pydio/cells/v4/common/utils/uuid"
+	"go.uber.org/zap"
 )
 
 type (
@@ -157,12 +155,15 @@ func CopyMoveNodes(ctx context.Context, router Handler, sourceNode *tree.Node, t
 
 	// Setting up logger
 	logger := log.Logger(ctx)
-	var taskLogger *zap.Logger
-	if isTask {
-		taskLogger = log.TasksLogger(ctx)
-	} else {
-		taskLogger = zap.New(zapcore.NewNopCore())
-	}
+	var taskLogger log.ZapLogger
+	taskLogger = log.TasksLogger(ctx)
+	/*
+		if isTask {
+			taskLogger = log.TasksLogger(ctx)
+		} else {
+			taskLogger = zap.New(zapcore.NewNopCore())
+		}
+	*/
 
 	// Read root of target to detect if it is on the same datasource as sourceNode
 	var crossDs bool
@@ -496,7 +497,7 @@ func copyMoveStatusKey(keyPath string, move bool, tFunc ...i18n.TranslateFunc) s
 	return status
 }
 
-func processCopyMove(ctx context.Context, handler Handler, session string, move, crossDs bool, sourceDs, targetDs string, sourceFlat, targetFlat, closeSession bool, childNode *tree.Node, prefixPathSrc, prefixPathTarget, targetDsPath string, logger *zap.Logger, publishError func(string, string), statusChan chan string, progress io.Reader, tFunc ...i18n.TranslateFunc) error {
+func processCopyMove(ctx context.Context, handler Handler, session string, move, crossDs bool, sourceDs, targetDs string, sourceFlat, targetFlat, closeSession bool, childNode *tree.Node, prefixPathSrc, prefixPathTarget, targetDsPath string, logger log.ZapLogger, publishError func(string, string), statusChan chan string, progress io.Reader, tFunc ...i18n.TranslateFunc) error {
 
 	childPath := childNode.Path
 	relativePath := strings.TrimPrefix(childPath, prefixPathSrc+"/")

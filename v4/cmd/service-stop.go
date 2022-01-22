@@ -74,5 +74,5 @@ EXAMPLE
 func init() {
 	addRegistryFlags(serviceStopCmd.Flags())
 
-	RootCmd.AddCommand(serviceStopCmd)
+	serviceCmd.AddCommand(serviceStopCmd)
 }

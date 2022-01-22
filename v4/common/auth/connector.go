@@ -42,7 +42,7 @@ type Connector interface{}
 type OpenerFunc func(proto.Message) (Opener, error)
 
 type Opener interface {
-	Open(string, *zap.Logger) (Connector, error)
+	Open(string, log.ZapLogger) (Connector, error)
 }
 
 var (

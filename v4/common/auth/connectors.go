@@ -24,11 +24,11 @@ import (
 	"context"
 	"net/http"
 
-	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/client/grpc"
+	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/service/errors"
 )
@@ -45,7 +45,7 @@ func init() {
 
 type pydioconfig struct{}
 
-func (c *pydioconfig) Open(string, *zap.Logger) (Connector, error) {
+func (c *pydioconfig) Open(string, log.ZapLogger) (Connector, error) {
 	return &pydioconnector{}, nil
 }
 

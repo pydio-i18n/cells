@@ -131,6 +131,7 @@ to quickly create a Cobra application.`,
 
 		broker.Register(broker.NewBroker(viper.GetString("broker"), broker.WithContext(ctx)))
 		plugins.InitGlobalConnConsumers(ctx, "main")
+		initLogLevelListener(ctx)
 
 		//localEndpointURI := "192.168.1.5:5454"
 		//reporterURI := "http://localhost:9411/api/v2/spans"

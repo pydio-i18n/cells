@@ -29,18 +29,19 @@ import (
 	"strconv"
 	"time"
 
-	"go.etcd.io/etcd/client/v3"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"go.etcd.io/etcd/client/v3"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/config/migrations"
 	"github.com/pydio/cells/v4/common/config/service"
 	"github.com/pydio/cells/v4/common/log"
 	context_wrapper "github.com/pydio/cells/v4/common/log/context-wrapper"
+	log2 "github.com/pydio/cells/v4/common/proto/log"
 	"github.com/pydio/cells/v4/common/utils/filex"
 
 	// "github.com/pydio/cells/v4/common/config/remote"
@@ -341,4 +342,19 @@ func initLogLevel() {
 
 	// Using it once
 	log.Logger(context.Background())
+}
+
+func initLogLevelListener(ctx context.Context) {
+	_, er := broker.Subscribe(ctx, common.TopicLogLevelEvent, func(message broker.Message) error {
+		event := &log2.LogLevelEvent{}
+		if _, e := message.Unmarshal(event); e == nil {
+			log.SetDynamicDebugLevels(event.GetResetInfo(), event.GetLevelDebug(), event.GetServices()...)
+		} else {
+			return e
+		}
+		return nil
+	})
+	if er != nil {
+		fmt.Println("Cannot subscribe to broker for TopicLogLevelEvent", er.Error())
+	}
 }

@@ -23,8 +23,6 @@ package log
 import (
 	"bufio"
 	"context"
-	"fmt"
-	"github.com/pydio/cells/v4/common/plugins"
 	"io"
 	"os"
 	"path/filepath"
@@ -37,6 +35,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/plugins"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 )
 
@@ -46,13 +45,13 @@ type WriteSyncer interface {
 	Sync() error
 }
 
-type LogContextWrapper func(ctx context.Context, logger *zap.Logger, fields ...zapcore.Field) *zap.Logger
+type LogContextWrapper func(ctx context.Context, logger ZapLogger, fields ...zapcore.Field) ZapLogger
 
 var (
 	mainLogger     = newLogger()
 	auditLogger    = newLogger()
 	tasksLogger    = newLogger()
-	contextWrapper = basicContextWrapper
+	contextWrapper = BasicContextWrapper
 
 	mainLogSyncerClient *LogSyncer
 
@@ -84,7 +83,7 @@ func Init(logDir string, ww ...LogContextWrapper) {
 			serverCore = zapcore.NewCore(
 				zapcore.NewJSONEncoder(srvConfig),
 				serverSync,
-				common.LogLevel,
+				getCoreLevel(),
 			)
 		}
 
@@ -111,7 +110,7 @@ func Init(logDir string, ww ...LogContextWrapper) {
 			core := zapcore.NewCore(
 				zapcore.NewJSONEncoder(cfg),
 				syncer,
-				common.LogLevel,
+				getCoreLevel(),
 			)
 			core = zapcore.NewTee(core, serverCore)
 			logger = zap.New(core)
@@ -123,10 +122,10 @@ func Init(logDir string, ww ...LogContextWrapper) {
 			core := zapcore.NewCore(
 				newColorConsoleEncoder(cfg),
 				syncer,
-				common.LogLevel,
+				getCoreLevel(),
 			)
 			core = zapcore.NewTee(core, serverCore)
-			if common.LogLevel == zap.DebugLevel {
+			if getCoreLevel() == zap.DebugLevel {
 				logger = zap.New(core, zap.AddStacktrace(zap.ErrorLevel))
 			} else {
 				logger = zap.New(core)
@@ -134,10 +133,7 @@ func Init(logDir string, ww ...LogContextWrapper) {
 
 		}
 
-		//nop := zap.NewNop()
 		_, _ = zap.RedirectStdLogAt(logger, zap.DebugLevel)
-
-		//		micro.SetLogger(micrologger{nop})
 
 		// Catch StdOut
 		if !common.LogCaptureStdOut {
@@ -211,13 +207,14 @@ func SetLoggerInit(f func() *zap.Logger, globalConnInit func(ctx context.Context
 }
 
 // Logger returns a zap logger with as much context as possible.
-func Logger(ctx context.Context) *zap.Logger {
+func Logger(ctx context.Context) ZapLogger {
 	l := servicecontext.GetLogger(ctx)
-	if l == nil {
-		return contextWrapper(ctx, mainLogger.get())
+	if l != nil {
+		if lg, ok := l.(ZapLogger); ok {
+			return lg
+		}
 	}
-
-	return l
+	return contextWrapper(ctx, mainLogger.get())
 }
 
 // SetAuditerInit defines what function to use to init the auditer
@@ -226,7 +223,7 @@ func SetAuditerInit(f func() *zap.Logger, globalConnInit func(ctx context.Contex
 }
 
 // Auditer returns a zap logger with as much context as possible
-func Auditer(ctx context.Context) *zap.Logger {
+func Auditer(ctx context.Context) ZapLogger {
 	return contextWrapper(ctx, auditLogger.get(), zap.String("LogType", "audit"))
 }
 
@@ -236,25 +233,13 @@ func SetTasksLoggerInit(f func() *zap.Logger, globalConnInit func(ctx context.Co
 }
 
 // TasksLogger returns a zap logger with as much context as possible.
-func TasksLogger(ctx context.Context) *zap.Logger {
+func TasksLogger(ctx context.Context) ZapLogger {
 	return contextWrapper(ctx, tasksLogger.get(), zap.String("LogType", "tasks"))
 }
 
 // GetAuditId simply returns a zap field that contains this message id to ease audit log analysis.
 func GetAuditId(msgId string) zapcore.Field {
 	return zap.String(common.KeyMsgId, msgId)
-}
-
-type micrologger struct {
-	*zap.Logger
-}
-
-func (m micrologger) Log(v ...interface{}) {
-	m.Info(fmt.Sprint(v...))
-}
-
-func (m micrologger) Logf(f string, v ...interface{}) {
-	m.Info(fmt.Sprintf(f, v...))
 }
 
 // RFC3369TimeEncoder serializes a time.Time to an RFC3339-formatted string
@@ -280,14 +265,4 @@ func Fatal(msg string, fields ...zapcore.Field) {
 
 func Info(msg string, fields ...zapcore.Field) {
 	mainLogger.Info(msg, fields...)
-}
-
-func basicContextWrapper(ctx context.Context, logger *zap.Logger, fields ...zapcore.Field) *zap.Logger {
-	if ctx == nil {
-		return logger
-	}
-	if serviceName := servicecontext.GetServiceName(ctx); serviceName != "" {
-		logger = logger.Named(serviceName)
-	}
-	return logger
 }

@@ -25,10 +25,25 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// addRegistryFlags registers necessary flags to connect to the registry
+// addRegistryFlags registers necessary flags to connect to the registry (defaults to memory)
 func addRegistryFlags(flags *pflag.FlagSet, hideAll ...bool) {
-	flags.String("registry", "memory://?cache=shared", "Registry used to manage services (currently nats only)")
-	flags.String("broker", "mem://", "Pub/sub service for events between services (currently nats only)")
+	flags.String("registry", "memory://?cache=shared", "Registry used to manage services")
+	flags.String("broker", "mem://", "Pub/sub service for events between services")
+	flags.String("transport", "grpc", "Transport protocol for RPC")
+	flags.Int("port_registry", net.GetAvailableRegistryAltPort(), "Port used to start a registry discovery service")
+	flags.Int("port_broker", net.GetAvailableBrokerAltPort(), "Port used to start a broker discovery service")
+
+	if len(hideAll) > 0 && hideAll[0] {
+		flags.MarkHidden("registry")
+		flags.MarkHidden("broker")
+		flags.MarkHidden("transport")
+	}
+}
+
+// addExternalCmdRegistryFlags registers necessary flags to connect to the registry with defaults :8001
+func addExternalCmdRegistryFlags(flags *pflag.FlagSet, hideAll ...bool) {
+	flags.String("registry", "grpc://:8001", "Registry used to contact services")
+	flags.String("broker", "grpc://:8001", "Pub/sub service for events between services")
 	flags.String("transport", "grpc", "Transport protocol for RPC")
 	flags.Int("port_registry", net.GetAvailableRegistryAltPort(), "Port used to start a registry discovery service")
 	flags.Int("port_broker", net.GetAvailableBrokerAltPort(), "Port used to start a broker discovery service")

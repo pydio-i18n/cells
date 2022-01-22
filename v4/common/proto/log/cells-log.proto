@@ -24,6 +24,16 @@ message Log {
     int32 Nano = 2;
 }
 
+// LogLevelEvent can be broadcasted to broker to change logger level from Info to Debug
+// for a specific set of services
+message LogLevelEvent {
+    // Reset all services to Info level
+    bool ResetInfo = 1;
+    // Set to Debug if true or Info if false
+    bool LevelDebug = 2;
+    // List of services where to apply (if Reset is not set)
+    repeated string Services = 3;
+}
 
 // LogMessage is the format used to transmit log messages to clients via the REST API.
 message LogMessage {

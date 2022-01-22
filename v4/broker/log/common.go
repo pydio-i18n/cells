@@ -27,8 +27,7 @@ package log
 import (
 	"time"
 
-	"go.uber.org/zap"
-
+	log2 "github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/log"
 )
 
@@ -38,8 +37,8 @@ type MessageRepository interface {
 	ListLogs(string, int32, int32) (chan log.ListLogResponse, error)
 	DeleteLogs(string) (int64, error)
 	AggregatedLogs(string, string, int32) (chan log.TimeRangeResponse, error)
-	Resync(logger *zap.Logger) error
-	Truncate(max int64, logger *zap.Logger) error
+	Resync(logger log2.ZapLogger) error
+	Truncate(max int64, logger log2.ZapLogger) error
 }
 
 // Single entry point to convert time.Time to Unix timestamps defined as int32

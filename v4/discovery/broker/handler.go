@@ -29,7 +29,7 @@ func (h *Handler) Publish(stream pb.Broker_PublishServer) error {
 	for {
 		req, err := stream.Recv()
 		if err != nil {
-			fmt.Println("Error is ", err)
+			fmt.Println("[discovery/grpc/broker] Publish: Error is ", err)
 			return err
 		}
 

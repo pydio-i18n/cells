@@ -32,7 +32,6 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/config"
-	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/sync"
@@ -56,7 +55,7 @@ func init() {
 			service.NewService(
 				service.Name(name),
 				service.Context(ctx),
-				service.WithLogger(log.Logger(ctx)),
+				//service.WithLogger(log.Logger(ctx)),
 				service.Tag(common.ServiceTagDatasource),
 				service.Description("Datasource indexation service"),
 				service.Source(source),
@@ -73,7 +72,7 @@ func init() {
 					if e != nil {
 						return fmt.Errorf("cannot find datasource configuration for " + sourceOpt)
 					}
-					engine := NewTreeServer(dsObject, name, servicecontext.GetDAO(ctx).(index.DAO), servicecontext.GetLogger(ctx))
+					engine := NewTreeServer(dsObject, name, servicecontext.GetDAO(ctx).(index.DAO))
 					tree.RegisterNodeReceiverEnhancedServer(srv, engine)
 					tree.RegisterNodeProviderEnhancedServer(srv, engine)
 					tree.RegisterNodeReceiverStreamEnhancedServer(srv, engine)

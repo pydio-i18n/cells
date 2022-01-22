@@ -21,6 +21,9 @@ func (this *RecorderPutResponse) Validate() error {
 func (this *Log) Validate() error {
 	return nil
 }
+func (this *LogLevelEvent) Validate() error {
+	return nil
+}
 func (this *LogMessage) Validate() error {
 	return nil
 }
