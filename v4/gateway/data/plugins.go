@@ -29,20 +29,19 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/pydio/cells/v4/common/server/middleware"
-
-	pydio "github.com/pydio/cells/v4/gateway/data/gw"
-
 	minio "github.com/minio/minio/cmd"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/server"
 	serverhttp "github.com/pydio/cells/v4/common/server/http"
+	"github.com/pydio/cells/v4/common/server/middleware"
 	"github.com/pydio/cells/v4/common/service"
 	"github.com/pydio/cells/v4/common/utils/net"
 	_ "github.com/pydio/cells/v4/gateway/data/gw"
+	pydio "github.com/pydio/cells/v4/gateway/data/gw"
 	"github.com/pydio/cells/v4/gateway/data/hooks"
 )
 
@@ -75,7 +74,7 @@ func init() {
 			// service.RouterDependencies(),
 			service.Description("S3 Gateway to tree service"),
 			//service.Port(fmt.Sprintf("%d", port)),
-			service.WithHTTP(func(c context.Context, mux *http.ServeMux) error {
+			service.WithHTTP(func(c context.Context, mux server.HttpMux) error {
 
 				u, _ := url.Parse(fmt.Sprintf("http://localhost:%d", port))
 				proxy := httputil.NewSingleHostReverseProxy(u)

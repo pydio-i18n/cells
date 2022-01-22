@@ -31,14 +31,15 @@ import (
 	"github.com/ory/hydra/jwk"
 	"github.com/ory/hydra/oauth2"
 	"github.com/ory/hydra/x"
-	"github.com/pydio/cells/v4/common/auth"
-	"github.com/pydio/cells/v4/common/config"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/rs/cors"
 
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/auth"
+	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/plugins"
+	"github.com/pydio/cells/v4/common/server"
 	"github.com/pydio/cells/v4/common/service"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 )
 
 func init() {
@@ -48,7 +49,7 @@ func init() {
 			service.Context(ctx),
 			service.Tag(common.ServiceTagIdm),
 			service.Description("OAuth Provider"),
-			service.WithHTTP(func(ctx context.Context, serveMux *http.ServeMux) error {
+			service.WithHTTP(func(ctx context.Context, serveMux server.HttpMux) error {
 				router := mux.NewRouter()
 				hh := config.GetSitesAllowedURLs()
 				for _, u := range hh {

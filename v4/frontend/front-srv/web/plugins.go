@@ -38,6 +38,7 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/front"
+	"github.com/pydio/cells/v4/common/server"
 	"github.com/pydio/cells/v4/common/server/caddy/hooks"
 	"github.com/pydio/cells/v4/common/service"
 	"github.com/pydio/cells/v4/common/service/frontend"
@@ -80,7 +81,7 @@ func init() {
 				// TODO V4 - Is this finally required ?
 				return hooks.Restart()
 			}),
-			service.WithHTTP(func(ctx context.Context, mux *http.ServeMux) error {
+			service.WithHTTP(func(ctx context.Context, mux server.HttpMux) error {
 				httpFs := http.FS(frontend.GetPluginsFS())
 
 				fs := gzipped.FileServer(httpFs)

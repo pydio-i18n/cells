@@ -9,7 +9,7 @@ import (
 )
 
 // WithHTTP adds a http micro service handler to the current service
-func WithHTTP(f func(context.Context, *http.ServeMux) error) ServiceOption {
+func WithHTTP(f func(context.Context, server.HttpMux) error) ServiceOption {
 	return func(o *ServiceOptions) {
 		o.serverType = server.ServerType_HTTP
 		o.serverStart = func() error {
@@ -25,7 +25,7 @@ func WithHTTP(f func(context.Context, *http.ServeMux) error) ServiceOption {
 	}
 }
 
-func WithHTTPStop(f func(context.Context, *http.ServeMux) error) ServiceOption {
+func WithHTTPStop(f func(context.Context, server.HttpMux) error) ServiceOption {
 	return func(o *ServiceOptions) {
 		o.serverStop = func() error {
 			var mux *http.ServeMux

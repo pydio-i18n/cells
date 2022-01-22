@@ -25,11 +25,11 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/pydio/cells/v4/common/log"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
+	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes"
 	"github.com/pydio/cells/v4/common/nodes/compose"
 	"github.com/pydio/cells/v4/common/plugins"
@@ -38,6 +38,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/server"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/gateway/websocket"
@@ -63,7 +64,7 @@ func init() {
 			service.Dependency(common.ServiceGrpcNamespace_+common.ServiceChat, []string{}),
 			service.Description("WebSocket server pushing event to the clients"),
 			service.Fork(true),
-			service.WithHTTP(func(ctx context.Context, mux *http.ServeMux) error {
+			service.WithHTTP(func(ctx context.Context, mux server.HttpMux) error {
 				ws = websocket.NewWebSocketHandler(ctx)
 				chat = websocket.NewChatHandler(ctx)
 				ws.EventRouter = compose.ReverseClient(
