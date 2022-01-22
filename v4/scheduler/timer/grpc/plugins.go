@@ -59,14 +59,13 @@ func init() {
 					return fmt.Errorf("cannot subscribe on JobConfigEvent topic %v", er)
 				}
 
-				if e := producer.Start(); e != nil {
-					return e
-				}
+				// TODO v4
+				go producer.Start()
 
-				select {
-				case <-c.Done():
-					fmt.Println("Handler is done")
-				}
+				//select {
+				//case <-c.Done():
+				//	fmt.Println("Handler is done")
+				//}
 				return nil
 
 			}),

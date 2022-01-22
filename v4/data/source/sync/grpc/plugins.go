@@ -60,8 +60,12 @@ func init() {
 		dss := config.ListSourcesFromConfig()
 
 		for _, datasource := range sources {
+			dsObject, ok := dss[datasource]
+			if !ok {
+				log.Error("Could not find datasource in config ", zap.String("datasource", datasource))
+				continue
+			}
 
-			dsObject := dss[datasource]
 			newService(ctx, dsObject)
 			continue
 

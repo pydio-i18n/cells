@@ -23,9 +23,7 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"os"
-	"runtime/trace"
-	"time"
+	"sync"
 
 	"github.com/pydio/cells/v4/common/server/caddy"
 
@@ -33,7 +31,6 @@ import (
 
 	clientcontext "github.com/pydio/cells/v4/common/client/context"
 
-	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 
 	clientgrpc "github.com/pydio/cells/v4/common/client/grpc"
@@ -72,7 +69,7 @@ to quickly create a Cobra application.`,
 		viper.Set("args", args)
 
 		bindViperFlags(cmd.Flags(), map[string]string{
-			//	"log":  "logs_level",
+			// "log":  "logs_level",
 			"fork": "is_fork",
 		})
 
@@ -81,33 +78,12 @@ to quickly create a Cobra application.`,
 		initConfig()
 
 		// Making sure we capture the signals
-		handleSignals()
+		handleSignals(args)
 
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
-
-		if !runtime.IsFork() {
-			f, err := os.Create("trace.out")
-			if err != nil {
-				panic(err)
-			}
-
-			err = trace.Start(f)
-			if err != nil {
-				panic(err)
-			}
-
-			go func() {
-				<-time.After(30 * time.Second)
-
-				fmt.Println("Finishing trace")
-				trace.Stop()
-				f.Close()
-			}()
-		}
-		// broker.Connect()
 
 		pluginsReg, err := registry.OpenRegistry(ctx, "memory:///?cache=shared")
 		if err != nil {
@@ -325,14 +301,27 @@ to quickly create a Cobra application.`,
 			}
 		}
 
-		var g errgroup.Group
+		// var g errgroup.Group
+
+		wg := &sync.WaitGroup{}
 		for _, srv := range srvs {
-			g.Go(srv.Serve)
+			// g.Go(srv.Serve)
+			wg.Add(1)
+			go func(srv server.Server) {
+				defer wg.Done()
+				if err := srv.Serve(); err != nil {
+					fmt.Println(err)
+				}
+
+				return
+			}(srv)
 		}
 
-		if err := g.Wait(); err != nil {
-			return err
-		}
+		wg.Wait()
+
+		//if err := g.Wait(); err != nil {
+		//	return err
+		//}
 
 		select {
 		case <-cmd.Context().Done():
@@ -357,6 +346,14 @@ func init() {
 	StartCmd.Flags().MarkHidden("fork")
 	StartCmd.Flags().MarkHidden("registry")
 	StartCmd.Flags().MarkHidden("broker")
+
+	// Other internal flags
+	StartCmd.Flags().String("log", "info", "Sets the log level: 'debug', 'info', 'warn', 'error' (for backward-compatibility, 'production' is equivalent to log_json+info)")
+	//StartCmd.Flags().Bool("log_json", false, "Sets the log output format to JSON instead of text")
+	//StartCmd.Flags().Bool("log_to_file", common.MustLogFileDefaultValue(), "Write logs on-file in CELLS_LOG_DIR")
+	//StartCmd.Flags().Bool("enable_metrics", false, "Instrument code to expose internal metrics")
+	//StartCmd.Flags().Bool("enable_pprof", false, "Enable pprof remote debugging")
+	//StartCmd.Flags().Int("healthcheck", 0, "Healthcheck port number")
 
 	RootCmd.AddCommand(StartCmd)
 }

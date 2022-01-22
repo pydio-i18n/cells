@@ -23,12 +23,17 @@ package etcd
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
+
+	"github.com/pydio/cells/v4/common/config"
 
 	clientv3 "go.etcd.io/etcd/client/v3"
 
 	configx "github.com/pydio/cells/v4/common/utils/configx"
 )
+
+var errClosedChannel = errors.New("channel is closed")
 
 type etcd struct {
 	v configx.Values
@@ -36,11 +41,19 @@ type etcd struct {
 	path string
 	cli  *clientv3.Client
 
-	updates []chan struct{}
+	receivers []*receiver
 }
 
-func NewSource(ctx context.Context, cli *clientv3.Client, path string) configx.Entrypoint {
+func NewSource(ctx context.Context, cli *clientv3.Client, path string) config.Store {
 	v := configx.New(configx.WithJSON())
+
+	resp, _ := cli.Get(context.Background(), path, clientv3.WithLimit(1))
+
+	for _, kv := range resp.Kvs {
+		if err := v.Set(kv.Value); err != nil {
+			fmt.Println("Error setting the value ", err)
+		}
+	}
 
 	m := &etcd{
 		v:    v,
@@ -64,65 +77,75 @@ func (m *etcd) watch(ctx context.Context) {
 			}
 			for _, ev := range resp.Events {
 				if err := m.v.Set(ev.Kv.Value); err != nil {
+					fmt.Println("Error setting the value here ", err)
 					continue
 				}
 
-				for _, ch := range m.updates {
-					ch <- struct{}{}
+				updated := m.receivers[:0]
+				for _, r := range m.receivers {
+					if err := r.call(); err == nil {
+						updated = append(updated, r)
+					}
 				}
+
+				m.receivers = updated
 			}
 		}
 	}
 }
 
 func (m *etcd) Get() configx.Value {
-	v := configx.New(configx.WithJSON())
-
-	resp, _ := m.cli.Get(context.Background(), m.path, clientv3.WithLimit(1))
-
-	for _, kv := range resp.Kvs {
-		v.Set(kv.Value)
-	}
-
-	return v
+	return m.v
 }
 
 func (m *etcd) Val(path ...string) configx.Values {
-	return &values{Values: m.v.Val(path...), rootPath: m.path, cli: m.cli}
+	return m.v.Val(path...) // &values{Values: m.v, rootPath: m.path, path: path, cli: m.cli}
 }
 
 func (m *etcd) Set(data interface{}) error {
-	resp, err := m.cli.Put(context.Background(), m.path, data.(string))
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(resp)
-
-	return nil
+	return m.v.Set(data)
 }
 
 func (m *etcd) Del() error {
 	return fmt.Errorf("not implemented")
 }
 
-func (m *etcd) Watch(path ...string) (configx.Receiver, error) {
-	ch := make(chan struct{})
+func (m *etcd) Save(ctxUser string, ctxMessage string) error {
+	_, err := m.cli.Put(context.Background(), m.path, string(m.v.Bytes()))
+	if err != nil {
+		return err
+	}
 
-	m.updates = append(m.updates, ch)
+	return nil
+}
+
+func (m *etcd) Watch(path ...string) (configx.Receiver, error) {
+	r := &receiver{
+		closed: false,
+		ch:     make(chan struct{}),
+		p:      path,
+		v:      m.v.Val(path...),
+	}
+
+	m.receivers = append(m.receivers, r)
 
 	// For the moment do nothing
-	return &receiver{
-		ch: ch,
-		p:  path,
-		v:  m.v.Val(path...),
-	}, nil
+	return r, nil
 }
 
 type receiver struct {
-	ch chan struct{}
-	p  []string
-	v  configx.Values
+	closed bool
+	ch     chan struct{}
+	p      []string
+	v      configx.Values
+}
+
+func (r *receiver) call() error {
+	if r.closed {
+		return errClosedChannel
+	}
+	r.ch <- struct{}{}
+	return nil
 }
 
 func (r *receiver) Next() (configx.Values, error) {
@@ -139,25 +162,27 @@ func (r *receiver) Next() (configx.Values, error) {
 }
 
 func (r *receiver) Stop() {
+	r.closed = true
 	close(r.ch)
 }
 
-type values struct {
-	cli *clientv3.Client
-
-	configx.Values
-	rootPath string
-}
-
-func (v *values) Set(data interface{}) error {
-	if err := v.Values.Set(data); err != nil {
-		return err
-	}
-
-	_, err := v.cli.Put(context.Background(), v.rootPath, v.Values.Val("#").String())
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
+//type values struct {
+//	cli *clientv3.Client
+//
+//	configx.Values
+//	rootPath string
+//	path     []string
+//}
+//
+//func (v *values) Set(data interface{}) error {
+//	if err := v.Values.Val(v.path...).Set(data); err != nil {
+//		return err
+//	}
+//
+//	_, err := v.cli.Put(context.Background(), v.rootPath, v.Values.Val("#").String())
+//	if err != nil {
+//		return err
+//	}
+//
+//	return nil
+//}

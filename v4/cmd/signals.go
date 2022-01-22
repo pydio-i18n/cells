@@ -23,14 +23,28 @@
 package cmd
 
 import (
+	"fmt"
+	"io"
 	"os"
 	"os/signal"
+	"path/filepath"
+	"runtime/pprof"
+	"strings"
 	"syscall"
+	"time"
 
+	"go.uber.org/zap"
+
+	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 )
 
-func handleSignals() {
+var (
+	profiling bool
+	profile   io.WriteCloser
+)
+
+func handleSignals(args []string) {
 	c := make(chan os.Signal, 1)
 
 	// SIGUSR1 does not compile on windows. Use direct value syscall.Signal instead
@@ -58,61 +72,60 @@ func handleSignals() {
 				//broker.Disconnect()
 			case syscall.SIGUSR1, syscall.SIGUSR2:
 
-				//if !profiling {
-				//
-				//	serviceMeta := registry.BuildServiceMeta()
-				//	startTags := strings.ReplaceAll(serviceMeta["start"], ",", "-")
-				//	startTags = strings.ReplaceAll(startTags, ":", "-")
-				//	if startTags == "" {
-				//		startTags = "main-process"
-				//	}
-				//	targetDir := filepath.Join(config.ApplicationWorkingDir(config.ApplicationDirLogs), "profiles", startTags)
-				//	os.MkdirAll(targetDir, 0755)
-				//	tStamp := time.Now().Format("2006-01-02T15:04:05")
-				//
-				//	if sig == syscall.SIGUSR1 { // SIGUSR2 will NOT write to Stdout
-				//		fmt.Printf("[Received SIGUSR1] Starting profiling session for process %d\n", os.Getpid())
-				//		pprof.Lookup("goroutine").WriteTo(os.Stdout, 1)
-				//	}
-				//
-				//	if routinesFile, err := os.OpenFile(filepath.Join(targetDir, tStamp+"-goroutines"), os.O_WRONLY|os.O_CREATE, 0755); err == nil {
-				//		pprof.Lookup("goroutine").WriteTo(routinesFile, 1)
-				//		routinesFile.Close()
-				//	}
-				//
-				//	if fheap, err := os.OpenFile(filepath.Join(targetDir, tStamp+"-heap-profile"), os.O_WRONLY|os.O_CREATE, 0755); err == nil {
-				//		pprof.WriteHeapProfile(fheap)
-				//		fheap.Close()
-				//	}
-				//
-				//	if fcpu, err := os.OpenFile(filepath.Join(targetDir, tStamp+"-cpu-profile"), os.O_WRONLY|os.O_CREATE, 0755); err == nil {
-				//		pprof.StartCPUProfile(fcpu)
-				//		profile = fcpu
-				//		profiling = true
-				//	}
-				//	// Close profiling session after 30s if user forgot to send a second call
-				//	go func(print bool) {
-				//		<-time.After(20 * time.Second)
-				//		if profiling {
-				//			if print {
-				//				fmt.Printf("Profiling session dumped to %s for process %d\n", targetDir, os.Getpid())
-				//			}
-				//			pprof.StopCPUProfile()
-				//			if err := profile.Close(); err != nil {
-				//				log.Fatal("Cannot close cpu profile", zap.Error(err))
-				//			}
-				//			profiling = false
-				//		}
-				//	}(sig == syscall.SIGUSR1)
-				//
-				//} else {
-				//
-				//	pprof.StopCPUProfile()
-				//	if err := profile.Close(); err != nil {
-				//		log.Fatal("Cannot close cpu profile", zap.Error(err))
-				//	}
-				//	profiling = false
-				//}
+				if !profiling {
+
+					startTags := "main-process"
+					if len(args) > 0 {
+						startTags = strings.Join(args, "-")
+					}
+
+					targetDir := filepath.Join(config.ApplicationWorkingDir(config.ApplicationDirLogs), "profiles", startTags)
+					os.MkdirAll(targetDir, 0755)
+					tStamp := time.Now().Format("2006-01-02T15:04:05")
+
+					if sig == syscall.SIGUSR1 { // SIGUSR2 will NOT write to Stdout
+						fmt.Printf("[Received SIGUSR1] Starting profiling session for process %d\n", os.Getpid())
+						pprof.Lookup("goroutine").WriteTo(os.Stdout, 1)
+					}
+
+					if routinesFile, err := os.OpenFile(filepath.Join(targetDir, tStamp+"-goroutines"), os.O_WRONLY|os.O_CREATE, 0755); err == nil {
+						pprof.Lookup("goroutine").WriteTo(routinesFile, 1)
+						routinesFile.Close()
+					}
+
+					if fheap, err := os.OpenFile(filepath.Join(targetDir, tStamp+"-heap-profile"), os.O_WRONLY|os.O_CREATE, 0755); err == nil {
+						pprof.WriteHeapProfile(fheap)
+						fheap.Close()
+					}
+
+					if fcpu, err := os.OpenFile(filepath.Join(targetDir, tStamp+"-cpu-profile"), os.O_WRONLY|os.O_CREATE, 0755); err == nil {
+						pprof.StartCPUProfile(fcpu)
+						profile = fcpu
+						profiling = true
+					}
+					// Close profiling session after 30s if user forgot to send a second call
+					go func(print bool) {
+						<-time.After(20 * time.Second)
+						if profiling {
+							if print {
+								fmt.Printf("Profiling session dumped to %s for process %d\n", targetDir, os.Getpid())
+							}
+							pprof.StopCPUProfile()
+							if err := profile.Close(); err != nil {
+								log.Fatal("Cannot close cpu profile", zap.Error(err))
+							}
+							profiling = false
+						}
+					}(sig == syscall.SIGUSR1)
+
+				} else {
+
+					pprof.StopCPUProfile()
+					if err := profile.Close(); err != nil {
+						log.Fatal("Cannot close cpu profile", zap.Error(err))
+					}
+					profiling = false
+				}
 
 			case syscall.SIGHUP:
 				// Stop all services

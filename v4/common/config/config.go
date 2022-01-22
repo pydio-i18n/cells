@@ -22,8 +22,9 @@ package config
 
 import (
 	"fmt"
-	configx2 "github.com/pydio/cells/v4/common/utils/configx"
 	"time"
+
+	configx2 "github.com/pydio/cells/v4/common/utils/configx"
 )
 
 var (
@@ -44,11 +45,12 @@ func RegisterLocal(store Store) {
 // Store defines the functionality a config must provide
 type Store interface {
 	configx2.Entrypoint
-
 	configx2.Watcher
+	Saver
+}
 
-	// Save with context
-	Save(string, string) error // Should we not do it in a function ?
+type Saver interface {
+	Save(string, string) error
 }
 
 // New creates a configuration provider with in-memory access
@@ -62,7 +64,7 @@ func New(store configx2.Entrypoint) Store {
 	// we initialise the store and save it in memory for easy access
 	if v != nil {
 		im := configx2.New(configx2.WithJSON())
-		im.Set(v)
+		im.Set(v.Bytes())
 		ret.im = im
 	} else {
 		im := configx2.New(configx2.WithJSON())

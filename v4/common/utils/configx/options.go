@@ -4,6 +4,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"gopkg.in/yaml.v2"
+	"sync"
 
 	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
@@ -27,6 +28,7 @@ type Decrypter interface {
 type Option func(*Options)
 
 type Options struct {
+	*sync.RWMutex
 	Unmarshaler
 	Marshaller
 	Encrypter
@@ -89,5 +91,11 @@ func WithEncrypt(e Encrypter) Option {
 func WithDecrypt(d Decrypter) Option {
 	return func(o *Options) {
 		o.Decrypter = d
+	}
+}
+
+func WithLock(m *sync.RWMutex) Option {
+	return func(o *Options) {
+		o.RWMutex = m
 	}
 }
