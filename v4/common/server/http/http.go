@@ -18,8 +18,10 @@ import (
 )
 
 type Server struct {
-	id     string
-	name   string
+	id   string
+	name string
+	meta map[string]string
+
 	cancel context.CancelFunc
 	net.Listener
 	*http.ServeMux
@@ -42,8 +44,10 @@ func New(ctx context.Context) server.Server {
 	ctx, cancel := context.WithCancel(ctx)
 
 	return server.NewServer(ctx, &Server{
-		id:       "http-" + uuid.New(),
-		name:     "http",
+		id:   "http-" + uuid.New(),
+		name: "http",
+		meta: server.InitPeerMeta(),
+
 		cancel:   cancel,
 		ServeMux: mux,
 		Server:   srv,
@@ -103,7 +107,7 @@ func (s *Server) Type() server.ServerType {
 }
 
 func (s *Server) Metadata() map[string]string {
-	return map[string]string{}
+	return s.meta // map[string]string{}
 }
 
 func (s *Server) As(i interface{}) bool {

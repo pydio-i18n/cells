@@ -8,8 +8,10 @@ import (
 )
 
 type Server struct {
-	id       string
-	name     string
+	id   string
+	name string
+	meta map[string]string
+
 	cancel   context.CancelFunc
 	handlers []func() error
 }
@@ -22,8 +24,10 @@ type Handler interface {
 func New(ctx context.Context) server.Server {
 	ctx, cancel := context.WithCancel(ctx)
 	return server.NewServer(ctx, &Server{
-		id:     "generic",
-		name:   "generic-" + uuid.New(),
+		id:   "generic",
+		name: "generic-" + uuid.New(),
+		meta: server.InitPeerMeta(),
+
 		cancel: cancel,
 	})
 }
@@ -65,7 +69,7 @@ func (s *Server) Type() server.ServerType {
 }
 
 func (s *Server) Metadata() map[string]string {
-	return map[string]string{}
+	return s.meta // map[string]string{}
 }
 
 func (s *Server) Address() []string {

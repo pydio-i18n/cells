@@ -26,6 +26,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	ProcessStartTags []string
+)
+
 // TODO v4 : rethink how the runitme is defined (cmd, config, ...)
 
 // IsFork checks if the runtime is originally a fork of a different process
@@ -43,12 +47,42 @@ func IsRemote() bool {
 	return viper.GetString("config") == "remote" || viper.GetString("config") == "raft"
 }
 
-func IsRequired(serviceName string) bool {
+func BuildProcessStartTag() {
 	args := viper.GetStringSlice("args")
 	xx := viper.GetStringSlice("exclude")
+	tt := viper.GetStringSlice("tags")
+	for _, t := range tt {
+		ProcessStartTags = append(ProcessStartTags, "t:"+t)
+	}
+	for _, a := range args {
+		ProcessStartTags = append(ProcessStartTags, "s:"+a)
+	}
+	for _, x := range xx {
+		ProcessStartTags = append(ProcessStartTags, "x:"+x)
+	}
+}
+
+func IsRequired(name string, tags ...string) bool {
+	args := viper.GetStringSlice("args")
+	xx := viper.GetStringSlice("exclude")
+	tt := viper.GetStringSlice("tags")
+	if len(tt) > 0 {
+		var hasTag bool
+		for _, t := range tt {
+			for _, st := range tags {
+				if st == t {
+					hasTag = true
+					break
+				}
+			}
+		}
+		if !hasTag {
+			return false
+		}
+	}
 	for _, x := range xx {
 		re := regexp.MustCompile(x)
-		if re.MatchString(serviceName) {
+		if re.MatchString(name) {
 			return false
 		}
 	}
@@ -59,7 +93,7 @@ func IsRequired(serviceName string) bool {
 
 	for _, arg := range viper.GetStringSlice("args") {
 		re := regexp.MustCompile(arg)
-		if re.MatchString(serviceName) {
+		if re.MatchString(name) {
 			return true
 		}
 	}

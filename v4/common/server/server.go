@@ -3,11 +3,8 @@ package server
 import (
 	"context"
 	"fmt"
-	"os"
-
-	"golang.org/x/sync/errgroup"
-
 	servercontext "github.com/pydio/cells/v4/common/server/context"
+	"golang.org/x/sync/errgroup"
 )
 
 type RawServer interface {
@@ -46,7 +43,6 @@ type server struct {
 
 func NewServer(ctx context.Context, s RawServer) Server {
 	reg := servercontext.GetRegistry(ctx)
-
 	srv := &server{
 		s: s,
 		opts: ServerOptions{
@@ -116,10 +112,7 @@ func (s *server) Endpoints() []string {
 }
 
 func (s *server) Metadata() map[string]string {
-	meta := s.s.Metadata()
-	meta["pid"] = fmt.Sprintf("%d", os.Getpid())
-
-	return meta
+	return s.s.Metadata()
 }
 
 func (s *server) BeforeServe(f func() error) {

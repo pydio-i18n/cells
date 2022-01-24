@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"fmt"
 	"net"
 
 	"github.com/spf13/viper"
@@ -15,8 +16,10 @@ import (
 )
 
 type Server struct {
-	id     string
-	name   string
+	id   string
+	name string
+	meta map[string]string
+
 	cancel context.CancelFunc
 	opts   *Options
 	addr   string
@@ -53,8 +56,10 @@ func New(ctx context.Context, opt ...Option) server.Server {
 	ctx, cancel := context.WithCancel(ctx)
 
 	return server.NewServer(ctx, &Server{
-		id:     "grpc-" + uuid.New(),
-		name:   "grpc",
+		id:   "grpc-" + uuid.New(),
+		name: "grpc",
+		meta: server.InitPeerMeta(),
+
 		cancel: cancel,
 		addr:   viper.GetString("grpc.address"),
 		opts:   opts,
@@ -81,13 +86,13 @@ func (s *Server) Type() server.ServerType {
 
 func (s *Server) Serve() error {
 	if s.opts.Listener == nil {
-		//fmt.Println("Serving Grpc on " + s.addr)
 		lis, err := net.Listen("tcp", s.addr)
 		if err != nil {
 			return err
 		}
 
 		s.opts.Listener = lis
+		fmt.Println("Serving Grpc (net.Listener.Addr()) " + lis.Addr().String())
 	}
 
 	go func() {
@@ -117,7 +122,7 @@ func (s *Server) Name() string {
 }
 
 func (s *Server) Metadata() map[string]string {
-	return map[string]string{}
+	return s.meta // map[string]string{}
 }
 
 func (s *Server) Address() []string {

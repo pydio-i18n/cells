@@ -212,93 +212,95 @@ to quickly create a Cobra application.`,
 			srvs       []server.Server
 		)
 
+		runtime.BuildProcessStartTag()
+
 		for _, ss := range services {
-			if !runtime.IsRequired(ss.Name()) {
+			var s service.Service
+			if !ss.As(&s) {
 				continue
 			}
+			if !runtime.IsRequired(s.Name(), s.Options().Tags...) {
+				continue
+			}
+			opts := s.Options()
 
-			var s service.Service
-			if ss.As(&s) {
-				opts := s.Options()
+			opts.Context = servicecontext.WithRegistry(opts.Context, reg)
 
-				opts.Context = servicecontext.WithRegistry(opts.Context, reg)
-
-				if opts.Fork && !runtime.IsFork() {
-					if !opts.AutoStart {
-						continue
-					}
-
-					srvFork := fork.NewServer(opts.Context)
-					var srvForkAs *fork.ForkServer
-					if srvFork.As(&srvForkAs) {
-						srvForkAs.RegisterForkParam(opts.Name)
-					}
-
-					srvs = append(srvs, srvFork)
-
-					opts.Server = srvFork
-
+			if opts.Fork && !runtime.IsFork() {
+				if !opts.AutoStart {
 					continue
 				}
 
-				if opts.Server != nil {
-
-					srvs = append(srvs, opts.Server)
-
-				} else if opts.ServerProvider != nil {
-
-					serv, er := opts.ServerProvider(ctx)
-					if er != nil {
-						log.Fatal(er)
-					}
-					opts.Server = serv
-					srvs = append(srvs, opts.Server)
-
-				} else {
-					if s.IsGRPC() {
-
-						if srvGRPC == nil {
-							srvGRPC = servergrpc.New(ctx)
-							srvs = append(srvs, srvGRPC)
-						}
-						opts.Server = srvGRPC
-
-					}
-					if s.IsREST() {
-
-						if srvHTTP == nil {
-							if runtime.IsFork() {
-								srvHTTP = http.New(ctx)
-							} else {
-								srvHTTP, _ = caddy.New(opts.Context, "")
-							}
-							srvs = append(srvs, srvHTTP)
-						}
-						opts.Server = srvHTTP
-
-					}
-					if s.IsGeneric() {
-
-						if srvGeneric == nil {
-							srvGeneric = generic.New(ctx)
-							srvs = append(srvs, srvGeneric)
-						}
-						opts.Server = srvGeneric
-
-					}
+				srvFork := fork.NewServer(opts.Context)
+				var srvForkAs *fork.ForkServer
+				if srvFork.As(&srvForkAs) {
+					srvForkAs.RegisterForkParam(opts.Name)
 				}
 
-				opts.Server.BeforeServe(s.Start)
-				opts.Server.AfterServe(func() error {
-					// Register service again to update nodes information
-					if err := reg.Register(s); err != nil {
-						return err
-					}
-					return nil
-				})
-				opts.Server.BeforeStop(s.Stop)
+				srvs = append(srvs, srvFork)
 
+				opts.Server = srvFork
+
+				continue
 			}
+
+			if opts.Server != nil {
+
+				srvs = append(srvs, opts.Server)
+
+			} else if opts.ServerProvider != nil {
+
+				serv, er := opts.ServerProvider(ctx)
+				if er != nil {
+					log.Fatal(er)
+				}
+				opts.Server = serv
+				srvs = append(srvs, opts.Server)
+
+			} else {
+				if s.IsGRPC() {
+
+					if srvGRPC == nil {
+						srvGRPC = servergrpc.New(ctx)
+						srvs = append(srvs, srvGRPC)
+					}
+					opts.Server = srvGRPC
+
+				}
+				if s.IsREST() {
+
+					if srvHTTP == nil {
+						if runtime.IsFork() {
+							srvHTTP = http.New(ctx)
+						} else {
+							srvHTTP, _ = caddy.New(opts.Context, "")
+						}
+						srvs = append(srvs, srvHTTP)
+					}
+					opts.Server = srvHTTP
+
+				}
+				if s.IsGeneric() {
+
+					if srvGeneric == nil {
+						srvGeneric = generic.New(ctx)
+						srvs = append(srvs, srvGeneric)
+					}
+					opts.Server = srvGeneric
+
+				}
+			}
+
+			opts.Server.BeforeServe(s.Start)
+			opts.Server.AfterServe(func() error {
+				// Register service again to update nodes information
+				if err := reg.Register(s); err != nil {
+					return err
+				}
+				return nil
+			})
+			opts.Server.BeforeStop(s.Stop)
+
 		}
 
 		// var g errgroup.Group

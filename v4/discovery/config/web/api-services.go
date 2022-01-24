@@ -22,6 +22,8 @@ package rest
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/server"
+	servercontext "github.com/pydio/cells/v4/common/server/context"
 	"net"
 	"path"
 	"sort"
@@ -78,6 +80,17 @@ func (h *Handler) ListServices(req *restful.Request, resp *restful.Response) {
 		Services: []*ctl.Service{},
 	}
 
+	disabledDss := map[string]struct{}{}
+	if dss, e := h.getDataSources(req.Request.Context()); e == nil {
+		for _, ds := range dss {
+			if ds.Disabled {
+				disabledDss[common.ServiceGrpcNamespace_+common.ServiceDataIndex_+ds.Name] = struct{}{}
+				disabledDss[common.ServiceGrpcNamespace_+common.ServiceDataSync_+ds.Name] = struct{}{}
+				disabledDss[common.ServiceGrpcNamespace_+common.ServiceDataObjects_+ds.Name] = struct{}{}
+			}
+		}
+	}
+
 	for _, item := range services {
 		srv := item.(registry.Service)
 		var found bool
@@ -90,57 +103,15 @@ func (h *Handler) ListServices(req *restful.Request, resp *restful.Response) {
 			}
 		}
 		if !found {
+			if _, dis := disabledDss[srv.Name()]; dis {
+				// Do not show disabled services as stopped
+				continue
+			}
 			output.Services = append(output.Services, h.serviceToRest(srv, false))
 		}
 	}
 
 	resp.WriteEntity(output)
-
-	/*
-		running, err := registry.ListRunningServices()
-		if err != nil {
-			service.RestError500(req, resp, err)
-			return
-		}
-
-		output := &rest.ServiceCollection{
-			Services: []*ctl.Service{},
-		}
-		for _, s := range running {
-			output.Services = append(output.Services, h.serviceToRest(s, true))
-		}
-
-		disabledDss := map[string]struct{}{}
-		if dss, e := h.getDataSources(req.Request.Context()); e == nil {
-			for _, ds := range dss {
-				if ds.Disabled {
-					disabledDss[common.ServiceGrpcNamespace_+common.ServiceDataIndex_+ds.Name] = struct{}{}
-					disabledDss[common.ServiceGrpcNamespace_+common.ServiceDataSync_+ds.Name] = struct{}{}
-					disabledDss[common.ServiceGrpcNamespace_+common.ServiceDataObjects_+ds.Name] = struct{}{}
-				}
-			}
-		}
-		for _, s := range all {
-			runningFound := false
-			for _, k := range running {
-				if k.Name() == s.Name() {
-					runningFound = true
-					break
-				}
-			}
-			if !runningFound {
-				// Ignore disabled services
-				if _, has := disabledDss[s.Name()]; has {
-					continue
-				}
-				output.Services = append(output.Services, h.serviceToRest(s, false))
-			}
-		}
-
-		output.Total = int32(len(output.Services))
-
-		resp.WriteEntity(output)
-	*/
 }
 
 // ListPeersAddresses lists all Peers (servers) on which any pydio service is running
@@ -149,22 +120,26 @@ func (h *Handler) ListPeersAddresses(req *restful.Request, resp *restful.Respons
 	response := &rest.ListPeersAddressesResponse{
 		PeerAddresses: []string{},
 	}
-	/*
-		// TODO V4
-			accu := make(map[string]string)
-
-			for _, p := range registry.GetPeers() {
-				accu[p.GetAddress()] = p.GetAddress()
-				if h := p.GetHostname(); h != "" {
-					// Replace value with "HostName|IP"
-					accu[p.GetAddress()] = h + "|" + p.GetAddress()
-				}
+	reg := servercontext.GetRegistry(req.Request.Context())
+	nodes, er := reg.List(registry.WithType(rpb.ItemType_NODE))
+	if er != nil {
+		service.RestError500(req, resp, er)
+		return
+	}
+	accu := make(map[string]string)
+	for _, n := range nodes {
+		node := n.(registry.Node)
+		addr := strings.Join(node.Address(), "")
+		if ho, _, e := net.SplitHostPort(addr); e == nil && ho != "" {
+			accu[ho] = ho
+			if h, ok := node.Metadata()[server.NodeMetaHostName]; ok && h != "" {
+				accu[ho] = h + "|" + ho
 			}
-
-			for _, v := range accu {
-				response.PeerAddresses = append(response.PeerAddresses, v)
-			}
-	*/
+		}
+	}
+	for _, v := range accu {
+		response.PeerAddresses = append(response.PeerAddresses, v)
+	}
 	resp.WriteEntity(response)
 
 }
@@ -237,45 +212,36 @@ func (h *Handler) ListProcesses(req *restful.Request, resp *restful.Response) {
 	}
 
 	out := &rest.ListProcessesResponse{}
-	resp.WriteEntity(out)
 
-	/*
-		for _, p := range registry.GetProcesses() {
-			// Filter by PeerId
-			if listReq.PeerId != "" && p.PeerId != listReq.PeerId {
-				continue
-			}
-			// Filter by Service
-			if listReq.ServiceName != "" {
-				var found bool
-				for _, s := range p.Services {
-					if s == listReq.ServiceName {
-						found = true
-						break
-					}
-				}
-				if !found {
-					continue
-				}
-			}
-			var services []string
-			for _, s := range p.Services {
-				services = append(services, s)
-			}
-			out.Processes = append(out.Processes, &rest.Process{
-				ID:          p.Id,
-				PeerId:      p.PeerId,
-				ParentID:    p.ParentId,
-				PeerAddress: p.PeerAddress,
-				MetricsPort: int32(p.MetricsPort),
-				StartTag:    p.StartTag,
-				Services:    services,
-			})
+	reg := servercontext.GetRegistry(req.Request.Context())
+	nodes, er := reg.List(registry.WithType(rpb.ItemType_NODE))
+	if er != nil {
+		service.RestError500(req, resp, er)
+		return
+	}
+	accu := make(map[string]map[string]string)
+	for _, n := range nodes {
+		node := n.(registry.Node)
+		mm := node.Metadata()
+		if _, ok := accu[mm[server.NodeMetaPID]]; ok {
+			continue
 		}
+		accu[mm[server.NodeMetaPID]] = mm
+	}
+	for pid, meta := range accu {
+		mport, _ := strconv.Atoi(meta[server.NodeMetaMetrics])
+		out.Processes = append(out.Processes, &rest.Process{
+			ID:          pid,
+			ParentID:    meta[server.NodeMetaParentPID],
+			MetricsPort: int32(mport),
+			PeerId:      "", // ??
+			PeerAddress: "", // ??
+			StartTag:    meta[server.NodeMetaStartTag],
+			Services:    []string{},
+		})
+	}
 
-		resp.WriteEntity(out)
-
-	*/
+	resp.WriteEntity(out)
 
 }
 

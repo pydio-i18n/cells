@@ -83,15 +83,17 @@ const (
 
 type Server struct {
 	*http.ServeMux
-	id       string
-	name     string
-	serveDir string
-	rootCtx  context.Context
+	id   string
+	name string
+	meta map[string]string
 
+	serveDir        string
+	rootCtx         context.Context
 	restartRequired bool
 	watchDone       chan struct{}
 
-	Confs []byte
+	addresses []string
+	Confs     []byte
 }
 
 func New(ctx context.Context, dir string) (server.Server, error) {
@@ -112,11 +114,13 @@ func New(ctx context.Context, dir string) (server.Server, error) {
 	}
 
 	srv := &Server{
+		id:   "caddy-" + uuid.New(),
+		name: "caddy",
+		meta: server.InitPeerMeta(),
+
 		rootCtx:   ctx,
 		serveDir:  dir,
 		watchDone: make(chan struct{}, 1),
-		id:        "caddy-" + uuid.New(),
-		name:      "caddy",
 		ServeMux:  srvMUX,
 	}
 	if err := srv.ComputeConfs(); err != nil {
@@ -176,6 +180,11 @@ func (s *Server) ComputeConfs() error {
 		log.Logger(s.rootCtx).Warn(w.String())
 	}
 	s.Confs = confs
+
+	s.addresses = []string{} // Empty slice on restart
+	for _, site := range caddySites {
+		s.addresses = append(s.addresses, site.GetBinds()...)
+	}
 	return nil
 }
 
@@ -189,7 +198,7 @@ func (s *Server) Stop() error {
 }
 
 func (s *Server) Address() []string {
-	return []string{}
+	return s.addresses
 }
 
 func (s *Server) Endpoints() []string {
@@ -210,7 +219,7 @@ func (s *Server) Name() string {
 }
 
 func (s *Server) Metadata() map[string]string {
-	return map[string]string{}
+	return s.meta // map[string]string{}
 }
 
 func (s *Server) As(i interface{}) bool {

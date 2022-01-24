@@ -16,8 +16,10 @@ import (
 )
 
 type Server struct {
-	id     string
-	name   string
+	id   string
+	name string
+	meta map[string]string
+
 	ctx    context.Context
 	cancel context.CancelFunc
 
@@ -28,8 +30,10 @@ func NewServer(ctx context.Context) server.Server {
 	ctx, cancel := context.WithCancel(ctx)
 
 	return server.NewServer(ctx, &Server{
-		id:     "fork-" + uuid.New(),
-		name:   "fork",
+		id:   "fork-" + uuid.New(),
+		name: "fork",
+		meta: server.InitPeerMeta(),
+
 		ctx:    ctx,
 		cancel: cancel,
 		s:      &ForkServer{},
@@ -98,7 +102,7 @@ func (s *Server) Type() server.ServerType {
 }
 
 func (s *Server) Metadata() map[string]string {
-	return map[string]string{}
+	return s.meta // map[string]string{}
 }
 
 func (s *Server) Address() []string {
