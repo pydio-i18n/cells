@@ -27,7 +27,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/emicklei/go-restful"
+	restful "github.com/emicklei/go-restful/v3"
 	"github.com/gorilla/sessions"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"

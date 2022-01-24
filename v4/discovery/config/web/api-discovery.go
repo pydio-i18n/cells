@@ -26,7 +26,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/emicklei/go-restful"
+	restful "github.com/emicklei/go-restful/v3"
 	"github.com/go-openapi/spec"
 	"github.com/ory/ladon"
 	"github.com/spf13/viper"

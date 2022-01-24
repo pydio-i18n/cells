@@ -26,7 +26,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/emicklei/go-restful"
+	restful "github.com/emicklei/go-restful/v3"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"google.golang.org/protobuf/proto"

@@ -29,7 +29,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/allegro/bigcache"
+	bigcache "github.com/allegro/bigcache/v3"
 	"github.com/uber-go/tally"
 
 	"github.com/pydio/cells/v4/common/service/metrics"

@@ -23,7 +23,7 @@ package service
 import (
 	"io"
 
-	"github.com/emicklei/go-restful"
+	restful "github.com/emicklei/go-restful/v3"
 	validator "github.com/mwitkow/go-proto-validators"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"

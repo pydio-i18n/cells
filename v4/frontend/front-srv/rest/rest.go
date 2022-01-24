@@ -33,7 +33,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/emicklei/go-restful"
+	restful "github.com/emicklei/go-restful/v3"
 	exifremove "github.com/scottleedavis/go-exif-remove"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/emptypb"

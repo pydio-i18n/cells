@@ -21,9 +21,9 @@
 package rest
 
 import (
+	restful "github.com/emicklei/go-restful/v3"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	restful "github.com/emicklei/go-restful"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/proto/docstore"

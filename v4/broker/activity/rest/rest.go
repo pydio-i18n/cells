@@ -29,7 +29,7 @@ import (
 
 	"github.com/pydio/cells/v4/common/nodes/compose"
 
-	"github.com/emicklei/go-restful"
+	restful "github.com/emicklei/go-restful/v3"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 

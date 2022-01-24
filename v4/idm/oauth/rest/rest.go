@@ -26,7 +26,7 @@ import (
 	"github.com/pydio/cells/v4/common/nodes"
 	"time"
 
-	"github.com/emicklei/go-restful"
+	restful "github.com/emicklei/go-restful/v3"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"

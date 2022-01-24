@@ -22,15 +22,13 @@ package rest
 
 import (
 	"context"
-	"github.com/pydio/cells/v4/common/server"
-	servercontext "github.com/pydio/cells/v4/common/server/context"
 	"net"
 	"path"
 	"sort"
 	"strconv"
 	"strings"
 
-	restful "github.com/emicklei/go-restful"
+	restful "github.com/emicklei/go-restful/v3"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -43,6 +41,8 @@ import (
 	"github.com/pydio/cells/v4/common/proto/rest"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/registry"
+	"github.com/pydio/cells/v4/common/server"
+	servercontext "github.com/pydio/cells/v4/common/server/context"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/errors"

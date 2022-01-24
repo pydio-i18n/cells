@@ -24,7 +24,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/emicklei/go-restful"
+	restful "github.com/emicklei/go-restful/v3"
 	"github.com/gorilla/sessions"
 
 	"github.com/pydio/cells/v4/common/auth"

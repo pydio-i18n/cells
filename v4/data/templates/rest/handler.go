@@ -22,7 +22,7 @@
 package rest
 
 import (
-	"github.com/emicklei/go-restful"
+	restful "github.com/emicklei/go-restful/v3"
 
 	"github.com/pydio/cells/v4/common/proto/rest"
 	"github.com/pydio/cells/v4/data/templates"

@@ -26,7 +26,7 @@ import (
 
 	"github.com/pydio/cells/v4/common/client/grpc"
 
-	"github.com/emicklei/go-restful"
+	restful "github.com/emicklei/go-restful/v3"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 

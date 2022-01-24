@@ -6,16 +6,16 @@ require (
 	cloud.google.com/go/kms v1.1.0 // indirect
 	cloud.google.com/go/storage v1.18.2 // indirect
 	github.com/ajvb/kala v0.8.4
-	github.com/allegro/bigcache v1.2.1
+	github.com/allegro/bigcache/v3 v3.0.1
 	github.com/beevik/ntp v0.3.0
 	github.com/blevesearch/bleve/v2 v2.3.0
 	github.com/c2fo/testify v0.0.0-20150827203832-fba96363964a // indirect
-	github.com/caddyserver/caddy/v2 v2.4.5
+	github.com/caddyserver/caddy/v2 v2.4.6
 	github.com/cskr/pubsub v1.0.2
 	github.com/disintegration/imaging v1.6.2
 	github.com/docker/docker v20.10.12+incompatible // indirect
 	github.com/dustin/go-humanize v1.0.1-0.20200219035652-afde56e7acac
-	github.com/emicklei/go-restful v2.15.0+incompatible
+	github.com/emicklei/go-restful/v3 v3.7.3
 	github.com/fatih/color v1.13.0
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/ghodss/yaml v1.0.0

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/emicklei/go-restful"
+	restful "github.com/emicklei/go-restful/v3"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
 	"github.com/rs/cors"

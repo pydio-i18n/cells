@@ -21,7 +21,8 @@
 package rest
 
 import (
-	restful "github.com/emicklei/go-restful"
+	restful "github.com/emicklei/go-restful/v3"
+
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config"

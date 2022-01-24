@@ -28,10 +28,10 @@ import (
 	"regexp"
 	"strings"
 
+	restful "github.com/emicklei/go-restful/v3"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 
-	restful "github.com/emicklei/go-restful"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/client/grpc"
