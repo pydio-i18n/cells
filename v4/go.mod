@@ -8,7 +8,7 @@ require (
 	github.com/ajvb/kala v0.8.4
 	github.com/allegro/bigcache v1.2.1
 	github.com/beevik/ntp v0.3.0
-	github.com/blevesearch/bleve v1.0.14
+	github.com/blevesearch/bleve/v2 v2.3.0
 	github.com/c2fo/testify v0.0.0-20150827203832-fba96363964a // indirect
 	github.com/caddyserver/caddy/v2 v2.4.5
 	github.com/cskr/pubsub v1.0.2
@@ -29,6 +29,7 @@ require (
 	github.com/gobwas/glob v0.2.3
 	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.3.0
+	github.com/gopherjs/gopherjs v0.0.0-20190910122728-9d188e94fb99 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.1

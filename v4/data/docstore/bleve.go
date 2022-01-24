@@ -25,9 +25,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/blevesearch/bleve"
-	"github.com/blevesearch/bleve/index/scorch"
-	"github.com/blevesearch/bleve/index/store/boltdb"
+	bleve "github.com/blevesearch/bleve/v2"
+	"github.com/blevesearch/bleve/v2/index/scorch"
+	"github.com/blevesearch/bleve/v2/index/upsidedown/store/boltdb"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common/log"
@@ -157,12 +157,12 @@ func (s *BleveServer) SearchDocuments(storeID string, query *docstore.DocumentQu
 	}
 	for _, hit := range searchResult.Hits {
 		doc, docErr := s.Engine.Document(hit.ID)
-		if docErr != nil || doc == nil || doc.ID == "" {
+		if docErr != nil || doc == nil || doc.ID() == "" {
 			log.Logger(context.Background()).Debug("Skipping Document", zap.Any("doc", doc), zap.Error(docErr))
 			continue
 		}
 		log.Logger(context.Background()).Debug("Sending Document", zap.Any("doc", doc))
-		docs = append(docs, doc.ID)
+		docs = append(docs, doc.ID())
 	}
 
 	return docs, int64(searchResult.Total), nil

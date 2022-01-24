@@ -30,14 +30,14 @@ import (
 
 	"github.com/pydio/cells/v4/common"
 
-	"github.com/blevesearch/bleve"
-	"github.com/blevesearch/bleve/analysis/analyzer/keyword"
-	"github.com/blevesearch/bleve/analysis/analyzer/standard"
-	"github.com/blevesearch/bleve/analysis/lang/en"
-	"github.com/blevesearch/bleve/index/scorch"
-	"github.com/blevesearch/bleve/index/store/boltdb"
-	"github.com/blevesearch/bleve/registry"
-	"github.com/blevesearch/bleve/search/query"
+	bleve "github.com/blevesearch/bleve/v2"
+	"github.com/blevesearch/bleve/v2/analysis/analyzer/keyword"
+	"github.com/blevesearch/bleve/v2/analysis/analyzer/standard"
+	"github.com/blevesearch/bleve/v2/analysis/lang/en"
+	"github.com/blevesearch/bleve/v2/index/scorch"
+	"github.com/blevesearch/bleve/v2/index/upsidedown/store/boltdb"
+	"github.com/blevesearch/bleve/v2/registry"
+	"github.com/blevesearch/bleve/v2/search/query"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common/log"
@@ -45,35 +45,35 @@ import (
 	"github.com/pydio/cells/v4/common/nodes/meta"
 	"github.com/pydio/cells/v4/common/proto/tree"
 
-	_ "github.com/blevesearch/bleve/analysis/lang/ar"
-	_ "github.com/blevesearch/bleve/analysis/lang/bg"
-	_ "github.com/blevesearch/bleve/analysis/lang/ca"
-	_ "github.com/blevesearch/bleve/analysis/lang/cjk"
-	_ "github.com/blevesearch/bleve/analysis/lang/ckb"
-	_ "github.com/blevesearch/bleve/analysis/lang/cs"
-	_ "github.com/blevesearch/bleve/analysis/lang/da"
-	_ "github.com/blevesearch/bleve/analysis/lang/de"
-	_ "github.com/blevesearch/bleve/analysis/lang/el"
-	_ "github.com/blevesearch/bleve/analysis/lang/es"
-	_ "github.com/blevesearch/bleve/analysis/lang/eu"
-	_ "github.com/blevesearch/bleve/analysis/lang/fa"
-	_ "github.com/blevesearch/bleve/analysis/lang/fi"
-	_ "github.com/blevesearch/bleve/analysis/lang/fr"
-	_ "github.com/blevesearch/bleve/analysis/lang/ga"
-	_ "github.com/blevesearch/bleve/analysis/lang/gl"
-	_ "github.com/blevesearch/bleve/analysis/lang/hi"
-	_ "github.com/blevesearch/bleve/analysis/lang/hu"
-	_ "github.com/blevesearch/bleve/analysis/lang/hy"
-	_ "github.com/blevesearch/bleve/analysis/lang/id"
-	_ "github.com/blevesearch/bleve/analysis/lang/in"
-	_ "github.com/blevesearch/bleve/analysis/lang/it"
-	_ "github.com/blevesearch/bleve/analysis/lang/nl"
-	_ "github.com/blevesearch/bleve/analysis/lang/no"
-	_ "github.com/blevesearch/bleve/analysis/lang/pt"
-	_ "github.com/blevesearch/bleve/analysis/lang/ro"
-	_ "github.com/blevesearch/bleve/analysis/lang/ru"
-	_ "github.com/blevesearch/bleve/analysis/lang/sv"
-	_ "github.com/blevesearch/bleve/analysis/lang/tr"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/ar"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/bg"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/ca"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/cjk"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/ckb"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/cs"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/da"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/de"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/el"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/es"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/eu"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/fa"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/fi"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/fr"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/ga"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/gl"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/hi"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/hu"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/hy"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/id"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/in"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/it"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/nl"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/no"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/pt"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/ro"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/ru"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/sv"
+	_ "github.com/blevesearch/bleve/v2/analysis/lang/tr"
 )
 
 const (
@@ -503,12 +503,14 @@ func (s *Server) SearchNodes(c context.Context, queryObject *tree.Query, from in
 	}
 	log.Logger(c).Debug("SearchObjects", zap.Any("total results", searchResult.Total))
 	for _, f := range searchResult.Facets {
-		for _, t := range f.Terms {
-			if t.Term != "" {
-				facets <- &tree.SearchFacet{
-					FieldName: f.Field,
-					Label:     t.Term,
-					Count:     int32(t.Count),
+		if f.Terms != nil {
+			for _, t := range f.Terms.Terms() {
+				if t.Term != "" {
+					facets <- &tree.SearchFacet{
+						FieldName: f.Field,
+						Label:     t.Term,
+						Count:     int32(t.Count),
+					}
 				}
 			}
 		}

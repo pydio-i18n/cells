@@ -31,7 +31,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/blevesearch/bleve"
+	bleve "github.com/blevesearch/bleve/v2"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
