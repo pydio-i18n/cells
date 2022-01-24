@@ -19,11 +19,11 @@ require (
 	github.com/fatih/color v1.13.0
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/ghodss/yaml v1.0.0
-	github.com/go-openapi/errors v0.20.1
+	github.com/go-openapi/errors v0.20.2
 	github.com/go-openapi/loads v0.21.0
-	github.com/go-openapi/runtime v0.20.0
+	github.com/go-openapi/runtime v0.21.1
 	github.com/go-openapi/spec v0.20.4
-	github.com/go-openapi/strfmt v0.21.0
+	github.com/go-openapi/strfmt v0.21.1
 	github.com/go-openapi/swag v0.19.15
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gobwas/glob v0.2.3
@@ -33,11 +33,11 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.1
-	github.com/gosimple/slug v1.11.2
+	github.com/gosimple/slug v1.12.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.6.0
-	github.com/h2non/filetype v1.1.1
-	github.com/hashicorp/go-version v1.3.0
+	github.com/h2non/filetype v1.1.3
+	github.com/hashicorp/go-version v1.4.0
 	github.com/imdario/mergo v0.3.12
 	github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf
 	github.com/jaytaylor/go-hostsfile v0.0.0-20201026230151-f581673a59cf
@@ -52,7 +52,7 @@ require (
 	github.com/livekit/protocol v0.10.0
 	github.com/lpar/gzipped v1.1.0
 	github.com/lucas-clemente/quic-go v0.24.0 // indirect
-	github.com/manifoldco/promptui v0.8.0
+	github.com/manifoldco/promptui v0.9.0
 	github.com/matcornic/hermes/v2 v2.1.0
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/minio/cli v1.22.0

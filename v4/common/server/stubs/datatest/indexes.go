@@ -29,7 +29,6 @@ import (
 	_ "gopkg.in/doug-martin/goqu.v4/adapters/sqlite3"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/server/stubs"
@@ -52,7 +51,7 @@ func NewIndexService(dsName string, nodes ...*tree.Node) (grpc.ClientConnInterfa
 		return nil, fmt.Errorf("could not start test: unable to initialise index DAO, error: %v", err)
 	}
 
-	ts := srv.NewTreeServer(&object.DataSource{Name: dsName}, common.ServiceGrpcNamespace_+common.ServiceTree, mockDAO.(index.DAO), log.Logger(context.Background()))
+	ts := srv.NewTreeServer(&object.DataSource{Name: dsName}, common.ServiceGrpcNamespace_+common.ServiceTree, mockDAO.(index.DAO))
 
 	srv1 := &tree.NodeProviderStub{}
 	srv1.NodeProviderServer = ts
