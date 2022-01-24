@@ -55,7 +55,7 @@ require (
 	github.com/matcornic/hermes/v2 v2.1.0
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/minio/cli v1.22.0
-	github.com/minio/madmin-go v1.1.12
+	github.com/minio/madmin-go v1.2.7
 	github.com/minio/minio v0.0.0-20211121184130-c791de0e1eae
 	github.com/minio/minio-go/v7 v7.0.21
 	github.com/mitchellh/mapstructure v1.4.3
@@ -104,9 +104,9 @@ require (
 	gocloud.dev v0.20.0
 	gocloud.dev/pubsub/natspubsub v0.20.0
 	gocloud.dev/pubsub/rabbitpubsub v0.20.0
-	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
+	golang.org/x/crypto v0.0.0-20211209193657-4570a0811e8b
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
-	golang.org/x/net v0.0.0-20211020060615-d418f374d309
+	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/text v0.3.7
@@ -126,4 +126,5 @@ require (
 )
 
 //replace github.com/minio/minio => /Users/charles/Sources/go/src/github.com/pydio/minio
-replace github.com/minio/minio => github.com/pydio/minio v0.0.0-20220110094737-71dca4158db2
+
+replace github.com/minio/minio => github.com/pydio/minio v0.0.0-20220124155239-9bd5f058758c
