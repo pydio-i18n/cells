@@ -30,7 +30,7 @@ import (
 	"time"
 
 	bigcache "github.com/allegro/bigcache/v3"
-	"github.com/uber-go/tally"
+	tally "github.com/uber-go/tally/v4"
 
 	"github.com/pydio/cells/v4/common/service/metrics"
 )
