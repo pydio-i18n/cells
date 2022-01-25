@@ -48,7 +48,7 @@ require (
 	github.com/karrick/godirwalk v1.16.1
 	github.com/krolaw/zipstream v0.0.0-20180621105154-0a2661891f94
 	github.com/kylelemons/godebug v1.1.0
-	github.com/livekit/protocol v0.10.0
+	github.com/livekit/protocol v0.11.11
 	github.com/lpar/gzipped v1.1.0
 	github.com/lucas-clemente/quic-go v0.24.0 // indirect
 	github.com/manifoldco/promptui v0.9.0
@@ -85,11 +85,11 @@ require (
 	github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/smartystreets/goconvey v1.7.2
-	github.com/spf13/afero v1.6.0
+	github.com/spf13/afero v1.8.0
 	github.com/spf13/cast v1.4.1
-	github.com/spf13/cobra v1.2.1
+	github.com/spf13/cobra v1.3.0
 	github.com/spf13/pflag v1.0.5
-	github.com/spf13/viper v1.8.1
+	github.com/spf13/viper v1.10.1
 	github.com/stretchr/testify v1.7.0
 	github.com/twmb/murmur3 v1.1.6 // indirect
 	github.com/uber-go/tally/v4 v4.1.1
@@ -111,7 +111,7 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/text v0.3.7
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac
-	google.golang.org/genproto v0.0.0-20211020151524-b7c3a969101a
+	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa
 	google.golang.org/grpc v1.43.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0
 	google.golang.org/grpc/examples v0.0.0-20211015201449-4757d0249e2d
