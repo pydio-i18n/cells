@@ -33,7 +33,7 @@ func (*rrPickerBuilder) Build(info base.PickerBuildInfo) balancer.Picker {
 
 	pcs := make(map[string]*rrPickerConns)
 	for sc, sci := range info.ReadySCs {
-		for _, s := range sci.Address.Attributes.Value("services").([]string) {
+		for _, s := range sci.Address.Attributes.Value("services").(comparableSlice) {
 			v, ok := pcs[s]
 			if !ok {
 				v = &rrPickerConns{}

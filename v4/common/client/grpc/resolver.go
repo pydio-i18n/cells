@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"sort"
 	"sync"
 	"time"
 
@@ -39,7 +40,7 @@ type cellsResolver struct {
 	address              string
 	cc                   resolver.ClientConn
 	name                 string
-	m                    map[string][]string
+	m                    map[string]comparableSlice
 	ml                   *sync.RWMutex
 	updatedState         chan struct{}
 	updatedStateTimer    *time.Timer
@@ -61,7 +62,7 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 		reg:                  b.reg,
 		name:                 name,
 		cc:                   cc,
-		m:                    map[string][]string{},
+		m:                    map[string]comparableSlice{},
 		ml:                   &sync.RWMutex{},
 		disableServiceConfig: opts.DisableServiceConfig,
 		updatedStateTimer:    time.NewTimer(50 * time.Millisecond),
@@ -178,4 +179,27 @@ func parseTarget(target string) (host, port, name string, err error) {
 	name = groups[3]
 
 	return host, port, name, nil
+}
+
+type comparableSlice []string
+
+func (c comparableSlice) Equal(o interface{}) bool {
+	if &c == o {
+		return true
+	}
+	ss, ok := o.(comparableSlice)
+	if !ok {
+		return false
+	}
+	if len(ss) != len(c) {
+		return false
+	}
+	sort.Strings(c)
+	sort.Strings(ss)
+	for i, v := range c {
+		if ss[i] != v {
+			return false
+		}
+	}
+	return true
 }
