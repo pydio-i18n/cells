@@ -26,10 +26,10 @@ import (
 	"fmt"
 	"time"
 
+	goqu "github.com/doug-martin/goqu/v9"
 	migrate "github.com/rubenv/sql-migrate"
-	"gopkg.in/doug-martin/goqu.v4"
 
-	service "github.com/pydio/cells/v4/common/proto/service"
+	"github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/common/utils/cache"
 	"github.com/pydio/cells/v4/common/utils/configx"
@@ -266,7 +266,7 @@ func (s *ResourcesSQL) BuildPolicyConditionForAction(q *service.ResourcePolicyQu
 			Prepared(true).
 			Select(goqu.L("1")).
 			Where(goqu.And(join, actionQ)).
-			ToSql()
+			ToSQL()
 
 		if e != nil {
 			return nil, e
@@ -293,7 +293,7 @@ func (s *ResourcesSQL) BuildPolicyConditionForAction(q *service.ResourcePolicyQu
 			Prepared(true).
 			Select(goqu.L("1")).
 			Where(goqu.And(ands...)).
-			ToSql()
+			ToSQL()
 
 		if e != nil {
 			return nil, e

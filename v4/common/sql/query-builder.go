@@ -24,10 +24,10 @@ import (
 	"fmt"
 	"strings"
 
+	goqu "github.com/doug-martin/goqu/v9"
+	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
-	"gopkg.in/doug-martin/goqu.v4"
-	_ "gopkg.in/doug-martin/goqu.v4/adapters/mysql"
 
 	"github.com/pydio/cells/v4/common/proto/service"
 )
@@ -118,7 +118,7 @@ func QueryStringFromExpression(tableName string, driver string, e Enquirer, ex g
 		dataset = dataset.Offset(uint(offset)).Limit(uint(limit))
 	}
 
-	queryString, args, err := dataset.ToSql()
+	queryString, args, err := dataset.ToSQL()
 	return queryString, args, err
 
 }
@@ -140,7 +140,7 @@ func CountStringFromExpression(tableName string, columnCount string, driver stri
 		dataset = dataset.Where(ex)
 	}
 
-	queryString, args, err := dataset.ToSql()
+	queryString, args, err := dataset.ToSQL()
 	return queryString, args, err
 
 }
@@ -153,7 +153,7 @@ func DeleteStringFromExpression(tableName string, driver string, ex goqu.Express
 	}
 
 	db := goqu.New(driver, nil)
-	sql, args, e := db.From(tableName).Prepared(true).Where(ex).ToDeleteSql()
+	sql, args, e := db.From(tableName).Prepared(true).Where(ex).ToSQL()
 	return sql, args, e
 
 }

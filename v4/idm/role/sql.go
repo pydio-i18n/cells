@@ -25,10 +25,10 @@ import (
 	"strings"
 	"time"
 
+	goqu "github.com/doug-martin/goqu/v9"
 	migrate "github.com/rubenv/sql-migrate"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
-	"gopkg.in/doug-martin/goqu.v4"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/proto/idm"

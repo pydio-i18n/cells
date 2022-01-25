@@ -28,9 +28,9 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
+	goqu "github.com/doug-martin/goqu/v9"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
-	"gopkg.in/doug-martin/goqu.v4"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/log"
@@ -98,7 +98,7 @@ func (s *sqlimpl) makeSearchQuery(query sql.Enquirer, countOnly bool, includePar
 
 	}
 
-	return dataset.ToSql()
+	return dataset.ToSQL()
 }
 
 type queryConverter struct {
@@ -224,7 +224,7 @@ func (c *queryConverter) Convert(val *anypb.Any, driver string) (goqu.Expression
 			attWheres = append(attWheres, exprName)
 			attWheres = append(attWheres, exprValue)
 		}
-		attQ, _, _ := dataset.Where(attWheres...).ToSql()
+		attQ, _, _ := dataset.Where(attWheres...).ToSQL()
 		if q.Not {
 			attQ = "NOT EXISTS (" + attQ + ")"
 		} else {
@@ -246,7 +246,7 @@ func (c *queryConverter) Convert(val *anypb.Any, driver string) (goqu.Expression
 			goqu.I("r.uuid").Eq(goqu.I("t.uuid")),
 			roleQuery,
 		}
-		attR, _, _ := datasetR.Where(attWheresR...).ToSql()
+		attR, _, _ := datasetR.Where(attWheresR...).ToSQL()
 		if q.Not {
 			attR = "NOT EXISTS (" + attR + ")"
 		} else {

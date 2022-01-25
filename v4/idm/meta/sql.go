@@ -25,9 +25,9 @@ import (
 	"embed"
 	"time"
 
+	goqu "github.com/doug-martin/goqu/v9"
 	migrate "github.com/rubenv/sql-migrate"
 	"go.uber.org/zap"
-	"gopkg.in/doug-martin/goqu.v4"
 
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/idm"

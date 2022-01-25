@@ -22,10 +22,10 @@
 package resources
 
 import (
+	goqu "github.com/doug-martin/goqu/v9"
 	"github.com/pydio/cells/v4/common/dao"
 	service "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/sql"
-	"gopkg.in/doug-martin/goqu.v4"
 )
 
 // DAO interface

@@ -9,11 +9,11 @@ require (
 	github.com/allegro/bigcache/v3 v3.0.1
 	github.com/beevik/ntp v0.3.0
 	github.com/blevesearch/bleve/v2 v2.3.0
-	github.com/c2fo/testify v0.0.0-20150827203832-fba96363964a // indirect
 	github.com/caddyserver/caddy/v2 v2.4.6
 	github.com/cskr/pubsub v1.0.2
 	github.com/disintegration/imaging v1.6.2
 	github.com/docker/docker v20.10.12+incompatible // indirect
+	github.com/doug-martin/goqu/v9 v9.18.0
 	github.com/dustin/go-humanize v1.0.1-0.20200219035652-afde56e7acac
 	github.com/emicklei/go-restful/v3 v3.7.3
 	github.com/fatih/color v1.13.0
@@ -116,8 +116,6 @@ require (
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0
 	google.golang.org/grpc/examples v0.0.0-20211015201449-4757d0249e2d
 	google.golang.org/protobuf v1.27.1
-	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0 // indirect
-	gopkg.in/doug-martin/goqu.v4 v4.2.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/gorp.v1 v1.7.2
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

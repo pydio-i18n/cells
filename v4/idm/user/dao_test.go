@@ -26,11 +26,11 @@ import (
 	"sync"
 	"testing"
 
+	_ "github.com/doug-martin/goqu/v9/dialect/sqlite3"
 	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/anypb"
 	// SQLite is used for the tests.
 	_ "github.com/mattn/go-sqlite3"
-	_ "gopkg.in/doug-martin/goqu.v4/adapters/sqlite3"
 
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/service"

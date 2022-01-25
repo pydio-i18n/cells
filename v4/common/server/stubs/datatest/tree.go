@@ -23,9 +23,9 @@ package datatest
 import (
 	"context"
 
+	_ "github.com/doug-martin/goqu/v9/dialect/sqlite3"
 	_ "github.com/mattn/go-sqlite3"
 	"google.golang.org/grpc"
-	_ "gopkg.in/doug-martin/goqu.v4/adapters/sqlite3"
 
 	"github.com/pydio/cells/v4/common"
 	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
