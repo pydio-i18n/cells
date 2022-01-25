@@ -18,7 +18,7 @@ main:
 	go build -a -trimpath\
 	 -ldflags "-X github.com/pydio/cells/v4/common.version=${CELLS_VERSION}\
 	 -X github.com/pydio/cells/v4/common.BuildStamp=${TODAY}\
-	 -X github.com/pydio/cells/v4/common.BuildRevision=${GITREV}\
+	 -X github.com/pydio/cells/v4/common.BuildRevision=${GITREV}"\
 	 -o cells\
 	 .
 
