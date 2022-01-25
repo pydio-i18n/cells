@@ -13,6 +13,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
 	status "google.golang.org/grpc/status"
+	sync "sync"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedMailerServiceServers = make(map[string]MailerServiceEnhancedServer)
+	enhancedMailerServiceServers     = make(map[string]MailerServiceEnhancedServer)
+	enhancedMailerServiceServersLock = sync.RWMutex{}
 )
 
 type NamedMailerServiceServer interface {
@@ -35,6 +37,8 @@ func (m MailerServiceEnhancedServer) SendMail(ctx context.Context, r *SendMailRe
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method SendMail should have a context")
 	}
+	enhancedMailerServiceServersLock.RLock()
+	defer enhancedMailerServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.SendMail(ctx, r)
@@ -48,6 +52,8 @@ func (m MailerServiceEnhancedServer) ConsumeQueue(ctx context.Context, r *Consum
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method ConsumeQueue should have a context")
 	}
+	enhancedMailerServiceServersLock.RLock()
+	defer enhancedMailerServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.ConsumeQueue(ctx, r)
@@ -57,6 +63,8 @@ func (m MailerServiceEnhancedServer) ConsumeQueue(ctx context.Context, r *Consum
 }
 func (m MailerServiceEnhancedServer) mustEmbedUnimplementedMailerServiceServer() {}
 func RegisterMailerServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedMailerServiceServer) {
+	enhancedMailerServiceServersLock.Lock()
+	defer enhancedMailerServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedMailerServiceServers[addr]
 	if !ok {
@@ -67,6 +75,8 @@ func RegisterMailerServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedMaile
 	m[srv.Name()] = srv
 }
 func DeregisterMailerServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedMailerServiceServersLock.Lock()
+	defer enhancedMailerServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedMailerServiceServers[addr]
 	if !ok {

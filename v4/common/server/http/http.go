@@ -2,12 +2,10 @@ package http
 
 import (
 	"context"
+	"github.com/pydio/cells/v4/common/server/middleware"
 	"net"
 	"net/http"
 	"net/http/pprof"
-	"reflect"
-
-	"github.com/pydio/cells/v4/common/server/middleware"
 
 	"github.com/spf13/viper"
 
@@ -24,12 +22,12 @@ type Server struct {
 
 	cancel context.CancelFunc
 	net.Listener
-	*http.ServeMux
+	*server.ListableMux
 	*http.Server
 }
 
 func New(ctx context.Context) server.Server {
-	mux := http.NewServeMux()
+	mux := server.NewListableMux()
 	mux.HandleFunc("/debug/pprof/", pprof.Index)
 	mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
 	mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
@@ -48,9 +46,9 @@ func New(ctx context.Context) server.Server {
 		name: "http",
 		meta: server.InitPeerMeta(),
 
-		cancel:   cancel,
-		ServeMux: mux,
-		Server:   srv,
+		cancel:      cancel,
+		ListableMux: mux,
+		Server:      srv,
 	})
 }
 
@@ -86,12 +84,7 @@ func (s *Server) Address() []string {
 }
 
 func (s *Server) Endpoints() []string {
-	var endpoints []string
-	for _, k := range reflect.ValueOf(s.ServeMux).Elem().FieldByName("m").MapKeys() {
-		endpoints = append(endpoints, k.String())
-	}
-
-	return endpoints
+	return s.ListableMux.Patterns()
 }
 
 func (s *Server) ID() string {
@@ -111,11 +104,13 @@ func (s *Server) Metadata() map[string]string {
 }
 
 func (s *Server) As(i interface{}) bool {
-	p, ok := i.(**http.ServeMux)
-	if !ok {
-		return false
+	if v, ok := i.(*server.HttpMux); ok {
+		*v = s.ListableMux
+		return true
 	}
-
-	*p = s.ServeMux
-	return true
+	if v, ok := i.(*server.PatternsProvider); ok {
+		*v = s.ListableMux
+		return true
+	}
+	return false
 }

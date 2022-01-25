@@ -3,7 +3,6 @@ package mux
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/server/caddy/maintenance"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -20,10 +19,12 @@ import (
 	clientcontext "github.com/pydio/cells/v4/common/client/context"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
+	"github.com/pydio/cells/v4/common/server"
+	"github.com/pydio/cells/v4/common/server/caddy/maintenance"
 	servercontext "github.com/pydio/cells/v4/common/server/context"
 )
 
-func RegisterServerMux(ctx context.Context, s *http.ServeMux) {
+func RegisterServerMux(ctx context.Context, s server.HttpMux) {
 	caddy.RegisterModule(Middleware{
 		c: clientcontext.GetClientConn(ctx),
 		r: servercontext.GetRegistry(ctx),
@@ -35,7 +36,7 @@ func RegisterServerMux(ctx context.Context, s *http.ServeMux) {
 type Middleware struct {
 	c grpc.ClientConnInterface
 	r registry.Registry
-	s *http.ServeMux
+	s server.HttpMux
 }
 
 // CaddyModule returns the Caddy module information.

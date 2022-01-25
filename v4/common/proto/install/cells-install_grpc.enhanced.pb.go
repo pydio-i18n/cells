@@ -13,6 +13,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
 	status "google.golang.org/grpc/status"
+	sync "sync"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedInstallServers = make(map[string]InstallEnhancedServer)
+	enhancedInstallServers     = make(map[string]InstallEnhancedServer)
+	enhancedInstallServersLock = sync.RWMutex{}
 )
 
 type NamedInstallServer interface {
@@ -35,6 +37,8 @@ func (m InstallEnhancedServer) GetDefaults(ctx context.Context, r *GetDefaultsRe
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method GetDefaults should have a context")
 	}
+	enhancedInstallServersLock.RLock()
+	defer enhancedInstallServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.GetDefaults(ctx, r)
@@ -48,6 +52,8 @@ func (m InstallEnhancedServer) Install(ctx context.Context, r *InstallRequest) (
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method Install should have a context")
 	}
+	enhancedInstallServersLock.RLock()
+	defer enhancedInstallServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.Install(ctx, r)
@@ -61,6 +67,8 @@ func (m InstallEnhancedServer) PerformCheck(ctx context.Context, r *PerformCheck
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method PerformCheck should have a context")
 	}
+	enhancedInstallServersLock.RLock()
+	defer enhancedInstallServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.PerformCheck(ctx, r)
@@ -70,6 +78,8 @@ func (m InstallEnhancedServer) PerformCheck(ctx context.Context, r *PerformCheck
 }
 func (m InstallEnhancedServer) mustEmbedUnimplementedInstallServer() {}
 func RegisterInstallEnhancedServer(s grpc.ServiceRegistrar, srv NamedInstallServer) {
+	enhancedInstallServersLock.Lock()
+	defer enhancedInstallServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedInstallServers[addr]
 	if !ok {
@@ -80,6 +90,8 @@ func RegisterInstallEnhancedServer(s grpc.ServiceRegistrar, srv NamedInstallServ
 	m[srv.Name()] = srv
 }
 func DeregisterInstallEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedInstallServersLock.Lock()
+	defer enhancedInstallServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedInstallServers[addr]
 	if !ok {

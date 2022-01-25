@@ -13,6 +13,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
 	status "google.golang.org/grpc/status"
+	sync "sync"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedObjectsEndpointServers = make(map[string]ObjectsEndpointEnhancedServer)
+	enhancedObjectsEndpointServers     = make(map[string]ObjectsEndpointEnhancedServer)
+	enhancedObjectsEndpointServersLock = sync.RWMutex{}
 )
 
 type NamedObjectsEndpointServer interface {
@@ -35,6 +37,8 @@ func (m ObjectsEndpointEnhancedServer) GetMinioConfig(ctx context.Context, r *Ge
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method GetMinioConfig should have a context")
 	}
+	enhancedObjectsEndpointServersLock.RLock()
+	defer enhancedObjectsEndpointServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.GetMinioConfig(ctx, r)
@@ -48,6 +52,8 @@ func (m ObjectsEndpointEnhancedServer) StorageStats(ctx context.Context, r *Stor
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method StorageStats should have a context")
 	}
+	enhancedObjectsEndpointServersLock.RLock()
+	defer enhancedObjectsEndpointServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.StorageStats(ctx, r)
@@ -57,6 +63,8 @@ func (m ObjectsEndpointEnhancedServer) StorageStats(ctx context.Context, r *Stor
 }
 func (m ObjectsEndpointEnhancedServer) mustEmbedUnimplementedObjectsEndpointServer() {}
 func RegisterObjectsEndpointEnhancedServer(s grpc.ServiceRegistrar, srv NamedObjectsEndpointServer) {
+	enhancedObjectsEndpointServersLock.Lock()
+	defer enhancedObjectsEndpointServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedObjectsEndpointServers[addr]
 	if !ok {
@@ -67,6 +75,8 @@ func RegisterObjectsEndpointEnhancedServer(s grpc.ServiceRegistrar, srv NamedObj
 	m[srv.Name()] = srv
 }
 func DeregisterObjectsEndpointEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedObjectsEndpointServersLock.Lock()
+	defer enhancedObjectsEndpointServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedObjectsEndpointServers[addr]
 	if !ok {
@@ -76,7 +86,8 @@ func DeregisterObjectsEndpointEnhancedServer(s grpc.ServiceRegistrar, name strin
 }
 
 var (
-	enhancedDataSourceEndpointServers = make(map[string]DataSourceEndpointEnhancedServer)
+	enhancedDataSourceEndpointServers     = make(map[string]DataSourceEndpointEnhancedServer)
+	enhancedDataSourceEndpointServersLock = sync.RWMutex{}
 )
 
 type NamedDataSourceEndpointServer interface {
@@ -90,6 +101,8 @@ func (m DataSourceEndpointEnhancedServer) GetDataSourceConfig(ctx context.Contex
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method GetDataSourceConfig should have a context")
 	}
+	enhancedDataSourceEndpointServersLock.RLock()
+	defer enhancedDataSourceEndpointServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.GetDataSourceConfig(ctx, r)
@@ -99,6 +112,8 @@ func (m DataSourceEndpointEnhancedServer) GetDataSourceConfig(ctx context.Contex
 }
 func (m DataSourceEndpointEnhancedServer) mustEmbedUnimplementedDataSourceEndpointServer() {}
 func RegisterDataSourceEndpointEnhancedServer(s grpc.ServiceRegistrar, srv NamedDataSourceEndpointServer) {
+	enhancedDataSourceEndpointServersLock.Lock()
+	defer enhancedDataSourceEndpointServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedDataSourceEndpointServers[addr]
 	if !ok {
@@ -109,6 +124,8 @@ func RegisterDataSourceEndpointEnhancedServer(s grpc.ServiceRegistrar, srv Named
 	m[srv.Name()] = srv
 }
 func DeregisterDataSourceEndpointEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedDataSourceEndpointServersLock.Lock()
+	defer enhancedDataSourceEndpointServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedDataSourceEndpointServers[addr]
 	if !ok {
@@ -118,7 +135,8 @@ func DeregisterDataSourceEndpointEnhancedServer(s grpc.ServiceRegistrar, name st
 }
 
 var (
-	enhancedResourceCleanerEndpointServers = make(map[string]ResourceCleanerEndpointEnhancedServer)
+	enhancedResourceCleanerEndpointServers     = make(map[string]ResourceCleanerEndpointEnhancedServer)
+	enhancedResourceCleanerEndpointServersLock = sync.RWMutex{}
 )
 
 type NamedResourceCleanerEndpointServer interface {
@@ -132,6 +150,8 @@ func (m ResourceCleanerEndpointEnhancedServer) CleanResourcesBeforeDelete(ctx co
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method CleanResourcesBeforeDelete should have a context")
 	}
+	enhancedResourceCleanerEndpointServersLock.RLock()
+	defer enhancedResourceCleanerEndpointServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CleanResourcesBeforeDelete(ctx, r)
@@ -142,6 +162,8 @@ func (m ResourceCleanerEndpointEnhancedServer) CleanResourcesBeforeDelete(ctx co
 func (m ResourceCleanerEndpointEnhancedServer) mustEmbedUnimplementedResourceCleanerEndpointServer() {
 }
 func RegisterResourceCleanerEndpointEnhancedServer(s grpc.ServiceRegistrar, srv NamedResourceCleanerEndpointServer) {
+	enhancedResourceCleanerEndpointServersLock.Lock()
+	defer enhancedResourceCleanerEndpointServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedResourceCleanerEndpointServers[addr]
 	if !ok {
@@ -152,6 +174,8 @@ func RegisterResourceCleanerEndpointEnhancedServer(s grpc.ServiceRegistrar, srv 
 	m[srv.Name()] = srv
 }
 func DeregisterResourceCleanerEndpointEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedResourceCleanerEndpointServersLock.Lock()
+	defer enhancedResourceCleanerEndpointServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedResourceCleanerEndpointServers[addr]
 	if !ok {

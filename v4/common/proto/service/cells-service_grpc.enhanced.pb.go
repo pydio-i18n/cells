@@ -13,6 +13,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
 	status "google.golang.org/grpc/status"
+	sync "sync"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedServiceManagerServers = make(map[string]ServiceManagerEnhancedServer)
+	enhancedServiceManagerServers     = make(map[string]ServiceManagerEnhancedServer)
+	enhancedServiceManagerServersLock = sync.RWMutex{}
 )
 
 type NamedServiceManagerServer interface {
@@ -35,6 +37,8 @@ func (m ServiceManagerEnhancedServer) Start(ctx context.Context, r *StartRequest
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method Start should have a context")
 	}
+	enhancedServiceManagerServersLock.RLock()
+	defer enhancedServiceManagerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.Start(ctx, r)
@@ -48,6 +52,8 @@ func (m ServiceManagerEnhancedServer) Stop(ctx context.Context, r *StopRequest) 
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method Stop should have a context")
 	}
+	enhancedServiceManagerServersLock.RLock()
+	defer enhancedServiceManagerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.Stop(ctx, r)
@@ -57,6 +63,8 @@ func (m ServiceManagerEnhancedServer) Stop(ctx context.Context, r *StopRequest) 
 }
 func (m ServiceManagerEnhancedServer) mustEmbedUnimplementedServiceManagerServer() {}
 func RegisterServiceManagerEnhancedServer(s grpc.ServiceRegistrar, srv NamedServiceManagerServer) {
+	enhancedServiceManagerServersLock.Lock()
+	defer enhancedServiceManagerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedServiceManagerServers[addr]
 	if !ok {
@@ -67,6 +75,8 @@ func RegisterServiceManagerEnhancedServer(s grpc.ServiceRegistrar, srv NamedServ
 	m[srv.Name()] = srv
 }
 func DeregisterServiceManagerEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedServiceManagerServersLock.Lock()
+	defer enhancedServiceManagerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedServiceManagerServers[addr]
 	if !ok {
@@ -76,7 +86,8 @@ func DeregisterServiceManagerEnhancedServer(s grpc.ServiceRegistrar, name string
 }
 
 var (
-	enhancedArchiverServers = make(map[string]ArchiverEnhancedServer)
+	enhancedArchiverServers     = make(map[string]ArchiverEnhancedServer)
+	enhancedArchiverServersLock = sync.RWMutex{}
 )
 
 type NamedArchiverServer interface {
@@ -90,6 +101,8 @@ func (m ArchiverEnhancedServer) Archive(ctx context.Context, r *Query) (*Archive
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method Archive should have a context")
 	}
+	enhancedArchiverServersLock.RLock()
+	defer enhancedArchiverServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.Archive(ctx, r)
@@ -99,6 +112,8 @@ func (m ArchiverEnhancedServer) Archive(ctx context.Context, r *Query) (*Archive
 }
 func (m ArchiverEnhancedServer) mustEmbedUnimplementedArchiverServer() {}
 func RegisterArchiverEnhancedServer(s grpc.ServiceRegistrar, srv NamedArchiverServer) {
+	enhancedArchiverServersLock.Lock()
+	defer enhancedArchiverServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedArchiverServers[addr]
 	if !ok {
@@ -109,6 +124,8 @@ func RegisterArchiverEnhancedServer(s grpc.ServiceRegistrar, srv NamedArchiverSe
 	m[srv.Name()] = srv
 }
 func DeregisterArchiverEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedArchiverServersLock.Lock()
+	defer enhancedArchiverServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedArchiverServers[addr]
 	if !ok {

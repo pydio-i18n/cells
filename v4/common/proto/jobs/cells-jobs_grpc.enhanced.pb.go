@@ -13,6 +13,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
 	status "google.golang.org/grpc/status"
+	sync "sync"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedJobServiceServers = make(map[string]JobServiceEnhancedServer)
+	enhancedJobServiceServers     = make(map[string]JobServiceEnhancedServer)
+	enhancedJobServiceServersLock = sync.RWMutex{}
 )
 
 type NamedJobServiceServer interface {
@@ -35,6 +37,8 @@ func (m JobServiceEnhancedServer) PutJob(ctx context.Context, r *PutJobRequest) 
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method PutJob should have a context")
 	}
+	enhancedJobServiceServersLock.RLock()
+	defer enhancedJobServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.PutJob(ctx, r)
@@ -48,6 +52,8 @@ func (m JobServiceEnhancedServer) GetJob(ctx context.Context, r *GetJobRequest) 
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method GetJob should have a context")
 	}
+	enhancedJobServiceServersLock.RLock()
+	defer enhancedJobServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.GetJob(ctx, r)
@@ -61,6 +67,8 @@ func (m JobServiceEnhancedServer) DeleteJob(ctx context.Context, r *DeleteJobReq
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method DeleteJob should have a context")
 	}
+	enhancedJobServiceServersLock.RLock()
+	defer enhancedJobServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DeleteJob(ctx, r)
@@ -74,6 +82,8 @@ func (m JobServiceEnhancedServer) ListJobs(r *ListJobsRequest, s JobService_List
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method ListJobs should have a context")
 	}
+	enhancedJobServiceServersLock.RLock()
+	defer enhancedJobServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.ListJobs(r, s)
@@ -87,6 +97,8 @@ func (m JobServiceEnhancedServer) PutTask(ctx context.Context, r *PutTaskRequest
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method PutTask should have a context")
 	}
+	enhancedJobServiceServersLock.RLock()
+	defer enhancedJobServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.PutTask(ctx, r)
@@ -100,6 +112,8 @@ func (m JobServiceEnhancedServer) PutTaskStream(s JobService_PutTaskStreamServer
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method PutTaskStream should have a context")
 	}
+	enhancedJobServiceServersLock.RLock()
+	defer enhancedJobServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.PutTaskStream(s)
@@ -113,6 +127,8 @@ func (m JobServiceEnhancedServer) ListTasks(r *ListTasksRequest, s JobService_Li
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method ListTasks should have a context")
 	}
+	enhancedJobServiceServersLock.RLock()
+	defer enhancedJobServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.ListTasks(r, s)
@@ -126,6 +142,8 @@ func (m JobServiceEnhancedServer) DeleteTasks(ctx context.Context, r *DeleteTask
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method DeleteTasks should have a context")
 	}
+	enhancedJobServiceServersLock.RLock()
+	defer enhancedJobServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DeleteTasks(ctx, r)
@@ -139,6 +157,8 @@ func (m JobServiceEnhancedServer) DetectStuckTasks(ctx context.Context, r *Detec
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method DetectStuckTasks should have a context")
 	}
+	enhancedJobServiceServersLock.RLock()
+	defer enhancedJobServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DetectStuckTasks(ctx, r)
@@ -148,6 +168,8 @@ func (m JobServiceEnhancedServer) DetectStuckTasks(ctx context.Context, r *Detec
 }
 func (m JobServiceEnhancedServer) mustEmbedUnimplementedJobServiceServer() {}
 func RegisterJobServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedJobServiceServer) {
+	enhancedJobServiceServersLock.Lock()
+	defer enhancedJobServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedJobServiceServers[addr]
 	if !ok {
@@ -158,6 +180,8 @@ func RegisterJobServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedJobServi
 	m[srv.Name()] = srv
 }
 func DeregisterJobServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedJobServiceServersLock.Lock()
+	defer enhancedJobServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedJobServiceServers[addr]
 	if !ok {
@@ -167,7 +191,8 @@ func DeregisterJobServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
 }
 
 var (
-	enhancedTaskServiceServers = make(map[string]TaskServiceEnhancedServer)
+	enhancedTaskServiceServers     = make(map[string]TaskServiceEnhancedServer)
+	enhancedTaskServiceServersLock = sync.RWMutex{}
 )
 
 type NamedTaskServiceServer interface {
@@ -181,6 +206,8 @@ func (m TaskServiceEnhancedServer) Control(ctx context.Context, r *CtrlCommand) 
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method Control should have a context")
 	}
+	enhancedTaskServiceServersLock.RLock()
+	defer enhancedTaskServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.Control(ctx, r)
@@ -190,6 +217,8 @@ func (m TaskServiceEnhancedServer) Control(ctx context.Context, r *CtrlCommand) 
 }
 func (m TaskServiceEnhancedServer) mustEmbedUnimplementedTaskServiceServer() {}
 func RegisterTaskServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedTaskServiceServer) {
+	enhancedTaskServiceServersLock.Lock()
+	defer enhancedTaskServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedTaskServiceServers[addr]
 	if !ok {
@@ -200,6 +229,8 @@ func RegisterTaskServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedTaskSer
 	m[srv.Name()] = srv
 }
 func DeregisterTaskServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedTaskServiceServersLock.Lock()
+	defer enhancedTaskServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedTaskServiceServers[addr]
 	if !ok {

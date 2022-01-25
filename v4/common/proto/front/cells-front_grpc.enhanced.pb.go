@@ -13,6 +13,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
 	status "google.golang.org/grpc/status"
+	sync "sync"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedManifestServiceServers = make(map[string]ManifestServiceEnhancedServer)
+	enhancedManifestServiceServers     = make(map[string]ManifestServiceEnhancedServer)
+	enhancedManifestServiceServersLock = sync.RWMutex{}
 )
 
 type NamedManifestServiceServer interface {
@@ -35,6 +37,8 @@ func (m ManifestServiceEnhancedServer) ExposedParameters(ctx context.Context, r 
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method ExposedParameters should have a context")
 	}
+	enhancedManifestServiceServersLock.RLock()
+	defer enhancedManifestServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.ExposedParameters(ctx, r)
@@ -44,6 +48,8 @@ func (m ManifestServiceEnhancedServer) ExposedParameters(ctx context.Context, r 
 }
 func (m ManifestServiceEnhancedServer) mustEmbedUnimplementedManifestServiceServer() {}
 func RegisterManifestServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedManifestServiceServer) {
+	enhancedManifestServiceServersLock.Lock()
+	defer enhancedManifestServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedManifestServiceServers[addr]
 	if !ok {
@@ -54,6 +60,8 @@ func RegisterManifestServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedMan
 	m[srv.Name()] = srv
 }
 func DeregisterManifestServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedManifestServiceServersLock.Lock()
+	defer enhancedManifestServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedManifestServiceServers[addr]
 	if !ok {

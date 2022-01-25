@@ -13,6 +13,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
 	status "google.golang.org/grpc/status"
+	sync "sync"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedNodeProviderServers = make(map[string]NodeProviderEnhancedServer)
+	enhancedNodeProviderServers     = make(map[string]NodeProviderEnhancedServer)
+	enhancedNodeProviderServersLock = sync.RWMutex{}
 )
 
 type NamedNodeProviderServer interface {
@@ -35,6 +37,8 @@ func (m NodeProviderEnhancedServer) ReadNode(ctx context.Context, r *ReadNodeReq
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method ReadNode should have a context")
 	}
+	enhancedNodeProviderServersLock.RLock()
+	defer enhancedNodeProviderServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.ReadNode(ctx, r)
@@ -48,6 +52,8 @@ func (m NodeProviderEnhancedServer) ListNodes(r *ListNodesRequest, s NodeProvide
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method ListNodes should have a context")
 	}
+	enhancedNodeProviderServersLock.RLock()
+	defer enhancedNodeProviderServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.ListNodes(r, s)
@@ -57,6 +63,8 @@ func (m NodeProviderEnhancedServer) ListNodes(r *ListNodesRequest, s NodeProvide
 }
 func (m NodeProviderEnhancedServer) mustEmbedUnimplementedNodeProviderServer() {}
 func RegisterNodeProviderEnhancedServer(s grpc.ServiceRegistrar, srv NamedNodeProviderServer) {
+	enhancedNodeProviderServersLock.Lock()
+	defer enhancedNodeProviderServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeProviderServers[addr]
 	if !ok {
@@ -67,6 +75,8 @@ func RegisterNodeProviderEnhancedServer(s grpc.ServiceRegistrar, srv NamedNodePr
 	m[srv.Name()] = srv
 }
 func DeregisterNodeProviderEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedNodeProviderServersLock.Lock()
+	defer enhancedNodeProviderServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeProviderServers[addr]
 	if !ok {
@@ -76,7 +86,8 @@ func DeregisterNodeProviderEnhancedServer(s grpc.ServiceRegistrar, name string) 
 }
 
 var (
-	enhancedNodeProviderStreamerServers = make(map[string]NodeProviderStreamerEnhancedServer)
+	enhancedNodeProviderStreamerServers     = make(map[string]NodeProviderStreamerEnhancedServer)
+	enhancedNodeProviderStreamerServersLock = sync.RWMutex{}
 )
 
 type NamedNodeProviderStreamerServer interface {
@@ -90,6 +101,8 @@ func (m NodeProviderStreamerEnhancedServer) ReadNodeStream(s NodeProviderStreame
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method ReadNodeStream should have a context")
 	}
+	enhancedNodeProviderStreamerServersLock.RLock()
+	defer enhancedNodeProviderStreamerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.ReadNodeStream(s)
@@ -99,6 +112,8 @@ func (m NodeProviderStreamerEnhancedServer) ReadNodeStream(s NodeProviderStreame
 }
 func (m NodeProviderStreamerEnhancedServer) mustEmbedUnimplementedNodeProviderStreamerServer() {}
 func RegisterNodeProviderStreamerEnhancedServer(s grpc.ServiceRegistrar, srv NamedNodeProviderStreamerServer) {
+	enhancedNodeProviderStreamerServersLock.Lock()
+	defer enhancedNodeProviderStreamerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeProviderStreamerServers[addr]
 	if !ok {
@@ -109,6 +124,8 @@ func RegisterNodeProviderStreamerEnhancedServer(s grpc.ServiceRegistrar, srv Nam
 	m[srv.Name()] = srv
 }
 func DeregisterNodeProviderStreamerEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedNodeProviderStreamerServersLock.Lock()
+	defer enhancedNodeProviderStreamerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeProviderStreamerServers[addr]
 	if !ok {
@@ -118,7 +135,8 @@ func DeregisterNodeProviderStreamerEnhancedServer(s grpc.ServiceRegistrar, name 
 }
 
 var (
-	enhancedNodeChangesStreamerServers = make(map[string]NodeChangesStreamerEnhancedServer)
+	enhancedNodeChangesStreamerServers     = make(map[string]NodeChangesStreamerEnhancedServer)
+	enhancedNodeChangesStreamerServersLock = sync.RWMutex{}
 )
 
 type NamedNodeChangesStreamerServer interface {
@@ -132,6 +150,8 @@ func (m NodeChangesStreamerEnhancedServer) StreamChanges(r *StreamChangesRequest
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method StreamChanges should have a context")
 	}
+	enhancedNodeChangesStreamerServersLock.RLock()
+	defer enhancedNodeChangesStreamerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.StreamChanges(r, s)
@@ -141,6 +161,8 @@ func (m NodeChangesStreamerEnhancedServer) StreamChanges(r *StreamChangesRequest
 }
 func (m NodeChangesStreamerEnhancedServer) mustEmbedUnimplementedNodeChangesStreamerServer() {}
 func RegisterNodeChangesStreamerEnhancedServer(s grpc.ServiceRegistrar, srv NamedNodeChangesStreamerServer) {
+	enhancedNodeChangesStreamerServersLock.Lock()
+	defer enhancedNodeChangesStreamerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeChangesStreamerServers[addr]
 	if !ok {
@@ -151,6 +173,8 @@ func RegisterNodeChangesStreamerEnhancedServer(s grpc.ServiceRegistrar, srv Name
 	m[srv.Name()] = srv
 }
 func DeregisterNodeChangesStreamerEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedNodeChangesStreamerServersLock.Lock()
+	defer enhancedNodeChangesStreamerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeChangesStreamerServers[addr]
 	if !ok {
@@ -160,7 +184,8 @@ func DeregisterNodeChangesStreamerEnhancedServer(s grpc.ServiceRegistrar, name s
 }
 
 var (
-	enhancedNodeReceiverServers = make(map[string]NodeReceiverEnhancedServer)
+	enhancedNodeReceiverServers     = make(map[string]NodeReceiverEnhancedServer)
+	enhancedNodeReceiverServersLock = sync.RWMutex{}
 )
 
 type NamedNodeReceiverServer interface {
@@ -174,6 +199,8 @@ func (m NodeReceiverEnhancedServer) CreateNode(ctx context.Context, r *CreateNod
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method CreateNode should have a context")
 	}
+	enhancedNodeReceiverServersLock.RLock()
+	defer enhancedNodeReceiverServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CreateNode(ctx, r)
@@ -187,6 +214,8 @@ func (m NodeReceiverEnhancedServer) UpdateNode(ctx context.Context, r *UpdateNod
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method UpdateNode should have a context")
 	}
+	enhancedNodeReceiverServersLock.RLock()
+	defer enhancedNodeReceiverServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.UpdateNode(ctx, r)
@@ -200,6 +229,8 @@ func (m NodeReceiverEnhancedServer) DeleteNode(ctx context.Context, r *DeleteNod
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method DeleteNode should have a context")
 	}
+	enhancedNodeReceiverServersLock.RLock()
+	defer enhancedNodeReceiverServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DeleteNode(ctx, r)
@@ -209,6 +240,8 @@ func (m NodeReceiverEnhancedServer) DeleteNode(ctx context.Context, r *DeleteNod
 }
 func (m NodeReceiverEnhancedServer) mustEmbedUnimplementedNodeReceiverServer() {}
 func RegisterNodeReceiverEnhancedServer(s grpc.ServiceRegistrar, srv NamedNodeReceiverServer) {
+	enhancedNodeReceiverServersLock.Lock()
+	defer enhancedNodeReceiverServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeReceiverServers[addr]
 	if !ok {
@@ -219,6 +252,8 @@ func RegisterNodeReceiverEnhancedServer(s grpc.ServiceRegistrar, srv NamedNodeRe
 	m[srv.Name()] = srv
 }
 func DeregisterNodeReceiverEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedNodeReceiverServersLock.Lock()
+	defer enhancedNodeReceiverServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeReceiverServers[addr]
 	if !ok {
@@ -228,7 +263,8 @@ func DeregisterNodeReceiverEnhancedServer(s grpc.ServiceRegistrar, name string) 
 }
 
 var (
-	enhancedNodeReceiverStreamServers = make(map[string]NodeReceiverStreamEnhancedServer)
+	enhancedNodeReceiverStreamServers     = make(map[string]NodeReceiverStreamEnhancedServer)
+	enhancedNodeReceiverStreamServersLock = sync.RWMutex{}
 )
 
 type NamedNodeReceiverStreamServer interface {
@@ -242,6 +278,8 @@ func (m NodeReceiverStreamEnhancedServer) CreateNodeStream(s NodeReceiverStream_
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method CreateNodeStream should have a context")
 	}
+	enhancedNodeReceiverStreamServersLock.RLock()
+	defer enhancedNodeReceiverStreamServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CreateNodeStream(s)
@@ -255,6 +293,8 @@ func (m NodeReceiverStreamEnhancedServer) UpdateNodeStream(s NodeReceiverStream_
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method UpdateNodeStream should have a context")
 	}
+	enhancedNodeReceiverStreamServersLock.RLock()
+	defer enhancedNodeReceiverStreamServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.UpdateNodeStream(s)
@@ -268,6 +308,8 @@ func (m NodeReceiverStreamEnhancedServer) DeleteNodeStream(s NodeReceiverStream_
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method DeleteNodeStream should have a context")
 	}
+	enhancedNodeReceiverStreamServersLock.RLock()
+	defer enhancedNodeReceiverStreamServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DeleteNodeStream(s)
@@ -277,6 +319,8 @@ func (m NodeReceiverStreamEnhancedServer) DeleteNodeStream(s NodeReceiverStream_
 }
 func (m NodeReceiverStreamEnhancedServer) mustEmbedUnimplementedNodeReceiverStreamServer() {}
 func RegisterNodeReceiverStreamEnhancedServer(s grpc.ServiceRegistrar, srv NamedNodeReceiverStreamServer) {
+	enhancedNodeReceiverStreamServersLock.Lock()
+	defer enhancedNodeReceiverStreamServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeReceiverStreamServers[addr]
 	if !ok {
@@ -287,6 +331,8 @@ func RegisterNodeReceiverStreamEnhancedServer(s grpc.ServiceRegistrar, srv Named
 	m[srv.Name()] = srv
 }
 func DeregisterNodeReceiverStreamEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedNodeReceiverStreamServersLock.Lock()
+	defer enhancedNodeReceiverStreamServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeReceiverStreamServers[addr]
 	if !ok {
@@ -296,7 +342,8 @@ func DeregisterNodeReceiverStreamEnhancedServer(s grpc.ServiceRegistrar, name st
 }
 
 var (
-	enhancedSessionIndexerServers = make(map[string]SessionIndexerEnhancedServer)
+	enhancedSessionIndexerServers     = make(map[string]SessionIndexerEnhancedServer)
+	enhancedSessionIndexerServersLock = sync.RWMutex{}
 )
 
 type NamedSessionIndexerServer interface {
@@ -310,6 +357,8 @@ func (m SessionIndexerEnhancedServer) OpenSession(ctx context.Context, r *OpenSe
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method OpenSession should have a context")
 	}
+	enhancedSessionIndexerServersLock.RLock()
+	defer enhancedSessionIndexerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.OpenSession(ctx, r)
@@ -323,6 +372,8 @@ func (m SessionIndexerEnhancedServer) FlushSession(ctx context.Context, r *Flush
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method FlushSession should have a context")
 	}
+	enhancedSessionIndexerServersLock.RLock()
+	defer enhancedSessionIndexerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.FlushSession(ctx, r)
@@ -336,6 +387,8 @@ func (m SessionIndexerEnhancedServer) CloseSession(ctx context.Context, r *Close
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method CloseSession should have a context")
 	}
+	enhancedSessionIndexerServersLock.RLock()
+	defer enhancedSessionIndexerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CloseSession(ctx, r)
@@ -345,6 +398,8 @@ func (m SessionIndexerEnhancedServer) CloseSession(ctx context.Context, r *Close
 }
 func (m SessionIndexerEnhancedServer) mustEmbedUnimplementedSessionIndexerServer() {}
 func RegisterSessionIndexerEnhancedServer(s grpc.ServiceRegistrar, srv NamedSessionIndexerServer) {
+	enhancedSessionIndexerServersLock.Lock()
+	defer enhancedSessionIndexerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedSessionIndexerServers[addr]
 	if !ok {
@@ -355,6 +410,8 @@ func RegisterSessionIndexerEnhancedServer(s grpc.ServiceRegistrar, srv NamedSess
 	m[srv.Name()] = srv
 }
 func DeregisterSessionIndexerEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedSessionIndexerServersLock.Lock()
+	defer enhancedSessionIndexerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedSessionIndexerServers[addr]
 	if !ok {
@@ -364,7 +421,8 @@ func DeregisterSessionIndexerEnhancedServer(s grpc.ServiceRegistrar, name string
 }
 
 var (
-	enhancedNodeEventsProviderServers = make(map[string]NodeEventsProviderEnhancedServer)
+	enhancedNodeEventsProviderServers     = make(map[string]NodeEventsProviderEnhancedServer)
+	enhancedNodeEventsProviderServersLock = sync.RWMutex{}
 )
 
 type NamedNodeEventsProviderServer interface {
@@ -378,6 +436,8 @@ func (m NodeEventsProviderEnhancedServer) WatchNode(r *WatchNodeRequest, s NodeE
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method WatchNode should have a context")
 	}
+	enhancedNodeEventsProviderServersLock.RLock()
+	defer enhancedNodeEventsProviderServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.WatchNode(r, s)
@@ -387,6 +447,8 @@ func (m NodeEventsProviderEnhancedServer) WatchNode(r *WatchNodeRequest, s NodeE
 }
 func (m NodeEventsProviderEnhancedServer) mustEmbedUnimplementedNodeEventsProviderServer() {}
 func RegisterNodeEventsProviderEnhancedServer(s grpc.ServiceRegistrar, srv NamedNodeEventsProviderServer) {
+	enhancedNodeEventsProviderServersLock.Lock()
+	defer enhancedNodeEventsProviderServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeEventsProviderServers[addr]
 	if !ok {
@@ -397,6 +459,8 @@ func RegisterNodeEventsProviderEnhancedServer(s grpc.ServiceRegistrar, srv Named
 	m[srv.Name()] = srv
 }
 func DeregisterNodeEventsProviderEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedNodeEventsProviderServersLock.Lock()
+	defer enhancedNodeEventsProviderServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeEventsProviderServers[addr]
 	if !ok {
@@ -406,7 +470,8 @@ func DeregisterNodeEventsProviderEnhancedServer(s grpc.ServiceRegistrar, name st
 }
 
 var (
-	enhancedSearcherServers = make(map[string]SearcherEnhancedServer)
+	enhancedSearcherServers     = make(map[string]SearcherEnhancedServer)
+	enhancedSearcherServersLock = sync.RWMutex{}
 )
 
 type NamedSearcherServer interface {
@@ -420,6 +485,8 @@ func (m SearcherEnhancedServer) Search(r *SearchRequest, s Searcher_SearchServer
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method Search should have a context")
 	}
+	enhancedSearcherServersLock.RLock()
+	defer enhancedSearcherServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.Search(r, s)
@@ -429,6 +496,8 @@ func (m SearcherEnhancedServer) Search(r *SearchRequest, s Searcher_SearchServer
 }
 func (m SearcherEnhancedServer) mustEmbedUnimplementedSearcherServer() {}
 func RegisterSearcherEnhancedServer(s grpc.ServiceRegistrar, srv NamedSearcherServer) {
+	enhancedSearcherServersLock.Lock()
+	defer enhancedSearcherServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedSearcherServers[addr]
 	if !ok {
@@ -439,6 +508,8 @@ func RegisterSearcherEnhancedServer(s grpc.ServiceRegistrar, srv NamedSearcherSe
 	m[srv.Name()] = srv
 }
 func DeregisterSearcherEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedSearcherServersLock.Lock()
+	defer enhancedSearcherServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedSearcherServers[addr]
 	if !ok {
@@ -448,7 +519,8 @@ func DeregisterSearcherEnhancedServer(s grpc.ServiceRegistrar, name string) {
 }
 
 var (
-	enhancedNodeContentReaderServers = make(map[string]NodeContentReaderEnhancedServer)
+	enhancedNodeContentReaderServers     = make(map[string]NodeContentReaderEnhancedServer)
+	enhancedNodeContentReaderServersLock = sync.RWMutex{}
 )
 
 type NamedNodeContentReaderServer interface {
@@ -459,6 +531,8 @@ type NodeContentReaderEnhancedServer map[string]NamedNodeContentReaderServer
 
 func (m NodeContentReaderEnhancedServer) mustEmbedUnimplementedNodeContentReaderServer() {}
 func RegisterNodeContentReaderEnhancedServer(s grpc.ServiceRegistrar, srv NamedNodeContentReaderServer) {
+	enhancedNodeContentReaderServersLock.Lock()
+	defer enhancedNodeContentReaderServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeContentReaderServers[addr]
 	if !ok {
@@ -469,6 +543,8 @@ func RegisterNodeContentReaderEnhancedServer(s grpc.ServiceRegistrar, srv NamedN
 	m[srv.Name()] = srv
 }
 func DeregisterNodeContentReaderEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedNodeContentReaderServersLock.Lock()
+	defer enhancedNodeContentReaderServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeContentReaderServers[addr]
 	if !ok {
@@ -478,7 +554,8 @@ func DeregisterNodeContentReaderEnhancedServer(s grpc.ServiceRegistrar, name str
 }
 
 var (
-	enhancedNodeContentWriterServers = make(map[string]NodeContentWriterEnhancedServer)
+	enhancedNodeContentWriterServers     = make(map[string]NodeContentWriterEnhancedServer)
+	enhancedNodeContentWriterServersLock = sync.RWMutex{}
 )
 
 type NamedNodeContentWriterServer interface {
@@ -489,6 +566,8 @@ type NodeContentWriterEnhancedServer map[string]NamedNodeContentWriterServer
 
 func (m NodeContentWriterEnhancedServer) mustEmbedUnimplementedNodeContentWriterServer() {}
 func RegisterNodeContentWriterEnhancedServer(s grpc.ServiceRegistrar, srv NamedNodeContentWriterServer) {
+	enhancedNodeContentWriterServersLock.Lock()
+	defer enhancedNodeContentWriterServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeContentWriterServers[addr]
 	if !ok {
@@ -499,6 +578,8 @@ func RegisterNodeContentWriterEnhancedServer(s grpc.ServiceRegistrar, srv NamedN
 	m[srv.Name()] = srv
 }
 func DeregisterNodeContentWriterEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedNodeContentWriterServersLock.Lock()
+	defer enhancedNodeContentWriterServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeContentWriterServers[addr]
 	if !ok {
@@ -508,7 +589,8 @@ func DeregisterNodeContentWriterEnhancedServer(s grpc.ServiceRegistrar, name str
 }
 
 var (
-	enhancedNodeVersionerServers = make(map[string]NodeVersionerEnhancedServer)
+	enhancedNodeVersionerServers     = make(map[string]NodeVersionerEnhancedServer)
+	enhancedNodeVersionerServersLock = sync.RWMutex{}
 )
 
 type NamedNodeVersionerServer interface {
@@ -522,6 +604,8 @@ func (m NodeVersionerEnhancedServer) CreateVersion(ctx context.Context, r *Creat
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method CreateVersion should have a context")
 	}
+	enhancedNodeVersionerServersLock.RLock()
+	defer enhancedNodeVersionerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CreateVersion(ctx, r)
@@ -535,6 +619,8 @@ func (m NodeVersionerEnhancedServer) StoreVersion(ctx context.Context, r *StoreV
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method StoreVersion should have a context")
 	}
+	enhancedNodeVersionerServersLock.RLock()
+	defer enhancedNodeVersionerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.StoreVersion(ctx, r)
@@ -548,6 +634,8 @@ func (m NodeVersionerEnhancedServer) ListVersions(r *ListVersionsRequest, s Node
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method ListVersions should have a context")
 	}
+	enhancedNodeVersionerServersLock.RLock()
+	defer enhancedNodeVersionerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.ListVersions(r, s)
@@ -561,6 +649,8 @@ func (m NodeVersionerEnhancedServer) HeadVersion(ctx context.Context, r *HeadVer
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method HeadVersion should have a context")
 	}
+	enhancedNodeVersionerServersLock.RLock()
+	defer enhancedNodeVersionerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.HeadVersion(ctx, r)
@@ -574,6 +664,8 @@ func (m NodeVersionerEnhancedServer) PruneVersions(ctx context.Context, r *Prune
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method PruneVersions should have a context")
 	}
+	enhancedNodeVersionerServersLock.RLock()
+	defer enhancedNodeVersionerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.PruneVersions(ctx, r)
@@ -583,6 +675,8 @@ func (m NodeVersionerEnhancedServer) PruneVersions(ctx context.Context, r *Prune
 }
 func (m NodeVersionerEnhancedServer) mustEmbedUnimplementedNodeVersionerServer() {}
 func RegisterNodeVersionerEnhancedServer(s grpc.ServiceRegistrar, srv NamedNodeVersionerServer) {
+	enhancedNodeVersionerServersLock.Lock()
+	defer enhancedNodeVersionerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeVersionerServers[addr]
 	if !ok {
@@ -593,6 +687,8 @@ func RegisterNodeVersionerEnhancedServer(s grpc.ServiceRegistrar, srv NamedNodeV
 	m[srv.Name()] = srv
 }
 func DeregisterNodeVersionerEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedNodeVersionerServersLock.Lock()
+	defer enhancedNodeVersionerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeVersionerServers[addr]
 	if !ok {
@@ -602,7 +698,8 @@ func DeregisterNodeVersionerEnhancedServer(s grpc.ServiceRegistrar, name string)
 }
 
 var (
-	enhancedFileKeyManagerServers = make(map[string]FileKeyManagerEnhancedServer)
+	enhancedFileKeyManagerServers     = make(map[string]FileKeyManagerEnhancedServer)
+	enhancedFileKeyManagerServersLock = sync.RWMutex{}
 )
 
 type NamedFileKeyManagerServer interface {
@@ -616,6 +713,8 @@ func (m FileKeyManagerEnhancedServer) GetEncryptionKey(ctx context.Context, r *G
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method GetEncryptionKey should have a context")
 	}
+	enhancedFileKeyManagerServersLock.RLock()
+	defer enhancedFileKeyManagerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.GetEncryptionKey(ctx, r)
@@ -625,6 +724,8 @@ func (m FileKeyManagerEnhancedServer) GetEncryptionKey(ctx context.Context, r *G
 }
 func (m FileKeyManagerEnhancedServer) mustEmbedUnimplementedFileKeyManagerServer() {}
 func RegisterFileKeyManagerEnhancedServer(s grpc.ServiceRegistrar, srv NamedFileKeyManagerServer) {
+	enhancedFileKeyManagerServersLock.Lock()
+	defer enhancedFileKeyManagerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedFileKeyManagerServers[addr]
 	if !ok {
@@ -635,6 +736,8 @@ func RegisterFileKeyManagerEnhancedServer(s grpc.ServiceRegistrar, srv NamedFile
 	m[srv.Name()] = srv
 }
 func DeregisterFileKeyManagerEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedFileKeyManagerServersLock.Lock()
+	defer enhancedFileKeyManagerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedFileKeyManagerServers[addr]
 	if !ok {
@@ -644,7 +747,8 @@ func DeregisterFileKeyManagerEnhancedServer(s grpc.ServiceRegistrar, name string
 }
 
 var (
-	enhancedSyncChangesServers = make(map[string]SyncChangesEnhancedServer)
+	enhancedSyncChangesServers     = make(map[string]SyncChangesEnhancedServer)
+	enhancedSyncChangesServersLock = sync.RWMutex{}
 )
 
 type NamedSyncChangesServer interface {
@@ -658,6 +762,8 @@ func (m SyncChangesEnhancedServer) Put(s SyncChanges_PutServer) error {
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method Put should have a context")
 	}
+	enhancedSyncChangesServersLock.RLock()
+	defer enhancedSyncChangesServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.Put(s)
@@ -671,6 +777,8 @@ func (m SyncChangesEnhancedServer) Search(r *SearchSyncChangeRequest, s SyncChan
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method Search should have a context")
 	}
+	enhancedSyncChangesServersLock.RLock()
+	defer enhancedSyncChangesServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.Search(r, s)
@@ -680,6 +788,8 @@ func (m SyncChangesEnhancedServer) Search(r *SearchSyncChangeRequest, s SyncChan
 }
 func (m SyncChangesEnhancedServer) mustEmbedUnimplementedSyncChangesServer() {}
 func RegisterSyncChangesEnhancedServer(s grpc.ServiceRegistrar, srv NamedSyncChangesServer) {
+	enhancedSyncChangesServersLock.Lock()
+	defer enhancedSyncChangesServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedSyncChangesServers[addr]
 	if !ok {
@@ -690,6 +800,8 @@ func RegisterSyncChangesEnhancedServer(s grpc.ServiceRegistrar, srv NamedSyncCha
 	m[srv.Name()] = srv
 }
 func DeregisterSyncChangesEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedSyncChangesServersLock.Lock()
+	defer enhancedSyncChangesServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedSyncChangesServers[addr]
 	if !ok {

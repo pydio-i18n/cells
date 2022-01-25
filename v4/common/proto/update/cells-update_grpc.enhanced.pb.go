@@ -13,6 +13,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
 	status "google.golang.org/grpc/status"
+	sync "sync"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedUpdateServiceServers = make(map[string]UpdateServiceEnhancedServer)
+	enhancedUpdateServiceServers     = make(map[string]UpdateServiceEnhancedServer)
+	enhancedUpdateServiceServersLock = sync.RWMutex{}
 )
 
 type NamedUpdateServiceServer interface {
@@ -35,6 +37,8 @@ func (m UpdateServiceEnhancedServer) UpdateRequired(ctx context.Context, r *Upda
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method UpdateRequired should have a context")
 	}
+	enhancedUpdateServiceServersLock.RLock()
+	defer enhancedUpdateServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.UpdateRequired(ctx, r)
@@ -48,6 +52,8 @@ func (m UpdateServiceEnhancedServer) ApplyUpdate(ctx context.Context, r *ApplyUp
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method ApplyUpdate should have a context")
 	}
+	enhancedUpdateServiceServersLock.RLock()
+	defer enhancedUpdateServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.ApplyUpdate(ctx, r)
@@ -57,6 +63,8 @@ func (m UpdateServiceEnhancedServer) ApplyUpdate(ctx context.Context, r *ApplyUp
 }
 func (m UpdateServiceEnhancedServer) mustEmbedUnimplementedUpdateServiceServer() {}
 func RegisterUpdateServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedUpdateServiceServer) {
+	enhancedUpdateServiceServersLock.Lock()
+	defer enhancedUpdateServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedUpdateServiceServers[addr]
 	if !ok {
@@ -67,6 +75,8 @@ func RegisterUpdateServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedUpdat
 	m[srv.Name()] = srv
 }
 func DeregisterUpdateServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedUpdateServiceServersLock.Lock()
+	defer enhancedUpdateServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedUpdateServiceServers[addr]
 	if !ok {
@@ -76,7 +86,8 @@ func DeregisterUpdateServiceEnhancedServer(s grpc.ServiceRegistrar, name string)
 }
 
 var (
-	enhancedUpdateServerServiceServers = make(map[string]UpdateServerServiceEnhancedServer)
+	enhancedUpdateServerServiceServers     = make(map[string]UpdateServerServiceEnhancedServer)
+	enhancedUpdateServerServiceServersLock = sync.RWMutex{}
 )
 
 type NamedUpdateServerServiceServer interface {
@@ -92,6 +103,8 @@ func (m UpdateServerServiceEnhancedServer) CheckForUpdate(ctx context.Context, r
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method CheckForUpdate should have a context")
 	}
+	enhancedUpdateServerServiceServersLock.RLock()
+	defer enhancedUpdateServerServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CheckForUpdate(ctx, r)
@@ -105,6 +118,8 @@ func (m UpdateServerServiceEnhancedServer) PublishPackage(ctx context.Context, r
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method PublishPackage should have a context")
 	}
+	enhancedUpdateServerServiceServersLock.RLock()
+	defer enhancedUpdateServerServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.PublishPackage(ctx, r)
@@ -118,6 +133,8 @@ func (m UpdateServerServiceEnhancedServer) ListPackages(ctx context.Context, r *
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method ListPackages should have a context")
 	}
+	enhancedUpdateServerServiceServersLock.RLock()
+	defer enhancedUpdateServerServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.ListPackages(ctx, r)
@@ -131,6 +148,8 @@ func (m UpdateServerServiceEnhancedServer) DeletePackage(ctx context.Context, r 
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method DeletePackage should have a context")
 	}
+	enhancedUpdateServerServiceServersLock.RLock()
+	defer enhancedUpdateServerServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DeletePackage(ctx, r)
@@ -140,6 +159,8 @@ func (m UpdateServerServiceEnhancedServer) DeletePackage(ctx context.Context, r 
 }
 func (m UpdateServerServiceEnhancedServer) mustEmbedUnimplementedUpdateServerServiceServer() {}
 func RegisterUpdateServerServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedUpdateServerServiceServer) {
+	enhancedUpdateServerServiceServersLock.Lock()
+	defer enhancedUpdateServerServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedUpdateServerServiceServers[addr]
 	if !ok {
@@ -150,6 +171,8 @@ func RegisterUpdateServerServiceEnhancedServer(s grpc.ServiceRegistrar, srv Name
 	m[srv.Name()] = srv
 }
 func DeregisterUpdateServerServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedUpdateServerServiceServersLock.Lock()
+	defer enhancedUpdateServerServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedUpdateServerServiceServers[addr]
 	if !ok {

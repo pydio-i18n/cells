@@ -75,7 +75,7 @@ func WithWeb(handler func(ctx context.Context) WebHandler) ServiceOption {
 	return func(o *ServiceOptions) {
 		o.serverType = server.ServerType_HTTP
 		o.serverStart = func() error {
-			var mux *http.ServeMux
+			var mux server.HttpMux
 			if !o.Server.As(&mux) {
 				return fmt.Errorf("server is not a mux ", o.Name)
 			}

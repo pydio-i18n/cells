@@ -3,6 +3,7 @@ package registrymux
 import (
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
+	"github.com/pydio/cells/v4/common/server"
 	"io"
 	"net/http"
 	"net/http/httputil"
@@ -11,13 +12,12 @@ import (
 	"strings"
 )
 
-
-type Middleware struct{
+type Middleware struct {
 	r registry.Registry
-	s *http.ServeMux
+	s server.HttpMux
 }
 
-func NewMiddleware(r registry.Registry, s *http.ServeMux) http.Handler {
+func NewMiddleware(r registry.Registry, s server.HttpMux) http.Handler {
 	return &Middleware{
 		r: r,
 		s: s,
@@ -42,7 +42,6 @@ func (m Middleware) watch() error {
 		}
 
 		if r.Action() == "create" {
-
 
 		}
 	}

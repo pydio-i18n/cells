@@ -13,6 +13,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
 	status "google.golang.org/grpc/status"
+	sync "sync"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedChatServiceServers = make(map[string]ChatServiceEnhancedServer)
+	enhancedChatServiceServers     = make(map[string]ChatServiceEnhancedServer)
+	enhancedChatServiceServersLock = sync.RWMutex{}
 )
 
 type NamedChatServiceServer interface {
@@ -35,6 +37,8 @@ func (m ChatServiceEnhancedServer) PutRoom(ctx context.Context, r *PutRoomReques
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method PutRoom should have a context")
 	}
+	enhancedChatServiceServersLock.RLock()
+	defer enhancedChatServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.PutRoom(ctx, r)
@@ -48,6 +52,8 @@ func (m ChatServiceEnhancedServer) DeleteRoom(ctx context.Context, r *DeleteRoom
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method DeleteRoom should have a context")
 	}
+	enhancedChatServiceServersLock.RLock()
+	defer enhancedChatServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DeleteRoom(ctx, r)
@@ -61,6 +67,8 @@ func (m ChatServiceEnhancedServer) ListRooms(r *ListRoomsRequest, s ChatService_
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method ListRooms should have a context")
 	}
+	enhancedChatServiceServersLock.RLock()
+	defer enhancedChatServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.ListRooms(r, s)
@@ -74,6 +82,8 @@ func (m ChatServiceEnhancedServer) ListMessages(r *ListMessagesRequest, s ChatSe
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method ListMessages should have a context")
 	}
+	enhancedChatServiceServersLock.RLock()
+	defer enhancedChatServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.ListMessages(r, s)
@@ -87,6 +97,8 @@ func (m ChatServiceEnhancedServer) PostMessage(ctx context.Context, r *PostMessa
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method PostMessage should have a context")
 	}
+	enhancedChatServiceServersLock.RLock()
+	defer enhancedChatServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.PostMessage(ctx, r)
@@ -100,6 +112,8 @@ func (m ChatServiceEnhancedServer) DeleteMessage(ctx context.Context, r *DeleteM
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method DeleteMessage should have a context")
 	}
+	enhancedChatServiceServersLock.RLock()
+	defer enhancedChatServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DeleteMessage(ctx, r)
@@ -109,6 +123,8 @@ func (m ChatServiceEnhancedServer) DeleteMessage(ctx context.Context, r *DeleteM
 }
 func (m ChatServiceEnhancedServer) mustEmbedUnimplementedChatServiceServer() {}
 func RegisterChatServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedChatServiceServer) {
+	enhancedChatServiceServersLock.Lock()
+	defer enhancedChatServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedChatServiceServers[addr]
 	if !ok {
@@ -119,6 +135,8 @@ func RegisterChatServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedChatSer
 	m[srv.Name()] = srv
 }
 func DeregisterChatServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedChatServiceServersLock.Lock()
+	defer enhancedChatServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedChatServiceServers[addr]
 	if !ok {

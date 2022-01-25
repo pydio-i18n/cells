@@ -13,6 +13,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
 	status "google.golang.org/grpc/status"
+	sync "sync"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedAuthTokenRevokerServers = make(map[string]AuthTokenRevokerEnhancedServer)
+	enhancedAuthTokenRevokerServers     = make(map[string]AuthTokenRevokerEnhancedServer)
+	enhancedAuthTokenRevokerServersLock = sync.RWMutex{}
 )
 
 type NamedAuthTokenRevokerServer interface {
@@ -37,6 +39,8 @@ func (m AuthTokenRevokerEnhancedServer) Revoke(ctx context.Context, r *RevokeTok
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method Revoke should have a context")
 	}
+	enhancedAuthTokenRevokerServersLock.RLock()
+	defer enhancedAuthTokenRevokerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.Revoke(ctx, r)
@@ -46,6 +50,8 @@ func (m AuthTokenRevokerEnhancedServer) Revoke(ctx context.Context, r *RevokeTok
 }
 func (m AuthTokenRevokerEnhancedServer) mustEmbedUnimplementedAuthTokenRevokerServer() {}
 func RegisterAuthTokenRevokerEnhancedServer(s grpc.ServiceRegistrar, srv NamedAuthTokenRevokerServer) {
+	enhancedAuthTokenRevokerServersLock.Lock()
+	defer enhancedAuthTokenRevokerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedAuthTokenRevokerServers[addr]
 	if !ok {
@@ -56,6 +62,8 @@ func RegisterAuthTokenRevokerEnhancedServer(s grpc.ServiceRegistrar, srv NamedAu
 	m[srv.Name()] = srv
 }
 func DeregisterAuthTokenRevokerEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedAuthTokenRevokerServersLock.Lock()
+	defer enhancedAuthTokenRevokerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedAuthTokenRevokerServers[addr]
 	if !ok {
@@ -65,7 +73,8 @@ func DeregisterAuthTokenRevokerEnhancedServer(s grpc.ServiceRegistrar, name stri
 }
 
 var (
-	enhancedAuthTokenPrunerServers = make(map[string]AuthTokenPrunerEnhancedServer)
+	enhancedAuthTokenPrunerServers     = make(map[string]AuthTokenPrunerEnhancedServer)
+	enhancedAuthTokenPrunerServersLock = sync.RWMutex{}
 )
 
 type NamedAuthTokenPrunerServer interface {
@@ -81,6 +90,8 @@ func (m AuthTokenPrunerEnhancedServer) PruneTokens(ctx context.Context, r *Prune
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method PruneTokens should have a context")
 	}
+	enhancedAuthTokenPrunerServersLock.RLock()
+	defer enhancedAuthTokenPrunerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.PruneTokens(ctx, r)
@@ -90,6 +101,8 @@ func (m AuthTokenPrunerEnhancedServer) PruneTokens(ctx context.Context, r *Prune
 }
 func (m AuthTokenPrunerEnhancedServer) mustEmbedUnimplementedAuthTokenPrunerServer() {}
 func RegisterAuthTokenPrunerEnhancedServer(s grpc.ServiceRegistrar, srv NamedAuthTokenPrunerServer) {
+	enhancedAuthTokenPrunerServersLock.Lock()
+	defer enhancedAuthTokenPrunerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedAuthTokenPrunerServers[addr]
 	if !ok {
@@ -100,6 +113,8 @@ func RegisterAuthTokenPrunerEnhancedServer(s grpc.ServiceRegistrar, srv NamedAut
 	m[srv.Name()] = srv
 }
 func DeregisterAuthTokenPrunerEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedAuthTokenPrunerServersLock.Lock()
+	defer enhancedAuthTokenPrunerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedAuthTokenPrunerServers[addr]
 	if !ok {
@@ -109,7 +124,8 @@ func DeregisterAuthTokenPrunerEnhancedServer(s grpc.ServiceRegistrar, name strin
 }
 
 var (
-	enhancedLoginProviderServers = make(map[string]LoginProviderEnhancedServer)
+	enhancedLoginProviderServers     = make(map[string]LoginProviderEnhancedServer)
+	enhancedLoginProviderServersLock = sync.RWMutex{}
 )
 
 type NamedLoginProviderServer interface {
@@ -123,6 +139,8 @@ func (m LoginProviderEnhancedServer) GetLogin(ctx context.Context, r *GetLoginRe
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method GetLogin should have a context")
 	}
+	enhancedLoginProviderServersLock.RLock()
+	defer enhancedLoginProviderServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.GetLogin(ctx, r)
@@ -136,6 +154,8 @@ func (m LoginProviderEnhancedServer) CreateLogin(ctx context.Context, r *CreateL
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method CreateLogin should have a context")
 	}
+	enhancedLoginProviderServersLock.RLock()
+	defer enhancedLoginProviderServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CreateLogin(ctx, r)
@@ -149,6 +169,8 @@ func (m LoginProviderEnhancedServer) AcceptLogin(ctx context.Context, r *AcceptL
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method AcceptLogin should have a context")
 	}
+	enhancedLoginProviderServersLock.RLock()
+	defer enhancedLoginProviderServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.AcceptLogin(ctx, r)
@@ -158,6 +180,8 @@ func (m LoginProviderEnhancedServer) AcceptLogin(ctx context.Context, r *AcceptL
 }
 func (m LoginProviderEnhancedServer) mustEmbedUnimplementedLoginProviderServer() {}
 func RegisterLoginProviderEnhancedServer(s grpc.ServiceRegistrar, srv NamedLoginProviderServer) {
+	enhancedLoginProviderServersLock.Lock()
+	defer enhancedLoginProviderServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedLoginProviderServers[addr]
 	if !ok {
@@ -168,6 +192,8 @@ func RegisterLoginProviderEnhancedServer(s grpc.ServiceRegistrar, srv NamedLogin
 	m[srv.Name()] = srv
 }
 func DeregisterLoginProviderEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedLoginProviderServersLock.Lock()
+	defer enhancedLoginProviderServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedLoginProviderServers[addr]
 	if !ok {
@@ -177,7 +203,8 @@ func DeregisterLoginProviderEnhancedServer(s grpc.ServiceRegistrar, name string)
 }
 
 var (
-	enhancedConsentProviderServers = make(map[string]ConsentProviderEnhancedServer)
+	enhancedConsentProviderServers     = make(map[string]ConsentProviderEnhancedServer)
+	enhancedConsentProviderServersLock = sync.RWMutex{}
 )
 
 type NamedConsentProviderServer interface {
@@ -191,6 +218,8 @@ func (m ConsentProviderEnhancedServer) GetConsent(ctx context.Context, r *GetCon
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method GetConsent should have a context")
 	}
+	enhancedConsentProviderServersLock.RLock()
+	defer enhancedConsentProviderServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.GetConsent(ctx, r)
@@ -204,6 +233,8 @@ func (m ConsentProviderEnhancedServer) CreateConsent(ctx context.Context, r *Cre
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method CreateConsent should have a context")
 	}
+	enhancedConsentProviderServersLock.RLock()
+	defer enhancedConsentProviderServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CreateConsent(ctx, r)
@@ -217,6 +248,8 @@ func (m ConsentProviderEnhancedServer) AcceptConsent(ctx context.Context, r *Acc
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method AcceptConsent should have a context")
 	}
+	enhancedConsentProviderServersLock.RLock()
+	defer enhancedConsentProviderServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.AcceptConsent(ctx, r)
@@ -226,6 +259,8 @@ func (m ConsentProviderEnhancedServer) AcceptConsent(ctx context.Context, r *Acc
 }
 func (m ConsentProviderEnhancedServer) mustEmbedUnimplementedConsentProviderServer() {}
 func RegisterConsentProviderEnhancedServer(s grpc.ServiceRegistrar, srv NamedConsentProviderServer) {
+	enhancedConsentProviderServersLock.Lock()
+	defer enhancedConsentProviderServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedConsentProviderServers[addr]
 	if !ok {
@@ -236,6 +271,8 @@ func RegisterConsentProviderEnhancedServer(s grpc.ServiceRegistrar, srv NamedCon
 	m[srv.Name()] = srv
 }
 func DeregisterConsentProviderEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedConsentProviderServersLock.Lock()
+	defer enhancedConsentProviderServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedConsentProviderServers[addr]
 	if !ok {
@@ -245,7 +282,8 @@ func DeregisterConsentProviderEnhancedServer(s grpc.ServiceRegistrar, name strin
 }
 
 var (
-	enhancedLogoutProviderServers = make(map[string]LogoutProviderEnhancedServer)
+	enhancedLogoutProviderServers     = make(map[string]LogoutProviderEnhancedServer)
+	enhancedLogoutProviderServersLock = sync.RWMutex{}
 )
 
 type NamedLogoutProviderServer interface {
@@ -259,6 +297,8 @@ func (m LogoutProviderEnhancedServer) CreateLogout(ctx context.Context, r *Creat
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method CreateLogout should have a context")
 	}
+	enhancedLogoutProviderServersLock.RLock()
+	defer enhancedLogoutProviderServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CreateLogout(ctx, r)
@@ -272,6 +312,8 @@ func (m LogoutProviderEnhancedServer) AcceptLogout(ctx context.Context, r *Accep
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method AcceptLogout should have a context")
 	}
+	enhancedLogoutProviderServersLock.RLock()
+	defer enhancedLogoutProviderServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.AcceptLogout(ctx, r)
@@ -281,6 +323,8 @@ func (m LogoutProviderEnhancedServer) AcceptLogout(ctx context.Context, r *Accep
 }
 func (m LogoutProviderEnhancedServer) mustEmbedUnimplementedLogoutProviderServer() {}
 func RegisterLogoutProviderEnhancedServer(s grpc.ServiceRegistrar, srv NamedLogoutProviderServer) {
+	enhancedLogoutProviderServersLock.Lock()
+	defer enhancedLogoutProviderServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedLogoutProviderServers[addr]
 	if !ok {
@@ -291,6 +335,8 @@ func RegisterLogoutProviderEnhancedServer(s grpc.ServiceRegistrar, srv NamedLogo
 	m[srv.Name()] = srv
 }
 func DeregisterLogoutProviderEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedLogoutProviderServersLock.Lock()
+	defer enhancedLogoutProviderServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedLogoutProviderServers[addr]
 	if !ok {
@@ -300,7 +346,8 @@ func DeregisterLogoutProviderEnhancedServer(s grpc.ServiceRegistrar, name string
 }
 
 var (
-	enhancedAuthCodeProviderServers = make(map[string]AuthCodeProviderEnhancedServer)
+	enhancedAuthCodeProviderServers     = make(map[string]AuthCodeProviderEnhancedServer)
+	enhancedAuthCodeProviderServersLock = sync.RWMutex{}
 )
 
 type NamedAuthCodeProviderServer interface {
@@ -314,6 +361,8 @@ func (m AuthCodeProviderEnhancedServer) CreateAuthCode(ctx context.Context, r *C
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method CreateAuthCode should have a context")
 	}
+	enhancedAuthCodeProviderServersLock.RLock()
+	defer enhancedAuthCodeProviderServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CreateAuthCode(ctx, r)
@@ -323,6 +372,8 @@ func (m AuthCodeProviderEnhancedServer) CreateAuthCode(ctx context.Context, r *C
 }
 func (m AuthCodeProviderEnhancedServer) mustEmbedUnimplementedAuthCodeProviderServer() {}
 func RegisterAuthCodeProviderEnhancedServer(s grpc.ServiceRegistrar, srv NamedAuthCodeProviderServer) {
+	enhancedAuthCodeProviderServersLock.Lock()
+	defer enhancedAuthCodeProviderServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedAuthCodeProviderServers[addr]
 	if !ok {
@@ -333,6 +384,8 @@ func RegisterAuthCodeProviderEnhancedServer(s grpc.ServiceRegistrar, srv NamedAu
 	m[srv.Name()] = srv
 }
 func DeregisterAuthCodeProviderEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedAuthCodeProviderServersLock.Lock()
+	defer enhancedAuthCodeProviderServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedAuthCodeProviderServers[addr]
 	if !ok {
@@ -342,7 +395,8 @@ func DeregisterAuthCodeProviderEnhancedServer(s grpc.ServiceRegistrar, name stri
 }
 
 var (
-	enhancedAuthTokenVerifierServers = make(map[string]AuthTokenVerifierEnhancedServer)
+	enhancedAuthTokenVerifierServers     = make(map[string]AuthTokenVerifierEnhancedServer)
+	enhancedAuthTokenVerifierServersLock = sync.RWMutex{}
 )
 
 type NamedAuthTokenVerifierServer interface {
@@ -358,6 +412,8 @@ func (m AuthTokenVerifierEnhancedServer) Verify(ctx context.Context, r *VerifyTo
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method Verify should have a context")
 	}
+	enhancedAuthTokenVerifierServersLock.RLock()
+	defer enhancedAuthTokenVerifierServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.Verify(ctx, r)
@@ -367,6 +423,8 @@ func (m AuthTokenVerifierEnhancedServer) Verify(ctx context.Context, r *VerifyTo
 }
 func (m AuthTokenVerifierEnhancedServer) mustEmbedUnimplementedAuthTokenVerifierServer() {}
 func RegisterAuthTokenVerifierEnhancedServer(s grpc.ServiceRegistrar, srv NamedAuthTokenVerifierServer) {
+	enhancedAuthTokenVerifierServersLock.Lock()
+	defer enhancedAuthTokenVerifierServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedAuthTokenVerifierServers[addr]
 	if !ok {
@@ -377,6 +435,8 @@ func RegisterAuthTokenVerifierEnhancedServer(s grpc.ServiceRegistrar, srv NamedA
 	m[srv.Name()] = srv
 }
 func DeregisterAuthTokenVerifierEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedAuthTokenVerifierServersLock.Lock()
+	defer enhancedAuthTokenVerifierServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedAuthTokenVerifierServers[addr]
 	if !ok {
@@ -386,7 +446,8 @@ func DeregisterAuthTokenVerifierEnhancedServer(s grpc.ServiceRegistrar, name str
 }
 
 var (
-	enhancedAuthCodeExchangerServers = make(map[string]AuthCodeExchangerEnhancedServer)
+	enhancedAuthCodeExchangerServers     = make(map[string]AuthCodeExchangerEnhancedServer)
+	enhancedAuthCodeExchangerServersLock = sync.RWMutex{}
 )
 
 type NamedAuthCodeExchangerServer interface {
@@ -400,6 +461,8 @@ func (m AuthCodeExchangerEnhancedServer) Exchange(ctx context.Context, r *Exchan
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method Exchange should have a context")
 	}
+	enhancedAuthCodeExchangerServersLock.RLock()
+	defer enhancedAuthCodeExchangerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.Exchange(ctx, r)
@@ -409,6 +472,8 @@ func (m AuthCodeExchangerEnhancedServer) Exchange(ctx context.Context, r *Exchan
 }
 func (m AuthCodeExchangerEnhancedServer) mustEmbedUnimplementedAuthCodeExchangerServer() {}
 func RegisterAuthCodeExchangerEnhancedServer(s grpc.ServiceRegistrar, srv NamedAuthCodeExchangerServer) {
+	enhancedAuthCodeExchangerServersLock.Lock()
+	defer enhancedAuthCodeExchangerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedAuthCodeExchangerServers[addr]
 	if !ok {
@@ -419,6 +484,8 @@ func RegisterAuthCodeExchangerEnhancedServer(s grpc.ServiceRegistrar, srv NamedA
 	m[srv.Name()] = srv
 }
 func DeregisterAuthCodeExchangerEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedAuthCodeExchangerServersLock.Lock()
+	defer enhancedAuthCodeExchangerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedAuthCodeExchangerServers[addr]
 	if !ok {
@@ -428,7 +495,8 @@ func DeregisterAuthCodeExchangerEnhancedServer(s grpc.ServiceRegistrar, name str
 }
 
 var (
-	enhancedPasswordCredentialsTokenServers = make(map[string]PasswordCredentialsTokenEnhancedServer)
+	enhancedPasswordCredentialsTokenServers     = make(map[string]PasswordCredentialsTokenEnhancedServer)
+	enhancedPasswordCredentialsTokenServersLock = sync.RWMutex{}
 )
 
 type NamedPasswordCredentialsTokenServer interface {
@@ -442,6 +510,8 @@ func (m PasswordCredentialsTokenEnhancedServer) PasswordCredentialsToken(ctx con
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method PasswordCredentialsToken should have a context")
 	}
+	enhancedPasswordCredentialsTokenServersLock.RLock()
+	defer enhancedPasswordCredentialsTokenServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.PasswordCredentialsToken(ctx, r)
@@ -452,6 +522,8 @@ func (m PasswordCredentialsTokenEnhancedServer) PasswordCredentialsToken(ctx con
 func (m PasswordCredentialsTokenEnhancedServer) mustEmbedUnimplementedPasswordCredentialsTokenServer() {
 }
 func RegisterPasswordCredentialsTokenEnhancedServer(s grpc.ServiceRegistrar, srv NamedPasswordCredentialsTokenServer) {
+	enhancedPasswordCredentialsTokenServersLock.Lock()
+	defer enhancedPasswordCredentialsTokenServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedPasswordCredentialsTokenServers[addr]
 	if !ok {
@@ -462,6 +534,8 @@ func RegisterPasswordCredentialsTokenEnhancedServer(s grpc.ServiceRegistrar, srv
 	m[srv.Name()] = srv
 }
 func DeregisterPasswordCredentialsTokenEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedPasswordCredentialsTokenServersLock.Lock()
+	defer enhancedPasswordCredentialsTokenServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedPasswordCredentialsTokenServers[addr]
 	if !ok {
@@ -471,7 +545,8 @@ func DeregisterPasswordCredentialsTokenEnhancedServer(s grpc.ServiceRegistrar, n
 }
 
 var (
-	enhancedAuthTokenRefresherServers = make(map[string]AuthTokenRefresherEnhancedServer)
+	enhancedAuthTokenRefresherServers     = make(map[string]AuthTokenRefresherEnhancedServer)
+	enhancedAuthTokenRefresherServersLock = sync.RWMutex{}
 )
 
 type NamedAuthTokenRefresherServer interface {
@@ -485,6 +560,8 @@ func (m AuthTokenRefresherEnhancedServer) Refresh(ctx context.Context, r *Refres
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method Refresh should have a context")
 	}
+	enhancedAuthTokenRefresherServersLock.RLock()
+	defer enhancedAuthTokenRefresherServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.Refresh(ctx, r)
@@ -494,6 +571,8 @@ func (m AuthTokenRefresherEnhancedServer) Refresh(ctx context.Context, r *Refres
 }
 func (m AuthTokenRefresherEnhancedServer) mustEmbedUnimplementedAuthTokenRefresherServer() {}
 func RegisterAuthTokenRefresherEnhancedServer(s grpc.ServiceRegistrar, srv NamedAuthTokenRefresherServer) {
+	enhancedAuthTokenRefresherServersLock.Lock()
+	defer enhancedAuthTokenRefresherServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedAuthTokenRefresherServers[addr]
 	if !ok {
@@ -504,6 +583,8 @@ func RegisterAuthTokenRefresherEnhancedServer(s grpc.ServiceRegistrar, srv Named
 	m[srv.Name()] = srv
 }
 func DeregisterAuthTokenRefresherEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedAuthTokenRefresherServersLock.Lock()
+	defer enhancedAuthTokenRefresherServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedAuthTokenRefresherServers[addr]
 	if !ok {
@@ -513,7 +594,8 @@ func DeregisterAuthTokenRefresherEnhancedServer(s grpc.ServiceRegistrar, name st
 }
 
 var (
-	enhancedPersonalAccessTokenServiceServers = make(map[string]PersonalAccessTokenServiceEnhancedServer)
+	enhancedPersonalAccessTokenServiceServers     = make(map[string]PersonalAccessTokenServiceEnhancedServer)
+	enhancedPersonalAccessTokenServiceServersLock = sync.RWMutex{}
 )
 
 type NamedPersonalAccessTokenServiceServer interface {
@@ -527,6 +609,8 @@ func (m PersonalAccessTokenServiceEnhancedServer) Generate(ctx context.Context, 
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method Generate should have a context")
 	}
+	enhancedPersonalAccessTokenServiceServersLock.RLock()
+	defer enhancedPersonalAccessTokenServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.Generate(ctx, r)
@@ -540,6 +624,8 @@ func (m PersonalAccessTokenServiceEnhancedServer) Revoke(ctx context.Context, r 
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method Revoke should have a context")
 	}
+	enhancedPersonalAccessTokenServiceServersLock.RLock()
+	defer enhancedPersonalAccessTokenServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.Revoke(ctx, r)
@@ -553,6 +639,8 @@ func (m PersonalAccessTokenServiceEnhancedServer) List(ctx context.Context, r *P
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method List should have a context")
 	}
+	enhancedPersonalAccessTokenServiceServersLock.RLock()
+	defer enhancedPersonalAccessTokenServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.List(ctx, r)
@@ -563,6 +651,8 @@ func (m PersonalAccessTokenServiceEnhancedServer) List(ctx context.Context, r *P
 func (m PersonalAccessTokenServiceEnhancedServer) mustEmbedUnimplementedPersonalAccessTokenServiceServer() {
 }
 func RegisterPersonalAccessTokenServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedPersonalAccessTokenServiceServer) {
+	enhancedPersonalAccessTokenServiceServersLock.Lock()
+	defer enhancedPersonalAccessTokenServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedPersonalAccessTokenServiceServers[addr]
 	if !ok {
@@ -573,6 +663,8 @@ func RegisterPersonalAccessTokenServiceEnhancedServer(s grpc.ServiceRegistrar, s
 	m[srv.Name()] = srv
 }
 func DeregisterPersonalAccessTokenServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedPersonalAccessTokenServiceServersLock.Lock()
+	defer enhancedPersonalAccessTokenServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedPersonalAccessTokenServiceServers[addr]
 	if !ok {

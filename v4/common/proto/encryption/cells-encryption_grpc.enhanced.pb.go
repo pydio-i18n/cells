@@ -13,6 +13,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
 	status "google.golang.org/grpc/status"
+	sync "sync"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedUserKeyStoreServers = make(map[string]UserKeyStoreEnhancedServer)
+	enhancedUserKeyStoreServers     = make(map[string]UserKeyStoreEnhancedServer)
+	enhancedUserKeyStoreServersLock = sync.RWMutex{}
 )
 
 type NamedUserKeyStoreServer interface {
@@ -35,6 +37,8 @@ func (m UserKeyStoreEnhancedServer) AddKey(ctx context.Context, r *AddKeyRequest
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method AddKey should have a context")
 	}
+	enhancedUserKeyStoreServersLock.RLock()
+	defer enhancedUserKeyStoreServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.AddKey(ctx, r)
@@ -48,6 +52,8 @@ func (m UserKeyStoreEnhancedServer) GetKey(ctx context.Context, r *GetKeyRequest
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method GetKey should have a context")
 	}
+	enhancedUserKeyStoreServersLock.RLock()
+	defer enhancedUserKeyStoreServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.GetKey(ctx, r)
@@ -61,6 +67,8 @@ func (m UserKeyStoreEnhancedServer) AdminListKeys(ctx context.Context, r *AdminL
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method AdminListKeys should have a context")
 	}
+	enhancedUserKeyStoreServersLock.RLock()
+	defer enhancedUserKeyStoreServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.AdminListKeys(ctx, r)
@@ -74,6 +82,8 @@ func (m UserKeyStoreEnhancedServer) AdminCreateKey(ctx context.Context, r *Admin
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method AdminCreateKey should have a context")
 	}
+	enhancedUserKeyStoreServersLock.RLock()
+	defer enhancedUserKeyStoreServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.AdminCreateKey(ctx, r)
@@ -87,6 +97,8 @@ func (m UserKeyStoreEnhancedServer) AdminDeleteKey(ctx context.Context, r *Admin
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method AdminDeleteKey should have a context")
 	}
+	enhancedUserKeyStoreServersLock.RLock()
+	defer enhancedUserKeyStoreServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.AdminDeleteKey(ctx, r)
@@ -100,6 +112,8 @@ func (m UserKeyStoreEnhancedServer) AdminExportKey(ctx context.Context, r *Admin
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method AdminExportKey should have a context")
 	}
+	enhancedUserKeyStoreServersLock.RLock()
+	defer enhancedUserKeyStoreServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.AdminExportKey(ctx, r)
@@ -113,6 +127,8 @@ func (m UserKeyStoreEnhancedServer) AdminImportKey(ctx context.Context, r *Admin
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method AdminImportKey should have a context")
 	}
+	enhancedUserKeyStoreServersLock.RLock()
+	defer enhancedUserKeyStoreServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.AdminImportKey(ctx, r)
@@ -122,6 +138,8 @@ func (m UserKeyStoreEnhancedServer) AdminImportKey(ctx context.Context, r *Admin
 }
 func (m UserKeyStoreEnhancedServer) mustEmbedUnimplementedUserKeyStoreServer() {}
 func RegisterUserKeyStoreEnhancedServer(s grpc.ServiceRegistrar, srv NamedUserKeyStoreServer) {
+	enhancedUserKeyStoreServersLock.Lock()
+	defer enhancedUserKeyStoreServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedUserKeyStoreServers[addr]
 	if !ok {
@@ -132,6 +150,8 @@ func RegisterUserKeyStoreEnhancedServer(s grpc.ServiceRegistrar, srv NamedUserKe
 	m[srv.Name()] = srv
 }
 func DeregisterUserKeyStoreEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedUserKeyStoreServersLock.Lock()
+	defer enhancedUserKeyStoreServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedUserKeyStoreServers[addr]
 	if !ok {
@@ -141,7 +161,8 @@ func DeregisterUserKeyStoreEnhancedServer(s grpc.ServiceRegistrar, name string) 
 }
 
 var (
-	enhancedNodeKeyManagerServers = make(map[string]NodeKeyManagerEnhancedServer)
+	enhancedNodeKeyManagerServers     = make(map[string]NodeKeyManagerEnhancedServer)
+	enhancedNodeKeyManagerServersLock = sync.RWMutex{}
 )
 
 type NamedNodeKeyManagerServer interface {
@@ -155,6 +176,8 @@ func (m NodeKeyManagerEnhancedServer) GetNodeInfo(ctx context.Context, r *GetNod
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method GetNodeInfo should have a context")
 	}
+	enhancedNodeKeyManagerServersLock.RLock()
+	defer enhancedNodeKeyManagerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.GetNodeInfo(ctx, r)
@@ -168,6 +191,8 @@ func (m NodeKeyManagerEnhancedServer) GetNodePlainSize(ctx context.Context, r *G
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method GetNodePlainSize should have a context")
 	}
+	enhancedNodeKeyManagerServersLock.RLock()
+	defer enhancedNodeKeyManagerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.GetNodePlainSize(ctx, r)
@@ -181,6 +206,8 @@ func (m NodeKeyManagerEnhancedServer) SetNodeInfo(s NodeKeyManager_SetNodeInfoSe
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method SetNodeInfo should have a context")
 	}
+	enhancedNodeKeyManagerServersLock.RLock()
+	defer enhancedNodeKeyManagerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.SetNodeInfo(s)
@@ -194,6 +221,8 @@ func (m NodeKeyManagerEnhancedServer) CopyNodeInfo(ctx context.Context, r *CopyN
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method CopyNodeInfo should have a context")
 	}
+	enhancedNodeKeyManagerServersLock.RLock()
+	defer enhancedNodeKeyManagerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CopyNodeInfo(ctx, r)
@@ -207,6 +236,8 @@ func (m NodeKeyManagerEnhancedServer) DeleteNode(ctx context.Context, r *DeleteN
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method DeleteNode should have a context")
 	}
+	enhancedNodeKeyManagerServersLock.RLock()
+	defer enhancedNodeKeyManagerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DeleteNode(ctx, r)
@@ -220,6 +251,8 @@ func (m NodeKeyManagerEnhancedServer) DeleteNodeKey(ctx context.Context, r *Dele
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method DeleteNodeKey should have a context")
 	}
+	enhancedNodeKeyManagerServersLock.RLock()
+	defer enhancedNodeKeyManagerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DeleteNodeKey(ctx, r)
@@ -233,6 +266,8 @@ func (m NodeKeyManagerEnhancedServer) DeleteNodeSharedKey(ctx context.Context, r
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method DeleteNodeSharedKey should have a context")
 	}
+	enhancedNodeKeyManagerServersLock.RLock()
+	defer enhancedNodeKeyManagerServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DeleteNodeSharedKey(ctx, r)
@@ -242,6 +277,8 @@ func (m NodeKeyManagerEnhancedServer) DeleteNodeSharedKey(ctx context.Context, r
 }
 func (m NodeKeyManagerEnhancedServer) mustEmbedUnimplementedNodeKeyManagerServer() {}
 func RegisterNodeKeyManagerEnhancedServer(s grpc.ServiceRegistrar, srv NamedNodeKeyManagerServer) {
+	enhancedNodeKeyManagerServersLock.Lock()
+	defer enhancedNodeKeyManagerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeKeyManagerServers[addr]
 	if !ok {
@@ -252,6 +289,8 @@ func RegisterNodeKeyManagerEnhancedServer(s grpc.ServiceRegistrar, srv NamedNode
 	m[srv.Name()] = srv
 }
 func DeregisterNodeKeyManagerEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedNodeKeyManagerServersLock.Lock()
+	defer enhancedNodeKeyManagerServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedNodeKeyManagerServers[addr]
 	if !ok {

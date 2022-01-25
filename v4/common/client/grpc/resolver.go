@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"sync"
 	"time"
 
 	"google.golang.org/grpc/attributes"
@@ -39,6 +40,7 @@ type cellsResolver struct {
 	cc                   resolver.ClientConn
 	name                 string
 	m                    map[string][]string
+	ml                   *sync.RWMutex
 	updatedState         chan struct{}
 	updatedStateTimer    *time.Timer
 	disableServiceConfig bool
@@ -60,6 +62,7 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 		name:                 name,
 		cc:                   cc,
 		m:                    map[string][]string{},
+		ml:                   &sync.RWMutex{},
 		disableServiceConfig: opts.DisableServiceConfig,
 		updatedStateTimer:    time.NewTimer(50 * time.Millisecond),
 	}
@@ -75,6 +78,7 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 		return nil, err
 	}
 
+	cr.ml.Lock()
 	for _, s := range services {
 		for _, n := range s.(registry.Service).Nodes() {
 			for _, a := range n.Address() {
@@ -82,6 +86,7 @@ func (b *cellsBuilder) Build(target resolver.Target, cc resolver.ClientConn, opt
 			}
 		}
 	}
+	cr.ml.Unlock()
 
 	cr.sendState()
 
@@ -102,13 +107,14 @@ func (cr *cellsResolver) watch() {
 
 		var s registry.Service
 		if r.Item().As(&s) && (r.Action() == "create" || r.Action() == "update") {
+			cr.ml.Lock()
 			for _, n := range s.Nodes() {
 				for _, a := range n.Address() {
 					cr.m[a] = append(cr.m[a], s.Name())
 				}
 				// cr.m[n.Address()[0]] = append(cr.m[n.Address()[0]], s.Name())
 			}
-
+			cr.ml.Unlock()
 			cr.updatedStateTimer.Reset(50 * time.Millisecond)
 		}
 	}
@@ -125,6 +131,7 @@ func (cr *cellsResolver) updateState() {
 
 func (cr *cellsResolver) sendState() {
 	var addresses []resolver.Address
+	cr.ml.RLock()
 	for k, v := range cr.m {
 		addresses = append(addresses, resolver.Address{
 			Addr:       k,
@@ -132,6 +139,7 @@ func (cr *cellsResolver) sendState() {
 			Attributes: attributes.New("services", v),
 		})
 	}
+	cr.ml.RUnlock()
 	if len(addresses) == 0 {
 		// dont' bother sending yet
 		return

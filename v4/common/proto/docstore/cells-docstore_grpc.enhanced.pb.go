@@ -13,6 +13,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
 	status "google.golang.org/grpc/status"
+	sync "sync"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedDocStoreServers = make(map[string]DocStoreEnhancedServer)
+	enhancedDocStoreServers     = make(map[string]DocStoreEnhancedServer)
+	enhancedDocStoreServersLock = sync.RWMutex{}
 )
 
 type NamedDocStoreServer interface {
@@ -35,6 +37,8 @@ func (m DocStoreEnhancedServer) PutDocument(ctx context.Context, r *PutDocumentR
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method PutDocument should have a context")
 	}
+	enhancedDocStoreServersLock.RLock()
+	defer enhancedDocStoreServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.PutDocument(ctx, r)
@@ -48,6 +52,8 @@ func (m DocStoreEnhancedServer) GetDocument(ctx context.Context, r *GetDocumentR
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method GetDocument should have a context")
 	}
+	enhancedDocStoreServersLock.RLock()
+	defer enhancedDocStoreServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.GetDocument(ctx, r)
@@ -61,6 +67,8 @@ func (m DocStoreEnhancedServer) DeleteDocuments(ctx context.Context, r *DeleteDo
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method DeleteDocuments should have a context")
 	}
+	enhancedDocStoreServersLock.RLock()
+	defer enhancedDocStoreServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DeleteDocuments(ctx, r)
@@ -74,6 +82,8 @@ func (m DocStoreEnhancedServer) CountDocuments(ctx context.Context, r *ListDocum
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method CountDocuments should have a context")
 	}
+	enhancedDocStoreServersLock.RLock()
+	defer enhancedDocStoreServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CountDocuments(ctx, r)
@@ -87,6 +97,8 @@ func (m DocStoreEnhancedServer) ListDocuments(r *ListDocumentsRequest, s DocStor
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method ListDocuments should have a context")
 	}
+	enhancedDocStoreServersLock.RLock()
+	defer enhancedDocStoreServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.ListDocuments(r, s)
@@ -96,6 +108,8 @@ func (m DocStoreEnhancedServer) ListDocuments(r *ListDocumentsRequest, s DocStor
 }
 func (m DocStoreEnhancedServer) mustEmbedUnimplementedDocStoreServer() {}
 func RegisterDocStoreEnhancedServer(s grpc.ServiceRegistrar, srv NamedDocStoreServer) {
+	enhancedDocStoreServersLock.Lock()
+	defer enhancedDocStoreServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedDocStoreServers[addr]
 	if !ok {
@@ -106,6 +120,8 @@ func RegisterDocStoreEnhancedServer(s grpc.ServiceRegistrar, srv NamedDocStoreSe
 	m[srv.Name()] = srv
 }
 func DeregisterDocStoreEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedDocStoreServersLock.Lock()
+	defer enhancedDocStoreServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedDocStoreServers[addr]
 	if !ok {

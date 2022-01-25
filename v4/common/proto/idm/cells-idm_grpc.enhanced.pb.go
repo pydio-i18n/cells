@@ -13,6 +13,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
 	status "google.golang.org/grpc/status"
+	sync "sync"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedRoleServiceServers = make(map[string]RoleServiceEnhancedServer)
+	enhancedRoleServiceServers     = make(map[string]RoleServiceEnhancedServer)
+	enhancedRoleServiceServersLock = sync.RWMutex{}
 )
 
 type NamedRoleServiceServer interface {
@@ -35,6 +37,8 @@ func (m RoleServiceEnhancedServer) CreateRole(ctx context.Context, r *CreateRole
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method CreateRole should have a context")
 	}
+	enhancedRoleServiceServersLock.RLock()
+	defer enhancedRoleServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CreateRole(ctx, r)
@@ -48,6 +52,8 @@ func (m RoleServiceEnhancedServer) DeleteRole(ctx context.Context, r *DeleteRole
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method DeleteRole should have a context")
 	}
+	enhancedRoleServiceServersLock.RLock()
+	defer enhancedRoleServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DeleteRole(ctx, r)
@@ -61,6 +67,8 @@ func (m RoleServiceEnhancedServer) SearchRole(r *SearchRoleRequest, s RoleServic
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method SearchRole should have a context")
 	}
+	enhancedRoleServiceServersLock.RLock()
+	defer enhancedRoleServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.SearchRole(r, s)
@@ -74,6 +82,8 @@ func (m RoleServiceEnhancedServer) StreamRole(s RoleService_StreamRoleServer) er
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method StreamRole should have a context")
 	}
+	enhancedRoleServiceServersLock.RLock()
+	defer enhancedRoleServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.StreamRole(s)
@@ -87,6 +97,8 @@ func (m RoleServiceEnhancedServer) CountRole(ctx context.Context, r *SearchRoleR
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method CountRole should have a context")
 	}
+	enhancedRoleServiceServersLock.RLock()
+	defer enhancedRoleServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CountRole(ctx, r)
@@ -96,6 +108,8 @@ func (m RoleServiceEnhancedServer) CountRole(ctx context.Context, r *SearchRoleR
 }
 func (m RoleServiceEnhancedServer) mustEmbedUnimplementedRoleServiceServer() {}
 func RegisterRoleServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedRoleServiceServer) {
+	enhancedRoleServiceServersLock.Lock()
+	defer enhancedRoleServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedRoleServiceServers[addr]
 	if !ok {
@@ -106,6 +120,8 @@ func RegisterRoleServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedRoleSer
 	m[srv.Name()] = srv
 }
 func DeregisterRoleServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedRoleServiceServersLock.Lock()
+	defer enhancedRoleServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedRoleServiceServers[addr]
 	if !ok {
@@ -115,7 +131,8 @@ func DeregisterRoleServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
 }
 
 var (
-	enhancedUserServiceServers = make(map[string]UserServiceEnhancedServer)
+	enhancedUserServiceServers     = make(map[string]UserServiceEnhancedServer)
+	enhancedUserServiceServersLock = sync.RWMutex{}
 )
 
 type NamedUserServiceServer interface {
@@ -129,6 +146,8 @@ func (m UserServiceEnhancedServer) CreateUser(ctx context.Context, r *CreateUser
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method CreateUser should have a context")
 	}
+	enhancedUserServiceServersLock.RLock()
+	defer enhancedUserServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CreateUser(ctx, r)
@@ -142,6 +161,8 @@ func (m UserServiceEnhancedServer) DeleteUser(ctx context.Context, r *DeleteUser
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method DeleteUser should have a context")
 	}
+	enhancedUserServiceServersLock.RLock()
+	defer enhancedUserServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DeleteUser(ctx, r)
@@ -155,6 +176,8 @@ func (m UserServiceEnhancedServer) BindUser(ctx context.Context, r *BindUserRequ
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method BindUser should have a context")
 	}
+	enhancedUserServiceServersLock.RLock()
+	defer enhancedUserServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.BindUser(ctx, r)
@@ -168,6 +191,8 @@ func (m UserServiceEnhancedServer) CountUser(ctx context.Context, r *SearchUserR
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method CountUser should have a context")
 	}
+	enhancedUserServiceServersLock.RLock()
+	defer enhancedUserServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CountUser(ctx, r)
@@ -181,6 +206,8 @@ func (m UserServiceEnhancedServer) SearchUser(r *SearchUserRequest, s UserServic
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method SearchUser should have a context")
 	}
+	enhancedUserServiceServersLock.RLock()
+	defer enhancedUserServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.SearchUser(r, s)
@@ -194,6 +221,8 @@ func (m UserServiceEnhancedServer) StreamUser(s UserService_StreamUserServer) er
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method StreamUser should have a context")
 	}
+	enhancedUserServiceServersLock.RLock()
+	defer enhancedUserServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.StreamUser(s)
@@ -203,6 +232,8 @@ func (m UserServiceEnhancedServer) StreamUser(s UserService_StreamUserServer) er
 }
 func (m UserServiceEnhancedServer) mustEmbedUnimplementedUserServiceServer() {}
 func RegisterUserServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedUserServiceServer) {
+	enhancedUserServiceServersLock.Lock()
+	defer enhancedUserServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedUserServiceServers[addr]
 	if !ok {
@@ -213,6 +244,8 @@ func RegisterUserServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedUserSer
 	m[srv.Name()] = srv
 }
 func DeregisterUserServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedUserServiceServersLock.Lock()
+	defer enhancedUserServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedUserServiceServers[addr]
 	if !ok {
@@ -222,7 +255,8 @@ func DeregisterUserServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
 }
 
 var (
-	enhancedWorkspaceServiceServers = make(map[string]WorkspaceServiceEnhancedServer)
+	enhancedWorkspaceServiceServers     = make(map[string]WorkspaceServiceEnhancedServer)
+	enhancedWorkspaceServiceServersLock = sync.RWMutex{}
 )
 
 type NamedWorkspaceServiceServer interface {
@@ -236,6 +270,8 @@ func (m WorkspaceServiceEnhancedServer) CreateWorkspace(ctx context.Context, r *
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method CreateWorkspace should have a context")
 	}
+	enhancedWorkspaceServiceServersLock.RLock()
+	defer enhancedWorkspaceServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CreateWorkspace(ctx, r)
@@ -249,6 +285,8 @@ func (m WorkspaceServiceEnhancedServer) DeleteWorkspace(ctx context.Context, r *
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method DeleteWorkspace should have a context")
 	}
+	enhancedWorkspaceServiceServersLock.RLock()
+	defer enhancedWorkspaceServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DeleteWorkspace(ctx, r)
@@ -262,6 +300,8 @@ func (m WorkspaceServiceEnhancedServer) SearchWorkspace(r *SearchWorkspaceReques
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method SearchWorkspace should have a context")
 	}
+	enhancedWorkspaceServiceServersLock.RLock()
+	defer enhancedWorkspaceServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.SearchWorkspace(r, s)
@@ -275,6 +315,8 @@ func (m WorkspaceServiceEnhancedServer) StreamWorkspace(s WorkspaceService_Strea
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method StreamWorkspace should have a context")
 	}
+	enhancedWorkspaceServiceServersLock.RLock()
+	defer enhancedWorkspaceServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.StreamWorkspace(s)
@@ -284,6 +326,8 @@ func (m WorkspaceServiceEnhancedServer) StreamWorkspace(s WorkspaceService_Strea
 }
 func (m WorkspaceServiceEnhancedServer) mustEmbedUnimplementedWorkspaceServiceServer() {}
 func RegisterWorkspaceServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedWorkspaceServiceServer) {
+	enhancedWorkspaceServiceServersLock.Lock()
+	defer enhancedWorkspaceServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedWorkspaceServiceServers[addr]
 	if !ok {
@@ -294,6 +338,8 @@ func RegisterWorkspaceServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedWo
 	m[srv.Name()] = srv
 }
 func DeregisterWorkspaceServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedWorkspaceServiceServersLock.Lock()
+	defer enhancedWorkspaceServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedWorkspaceServiceServers[addr]
 	if !ok {
@@ -303,7 +349,8 @@ func DeregisterWorkspaceServiceEnhancedServer(s grpc.ServiceRegistrar, name stri
 }
 
 var (
-	enhancedACLServiceServers = make(map[string]ACLServiceEnhancedServer)
+	enhancedACLServiceServers     = make(map[string]ACLServiceEnhancedServer)
+	enhancedACLServiceServersLock = sync.RWMutex{}
 )
 
 type NamedACLServiceServer interface {
@@ -317,6 +364,8 @@ func (m ACLServiceEnhancedServer) CreateACL(ctx context.Context, r *CreateACLReq
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method CreateACL should have a context")
 	}
+	enhancedACLServiceServersLock.RLock()
+	defer enhancedACLServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.CreateACL(ctx, r)
@@ -330,6 +379,8 @@ func (m ACLServiceEnhancedServer) ExpireACL(ctx context.Context, r *ExpireACLReq
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method ExpireACL should have a context")
 	}
+	enhancedACLServiceServersLock.RLock()
+	defer enhancedACLServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.ExpireACL(ctx, r)
@@ -343,6 +394,8 @@ func (m ACLServiceEnhancedServer) DeleteACL(ctx context.Context, r *DeleteACLReq
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method DeleteACL should have a context")
 	}
+	enhancedACLServiceServersLock.RLock()
+	defer enhancedACLServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DeleteACL(ctx, r)
@@ -356,6 +409,8 @@ func (m ACLServiceEnhancedServer) SearchACL(r *SearchACLRequest, s ACLService_Se
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method SearchACL should have a context")
 	}
+	enhancedACLServiceServersLock.RLock()
+	defer enhancedACLServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.SearchACL(r, s)
@@ -369,6 +424,8 @@ func (m ACLServiceEnhancedServer) StreamACL(s ACLService_StreamACLServer) error 
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method StreamACL should have a context")
 	}
+	enhancedACLServiceServersLock.RLock()
+	defer enhancedACLServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.StreamACL(s)
@@ -378,6 +435,8 @@ func (m ACLServiceEnhancedServer) StreamACL(s ACLService_StreamACLServer) error 
 }
 func (m ACLServiceEnhancedServer) mustEmbedUnimplementedACLServiceServer() {}
 func RegisterACLServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedACLServiceServer) {
+	enhancedACLServiceServersLock.Lock()
+	defer enhancedACLServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedACLServiceServers[addr]
 	if !ok {
@@ -388,6 +447,8 @@ func RegisterACLServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedACLServi
 	m[srv.Name()] = srv
 }
 func DeregisterACLServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedACLServiceServersLock.Lock()
+	defer enhancedACLServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedACLServiceServers[addr]
 	if !ok {
@@ -397,7 +458,8 @@ func DeregisterACLServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
 }
 
 var (
-	enhancedUserMetaServiceServers = make(map[string]UserMetaServiceEnhancedServer)
+	enhancedUserMetaServiceServers     = make(map[string]UserMetaServiceEnhancedServer)
+	enhancedUserMetaServiceServersLock = sync.RWMutex{}
 )
 
 type NamedUserMetaServiceServer interface {
@@ -411,6 +473,8 @@ func (m UserMetaServiceEnhancedServer) UpdateUserMeta(ctx context.Context, r *Up
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method UpdateUserMeta should have a context")
 	}
+	enhancedUserMetaServiceServersLock.RLock()
+	defer enhancedUserMetaServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.UpdateUserMeta(ctx, r)
@@ -424,6 +488,8 @@ func (m UserMetaServiceEnhancedServer) SearchUserMeta(r *SearchUserMetaRequest, 
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method SearchUserMeta should have a context")
 	}
+	enhancedUserMetaServiceServersLock.RLock()
+	defer enhancedUserMetaServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.SearchUserMeta(r, s)
@@ -437,6 +503,8 @@ func (m UserMetaServiceEnhancedServer) UpdateUserMetaNamespace(ctx context.Conte
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method UpdateUserMetaNamespace should have a context")
 	}
+	enhancedUserMetaServiceServersLock.RLock()
+	defer enhancedUserMetaServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.UpdateUserMetaNamespace(ctx, r)
@@ -450,6 +518,8 @@ func (m UserMetaServiceEnhancedServer) ListUserMetaNamespace(r *ListUserMetaName
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method ListUserMetaNamespace should have a context")
 	}
+	enhancedUserMetaServiceServersLock.RLock()
+	defer enhancedUserMetaServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.ListUserMetaNamespace(r, s)
@@ -459,6 +529,8 @@ func (m UserMetaServiceEnhancedServer) ListUserMetaNamespace(r *ListUserMetaName
 }
 func (m UserMetaServiceEnhancedServer) mustEmbedUnimplementedUserMetaServiceServer() {}
 func RegisterUserMetaServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedUserMetaServiceServer) {
+	enhancedUserMetaServiceServersLock.Lock()
+	defer enhancedUserMetaServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedUserMetaServiceServers[addr]
 	if !ok {
@@ -469,6 +541,8 @@ func RegisterUserMetaServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedUse
 	m[srv.Name()] = srv
 }
 func DeregisterUserMetaServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedUserMetaServiceServersLock.Lock()
+	defer enhancedUserMetaServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedUserMetaServiceServers[addr]
 	if !ok {
@@ -478,7 +552,8 @@ func DeregisterUserMetaServiceEnhancedServer(s grpc.ServiceRegistrar, name strin
 }
 
 var (
-	enhancedPolicyEngineServiceServers = make(map[string]PolicyEngineServiceEnhancedServer)
+	enhancedPolicyEngineServiceServers     = make(map[string]PolicyEngineServiceEnhancedServer)
+	enhancedPolicyEngineServiceServersLock = sync.RWMutex{}
 )
 
 type NamedPolicyEngineServiceServer interface {
@@ -492,6 +567,8 @@ func (m PolicyEngineServiceEnhancedServer) IsAllowed(ctx context.Context, r *Pol
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method IsAllowed should have a context")
 	}
+	enhancedPolicyEngineServiceServersLock.RLock()
+	defer enhancedPolicyEngineServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.IsAllowed(ctx, r)
@@ -505,6 +582,8 @@ func (m PolicyEngineServiceEnhancedServer) StorePolicyGroup(ctx context.Context,
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method StorePolicyGroup should have a context")
 	}
+	enhancedPolicyEngineServiceServersLock.RLock()
+	defer enhancedPolicyEngineServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.StorePolicyGroup(ctx, r)
@@ -518,6 +597,8 @@ func (m PolicyEngineServiceEnhancedServer) ListPolicyGroups(ctx context.Context,
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method ListPolicyGroups should have a context")
 	}
+	enhancedPolicyEngineServiceServersLock.RLock()
+	defer enhancedPolicyEngineServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.ListPolicyGroups(ctx, r)
@@ -531,6 +612,8 @@ func (m PolicyEngineServiceEnhancedServer) DeletePolicyGroup(ctx context.Context
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method DeletePolicyGroup should have a context")
 	}
+	enhancedPolicyEngineServiceServersLock.RLock()
+	defer enhancedPolicyEngineServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DeletePolicyGroup(ctx, r)
@@ -540,6 +623,8 @@ func (m PolicyEngineServiceEnhancedServer) DeletePolicyGroup(ctx context.Context
 }
 func (m PolicyEngineServiceEnhancedServer) mustEmbedUnimplementedPolicyEngineServiceServer() {}
 func RegisterPolicyEngineServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedPolicyEngineServiceServer) {
+	enhancedPolicyEngineServiceServersLock.Lock()
+	defer enhancedPolicyEngineServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedPolicyEngineServiceServers[addr]
 	if !ok {
@@ -550,6 +635,8 @@ func RegisterPolicyEngineServiceEnhancedServer(s grpc.ServiceRegistrar, srv Name
 	m[srv.Name()] = srv
 }
 func DeregisterPolicyEngineServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedPolicyEngineServiceServersLock.Lock()
+	defer enhancedPolicyEngineServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedPolicyEngineServiceServers[addr]
 	if !ok {

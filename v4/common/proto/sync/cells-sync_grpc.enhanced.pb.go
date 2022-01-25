@@ -13,6 +13,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
 	status "google.golang.org/grpc/status"
+	sync "sync"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedSyncEndpointServers = make(map[string]SyncEndpointEnhancedServer)
+	enhancedSyncEndpointServers     = make(map[string]SyncEndpointEnhancedServer)
+	enhancedSyncEndpointServersLock = sync.RWMutex{}
 )
 
 type NamedSyncEndpointServer interface {
@@ -35,6 +37,8 @@ func (m SyncEndpointEnhancedServer) TriggerResync(ctx context.Context, r *Resync
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method TriggerResync should have a context")
 	}
+	enhancedSyncEndpointServersLock.RLock()
+	defer enhancedSyncEndpointServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.TriggerResync(ctx, r)
@@ -44,6 +48,8 @@ func (m SyncEndpointEnhancedServer) TriggerResync(ctx context.Context, r *Resync
 }
 func (m SyncEndpointEnhancedServer) mustEmbedUnimplementedSyncEndpointServer() {}
 func RegisterSyncEndpointEnhancedServer(s grpc.ServiceRegistrar, srv NamedSyncEndpointServer) {
+	enhancedSyncEndpointServersLock.Lock()
+	defer enhancedSyncEndpointServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedSyncEndpointServers[addr]
 	if !ok {
@@ -54,6 +60,8 @@ func RegisterSyncEndpointEnhancedServer(s grpc.ServiceRegistrar, srv NamedSyncEn
 	m[srv.Name()] = srv
 }
 func DeregisterSyncEndpointEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedSyncEndpointServersLock.Lock()
+	defer enhancedSyncEndpointServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedSyncEndpointServers[addr]
 	if !ok {

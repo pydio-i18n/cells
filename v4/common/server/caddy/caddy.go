@@ -6,11 +6,9 @@ import (
 	"fmt"
 	"go.uber.org/zap"
 	"html/template"
-	"net/http"
 	"net/http/pprof"
 	"os"
 	"path/filepath"
-	"reflect"
 	"time"
 
 	caddy "github.com/caddyserver/caddy/v2"
@@ -82,7 +80,7 @@ const (
 )
 
 type Server struct {
-	*http.ServeMux
+	*server.ListableMux
 	id   string
 	name string
 	meta map[string]string
@@ -97,7 +95,7 @@ type Server struct {
 }
 
 func New(ctx context.Context, dir string) (server.Server, error) {
-	srvMUX := http.NewServeMux()
+	srvMUX := server.NewListableMux()
 	srvMUX.HandleFunc("/debug/pprof/", pprof.Index)
 	srvMUX.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
 	srvMUX.HandleFunc("/debug/pprof/profile", pprof.Profile)
@@ -118,10 +116,10 @@ func New(ctx context.Context, dir string) (server.Server, error) {
 		name: "caddy",
 		meta: server.InitPeerMeta(),
 
-		rootCtx:   ctx,
-		serveDir:  dir,
-		watchDone: make(chan struct{}, 1),
-		ServeMux:  srvMUX,
+		rootCtx:     ctx,
+		serveDir:    dir,
+		watchDone:   make(chan struct{}, 1),
+		ListableMux: srvMUX,
 	}
 	if err := srv.ComputeConfs(); err != nil {
 		return nil, err
@@ -202,12 +200,7 @@ func (s *Server) Address() []string {
 }
 
 func (s *Server) Endpoints() []string {
-	var endpoints []string
-	for _, k := range reflect.ValueOf(s.ServeMux).Elem().FieldByName("m").MapKeys() {
-		endpoints = append(endpoints, k.String())
-	}
-
-	return endpoints
+	return s.ListableMux.Patterns()
 }
 
 func (s *Server) ID() string {
@@ -223,13 +216,15 @@ func (s *Server) Metadata() map[string]string {
 }
 
 func (s *Server) As(i interface{}) bool {
-	p, ok := i.(**http.ServeMux)
-	if !ok {
-		return false
+	if v, ok := i.(*server.HttpMux); ok {
+		*v = s.ListableMux
+		return true
 	}
-
-	*p = s.ServeMux
-	return true
+	if v, ok := i.(*server.PatternsProvider); ok {
+		*v = s.ListableMux
+		return true
+	}
+	return false
 }
 
 func (s *Server) watchReload() {

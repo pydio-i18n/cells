@@ -13,6 +13,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
 	status "google.golang.org/grpc/status"
+	sync "sync"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedLogRecorderServers = make(map[string]LogRecorderEnhancedServer)
+	enhancedLogRecorderServers     = make(map[string]LogRecorderEnhancedServer)
+	enhancedLogRecorderServersLock = sync.RWMutex{}
 )
 
 type NamedLogRecorderServer interface {
@@ -37,6 +39,8 @@ func (m LogRecorderEnhancedServer) PutLog(s LogRecorder_PutLogServer) error {
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method PutLog should have a context")
 	}
+	enhancedLogRecorderServersLock.RLock()
+	defer enhancedLogRecorderServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.PutLog(s)
@@ -52,6 +56,8 @@ func (m LogRecorderEnhancedServer) ListLogs(r *ListLogRequest, s LogRecorder_Lis
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method ListLogs should have a context")
 	}
+	enhancedLogRecorderServersLock.RLock()
+	defer enhancedLogRecorderServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.ListLogs(r, s)
@@ -67,6 +73,8 @@ func (m LogRecorderEnhancedServer) DeleteLogs(ctx context.Context, r *ListLogReq
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method DeleteLogs should have a context")
 	}
+	enhancedLogRecorderServersLock.RLock()
+	defer enhancedLogRecorderServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.DeleteLogs(ctx, r)
@@ -82,6 +90,8 @@ func (m LogRecorderEnhancedServer) AggregatedLogs(r *TimeRangeRequest, s LogReco
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method AggregatedLogs should have a context")
 	}
+	enhancedLogRecorderServersLock.RLock()
+	defer enhancedLogRecorderServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.AggregatedLogs(r, s)
@@ -91,6 +101,8 @@ func (m LogRecorderEnhancedServer) AggregatedLogs(r *TimeRangeRequest, s LogReco
 }
 func (m LogRecorderEnhancedServer) mustEmbedUnimplementedLogRecorderServer() {}
 func RegisterLogRecorderEnhancedServer(s grpc.ServiceRegistrar, srv NamedLogRecorderServer) {
+	enhancedLogRecorderServersLock.Lock()
+	defer enhancedLogRecorderServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedLogRecorderServers[addr]
 	if !ok {
@@ -101,6 +113,8 @@ func RegisterLogRecorderEnhancedServer(s grpc.ServiceRegistrar, srv NamedLogReco
 	m[srv.Name()] = srv
 }
 func DeregisterLogRecorderEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedLogRecorderServersLock.Lock()
+	defer enhancedLogRecorderServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedLogRecorderServers[addr]
 	if !ok {

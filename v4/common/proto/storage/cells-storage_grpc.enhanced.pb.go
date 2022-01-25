@@ -13,6 +13,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
 	status "google.golang.org/grpc/status"
+	sync "sync"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedStorageEndpointServers = make(map[string]StorageEndpointEnhancedServer)
+	enhancedStorageEndpointServers     = make(map[string]StorageEndpointEnhancedServer)
+	enhancedStorageEndpointServersLock = sync.RWMutex{}
 )
 
 type NamedStorageEndpointServer interface {
@@ -35,6 +37,8 @@ func (m StorageEndpointEnhancedServer) Propose(ctx context.Context, r *ProposeRe
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method Propose should have a context")
 	}
+	enhancedStorageEndpointServersLock.RLock()
+	defer enhancedStorageEndpointServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.Propose(ctx, r)
@@ -48,6 +52,8 @@ func (m StorageEndpointEnhancedServer) Lookup(ctx context.Context, r *LookupRequ
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method Lookup should have a context")
 	}
+	enhancedStorageEndpointServersLock.RLock()
+	defer enhancedStorageEndpointServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.Lookup(ctx, r)
@@ -57,6 +63,8 @@ func (m StorageEndpointEnhancedServer) Lookup(ctx context.Context, r *LookupRequ
 }
 func (m StorageEndpointEnhancedServer) mustEmbedUnimplementedStorageEndpointServer() {}
 func RegisterStorageEndpointEnhancedServer(s grpc.ServiceRegistrar, srv NamedStorageEndpointServer) {
+	enhancedStorageEndpointServersLock.Lock()
+	defer enhancedStorageEndpointServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedStorageEndpointServers[addr]
 	if !ok {
@@ -67,6 +75,8 @@ func RegisterStorageEndpointEnhancedServer(s grpc.ServiceRegistrar, srv NamedSto
 	m[srv.Name()] = srv
 }
 func DeregisterStorageEndpointEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedStorageEndpointServersLock.Lock()
+	defer enhancedStorageEndpointServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedStorageEndpointServers[addr]
 	if !ok {

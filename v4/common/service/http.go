@@ -3,8 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"net/http"
-
 	"github.com/pydio/cells/v4/common/server"
 )
 
@@ -13,7 +11,7 @@ func WithHTTP(f func(context.Context, server.HttpMux) error) ServiceOption {
 	return func(o *ServiceOptions) {
 		o.serverType = server.ServerType_HTTP
 		o.serverStart = func() error {
-			var mux *http.ServeMux
+			var mux server.HttpMux
 			if !o.Server.As(&mux) {
 				return fmt.Errorf("server is not a mux ", o.Name)
 			}
@@ -28,7 +26,7 @@ func WithHTTP(f func(context.Context, server.HttpMux) error) ServiceOption {
 func WithHTTPStop(f func(context.Context, server.HttpMux) error) ServiceOption {
 	return func(o *ServiceOptions) {
 		o.serverStop = func() error {
-			var mux *http.ServeMux
+			var mux server.HttpMux
 			o.Server.As(&mux)
 			return f(o.Context, mux)
 		}

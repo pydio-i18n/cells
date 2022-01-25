@@ -10,6 +10,7 @@ import (
 const (
 	fmtPackage             = protogen.GoImportPath("fmt")
 	contextPackage         = protogen.GoImportPath("context")
+	syncPackage            = protogen.GoImportPath("sync")
 	grpcPackage            = protogen.GoImportPath("google.golang.org/grpc")
 	statusPackage          = protogen.GoImportPath("google.golang.org/grpc/status")
 	codesPackage           = protogen.GoImportPath("google.golang.org/grpc/codes")
@@ -71,9 +72,12 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 	server := service.GoName + "Server"
 	namedServer := "Named" + server
 	multiServer := service.GoName + "EnhancedServer"
+	enhancedInstance := "enhanced" + server + "s"
+	enhancedLocker := "enhanced" + server + "sLock"
 
 	g.P("var (")
-	g.P("enhanced", server, "s = make(map[string]", multiServer, ")")
+	g.P(enhancedInstance, " = make(map[string]", multiServer, ")")
+	g.P(enhancedLocker, " = ", syncPackage.Ident("RWMutex"), "{}")
 	g.P(")")
 
 	g.Annotate(namedServer, service.Location)
@@ -96,6 +100,8 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 			g.P("if !ok || len(md.Get(\"targetname\")) == 0 {")
 			g.P("return nil, ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("FailedPrecondition"), ", \"method ", method.GoName, " should have a context\")")
 			g.P("}")
+			g.P(enhancedLocker, ".RLock()")
+			g.P("defer ", enhancedLocker, ".RUnlock()")
 			g.P("for _, mm := range m {")
 			g.P("if mm.Name() == md.Get(\"targetname\")[0] {")
 			g.P("return mm.", method.GoName, "(ctx, r)")
@@ -108,6 +114,8 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 			g.P("if !ok || len(md.Get(\"targetname\")) == 0 {")
 			g.P("return ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("FailedPrecondition"), ", \"method ", method.GoName, " should have a context\")")
 			g.P("}")
+			g.P(enhancedLocker, ".RLock()")
+			g.P("defer ", enhancedLocker, ".RUnlock()")
 			g.P("for _, mm := range m {")
 			g.P("if mm.Name() == md.Get(\"targetname\")[0] {")
 			g.P("return mm.", method.GoName, "(r, s)")
@@ -119,6 +127,8 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 			g.P("if !ok || len(md.Get(\"targetname\")) == 0 {")
 			g.P("return ", statusPackage.Ident("Errorf"), "(", codesPackage.Ident("FailedPrecondition"), ", \"method ", method.GoName, " should have a context\")")
 			g.P("}")
+			g.P(enhancedLocker, ".RLock()")
+			g.P("defer ", enhancedLocker, ".RUnlock()")
 			g.P("for _, mm := range m {")
 			g.P("if mm.Name() == md.Get(\"targetname\")[0] {")
 			g.P("return mm.", method.GoName, "(s)")
@@ -132,19 +142,23 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 	g.P("func (m ", multiServer, ") mustEmbedUnimplemented", server, "() {}")
 
 	g.P("func Register", multiServer, "(s grpc.ServiceRegistrar, srv ", namedServer, ") {")
+	g.P(enhancedLocker, ".Lock()")
+	g.P("defer ", enhancedLocker, ".Unlock()")
 	g.P("addr := ", fmtPackage.Ident("Sprintf"), "(\"%p\", s)")
-	g.P("m, ok := enhanced", server, "s[addr]")
+	g.P("m, ok := ", enhancedInstance, "[addr]")
 	g.P("if !ok {")
 	g.P("m = ", multiServer, "{}")
-	g.P("enhanced", server, "s[addr] = m")
+	g.P(enhancedInstance, "[addr] = m")
 	g.P("Register", server, "(s, m)")
 	g.P("}")
 	g.P("m[srv.Name()] = srv")
 	g.P("}")
 
 	g.P("func Deregister", multiServer, "(s grpc.ServiceRegistrar, name string) {")
+	g.P(enhancedLocker, ".Lock()")
+	g.P("defer ", enhancedLocker, ".Unlock()")
 	g.P("addr := ", fmtPackage.Ident("Sprintf"), "(\"%p\", s)")
-	g.P("m, ok := enhanced", server, "s[addr]")
+	g.P("m, ok := ", enhancedInstance, "[addr]")
 	g.P("if !ok {")
 	g.P("return")
 	g.P("}")

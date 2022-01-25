@@ -13,6 +13,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	metadata "google.golang.org/grpc/metadata"
 	status "google.golang.org/grpc/status"
+	sync "sync"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 var (
-	enhancedActivityServiceServers = make(map[string]ActivityServiceEnhancedServer)
+	enhancedActivityServiceServers     = make(map[string]ActivityServiceEnhancedServer)
+	enhancedActivityServiceServersLock = sync.RWMutex{}
 )
 
 type NamedActivityServiceServer interface {
@@ -35,6 +37,8 @@ func (m ActivityServiceEnhancedServer) PostActivity(s ActivityService_PostActivi
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method PostActivity should have a context")
 	}
+	enhancedActivityServiceServersLock.RLock()
+	defer enhancedActivityServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.PostActivity(s)
@@ -48,6 +52,8 @@ func (m ActivityServiceEnhancedServer) StreamActivities(r *StreamActivitiesReque
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method StreamActivities should have a context")
 	}
+	enhancedActivityServiceServersLock.RLock()
+	defer enhancedActivityServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.StreamActivities(r, s)
@@ -61,6 +67,8 @@ func (m ActivityServiceEnhancedServer) UnreadActivitiesNumber(ctx context.Contex
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method UnreadActivitiesNumber should have a context")
 	}
+	enhancedActivityServiceServersLock.RLock()
+	defer enhancedActivityServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.UnreadActivitiesNumber(ctx, r)
@@ -74,6 +82,8 @@ func (m ActivityServiceEnhancedServer) PurgeActivities(ctx context.Context, r *P
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method PurgeActivities should have a context")
 	}
+	enhancedActivityServiceServersLock.RLock()
+	defer enhancedActivityServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.PurgeActivities(ctx, r)
@@ -87,6 +97,8 @@ func (m ActivityServiceEnhancedServer) SetUserLastActivity(ctx context.Context, 
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method SetUserLastActivity should have a context")
 	}
+	enhancedActivityServiceServersLock.RLock()
+	defer enhancedActivityServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.SetUserLastActivity(ctx, r)
@@ -100,6 +112,8 @@ func (m ActivityServiceEnhancedServer) Subscribe(ctx context.Context, r *Subscri
 	if !ok || len(md.Get("targetname")) == 0 {
 		return nil, status.Errorf(codes.FailedPrecondition, "method Subscribe should have a context")
 	}
+	enhancedActivityServiceServersLock.RLock()
+	defer enhancedActivityServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.Subscribe(ctx, r)
@@ -113,6 +127,8 @@ func (m ActivityServiceEnhancedServer) SearchSubscriptions(r *SearchSubscription
 	if !ok || len(md.Get("targetname")) == 0 {
 		return status.Errorf(codes.FailedPrecondition, "method SearchSubscriptions should have a context")
 	}
+	enhancedActivityServiceServersLock.RLock()
+	defer enhancedActivityServiceServersLock.RUnlock()
 	for _, mm := range m {
 		if mm.Name() == md.Get("targetname")[0] {
 			return mm.SearchSubscriptions(r, s)
@@ -122,6 +138,8 @@ func (m ActivityServiceEnhancedServer) SearchSubscriptions(r *SearchSubscription
 }
 func (m ActivityServiceEnhancedServer) mustEmbedUnimplementedActivityServiceServer() {}
 func RegisterActivityServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedActivityServiceServer) {
+	enhancedActivityServiceServersLock.Lock()
+	defer enhancedActivityServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedActivityServiceServers[addr]
 	if !ok {
@@ -132,6 +150,8 @@ func RegisterActivityServiceEnhancedServer(s grpc.ServiceRegistrar, srv NamedAct
 	m[srv.Name()] = srv
 }
 func DeregisterActivityServiceEnhancedServer(s grpc.ServiceRegistrar, name string) {
+	enhancedActivityServiceServersLock.Lock()
+	defer enhancedActivityServiceServersLock.Unlock()
 	addr := fmt.Sprintf("%p", s)
 	m, ok := enhancedActivityServiceServers[addr]
 	if !ok {
