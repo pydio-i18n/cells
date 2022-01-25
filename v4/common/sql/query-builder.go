@@ -153,7 +153,7 @@ func DeleteStringFromExpression(tableName string, driver string, ex goqu.Express
 	}
 
 	db := goqu.New(driver, nil)
-	sql, args, e := db.From(tableName).Prepared(true).Where(ex).ToSQL()
+	sql, args, e := db.From(tableName).Prepared(true).Where(ex).Delete().ToSQL()
 	return sql, args, e
 
 }
