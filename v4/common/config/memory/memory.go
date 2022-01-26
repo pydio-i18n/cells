@@ -3,6 +3,7 @@ package memory
 import (
 	"fmt"
 
+	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/utils/configx"
 )
 
@@ -10,9 +11,9 @@ type memory struct {
 	v configx.Values
 }
 
-func New() configx.Entrypoint {
+func New(opts ...configx.Option) config.Store {
 	return &memory{
-		v: configx.New(),
+		v: configx.New(opts...),
 	}
 }
 
@@ -32,8 +33,13 @@ func (m *memory) Del() error {
 	return fmt.Errorf("not implemented")
 }
 
+func (m *memory) Save(string, string) error {
+	// do nothing
+	return nil
+}
+
 func (m *memory) Watch(path ...string) (configx.Receiver, error) {
-	// For the moment do nothing
+	// do nothing
 	return &receiver{}, nil
 }
 

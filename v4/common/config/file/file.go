@@ -27,41 +27,46 @@ type file struct {
 	receivers []*receiver
 }
 
-func New(path string) config.Store {
+func New(path string, autoUpdate bool, opts ...configx.Option) config.Store {
 	data, err := filex.Read(path)
 	if err != nil {
 		return nil
 	}
 
+	opts = append(opts, configx.WithJSON())
+
 	mtx := &sync.RWMutex{}
 	v := configx.New(
-		configx.WithJSON(),
+		opts...,
 	)
 
 	if err := v.Set(data); err != nil {
 		return nil
 	}
 
-	watcher, err := fsnotify.NewWatcher()
-	if err != nil {
-		// TODO v4 this should not return nil
-		return nil
-	}
-
-	if err := watcher.Add(path); err != nil {
-		// TODO v4 this should not return nil
-		return nil
-	}
-
 	f := &file{
-		v:       v,
-		path:    path,
-		watcher: watcher,
-		dirty:   false,
-		mtx:     mtx,
+		v:     v,
+		path:  path,
+		dirty: false,
+		mtx:   mtx,
 	}
 
-	go f.watch()
+	if autoUpdate {
+		watcher, err := fsnotify.NewWatcher()
+		if err != nil {
+			// TODO v4 this should not return nil
+			return nil
+		}
+
+		if err := watcher.Add(path); err != nil {
+			// TODO v4 this should not return nil
+			return nil
+		}
+
+		f.watcher = watcher
+
+		go f.watch()
+	}
 
 	return f
 }

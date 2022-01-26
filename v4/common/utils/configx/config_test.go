@@ -2,11 +2,12 @@ package configx
 
 import (
 	"fmt"
+	"strings"
+	"testing"
+
 	"github.com/pydio/cells/v4/common/proto/docstore"
 	"github.com/pydio/cells/v4/common/utils/filex"
 	json "github.com/pydio/cells/v4/common/utils/jsonx"
-	"strings"
-	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -357,7 +358,5 @@ func TestEncrypt(t *testing.T) {
 		err := m.Set(dataYAML)
 		So(err, ShouldBeNil)
 		So(m.Val("secrets/test").Set("test"), ShouldBeNil)
-
-		//m.Val("secrets/test").Scan(&s)
 	})
 }

@@ -29,6 +29,12 @@ type Receiver interface {
 	Stop()
 }
 
+// TODO - we should be returning a Value
+type KV struct {
+	Key   string
+	Value interface{}
+}
+
 type Key interface{}
 
 type Value interface {
@@ -335,6 +341,14 @@ func (c *config) Val(s ...string) Values {
 	for _, pkk := range pk {
 		switch cv := current.(type) {
 		case map[interface{}]interface{}:
+			cvv, ok := cv[pkk]
+			if !ok {
+				// The parent doesn't actually exist here, we return the nil value
+				return &config{nil, nil, root, keys, c.opts}
+			}
+
+			current = cvv
+		case map[string]string:
 			cvv, ok := cv[pkk]
 			if !ok {
 				// The parent doesn't actually exist here, we return the nil value

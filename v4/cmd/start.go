@@ -25,6 +25,8 @@ import (
 	"log"
 	"sync"
 
+	"github.com/pydio/cells/v4/common/config"
+
 	"github.com/pydio/cells/v4/common/server/caddy"
 
 	"github.com/pydio/cells/v4/common/broker"
@@ -305,6 +307,26 @@ to quickly create a Cobra application.`,
 
 		// var g errgroup.Group
 
+		go func() {
+			ch, err := config.WatchMap("services")
+			if err != nil {
+				return
+			}
+
+			for kv := range ch {
+				s, err := reg.Get(kv.Key)
+				if err != nil {
+					continue
+				}
+				var rs service.Service
+				if s.As(&rs) {
+					rs.Stop()
+
+					rs.Start()
+				}
+			}
+		}()
+
 		wg := &sync.WaitGroup{}
 		for _, srv := range srvs {
 			// g.Go(srv.Serve)
@@ -320,10 +342,6 @@ to quickly create a Cobra application.`,
 		}
 
 		wg.Wait()
-
-		//if err := g.Wait(); err != nil {
-		//	return err
-		//}
 
 		select {
 		case <-cmd.Context().Done():

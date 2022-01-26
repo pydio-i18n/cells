@@ -58,18 +58,18 @@ func actionConfigsSet(c *install.InstallConfig) error {
 	if err := config.SetDatabase(common.ServiceGrpcNamespace_+common.ServiceActivity, "boltdb", filepath.Join(acDir, "activities.db")); err != nil {
 		return err
 	}
-	if err := config.SetDatabase(common.ServiceGrpcNamespace_+common.ServiceChat, "boltdb", filepath.Join(acDir, "chat.db")); err != nil {
+	if err := config.SetDatabase(common.ServiceGrpcNamespace_+common.ServiceChat, "boltdb", filepath.Join(chatDir, "chat.db")); err != nil {
 		return err
 	}
 
 	// Easy finding usage of srvUrl
 	configKeys := map[string]interface{}{
-		"databases/" + common.ServiceGrpcNamespace_ + common.ServiceActivity + "/driver": "boltdb",
-		"databases/" + common.ServiceGrpcNamespace_ + common.ServiceActivity + "/dsn":    filepath.Join(acDir, "activities.db"),
-		"databases/" + common.ServiceGrpcNamespace_ + common.ServiceChat + "/driver":     "boltdb",
-		"databases/" + common.ServiceGrpcNamespace_ + common.ServiceChat + "/dsn":        filepath.Join(chatDir, "chat.db"),
-		"services/" + oauthWeb + "/insecureRedirects":                                    []string{"#insecure_binds...#/auth/callback"},
-		"services/" + oauthWeb + "/secret":                                               string(secret),
+		//"databases/" + common.ServiceGrpcNamespace_ + common.ServiceActivity + "/driver": "boltdb",
+		//"databases/" + common.ServiceGrpcNamespace_ + common.ServiceActivity + "/dsn":    filepath.Join(acDir, "activities.db"),
+		//"databases/" + common.ServiceGrpcNamespace_ + common.ServiceChat + "/driver":     "boltdb",
+		//"databases/" + common.ServiceGrpcNamespace_ + common.ServiceChat + "/dsn":        filepath.Join(chatDir, "chat.db"),
+		"services/" + oauthWeb + "/insecureRedirects": []string{"#insecure_binds...#/auth/callback"},
+		"services/" + oauthWeb + "/secret":            string(secret),
 	}
 
 	for path, def := range configKeys {

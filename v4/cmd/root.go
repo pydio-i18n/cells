@@ -22,8 +22,11 @@ package cmd
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/pydio/cells/v4/common/crypto"
+	"github.com/pydio/cells/v4/common/utils/configx"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -149,6 +152,15 @@ func initConfig() (new bool) {
 		return
 	}
 
+	keyringStore := file.New(filepath.Join(config.PydioConfigDir, "cells-vault-key"), false)
+	keyring := crypto.NewConfigKeyring(keyringStore, crypto.WithAutoCreate(true))
+	password, err := keyring.Get(common.ServiceGrpcNamespace_+common.ServiceUserKey, common.KeyringMasterKey)
+	if err != nil {
+		log.Fatal("Should have a master password")
+	}
+
+	e := encrypter{key: crypto.KeyFromPassword([]byte(password), 32)}
+
 	versionsStore := filex.NewStore(config.PydioConfigDir)
 
 	var localConfig config.Store
@@ -158,7 +170,7 @@ func initConfig() (new bool) {
 
 	switch viper.GetString("config") {
 	case "etcd":
-		localConfig := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile))
+		localConfig := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), false)
 
 		conn, err := clientv3.New(clientv3.Config{
 			Endpoints:   []string{"http://192.168.1.92:2379"},
@@ -174,7 +186,7 @@ func initConfig() (new bool) {
 		config.Register(localConfig)
 		config.RegisterLocal(localConfig)
 	case "mysql":
-		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile))
+		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), false)
 
 		localConfig = config.New(
 			localSource,
@@ -199,7 +211,7 @@ func initConfig() (new bool) {
 		defaultConfig = config.NewVersionStore(versionsStore, defaultConfig)
 
 	case "remote":
-		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile))
+		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), false)
 
 		localConfig = config.New(
 			localSource,
@@ -214,7 +226,7 @@ func initConfig() (new bool) {
 			service.New(common.ServiceGrpcNamespace_+common.ServiceConfig, "config"),
 		)
 	case "raft":
-		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile))
+		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), false)
 
 		localConfig = config.New(
 			localSource,
@@ -229,26 +241,14 @@ func initConfig() (new bool) {
 			service.New(common.ServiceStorageNamespace_+common.ServiceConfig, "config"),
 		)
 	default:
-		defaultConfig = file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile))
+		defaultConfig = file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), false)
 
-		vaultConfig = file.New(filepath.Join(config.PydioConfigDir, "pydio-vault.json"))
-		/*vaultConfig = config.New(
-		micro.New(
-			microconfig.NewConfig(
-				microconfig.WithSource(
-					vault.NewVaultSource(
-						filepath.Join(config.PydioConfigDir, "pydio-vault.json"),
-						filepath.Join(config.PydioConfigDir, "cells-vault-key"),
-						true,
-					),
-				),
-				microconfig.PollInterval(10*time.Second),
-			),
-		))*/
-
-		//defaultConfig = config.New(
-		//	source,
-		//)
+		vaultConfig = file.New(
+			filepath.Join(config.PydioConfigDir, "pydio-vault.json"),
+			false,
+			configx.WithEncrypt(e),
+			configx.WithDecrypt(e),
+		)
 
 		defaultConfig = config.NewVersionStore(versionsStore, defaultConfig)
 		defaultConfig = config.NewVault(vaultConfig, defaultConfig)
@@ -356,5 +356,28 @@ func initLogLevelListener(ctx context.Context) {
 	})
 	if er != nil {
 		fmt.Println("Cannot subscribe to broker for TopicLogLevelEvent", er.Error())
+	}
+}
+
+// Encryption with key
+type encrypter struct {
+	key []byte
+}
+
+func (e encrypter) Encrypt(b []byte) (string, error) {
+	sealed, err := crypto.Seal(e.key, b)
+	if err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(sealed), nil
+}
+func (e encrypter) Decrypt(s string) ([]byte, error) {
+	if s == "" {
+		return []byte{}, nil
+	}
+	if data, err := base64.StdEncoding.DecodeString(s); err != nil {
+		return []byte{}, err
+	} else {
+		return crypto.Open(e.key, data[:12], data[12:])
 	}
 }

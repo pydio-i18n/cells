@@ -176,6 +176,10 @@ func (h *Handler) SendMail(ctx context.Context, req *proto.SendMailRequest) (*pr
 // ConsumeQueue browses current queue for emails to be sent
 func (h *Handler) ConsumeQueue(ctx context.Context, req *proto.ConsumeQueueRequest) (*proto.ConsumeQueueResponse, error) {
 
+	if h.queue == nil {
+		return nil, fmt.Errorf("queue not initialised")
+	}
+
 	h.checkConfigChange(ctx, false)
 
 	counter := int64(0)

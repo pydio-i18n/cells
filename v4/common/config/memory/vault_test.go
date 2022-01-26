@@ -18,11 +18,16 @@
  * The latest code can be found at <https://pydio.com>.
  */
 
-package config
+package memory
 
 import (
-	ccontext "context"
+	"fmt"
+	"strings"
 	"testing"
+
+	"github.com/pydio/cells/v4/common/config"
+
+	"github.com/pydio/cells/v4/common/utils/configx"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -32,13 +37,15 @@ var (
 )
 
 func TestVault(t *testing.T) {
-	stdvault, _ := OpenStore(ccontext.Background(), "memory:///")
+	e := encrypter{}
+	std := New()
+	stdvault := New(configx.WithEncrypt(e), configx.WithDecrypt(e))
 
-	vault := NewVault(std, stdvault)
+	vault := config.NewVault(std, stdvault)
 
-	RegisterVaultKey("protectedValue")
-	RegisterVaultKey("my-protected-map/my-protected-value")
-	RegisterVaultKey("myjson/myprotectedmap/myprotectedvalue")
+	config.RegisterVaultKey("protectedValue")
+	config.RegisterVaultKey("my-protected-map/my-protected-value")
+	config.RegisterVaultKey("myjson/myprotectedmap/myprotectedvalue")
 
 	Convey("Test Set", t, func() {
 		vault.Val("protectedValue").Set("my-secret-data")
@@ -69,17 +76,20 @@ func TestVault(t *testing.T) {
 			"myunprotectedvalue": "whatever",
 		})
 
+		fmt.Println(vault.Val("myjson/myprotectedmap/myprotectedvalue").Default("").String())
 		So(vault.Val("myjson/myprotectedmap/myprotectedvalue").Default("").String(), ShouldNotEqual, "test")
 
 		// Trying to reset
 		uuid := vault.Val("myjson/myprotectedmap/myprotectedvalue").Default("").String()
 
 		vault.Val("myjson/myprotectedmap").Set(map[string]interface{}{
-			"myprotectedvalue": uuid,
+			"mynewunprotectedvalue": "test",
+			"myprotectedvalue":      uuid,
 		})
 
 		// uuid should't have changed
 		So(uuid, ShouldEqual, vault.Val("myjson/myprotectedmap/myprotectedvalue").Default("").String())
+		So(vault.Val("myjson/myprotectedmap/myunprotectedvalue").String(), ShouldBeEmpty)
 
 		vault.Val("myjson/myprotectedmap").Set(map[string]interface{}{
 			"myprotectedvalue": "test",
@@ -95,4 +105,14 @@ func TestVault(t *testing.T) {
 		// uuid should have changed
 		So(uuid, ShouldNotEqual, vault.Val("myjson/myprotectedmap/myprotectedvalue").Default("").String())
 	})
+}
+
+type encrypter struct {
+}
+
+func (encrypter) Encrypt(b []byte) (string, error) {
+	return "encrypted : " + string(b), nil
+}
+func (encrypter) Decrypt(s string) ([]byte, error) {
+	return []byte(strings.TrimPrefix(s, "encrypted : ")), nil
 }

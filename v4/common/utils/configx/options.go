@@ -33,6 +33,8 @@ type Options struct {
 	Marshaller
 	Encrypter
 	Decrypter
+
+	AutoUpdate bool
 }
 
 type jsonReader struct{}

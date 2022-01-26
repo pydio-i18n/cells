@@ -139,6 +139,13 @@ func AutoStart(b bool) ServiceOption {
 	}
 }
 
+// AutoRestart option for a service
+func AutoRestart(b bool) ServiceOption {
+	return func(o *ServiceOptions) {
+		o.AutoRestart = b
+	}
+}
+
 // AfterStart registers a callback to be run after service.Start (blocking)
 func AfterStart(f func(ctx context.Context) error) ServiceOption {
 	return func(o *ServiceOptions) {
