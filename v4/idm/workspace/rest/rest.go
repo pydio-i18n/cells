@@ -43,12 +43,14 @@ import (
 
 // WorkspaceHandler defines the specific handler struc for workspace management.
 type WorkspaceHandler struct {
+	runtimeCtx context.Context
 	resources.ResourceProviderHandler
 }
 
 // NewWorkspaceHandler simply creates and configures a handler.
-func NewWorkspaceHandler() *WorkspaceHandler {
+func NewWorkspaceHandler(ctx context.Context) *WorkspaceHandler {
 	h := new(WorkspaceHandler)
+	h.runtimeCtx = ctx
 	h.ServiceName = common.ServiceWorkspace
 	h.ResourceName = "workspace"
 	h.PoliciesLoader = h.loadPoliciesForResource
