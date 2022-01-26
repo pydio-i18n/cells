@@ -25,20 +25,19 @@ import (
 	"log"
 	"sync"
 
-	"github.com/pydio/cells/v4/common/server/caddy"
-
-	"github.com/pydio/cells/v4/common/broker"
-
-	clientcontext "github.com/pydio/cells/v4/common/client/context"
-
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 
+	"github.com/pydio/cells/v4/common/broker"
+	clientcontext "github.com/pydio/cells/v4/common/client/context"
 	clientgrpc "github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/config/runtime"
 	"github.com/pydio/cells/v4/common/plugins"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/server"
+	"github.com/pydio/cells/v4/common/server/caddy"
 	servercontext "github.com/pydio/cells/v4/common/server/context"
 	"github.com/pydio/cells/v4/common/server/fork"
 	"github.com/pydio/cells/v4/common/server/generic"
@@ -46,8 +45,6 @@ import (
 	"github.com/pydio/cells/v4/common/server/http"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -96,7 +93,7 @@ to quickly create a Cobra application.`,
 		}
 
 		// Create a main client connection
-		conn, err := grpc.Dial("cells:///", grpc.WithInsecure(), grpc.WithResolvers(clientgrpc.NewBuilder(reg)))
+		conn, err := grpc.Dial("cells:///", clientgrpc.DialOptionsForRegistry(reg)...)
 		if err != nil {
 			return err
 		}

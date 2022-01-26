@@ -25,10 +25,10 @@ import (
 	"net/url"
 	"time"
 
-	cgrpc "github.com/pydio/cells/v4/common/client/grpc"
-
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
+	cgrpc "github.com/pydio/cells/v4/common/client/grpc"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/utils/std"
@@ -59,7 +59,7 @@ func (o *URLOpener) OpenURL(ctx context.Context, u *url.URL) (registry.Registry,
 		}
 
 		// TODO v4 error handling
-		cli, err := grpc.Dial(u.Hostname()+":"+u.Port(), grpc.WithInsecure(), grpc.WithBlock())
+		cli, err := grpc.Dial(u.Hostname()+":"+u.Port(), grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 		if err != nil {
 			return err
 		}

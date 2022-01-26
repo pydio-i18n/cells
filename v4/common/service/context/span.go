@@ -33,9 +33,9 @@ import (
 type spanContextKey struct{}
 
 const (
-	SpanMetadataId           = "x-pydio-span-id"
-	SpanMetadataRootParentId = "x-pydio-span-root-id"
-	OperationMetadataId      = "x-pydio-operation-id"
+	SpanMetadataId           = "X-Pydio-Span-Id"
+	SpanMetadataRootParentId = "X-Pydio-Span-Root-Id"
+	OperationMetadataId      = "X-Pydio-Operation-Id"
 )
 
 type Span struct {
@@ -63,17 +63,13 @@ func NewSpanFromParent(s *Span) *Span {
 }
 
 func WithSpan(ctx context.Context, s *Span) context.Context {
-	md := map[string]string{}
-	if meta, ok := metadata.FromContext(ctx); ok {
-		for k, v := range meta {
-			md[k] = v
-		}
+	md := map[string]string{
+		SpanMetadataId: s.SpanId,
 	}
-	md[SpanMetadataId] = s.SpanId
 	if len(s.RootParentId) > 0 {
 		md[SpanMetadataRootParentId] = s.RootParentId
 	}
-	ctx = metadata.NewContext(ctx, md)
+	ctx = metadata.WithAdditionalMetadata(ctx, md)
 	return context.WithValue(ctx, spanContextKey{}, s)
 }
 
@@ -125,7 +121,7 @@ func ctxWithOpIdFromMeta(ctx context.Context) context.Context {
 	return ctx
 }
 
-// todo v4
+// SpanUnaryClientInterceptor inserts specific meta in context (will be later to OutgoingContext meta)
 func SpanUnaryClientInterceptor() grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		//fmt.Println("Client Call", method)
@@ -134,21 +130,14 @@ func SpanUnaryClientInterceptor() grpc.UnaryClientInterceptor {
 			ctx = WithSpan(ctx, s)
 		}
 		if opID, _ := GetOperationID(ctx); opID != "" {
-			md := map[string]string{}
-			if meta, ok := metadata.FromContext(ctx); ok {
-				for k, v := range meta {
-					md[k] = v
-				}
-			}
-			md[OperationMetadataId] = opID
-			ctx = metadata.NewContext(ctx, md)
+			ctx = metadata.WithAdditionalMetadata(ctx, map[string]string{OperationMetadataId: opID})
 		}
 
 		return invoker(ctx, method, req, reply, cc, opts...)
 	}
 }
 
-// todo v4
+// SpanStreamClientInterceptor inserts specific meta in context (will be later to OutgoingContext meta)
 func SpanStreamClientInterceptor() grpc.StreamClientInterceptor {
 	return func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 		//fmt.Println("Client Stream", method)
@@ -157,14 +146,7 @@ func SpanStreamClientInterceptor() grpc.StreamClientInterceptor {
 			ctx = WithSpan(ctx, s)
 		}
 		if opID, _ := GetOperationID(ctx); opID != "" {
-			md := map[string]string{}
-			if meta, ok := metadata.FromContext(ctx); ok {
-				for k, v := range meta {
-					md[k] = v
-				}
-			}
-			md[OperationMetadataId] = opID
-			ctx = metadata.NewContext(ctx, md)
+			ctx = metadata.WithAdditionalMetadata(ctx, map[string]string{OperationMetadataId: opID})
 		}
 
 		return streamer(ctx, desc, cc, method, opts...)
