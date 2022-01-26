@@ -152,7 +152,7 @@ func initConfig() (new bool) {
 		return
 	}
 
-	keyringStore := file.New(filepath.Join(config.PydioConfigDir, "cells-vault-key"), false)
+	keyringStore := file.New(filepath.Join(config.PydioConfigDir, "cells-vault-key"), true)
 	keyring := crypto.NewConfigKeyring(keyringStore, crypto.WithAutoCreate(true))
 	password, err := keyring.Get(common.ServiceGrpcNamespace_+common.ServiceUserKey, common.KeyringMasterKey)
 	if err != nil {
@@ -170,7 +170,7 @@ func initConfig() (new bool) {
 
 	switch viper.GetString("config") {
 	case "etcd":
-		localConfig := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), false)
+		localConfig := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), true)
 
 		conn, err := clientv3.New(clientv3.Config{
 			Endpoints:   []string{"http://192.168.1.92:2379"},
@@ -186,7 +186,7 @@ func initConfig() (new bool) {
 		config.Register(localConfig)
 		config.RegisterLocal(localConfig)
 	case "mysql":
-		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), false)
+		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), true)
 
 		localConfig = config.New(
 			localSource,
@@ -211,7 +211,7 @@ func initConfig() (new bool) {
 		defaultConfig = config.NewVersionStore(versionsStore, defaultConfig)
 
 	case "remote":
-		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), false)
+		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), true)
 
 		localConfig = config.New(
 			localSource,
@@ -226,7 +226,7 @@ func initConfig() (new bool) {
 			service.New(common.ServiceGrpcNamespace_+common.ServiceConfig, "config"),
 		)
 	case "raft":
-		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), false)
+		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), true)
 
 		localConfig = config.New(
 			localSource,
@@ -241,11 +241,11 @@ func initConfig() (new bool) {
 			service.New(common.ServiceStorageNamespace_+common.ServiceConfig, "config"),
 		)
 	default:
-		defaultConfig = file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), false)
+		defaultConfig = file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), true)
 
 		vaultConfig = file.New(
 			filepath.Join(config.PydioConfigDir, "pydio-vault.json"),
-			false,
+			true,
 			configx.WithEncrypt(e),
 			configx.WithDecrypt(e),
 		)
