@@ -34,17 +34,17 @@ func New(ctx context.Context, opt ...Option) server.Server {
 	}
 	s := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
-			servicecontext.ContextUnaryServerInterceptor(servicecontext.SpanIncomingContext),
 			servicecontext.MetricsUnaryServerInterceptor(),
 			servicecontext.ContextUnaryServerInterceptor(servicecontext.MetaIncomingContext),
+			servicecontext.ContextUnaryServerInterceptor(servicecontext.SpanIncomingContext),
 			servicecontext.ContextUnaryServerInterceptor(middleware.TargetNameToServiceNameContext(ctx)),
 			servicecontext.ContextUnaryServerInterceptor(middleware.ClientConnIncomingContext(ctx)),
 			servicecontext.ContextUnaryServerInterceptor(middleware.RegistryIncomingContext(ctx)),
 		),
 		grpc.ChainStreamInterceptor(
-			servicecontext.ContextStreamServerInterceptor(servicecontext.SpanIncomingContext),
 			servicecontext.MetricsStreamServerInterceptor(),
 			servicecontext.ContextStreamServerInterceptor(servicecontext.MetaIncomingContext),
+			servicecontext.ContextStreamServerInterceptor(servicecontext.SpanIncomingContext),
 			servicecontext.ContextStreamServerInterceptor(middleware.TargetNameToServiceNameContext(ctx)),
 			servicecontext.ContextStreamServerInterceptor(middleware.ClientConnIncomingContext(ctx)),
 			servicecontext.ContextStreamServerInterceptor(middleware.RegistryIncomingContext(ctx)),

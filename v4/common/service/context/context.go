@@ -25,7 +25,7 @@ import (
 	"context"
 
 	"github.com/pkg/errors"
-	
+
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/server"
@@ -46,7 +46,7 @@ const (
 
 	ContextMetaJobUuid        = "X-Pydio-Job-Uuid"
 	ContextMetaTaskUuid       = "X-Pydio-Task-Uuid"
-	ContextMetaTaskActionPath = "X-Pydio-Task-ActionPath"
+	ContextMetaTaskActionPath = "X-Pydio-Task-Action-Path"
 )
 
 // WithServiceName returns a context which knows its service name

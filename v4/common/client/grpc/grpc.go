@@ -6,16 +6,17 @@ import (
 	"time"
 
 	servercontext "github.com/pydio/cells/v4/common/server/context"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 
 	"github.com/pydio/cells/v4/common"
 	clientcontext "github.com/pydio/cells/v4/common/client/context"
 	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/service/context/ckeys"
-	metadata2 "github.com/pydio/cells/v4/common/service/context/metadata"
 )
 
 var (
@@ -25,6 +26,21 @@ var (
 	CallTimeoutDefault = 10 * time.Minute
 	CallTimeoutShort   = 1 * time.Second
 )
+
+func DialOptionsForRegistry(reg registry.Registry, options ...grpc.DialOption) []grpc.DialOption {
+	return append([]grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithResolvers(NewBuilder(reg)),
+		grpc.WithChainUnaryInterceptor(
+			servicecontext.SpanUnaryClientInterceptor(),
+			MetaUnaryClientInterceptor(),
+		),
+		grpc.WithChainStreamInterceptor(
+			servicecontext.SpanStreamClientInterceptor(),
+			MetaStreamClientInterceptor(),
+		),
+	}, options...)
+}
 
 func GetClientConnFromCtx(ctx context.Context, serviceName string, opt ...Option) grpc.ClientConnInterface {
 	if ctx == nil {
@@ -57,9 +73,7 @@ func NewClientConn(serviceName string, opt ...Option) grpc.ClientConnInterface {
 
 			opts.Registry = reg
 		}
-
-		opts.DialOptions = append([]grpc.DialOption{grpc.WithInsecure(), grpc.WithResolvers(NewBuilder(opts.Registry))}, opts.DialOptions...)
-		conn, err := grpc.Dial("cells:///", opts.DialOptions...)
+		conn, err := grpc.Dial("cells:///", DialOptionsForRegistry(opts.Registry, opts.DialOptions...)...)
 		if err != nil {
 			return nil
 		}
@@ -84,25 +98,14 @@ type clientConn struct {
 // Invoke performs a unary RPC and returns after the response is received
 // into reply.
 func (cc *clientConn) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	md := metadata.MD{}
-	if lmd, ok := metadata2.FromContext(ctx); ok {
-		for k, v := range lmd {
-			if strings.HasPrefix(k, ":") {
-				continue
-			}
-			md.Set(ckeys.CellsMetaPrefix+k, v)
-		}
-	}
-	md.Set(ckeys.TargetServiceName, cc.serviceName)
+	ctx = metadata.AppendToOutgoingContext(ctx, ckeys.TargetServiceName, cc.serviceName)
 	var cancel context.CancelFunc
 	if cc.callTimeout > 0 {
 		ctx, cancel = context.WithTimeout(ctx, cc.callTimeout)
-		// Todo v4: can we simply defer cancel() for Invoke ?
 	}
 	if cc.subConnSelector != nil {
 		ctx = context.WithValue(ctx, ctxSubconnSelectorKey, cc.subConnSelector)
 	}
-	ctx = metadata.NewOutgoingContext(ctx, md)
 	er := cc.ClientConnInterface.Invoke(ctx, method, args, reply, opts...)
 	if er != nil && cancel != nil {
 		cancel()
@@ -112,16 +115,7 @@ func (cc *clientConn) Invoke(ctx context.Context, method string, args interface{
 
 // NewStream begins a streaming RPC.
 func (cc *clientConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	md := metadata.MD{}
-	if lmd, ok := metadata2.FromContext(ctx); ok {
-		for k, v := range lmd {
-			if strings.HasPrefix(k, ":") {
-				continue
-			}
-			md.Set(ckeys.CellsMetaPrefix+k, v)
-		}
-	}
-	md.Set(ckeys.TargetServiceName, cc.serviceName)
+	ctx = metadata.AppendToOutgoingContext(ctx, ckeys.TargetServiceName, cc.serviceName)
 	var cancel context.CancelFunc
 	if cc.callTimeout > 0 {
 		ctx, cancel = context.WithTimeout(ctx, cc.callTimeout)
@@ -129,7 +123,6 @@ func (cc *clientConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, meth
 	if cc.subConnSelector != nil {
 		ctx = context.WithValue(ctx, ctxSubconnSelectorKey, cc.subConnSelector)
 	}
-	ctx = metadata.NewOutgoingContext(ctx, md)
 	s, e := cc.ClientConnInterface.NewStream(ctx, desc, method, opts...)
 	if e != nil && cancel != nil {
 		cancel()
