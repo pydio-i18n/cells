@@ -225,15 +225,20 @@ func (v *vaultvalues) set(val interface{}) error {
 	uuid := v.Values.String()
 
 	// Get the current value and do nothing if it hasn't change
-	current := v.vault.Val(uuid).Default("").String()
+	current := v.vault.Val(uuid)
 
-	if current == val.(string) || uuid == val.(string) {
+	if current.String() == val.(string) || uuid == val.(string) {
 		// already set
 		return nil
 	}
 
-	if err := v.vault.Val(uuid).Del(); err != nil {
-		return err
+	// Removing old value if it was set
+	if uuid != "" {
+		if current.String() != "" {
+			if err := current.Del(); err != nil {
+				return err
+			}
+		}
 	}
 
 	uuid = NewKeyForSecret()
