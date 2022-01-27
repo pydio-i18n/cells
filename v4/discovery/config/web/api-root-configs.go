@@ -67,6 +67,7 @@ func (s *Handler) PutConfig(req *restful.Request, resp *restful.Response) {
 		var original map[string]interface{}
 		if o := config.Get(path...).Map(); len(o) > 0 {
 			original = o
+			// Delete was there to prevent a merge - now done directly in the config lib
 			// config.Del(path...)
 		}
 		config.Set(parsed, path...)

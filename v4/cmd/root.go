@@ -152,10 +152,11 @@ func initConfig() (new bool) {
 		return
 	}
 
+	// Keyring store
 	keyringPath := filepath.Join(config.PydioConfigDir, "cells-vault-key")
 	keyringStore, err := file.New(keyringPath, true)
 	if err != nil {
-		// Config is likely the old style - switching it
+		// Keyring Config is likely the old style - switching it
 		b, err := filex.Read(keyringPath)
 		if err != nil {
 			log.Fatal("could not start keyring store")
@@ -179,6 +180,7 @@ func initConfig() (new bool) {
 		keyringStore = store
 	}
 
+	// Keyring start and creation of the master password
 	keyring := crypto.NewConfigKeyring(keyringStore, crypto.WithAutoCreate(true))
 	password, err := keyring.Get(common.ServiceGrpcNamespace_+common.ServiceUserKey, common.KeyringMasterKey)
 	if err != nil {
