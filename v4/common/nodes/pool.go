@@ -101,7 +101,7 @@ func NewClientsPool(ctx context.Context, watchRegistry bool) *ClientsPool {
 		return pool
 	}
 
-	pool.LoadDataSources()
+	go pool.LoadDataSources()
 	if watchRegistry {
 		reg := servercontext.GetRegistry(ctx)
 		if reg == nil {

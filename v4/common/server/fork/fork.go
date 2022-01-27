@@ -1,16 +1,14 @@
 package fork
 
 import (
-	"bufio"
 	"context"
 	"fmt"
-	"os"
-	"os/exec"
+	"github.com/pydio/cells/v4/common/config"
+	"github.com/pydio/cells/v4/common/utils/fork"
 	"strings"
 
 	"github.com/spf13/viper"
 
-	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/server"
 	"github.com/pydio/cells/v4/common/utils/uuid"
 )
@@ -20,72 +18,45 @@ type Server struct {
 	name string
 	meta map[string]string
 
-	ctx    context.Context
-	cancel context.CancelFunc
+	ctx     context.Context
+	process *fork.Process
 
 	s *ForkServer
 }
 
 func NewServer(ctx context.Context) server.Server {
-	ctx, cancel := context.WithCancel(ctx)
-
 	return server.NewServer(ctx, &Server{
 		id:   "fork-" + uuid.New(),
 		name: "fork",
 		meta: server.InitPeerMeta(),
-
-		ctx:    ctx,
-		cancel: cancel,
-		s:      &ForkServer{},
+		ctx:  ctx,
+		s:    &ForkServer{},
 	})
 }
 
 func (s *Server) Serve() error {
-	cmd := exec.CommandContext(s.ctx, os.Args[0], buildForkStartParams(s.s.name)...)
 
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return err
+	var opts []fork.Option
+	if config.Get("services", s.s.name, "debugFork").Bool() {
+		opts = append(opts, fork.WithDebug())
 	}
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		return err
+	if len(config.DefaultBindOverrideToFlags()) > 0 {
+		opts = append(opts, fork.WithCustomFlags(config.DefaultBindOverrideToFlags()...))
 	}
+	opts = append(opts, fork.WithRetries(3))
+	s.process = fork.NewProcess(s.ctx, s.s.name, opts...)
 
-	scannerOut := bufio.NewScanner(stdout)
-	scannerErr := bufio.NewScanner(stderr)
+	var e error
 	go func() {
-		for scannerOut.Scan() {
-			text := strings.TrimRight(scannerOut.Text(), "\n")
-			log.Logger(s.ctx).Info(text)
-		}
+		e = s.process.StartAndWait()
 	}()
-
-	go func() {
-		for scannerErr.Scan() {
-			text := strings.TrimRight(scannerErr.Text(), "\n")
-			if text != "" {
-				log.Logger(s.ctx).Error(text)
-			}
-		}
-	}()
-
-	go func() {
-		if err := cmd.Start(); err != nil {
-			return
-		}
-
-		if err := cmd.Wait(); err != nil {
-			return
-		}
-	}()
-
-	return nil
+	return e
 }
 
 func (s *Server) Stop() error {
-	s.cancel()
-
+	if s.process != nil {
+		s.process.Stop()
+	}
 	return nil
 }
 

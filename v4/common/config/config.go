@@ -116,10 +116,10 @@ func Watch(path ...string) (configx.Receiver, error) {
 
 func WatchMap(path ...string) (chan configx.KV, error) {
 	var snap map[string]interface{}
-	if err := Get("services").Scan(&snap); err != nil {
+	if err := Get(path...).Scan(&snap); err != nil {
 		return nil, err
 	}
-	watcher, err := Watch("services")
+	watcher, err := Watch(path...)
 	if err != nil {
 		return nil, err
 	}

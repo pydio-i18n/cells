@@ -21,14 +21,9 @@
 package service
 
 import (
-	"bufio"
 	"context"
 	"fmt"
-	"os"
-	"os/exec"
-	"strings"
 	"sync"
-	"syscall"
 	"time"
 
 	"go.uber.org/zap"
@@ -38,8 +33,8 @@ import (
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/server/generic"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/utils/configx"
+	"github.com/pydio/cells/v4/common/utils/fork"
 	"github.com/pydio/cells/v4/common/utils/net"
 )
 
@@ -63,14 +58,14 @@ func NewChildrenRunner(parentName string, childPrefix string) *ChildrenRunner {
 		childPrefix: childPrefix,
 	}
 	c.mutex = &sync.RWMutex{}
-	c.services = make(map[string]*exec.Cmd)
+	c.services = make(map[string]*fork.Process)
 	return c
 }
 
 // ChildrenRunner For Regexp based service
 type ChildrenRunner struct {
 	mutex             *sync.RWMutex
-	services          map[string]*exec.Cmd
+	services          map[string]*fork.Process
 	parentName        string
 	childPrefix       string
 	beforeDeleteClean bool
@@ -104,79 +99,25 @@ func (c *ChildrenRunner) StartFromInitialConf(ctx context.Context, cfg configx.V
 func (c *ChildrenRunner) Start(ctx context.Context, source string, retries ...int) error {
 
 	name := c.childPrefix + source
-	cmd := exec.Command(os.Args[0], buildForkStartParams(name)...)
-
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return err
+	var opts []fork.Option
+	if config.Get("services", name, "debugFork").Bool() {
+		opts = append(opts, fork.WithDebug())
 	}
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		return err
+	if len(config.DefaultBindOverrideToFlags()) > 0 {
+		opts = append(opts, fork.WithCustomFlags(config.DefaultBindOverrideToFlags()...))
 	}
-	serviceCtx := servicecontext.WithServiceName(ctx, name)
-	scannerOut := bufio.NewScanner(stdout)
-	parentName := c.childPrefix + "(.+)"
-	go func() {
-		for scannerOut.Scan() {
-			text := strings.TrimRight(scannerOut.Text(), "\n")
-			if strings.Contains(text, name) || strings.Contains(text, parentName) {
-				log.StdOut.WriteString(text + "\n")
-			} else {
-				log.Logger(serviceCtx).Info(text)
-			}
-		}
-	}()
-	scannerErr := bufio.NewScanner(stderr)
-	go func() {
-		for scannerErr.Scan() {
-			text := strings.TrimRight(scannerErr.Text(), "\n")
-			if strings.Contains(text, name) || strings.Contains(text, parentName) {
-				log.StdOut.WriteString(text + "\n")
-			} else {
-				log.Logger(serviceCtx).Error(text)
-			}
-		}
-	}()
-
-	select {
-	case <-ctx.Done():
-		return nil
-	default:
+	opts = append(opts, fork.WithRetries(3))
+	opts = append(opts, fork.WithWatch(func(event string, process *fork.Process) {
 		c.mutex.Lock()
-		c.services[source] = cmd
-		c.mutex.Unlock()
-
-		log.Logger(ctx).Debug("Starting SubProcess: " + name)
-		if err := cmd.Start(); err != nil {
-			return err
+		if event == "start" {
+			c.services[source] = process
+		} else if event == "stop" {
+			delete(c.services, source)
 		}
-
-		if err := cmd.Wait(); err != nil {
-			fmt.Println("HERE WE ARE ", err.Error())
-			if err.Error() != "signal: terminated" && err.Error() != "signal: interrupt" {
-				log.Logger(serviceCtx).Error("SubProcess was not killed properly: " + err.Error())
-				c.mutex.Lock()
-				delete(c.services, source)
-				c.mutex.Unlock()
-				r := 0
-				if len(retries) > 0 {
-					r = retries[0]
-				}
-				if r < 3 {
-					log.Logger(serviceCtx).Error("Restarting service in 3s...")
-					<-time.After(3 * time.Second)
-					return c.Start(ctx, source, r+1)
-				}
-			}
-			return err
-		}
-
-		c.mutex.Lock()
-		delete(c.services, source)
 		c.mutex.Unlock()
-	}
-
+	}))
+	process := fork.NewProcess(ctx, name, opts...)
+	process.StartAndWait()
 	return nil
 }
 
@@ -184,11 +125,7 @@ func (c *ChildrenRunner) Start(ctx context.Context, source string, retries ...in
 func (c *ChildrenRunner) StopAll(ctx context.Context) {
 	for name, cmd := range c.services {
 		log.Logger(ctx).Debug("stopping sub-process " + c.childPrefix + name)
-		if cmd.Process != nil {
-			if e := cmd.Process.Signal(syscall.SIGINT); e != nil {
-				cmd.Process.Kill()
-			}
-		}
+		cmd.Stop()
 	}
 }
 
@@ -213,8 +150,12 @@ func (c *ChildrenRunner) Watch(ctx context.Context) error {
 				arr := res.StringArray()
 
 				sources := config.SourceNamesFiltered(arr)
-				log.Logger(ctx).Info("Got an event on sources keys for " + c.parentName + ". Let's start/stop services accordingly")
+				//log.Logger(ctx).Info("Got an event on sources keys for " + c.parentName + ". Let's start/stop services accordingly")
 				log.Logger(ctx).Debug("Got an event on sources keys for "+c.parentName+". Details", zap.Any("currently running", c.services), zap.Int("new sources length", len(sources)))
+
+				all := config.Get("services")
+				var servicesConf map[string]interface{}
+				all.Scan(&servicesConf)
 
 				// First stopping what's been removed
 				for name, cmd := range c.services {
@@ -231,10 +172,7 @@ func (c *ChildrenRunner) Watch(ctx context.Context) error {
 					}
 
 					// Verify if it was fully deleted (not just filtered out)
-					all := config.Get("services")
-					var conf map[string]interface{}
-					all.Scan(&conf)
-					_, exists := conf[c.childPrefix+name]
+					_, exists := servicesConf[c.childPrefix+name]
 					if !exists && c.beforeDeleteClean {
 						caller := object.NewResourceCleanerEndpointClient(grpc.GetClientConnFromCtx(ctx, c.childPrefix+name))
 						if resp, err := caller.CleanResourcesBeforeDelete(ctx, &object.CleanResourcesRequest{}); err == nil {
@@ -244,14 +182,8 @@ func (c *ChildrenRunner) Watch(ctx context.Context) error {
 						}
 					}
 
-					if cmd.Process != nil {
-						if e := cmd.Process.Signal(syscall.SIGINT); e != nil {
-							cmd.Process.Kill()
-						}
-					}
-					c.mutex.Lock()
-					delete(c.services, name)
-					c.mutex.Unlock()
+					log.Logger(ctx).Info("Stopping sub-service " + c.childPrefix + name)
+					cmd.Stop()
 
 					if !exists && c.afterDeleteChan != nil {
 						c.afterDeleteChan <- name
@@ -264,6 +196,7 @@ func (c *ChildrenRunner) Watch(ctx context.Context) error {
 					_, ok := c.services[source]
 					c.mutex.RUnlock()
 					if !ok && !c.FilterOutSource(ctx, source) {
+						log.Logger(ctx).Info("Starting sub-service " + c.childPrefix + source)
 						go c.Start(ctx, source)
 					}
 				}

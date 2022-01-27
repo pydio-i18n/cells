@@ -315,7 +315,7 @@ to quickly create a Cobra application.`,
 					continue
 				}
 				var rs service.Service
-				if s.As(&rs) {
+				if s.As(&rs) && rs.Options().AutoRestart {
 					rs.Stop()
 
 					rs.Start()
