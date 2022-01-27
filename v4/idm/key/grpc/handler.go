@@ -30,7 +30,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/crypto"
 	"github.com/pydio/cells/v4/common/log"
 	enc "github.com/pydio/cells/v4/common/proto/encryption"
@@ -40,12 +39,26 @@ import (
 
 type userKeyStore struct {
 	enc.UnimplementedUserKeyStoreServer
-	dao key.DAO
+	dao            key.DAO
+	masterPassword []byte
 }
 
 // NewUserKeyStore creates a master password based
-func NewUserKeyStore(_ context.Context, dao key.DAO) enc.NamedUserKeyStoreServer {
-	return &userKeyStore{dao: dao}
+func NewUserKeyStore(_ context.Context, dao key.DAO, keyring crypto.Keyring) enc.NamedUserKeyStoreServer {
+	masterPasswordStr, err := keyring.Get(common.ServiceGrpcNamespace_+common.ServiceUserKey, common.KeyringMasterKey)
+	if err != nil {
+		log.Fatal("could not get master password")
+	}
+
+	masterPassword, err := base64.StdEncoding.DecodeString(masterPasswordStr)
+	if err != nil {
+		log.Fatal("could not decode string password")
+	}
+
+	return &userKeyStore{
+		dao:            dao,
+		masterPassword: masterPassword,
+	}
 }
 
 func (ukm *userKeyStore) Name() string {
@@ -72,7 +85,7 @@ func (ukm *userKeyStore) GetKey(ctx context.Context, req *enc.GetKeyRequest) (*e
 
 	// TODO: Extract user / password info from Context
 	user := common.PydioSystemUsername
-	pwd := config.Vault().Val("masterPassword").Bytes()
+	pwd := ukm.masterPassword
 
 	var err error
 	rsp.Key, err = ukm.dao.GetKey(user, req.KeyID)
@@ -103,7 +116,7 @@ func (ukm *userKeyStore) AdminCreateKey(ctx context.Context, req *enc.AdminCreat
 
 	if _, err := keyDao.GetKey(common.PydioSystemUsername, req.KeyID); err != nil {
 		if errors.FromError(err).Code == 404 {
-			return rsp, createSystemKey(keyDao, req.KeyID, req.Label)
+			return rsp, createSystemKey(keyDao, ukm.masterPassword, req.KeyID, req.Label)
 		} else {
 			return nil, err
 		}
@@ -142,7 +155,7 @@ func (ukm *userKeyStore) AdminImportKey(ctx context.Context, req *enc.AdminImpor
 	}
 
 	log.Logger(ctx).Debug("Sealing with master key")
-	err = sealWithMasterKey(req.Key)
+	err = seal(req.Key, ukm.masterPassword)
 	if err != nil {
 		rsp.Success = false
 		return rsp, errors.InternalServerError(common.ServiceEncKey, "unable to encrypt %s.%s for export, cause: %s", common.PydioSystemUsername, req.Key.ID, err.Error())
@@ -219,7 +232,7 @@ func (ukm *userKeyStore) AdminExportKey(ctx context.Context, req *enc.AdminExpor
 		return rsp, errors.InternalServerError(common.ServiceEncKey, "failed to update key info, cause: %s", err.Error())
 	}
 
-	err = openWithMasterKey(rsp.Key)
+	err = open(rsp.Key, ukm.masterPassword)
 	if err != nil {
 		return rsp, errors.InternalServerError(common.ServiceEncKey, "unable to decrypt for %s with key %s, cause: %s", common.PydioSystemUsername, req.KeyID, err)
 	}
@@ -232,7 +245,7 @@ func (ukm *userKeyStore) AdminExportKey(ctx context.Context, req *enc.AdminExpor
 }
 
 // Create a default key or create a system key with a given ID
-func createSystemKey(dao key.DAO, keyID string, keyLabel string) error {
+func createSystemKey(dao key.DAO, masterPassword []byte, keyID string, keyLabel string) error {
 	systemKey := &enc.Key{
 		ID:           keyID,
 		Owner:        common.PydioSystemUsername,
@@ -246,12 +259,7 @@ func createSystemKey(dao key.DAO, keyID string, keyLabel string) error {
 		return err
 	}
 
-	masterPasswordBytes, err := getMasterPassword()
-	if err != nil {
-		return errors.InternalServerError(common.ServiceEncKey, "failed to get password. Make sure you have the system keyring installed. Cause: %s", err.Error())
-	}
-
-	masterKey := crypto.KeyFromPassword(masterPasswordBytes, 32)
+	masterKey := crypto.KeyFromPassword(masterPassword, 32)
 	encryptedKeyContentBytes, err := crypto.Seal(masterKey, keyContentBytes)
 	if err != nil {
 		return errors.InternalServerError(common.ServiceEncKey, "failed to encrypt the default key. Cause: %s", err.Error())
@@ -261,20 +269,8 @@ func createSystemKey(dao key.DAO, keyID string, keyLabel string) error {
 	return dao.SaveKey(systemKey)
 }
 
-func sealWithMasterKey(k *enc.Key) error {
-	masterPasswordBytes, err := getMasterPassword()
-	if len(masterPasswordBytes) == 0 {
-		return errors.InternalServerError(common.ServiceEncKey, "failed to get %s password, cause: %s", common.PydioSystemUsername, err.Error())
-	}
-	return seal(k, masterPasswordBytes)
-}
-
-func openWithMasterKey(k *enc.Key) error {
-	masterPasswordBytes, err := getMasterPassword()
-	if err != nil {
-		return errors.InternalServerError(common.ServiceEncKey, "failed to get %s password, cause: %s", common.PydioSystemUsername, err.Error())
-	}
-	return open(k, masterPasswordBytes)
+func openWithMasterKey(masterPassword []byte, k *enc.Key) error {
+	return open(k, masterPassword)
 }
 
 func seal(k *enc.Key, passwordBytes []byte) error {
@@ -311,14 +307,4 @@ func open(k *enc.Key, passwordBytes []byte) error {
 
 	k.Content = base64.StdEncoding.EncodeToString(keyPlainContentBytes)
 	return nil
-}
-
-func getMasterPassword() ([]byte, error) {
-	var masterPasswordBytes []byte
-	masterPassword := config.Vault().Val("masterPassword").String()
-	if masterPassword == "" {
-		return masterPasswordBytes, errors.InternalServerError("master.key.load", "cannot get master password")
-	}
-	masterPasswordBytes = []byte(masterPassword)
-	return masterPasswordBytes, nil
 }

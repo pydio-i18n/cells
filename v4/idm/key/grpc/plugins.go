@@ -24,6 +24,7 @@ package grpc
 import (
 	"context"
 
+	"github.com/pydio/cells/v4/common/crypto"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 
 	"github.com/pydio/cells/v4/common/proto/encryption"
@@ -46,8 +47,10 @@ func init() {
 			service.Description("Encryption Keys server"),
 			service.WithStorage(key.NewDAO, "idm_key"),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
+				dao := servicecontext.GetDAO(ctx).(key.DAO)
+				keyring := servicecontext.GetKeyring(ctx).(crypto.Keyring)
 
-				h := NewUserKeyStore(ctx, servicecontext.GetDAO(ctx).(key.DAO))
+				h := NewUserKeyStore(ctx, dao, keyring)
 				encryption.RegisterUserKeyStoreEnhancedServer(server, h)
 
 				return nil

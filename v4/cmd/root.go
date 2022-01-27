@@ -59,6 +59,8 @@ var (
 
 	cfgFile string
 
+	keyring crypto.Keyring
+
 	infoCommands = []string{"version", "completion", "doc", "help", "--help", "bash", "zsh", os.Args[0]}
 )
 
@@ -181,7 +183,8 @@ func initConfig() (new bool) {
 	}
 
 	// Keyring start and creation of the master password
-	keyring := crypto.NewConfigKeyring(keyringStore, crypto.WithAutoCreate(true))
+	keyring = crypto.NewConfigKeyring(keyringStore, crypto.WithAutoCreate(true))
+
 	password, err := keyring.Get(common.ServiceGrpcNamespace_+common.ServiceUserKey, common.KeyringMasterKey)
 	if err != nil {
 		log.Fatal("could not get master password")
