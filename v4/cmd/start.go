@@ -223,6 +223,7 @@ to quickly create a Cobra application.`,
 			opts := s.Options()
 
 			opts.Context = servicecontext.WithRegistry(opts.Context, reg)
+			opts.Context = servicecontext.WithKeyring(opts.Context, keyring)
 
 			if opts.Fork && !runtime.IsFork() {
 				if !opts.AutoStart {
