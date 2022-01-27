@@ -34,7 +34,6 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/log"
-	"github.com/pydio/cells/v4/common/plugins"
 	"github.com/pydio/cells/v4/common/proto/ctl"
 	"github.com/pydio/cells/v4/common/proto/object"
 	rpb "github.com/pydio/cells/v4/common/proto/registry"
@@ -64,12 +63,11 @@ func (h *Handler) ListServices(req *restful.Request, resp *restful.Response) {
 	}
 
 	// Create a list of all plugins
-	pluginsReg, e := registry.OpenRegistry(context.Background(), "memory:///")
+	pluginsReg, e := registry.OpenRegistry(context.Background(), "memory:///?cache=shared")
 	if e != nil {
 		service.RestError500(req, resp, e)
 		return
 	}
-	plugins.Init(servicecontext.WithRegistry(context.Background(), pluginsReg), "main")
 	services, err := pluginsReg.List(registry.WithType(rpb.ItemType_SERVICE))
 	if err != nil {
 		service.RestError500(req, resp, err)
