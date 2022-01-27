@@ -679,23 +679,12 @@ func (streamer *setBlockStream) SendKey(key *encryption.NodeKey) error {
 
 	key.NodeId = streamer.nodeUuid
 
-	streamer.err = streamer.client.SendMsg(&encryption.SetNodeInfoRequest{
+	streamer.err = streamer.client.Send(&encryption.SetNodeInfoRequest{
 		Action: "key",
 		SetNodeKey: &encryption.SetNodeKeyRequest{
 			NodeKey: key,
 		},
 	})
-	if streamer.err != nil {
-		return streamer.err
-	}
-
-	var rsp encryption.SetNodeInfoResponse
-	streamer.err = streamer.client.RecvMsg(&rsp)
-	if streamer.err != nil {
-		return streamer.err
-	} else if rsp.ErrorText != "" {
-		return errors.Parse(rsp.ErrorText)
-	}
 	return streamer.err
 }
 
@@ -717,19 +706,8 @@ func (streamer *setBlockStream) SendBlock(block *encryption.Block) error {
 		},
 	}
 
-	streamer.err = streamer.client.SendMsg(setNodeInfoRequest)
-	if streamer.err != nil {
-		return streamer.err
-	}
-
-	var rsp encryption.SetNodeInfoResponse
-	streamer.err = streamer.client.RecvMsg(&rsp)
-	if streamer.err != nil {
-		return streamer.err
-	} else if rsp.ErrorText != "" {
-		return errors.Parse(rsp.ErrorText)
-	}
-	return nil
+	streamer.err = streamer.client.Send(setNodeInfoRequest)
+	return streamer.err
 }
 
 func (streamer *setBlockStream) ClearBlocks(NodeId string) error {
@@ -744,19 +722,8 @@ func (streamer *setBlockStream) ClearBlocks(NodeId string) error {
 		},
 	}
 
-	streamer.err = streamer.client.SendMsg(setNodeInfoRequest)
-	if streamer.err != nil {
-		return streamer.err
-	}
-
-	var rsp encryption.SetNodeInfoResponse
-	streamer.err = streamer.client.RecvMsg(&rsp)
-	if streamer.err != nil {
-		return streamer.err
-	} else if rsp.ErrorText != "" {
-		return errors.Parse(rsp.ErrorText)
-	}
-	return nil
+	streamer.err = streamer.client.Send(setNodeInfoRequest)
+	return streamer.err
 }
 
 func (streamer *setBlockStream) Close() error {
@@ -767,12 +734,5 @@ func (streamer *setBlockStream) Close() error {
 	if err != nil {
 		log.Logger(streamer.ctx).Warn("data.key.service.SetBlockStream: could not send close action")
 	}
-
-	var rsp encryption.SetNodeInfoResponse
-	err = streamer.client.RecvMsg(&rsp)
-	if err != nil {
-		log.Logger(streamer.ctx).Warn("data.key.service.SetBlockStream: could not receive close action response")
-	}
-
 	return streamer.client.CloseSend()
 }

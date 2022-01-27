@@ -193,10 +193,9 @@ func (km *NodeKeyManagerHandler) SetNodeInfo(stream encryption.NodeKeyManager_Se
 
 	for sessionOpened {
 
-		var req encryption.SetNodeInfoRequest
-		var rsp encryption.SetNodeInfoResponse
+		rsp := &encryption.SetNodeInfoResponse{}
 
-		err = stream.RecvMsg(&req)
+		req, err := stream.Recv()
 		if err != nil {
 			if err != io.EOF {
 				log.Logger(ctx).Error("data.key.handler.SetNodeInfo: failed to read SetInfoRequest", zap.Error(err))
@@ -265,15 +264,13 @@ func (km *NodeKeyManagerHandler) SetNodeInfo(stream encryption.NodeKeyManager_Se
 			}
 		}
 
-		err = stream.SendMsg(&rsp)
-		if err != nil {
-			break
-		}
 	}
 
-	if sce := stream.SendAndClose(nil); sce != nil {
-		log.Logger(ctx).Error("data.key.handler.SetNodeInfo: failed to close micro.stream", zap.Error(sce))
-	}
+	/*
+		if sce := stream.SendAndClose(nil); sce != nil {
+			log.Logger(ctx).Error("data.key.handler.SetNodeInfo: failed to close micro.stream", zap.Error(sce))
+		}
+	*/
 	return err
 }
 
