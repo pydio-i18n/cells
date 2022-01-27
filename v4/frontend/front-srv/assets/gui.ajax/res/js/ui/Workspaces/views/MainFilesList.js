@@ -53,7 +53,7 @@ class ComponentConfigsParser {
                 sortType:'file-natural',
                 remoteSortAttribute:'ajxp_label'
             },
-            filesize:{
+            bytesize:{
                 label:'File Size',
                 message:'2',
                 sortType:'number',
