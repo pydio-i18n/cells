@@ -27,10 +27,10 @@ type file struct {
 	receivers []*receiver
 }
 
-func New(path string, autoUpdate bool, opts ...configx.Option) config.Store {
+func New(path string, autoUpdate bool, opts ...configx.Option) (config.Store, error) {
 	data, err := filex.Read(path)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	opts = append(opts, configx.WithJSON())
@@ -41,7 +41,7 @@ func New(path string, autoUpdate bool, opts ...configx.Option) config.Store {
 	)
 
 	if err := v.Set(data); err != nil {
-		return nil
+		return nil, err
 	}
 
 	f := &file{
@@ -54,13 +54,11 @@ func New(path string, autoUpdate bool, opts ...configx.Option) config.Store {
 	if autoUpdate {
 		watcher, err := fsnotify.NewWatcher()
 		if err != nil {
-			// TODO v4 this should not return nil
-			return nil
+			return nil, err
 		}
 
 		if err := watcher.Add(path); err != nil {
-			// TODO v4 this should not return nil
-			return nil
+			return nil, err
 		}
 
 		f.watcher = watcher
@@ -68,7 +66,7 @@ func New(path string, autoUpdate bool, opts ...configx.Option) config.Store {
 		go f.watch()
 	}
 
-	return f
+	return f, nil
 }
 
 // TODO - error handling

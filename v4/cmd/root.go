@@ -25,11 +25,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/pydio/cells/v4/common/config/memory"
 	"github.com/pydio/cells/v4/common/crypto"
 	"github.com/pydio/cells/v4/common/utils/configx"
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -41,7 +43,6 @@ import (
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/config/migrations"
-	"github.com/pydio/cells/v4/common/config/service"
 	"github.com/pydio/cells/v4/common/log"
 	context_wrapper "github.com/pydio/cells/v4/common/log/context-wrapper"
 	log2 "github.com/pydio/cells/v4/common/proto/log"
@@ -50,7 +51,6 @@ import (
 	// "github.com/pydio/cells/v4/common/config/remote"
 	"github.com/pydio/cells/v4/common/config/etcd"
 	"github.com/pydio/cells/v4/common/config/file"
-	"github.com/pydio/cells/v4/common/config/sql"
 )
 
 var (
@@ -152,26 +152,56 @@ func initConfig() (new bool) {
 		return
 	}
 
-	keyringStore := file.New(filepath.Join(config.PydioConfigDir, "cells-vault-key"), true)
+	keyringPath := filepath.Join(config.PydioConfigDir, "cells-vault-key")
+	keyringStore, err := file.New(keyringPath, true)
+	if err != nil {
+		// Config is likely the old style - switching it
+		b, err := filex.Read(keyringPath)
+		if err != nil {
+			log.Fatal("could not start keyring store")
+		}
+
+		mem := memory.New(configx.WithJSON())
+		keyring := crypto.NewConfigKeyring(mem)
+		if err := keyring.Set(common.ServiceGrpcNamespace_+common.ServiceUserKey, common.KeyringMasterKey, strings.TrimSuffix(string(b), "\n")); err != nil {
+			log.Fatal("could not start keyring store")
+		}
+
+		if err := filex.Save(keyringPath, mem.Get()); err != nil {
+			log.Fatal("could not start keyring store")
+		}
+
+		store, err := file.New(keyringPath, true)
+		if err != nil {
+			log.Fatal("could not start keyring store")
+		}
+
+		keyringStore = store
+	}
+
 	keyring := crypto.NewConfigKeyring(keyringStore, crypto.WithAutoCreate(true))
 	password, err := keyring.Get(common.ServiceGrpcNamespace_+common.ServiceUserKey, common.KeyringMasterKey)
 	if err != nil {
-		log.Fatal("Should have a master password")
+		log.Fatal("could not get master password")
 	}
 
 	e := encrypter{key: crypto.KeyFromPassword([]byte(password), 32)}
 
+	// Versions store
 	versionsStore := filex.NewStore(config.PydioConfigDir)
 
-	var localConfig config.Store
-	var vaultConfig config.Store
-	var defaultConfig config.Store
-	var versionsConfig config.Store
+	config.RegisterVersionStore(versionsStore)
+
+	// Local configuration file
+	lc, err := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), true)
+	if err != nil {
+		log.Fatal("could not start local file", zap.Error(err))
+	}
+
+	config.RegisterLocal(lc)
 
 	switch viper.GetString("config") {
 	case "etcd":
-		localConfig := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), true)
-
 		conn, err := clientv3.New(clientv3.Config{
 			Endpoints:   []string{"http://192.168.1.92:2379"},
 			DialTimeout: 2 * time.Second,
@@ -180,98 +210,51 @@ func initConfig() (new bool) {
 			log.Fatal("could not start etcd", zap.Error(err))
 		}
 
-		vaultConfig = etcd.NewSource(context.Background(), conn, "vault")
-		defaultConfig = etcd.NewSource(context.Background(), conn, "config")
-
-		config.Register(localConfig)
-		config.RegisterLocal(localConfig)
-	case "mysql":
-		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), true)
-
-		localConfig = config.New(
-			localSource,
-		)
-
-		config.Register(localConfig)
-		config.RegisterLocal(localConfig)
-
-		// Pre-check that pydio.json is properly configured
-		if a, _ := config.GetDatabase("default"); a == "" {
-			return
-		}
-
-		driver, dsn := config.GetDatabase("default")
-		vaultConfig = config.New(sql.New(driver, dsn, "vault"))
-		defaultConfig = config.New(sql.New(driver, dsn, "default"))
-		versionsConfig = config.New(sql.New(driver, dsn, "versions"))
-
-		versionsStore, _ = config.NewConfigStore(versionsConfig)
-
-		defaultConfig = config.NewVault(vaultConfig, defaultConfig)
-		defaultConfig = config.NewVersionStore(versionsStore, defaultConfig)
-
-	case "remote":
-		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), true)
-
-		localConfig = config.New(
-			localSource,
-		)
-
-		config.RegisterLocal(localConfig)
-
-		vaultConfig = config.New(
-			service.New(common.ServiceGrpcNamespace_+common.ServiceConfig, "vault"),
-		)
-		defaultConfig = config.New(
-			service.New(common.ServiceGrpcNamespace_+common.ServiceConfig, "config"),
-		)
-	case "raft":
-		localSource := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), true)
-
-		localConfig = config.New(
-			localSource,
-		)
-
-		config.RegisterLocal(localConfig)
-
-		vaultConfig = config.New(
-			service.New(common.ServiceStorageNamespace_+common.ServiceConfig, "vault"),
-		)
-		defaultConfig = config.New(
-			service.New(common.ServiceStorageNamespace_+common.ServiceConfig, "config"),
-		)
+		config.RegisterVault(etcd.NewSource(context.Background(), conn, "vault"))
+		config.Register(etcd.NewSource(context.Background(), conn, "config"))
+	//case "mysql":
+	//	// Pre-check that pydio.json is properly configured
+	//	if a, _ := config.GetDatabase("default"); a == "" {
+	//		return
+	//	}
+	//
+	//	driver, dsn := config.GetDatabase("default")
+	//	vaultConfig := sql.New(driver, dsn, "vault")
+	//	defaultConfig := sql.New(driver, dsn, "default")
+	//	versionsConfig := sql.New(driver, dsn, "versions")
+	//
+	//	versionsStore, _ = config.NewConfigStore(versionsConfig)
+	//
+	//	defaultConfig = config.NewVault(vaultConfig, defaultConfig)
+	//	defaultConfig = config.NewVersionStore(versionsStore, defaultConfig)
+	//case "remote":
+	//	config.RegisterVault(service.New(common.ServiceGrpcNamespace_+common.ServiceConfig, "vault"))
+	//	config.Register(service.New(common.ServiceGrpcNamespace_+common.ServiceConfig, "config"))
 	default:
-		defaultConfig = file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), true)
-
-		vaultConfig = file.New(
+		vaultConfig, err := file.New(
 			filepath.Join(config.PydioConfigDir, "pydio-vault.json"),
 			true,
 			configx.WithEncrypt(e),
 			configx.WithDecrypt(e),
 		)
+		if err != nil {
+			log.Fatal("could not start vault store")
+		}
 
-		defaultConfig = config.NewVersionStore(versionsStore, defaultConfig)
+		defaultConfig := config.NewVersionStore(versionsStore, lc)
 		defaultConfig = config.NewVault(vaultConfig, defaultConfig)
 
-		localConfig = defaultConfig
-
-		config.RegisterLocal(localConfig)
+		config.Register(defaultConfig)
+		config.RegisterLocal(defaultConfig)
+		config.RegisterVault(vaultConfig)
 	}
 
-	config.Register(defaultConfig)
-	config.RegisterVault(vaultConfig)
-	config.RegisterVersionStore(versionsStore)
-
-	//if skipUpgrade {
-	//	return
-	//}
-
-	if defaultConfig.Val("version").String() == "" && defaultConfig.Val("defaults/database").String() == "" {
+	if config.Get("version").String() == "" && config.Get("defaults/database").String() == "" {
 		new = true
 
 		var data interface{}
 		if err := json.Unmarshal([]byte(config.SampleConfig), &data); err == nil {
-			if err := defaultConfig.Val().Set(data); err == nil {
+			if err := config.Get().Set(data); err == nil {
 				versionsStore.Put(&filex.Version{
 					User: "cli",
 					Date: time.Now(),
@@ -283,7 +266,7 @@ func initConfig() (new bool) {
 	}
 
 	// Need to do something for the versions
-	if save, err := migrations.UpgradeConfigsIfRequired(defaultConfig.Val(), common.Version()); err == nil && save {
+	if save, err := migrations.UpgradeConfigsIfRequired(config.Get(), common.Version()); err == nil && save {
 		if err := config.Save(common.PydioSystemUsername, "Configs upgrades applied"); err != nil {
 			log.Fatal("Could not save config migrations", zap.Error(err))
 		}
