@@ -49,8 +49,6 @@ var (
 // FirstRun detects datasources created during install and create workspaces on them
 func FirstRun(ctx context.Context) error {
 
-	<-time.After(8 * time.Second)
-
 	var hasPersonal bool
 	var commonDS string
 	// List datasources from configs

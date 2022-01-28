@@ -73,9 +73,6 @@ var (
 )
 
 func InitRoles(ctx context.Context) error {
-
-	<-time.After(3 * time.Second)
-
 	lang := config.Get("frontend", "plugin", "core.pydio", "DEFAULT_LANGUAGE").Default("en-us").String()
 	langJ, _ := json.Marshal(lang)
 	scopeAll := permissions.FrontWsScopeAll
@@ -167,7 +164,6 @@ func InitRoles(ctx context.Context) error {
 		rolesAcls := insert.Acls
 		roleName := insert.Role.Label
 		go func() {
-			<-time.After(10 * time.Second)
 			er := std.Retry(ctx, func() error {
 				aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
 				for _, acl := range rolesAcls {
@@ -191,7 +187,6 @@ func InitRoles(ctx context.Context) error {
 
 func UpgradeTo12(ctx context.Context) error {
 
-	<-time.After(3 * time.Second)
 	scopeShared := permissions.FrontWsScopeShared
 
 	insertRoles := []*insertRole{
