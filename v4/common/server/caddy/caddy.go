@@ -166,7 +166,7 @@ func (s *Server) ComputeConfs() error {
 	}
 
 	b := buf.Bytes()
-	fmt.Println(string(b))
+	// fmt.Println(string(b))
 
 	// Load config directly from memory
 	adapter := caddyconfig.GetAdapter("caddyfile")

@@ -272,7 +272,11 @@ to quickly create a Cobra application.`,
 						if runtime.IsFork() {
 							srvHTTP = http.New(ctx)
 						} else {
-							srvHTTP, _ = caddy.New(opts.Context, "")
+							if s, e := caddy.New(opts.Context, ""); e != nil {
+								log.Fatal(e)
+							} else {
+								srvHTTP = s
+							}
 						}
 						srvs = append(srvs, srvHTTP)
 					}

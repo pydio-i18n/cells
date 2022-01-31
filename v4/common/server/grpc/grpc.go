@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"fmt"
 	"net"
 
 	"github.com/spf13/viper"
@@ -92,7 +91,7 @@ func (s *Server) Serve() error {
 		}
 
 		s.opts.Listener = lis
-		fmt.Println("Serving Grpc (net.Listener.Addr()) " + lis.Addr().String())
+		// fmt.Println("Serving Grpc (net.Listener.Addr()) " + lis.Addr().String())
 	}
 
 	go func() {
