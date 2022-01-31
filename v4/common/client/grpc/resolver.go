@@ -108,6 +108,10 @@ func (cr *cellsResolver) watch() {
 
 		var s registry.Service
 		if r.Item().As(&s) && (r.Action() == "create" || r.Action() == "update") {
+			if !s.IsGRPC() {
+				continue
+			}
+
 			cr.ml.Lock()
 			for _, n := range s.Nodes() {
 				for _, a := range n.Address() {
