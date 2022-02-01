@@ -33,8 +33,8 @@ import (
 	bolt "go.etcd.io/bbolt"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/boltdb"
 	"github.com/pydio/cells/v4/common/broker"
+	"github.com/pydio/cells/v4/common/dao/boltdb"
 	"github.com/pydio/cells/v4/common/proto/activity"
 	"github.com/pydio/cells/v4/common/utils/configx"
 	json "github.com/pydio/cells/v4/common/utils/jsonx"
@@ -294,7 +294,7 @@ func (dao *boltdbimpl) ActivitiesFor(ownerType activity.OwnerType, ownerId strin
 	if refBoxOffset != BoxLastSent && ownerType == activity.OwnerType_USER && boxName == BoxInbox && len(lastRead) > 0 {
 		// Store last read in dedicated box
 		go func() {
-			dao.StoreLastUserInbox(ownerId, BoxLastRead, lastRead, "")
+			dao.storeLastUserInbox(ownerId, BoxLastRead, lastRead)
 		}()
 	}
 
@@ -319,15 +319,17 @@ func (dao *boltdbimpl) ReadLastUserInbox(userId string, boxName BoxName) uint64 
 	return 0
 }
 
+func (dao *boltdbimpl) StoreLastUserInbox(userId string, boxName BoxName, activityId string) error {
+
+	id := strings.TrimPrefix(activityId, "/activity-")
+	uintId, _ := strconv.ParseUint(id, 10, 64)
+	last := dao.uintToBytes(uintId)
+
+	return dao.storeLastUserInbox(userId, boxName, last)
+}
+
 // StoreLastUserInbox stores last key read to a "Last" inbox (read, sent)
-func (dao *boltdbimpl) StoreLastUserInbox(userId string, boxName BoxName, last []byte, activityId string) error {
-
-	if last == nil && activityId != "" {
-		id := strings.TrimPrefix(activityId, "/activity-")
-		uintId, _ := strconv.ParseUint(id, 10, 64)
-		last = dao.uintToBytes(uintId)
-	}
-
+func (dao *boltdbimpl) storeLastUserInbox(userId string, boxName BoxName, last []byte) error {
 	return dao.DB().Update(func(tx *bolt.Tx) error {
 		bucket, err := dao.getBucket(tx, true, activity.OwnerType_USER, userId, boxName)
 		if err != nil {

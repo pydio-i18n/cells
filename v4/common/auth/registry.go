@@ -141,6 +141,10 @@ func getLogrusLogger(serviceName string) *logrus.Logger {
 						message = m.(string)
 					}
 				}
+				// Special case
+				if strings.Contains(message, "No tracer configured") {
+					level = "debug"
+				}
 				switch level {
 				case "debug":
 					log.Logger(logCtx).Debug(message)

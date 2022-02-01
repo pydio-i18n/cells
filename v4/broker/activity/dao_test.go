@@ -21,6 +21,8 @@
 package activity
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"os"
 	"path"
@@ -32,7 +34,8 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/pydio/cells/v4/common/boltdb"
+	"github.com/pydio/cells/v4/common/dao/boltdb"
+	"github.com/pydio/cells/v4/common/dao/mongodb"
 	"github.com/pydio/cells/v4/common/proto/activity"
 	"github.com/pydio/cells/v4/common/utils/configx"
 	"github.com/pydio/cells/v4/common/utils/jsonx"
@@ -52,7 +55,32 @@ func init() {
 	testEnv = true
 }
 
-func TestEmptyDao(t *testing.T) {
+func initDao() (DAO, func()) {
+
+	if mDsn := os.Getenv("CELLS_TEST_MONGODB_DSN"); mDsn != "" {
+
+		fmt.Println("Testing on MONGO")
+		h := mongodb.NewDAO("mongodb", mDsn, "activity-test")
+		m := NewDAO(h).(DAO)
+		conf := configx.New()
+		m.Init(conf)
+		return m, func() {
+			h.DB().Drop(context.Background())
+			h.CloseConn()
+		}
+
+	}
+
+	tmpdao := boltdb.NewDAO("boltdb", tmpDbFilePath, "")
+	dao := NewDAO(tmpdao).(DAO)
+	dao.Init(conf)
+	return dao, func() {
+		dao.CloseConn()
+		os.Remove(tmpDbFilePath)
+	}
+}
+
+func TestBoltEmptyDao(t *testing.T) {
 
 	Convey("Test initialize DB", t, func() {
 		defer os.Remove(tmpDbFilePath)
@@ -81,13 +109,60 @@ func TestEmptyDao(t *testing.T) {
 	})
 }
 
-func TestInsertActivity(t *testing.T) {
+func TestBoltMassivePurge(t *testing.T) {
 
+	tmpMassivePurge := path.Join(os.TempDir(), "bolt-test.db")
+	t.Log("MASSIVE DB AT", tmpMassivePurge)
 	defer os.Remove(tmpDbFilePath)
 	tmpdao := boltdb.NewDAO("boltdb", tmpDbFilePath, "")
 	dao := NewDAO(tmpdao).(DAO)
 	dao.Init(conf)
 	defer dao.CloseConn()
+	number := 100000
+	bb := dao.(boltdb.DAO).DB()
+
+	Convey("Test Massive Purge", t, func() {
+		var aa []*batchActivity
+		for i := 0; i < number; i++ {
+			aa = append(aa, &batchActivity{
+				Object:     &activity.Object{Type: activity.ObjectType_Like, Updated: &timestamppb.Timestamp{Seconds: time.Now().Unix()}},
+				ownerType:  activity.OwnerType_NODE,
+				ownerId:    "node-id",
+				boxName:    BoxOutbox,
+				publishCtx: nil,
+			})
+		}
+		err := dao.(batchDAO).BatchPost(aa)
+		So(err, ShouldBeNil)
+		st, e := os.Stat(tmpMassivePurge)
+		So(e, ShouldBeNil)
+		initSize := st.Size()
+		t.Log("DB Size is", humanize.Bytes(uint64(initSize)))
+		stats, _ := jsonx.Marshal(bb.Stats())
+		t.Log(string(stats))
+		So(st.Size(), ShouldBeGreaterThan, 0)
+
+		<-time.After(5 * time.Second)
+		deleted := 0
+		// Now Purge
+		e = dao.Purge(func(s string) { deleted++ }, activity.OwnerType_NODE, "node-id", BoxOutbox, 0, 10, time.Time{}, true, true)
+		So(e, ShouldBeNil)
+		So(deleted, ShouldBeGreaterThan, 1)
+		st, _ = os.Stat(tmpMassivePurge)
+		newSize := st.Size()
+		t.Log("DB Size is now", humanize.Bytes(uint64(newSize)), "after", deleted, "deletes and compaction")
+		stats, _ = jsonx.Marshal(dao.(boltdb.DAO).DB().Stats())
+		t.Log(string(stats))
+		So(newSize, ShouldBeLessThan, initSize)
+
+	})
+
+}
+
+func TestInsertActivity(t *testing.T) {
+
+	dao, def := initDao()
+	defer def()
 
 	Convey("Test insert", t, func() {
 
@@ -180,11 +255,8 @@ func TestInsertActivity(t *testing.T) {
 
 func TestMultipleInsert(t *testing.T) {
 
-	defer os.Remove(tmpDbFilePath)
-	tmpdao := boltdb.NewDAO("boltdb", tmpDbFilePath, "")
-	dao := NewDAO(tmpdao).(DAO)
-	dao.Init(conf)
-	defer dao.CloseConn()
+	dao, def := initDao()
+	defer def()
 
 	Convey("Test insert", t, func() {
 
@@ -236,11 +308,8 @@ func TestMultipleInsert(t *testing.T) {
 
 func TestCursor(t *testing.T) {
 
-	defer os.Remove(tmpDbFilePath)
-	tmpdao := boltdb.NewDAO("boltdb", tmpDbFilePath, "")
-	dao := NewDAO(tmpdao).(DAO)
-	dao.Init(conf)
-	defer dao.CloseConn()
+	dao, def := initDao()
+	defer def()
 
 	Convey("Insert Activities and browse", t, func() {
 
@@ -249,7 +318,7 @@ func TestCursor(t *testing.T) {
 				Type: activity.ObjectType_Accept,
 				Actor: &activity.Object{
 					Type: activity.ObjectType_Person,
-					Name: "Random User",
+					Name: fmt.Sprintf("Random User %d", i+1),
 					Id:   uuid.New(),
 				},
 			}
@@ -294,8 +363,8 @@ func TestCursor(t *testing.T) {
 		wg.Wait()
 		So(err, ShouldBeNil)
 		So(results, ShouldHaveLength, 20)
-		So(results[0].Id, ShouldEqual, "/activity-30")
-		So(results[19].Id, ShouldEqual, "/activity-11")
+		So(results[0].Actor.Name, ShouldEqual, "Random User 30")
+		So(results[19].Actor.Name, ShouldEqual, "Random User 11")
 
 		results = results[:0]
 		wg.Add(1)
@@ -306,8 +375,8 @@ func TestCursor(t *testing.T) {
 		wg.Wait()
 		So(err, ShouldBeNil)
 		So(results, ShouldHaveLength, 30)
-		So(results[0].Id, ShouldEqual, "/activity-30")
-		So(results[29].Id, ShouldEqual, "/activity-1")
+		So(results[0].Actor.Name, ShouldEqual, "Random User 30")
+		So(results[29].Actor.Name, ShouldEqual, "Random User 1")
 
 		// GET LAST NOT SENT YET
 		results = results[:0]
@@ -319,8 +388,8 @@ func TestCursor(t *testing.T) {
 		wg.Wait()
 		So(err, ShouldBeNil)
 		So(results, ShouldHaveLength, 50)
-		So(results[0].Id, ShouldEqual, "/activity-50")
-		err = dao.StoreLastUserInbox("charles", BoxLastSent, nil, results[0].Id)
+		So(results[0].Actor.Name, ShouldEqual, "Random User 50")
+		err = dao.StoreLastUserInbox("charles", BoxLastSent, results[0].Id)
 		So(err, ShouldBeNil)
 
 		// STORE 20 NEW ONES
@@ -329,7 +398,7 @@ func TestCursor(t *testing.T) {
 				Type: activity.ObjectType_Accept,
 				Actor: &activity.Object{
 					Type: activity.ObjectType_Person,
-					Name: "Random User",
+					Name: fmt.Sprintf("Random User %d", i+1+50),
 					Id:   uuid.New(),
 				},
 			}
@@ -347,19 +416,16 @@ func TestCursor(t *testing.T) {
 		wg.Wait()
 		So(err, ShouldBeNil)
 		So(results, ShouldHaveLength, 20)
-		So(results[0].Id, ShouldEqual, "/activity-70")
-		So(results[19].Id, ShouldEqual, "/activity-51")
+		So(results[0].Actor.Name, ShouldEqual, "Random User 70")
+		So(results[19].Actor.Name, ShouldEqual, "Random User 51")
 
 	})
 }
 
 func TestDelete(t *testing.T) {
 
-	defer os.Remove(tmpDbFilePath)
-	tmpdao := boltdb.NewDAO("boltdb", tmpDbFilePath, "")
-	dao := NewDAO(tmpdao).(DAO)
-	dao.Init(conf)
-	defer dao.CloseConn()
+	dao, def := initDao()
+	defer def()
 
 	Convey("Test Delete Owner", t, func() {
 
@@ -384,63 +450,10 @@ func TestDelete(t *testing.T) {
 	})
 }
 
-func TestMassivePurge(t *testing.T) {
-
-	tmpMassivePurge := path.Join(os.TempDir(), "bolt-test.db")
-	t.Log("MASSIVE DB AT", tmpMassivePurge)
-	defer os.Remove(tmpDbFilePath)
-	tmpdao := boltdb.NewDAO("boltdb", tmpDbFilePath, "")
-	dao := NewDAO(tmpdao).(DAO)
-	dao.Init(conf)
-	defer dao.CloseConn()
-	number := 100000
-	bb := dao.(boltdb.DAO).DB()
-
-	Convey("Test Massive Purge", t, func() {
-		var aa []*batchActivity
-		for i := 0; i < number; i++ {
-			aa = append(aa, &batchActivity{
-				Object:     &activity.Object{Type: activity.ObjectType_Like, Updated: &timestamppb.Timestamp{Seconds: time.Now().Unix()}},
-				ownerType:  activity.OwnerType_NODE,
-				ownerId:    "node-id",
-				boxName:    BoxOutbox,
-				publishCtx: nil,
-			})
-		}
-		err := dao.(batchDAO).BatchPost(aa)
-		So(err, ShouldBeNil)
-		st, e := os.Stat(tmpMassivePurge)
-		So(e, ShouldBeNil)
-		initSize := st.Size()
-		t.Log("DB Size is", humanize.Bytes(uint64(initSize)))
-		stats, _ := jsonx.Marshal(bb.Stats())
-		t.Log(string(stats))
-		So(st.Size(), ShouldBeGreaterThan, 0)
-
-		<-time.After(5 * time.Second)
-		deleted := 0
-		// Now Purge
-		e = dao.Purge(func(s string) { deleted++ }, activity.OwnerType_NODE, "node-id", BoxOutbox, 0, 10, time.Time{}, true, true)
-		So(e, ShouldBeNil)
-		So(deleted, ShouldBeGreaterThan, 1)
-		st, _ = os.Stat(tmpMassivePurge)
-		newSize := st.Size()
-		t.Log("DB Size is now", humanize.Bytes(uint64(newSize)), "after", deleted, "deletes and compaction")
-		stats, _ = jsonx.Marshal(dao.(boltdb.DAO).DB().Stats())
-		t.Log(string(stats))
-		So(newSize, ShouldBeLessThan, initSize)
-
-	})
-
-}
-
 func TestPurge(t *testing.T) {
 
-	defer os.Remove(tmpDbFilePath)
-	tmpdao := boltdb.NewDAO("boltdb", tmpDbFilePath, "")
-	dao := NewDAO(tmpdao).(DAO)
-	dao.Init(conf)
-	defer dao.CloseConn()
+	dao, def := initDao()
+	defer def()
 
 	listJohn := func() ([]*activity.Object, error) {
 		var results []*activity.Object
@@ -499,7 +512,7 @@ func TestPurge(t *testing.T) {
 		So(results, ShouldHaveLength, 2)
 
 		// Now test purge by date
-		dao.PostActivity(activity.OwnerType_USER, "john", BoxInbox, ac2, nil)
+		//dao.PostActivity(activity.OwnerType_USER, "john", BoxInbox, ac2, nil)
 		dao.PostActivity(activity.OwnerType_USER, "john", BoxInbox, ac3, nil)
 		dao.PostActivity(activity.OwnerType_USER, "john", BoxInbox, ac4, nil)
 		sevenDays := 7 * time.Hour * 24
@@ -523,11 +536,8 @@ func TestPurge(t *testing.T) {
 
 func TestSubscriptions(t *testing.T) {
 
-	defer os.Remove(tmpDbFilePath)
-	tmpdao := boltdb.NewDAO("boltdb", tmpDbFilePath, "")
-	dao := NewDAO(tmpdao).(DAO)
-	dao.Init(conf)
-	defer dao.CloseConn()
+	dao, def := initDao()
+	defer def()
 
 	Convey("Test subscribe", t, func() {
 
@@ -538,6 +548,15 @@ func TestSubscriptions(t *testing.T) {
 			Events:     []string{"read", "write"},
 		}
 		err := dao.UpdateSubscription(sub)
+		So(err, ShouldBeNil)
+
+		sub2 := &activity.Subscription{
+			UserId:     "user1",
+			ObjectType: activity.OwnerType_NODE,
+			ObjectId:   "OTHER_NODE",
+			Events:     []string{"read", "write"},
+		}
+		err = dao.UpdateSubscription(sub2)
 		So(err, ShouldBeNil)
 
 		subs, err := dao.ListSubscriptions(activity.OwnerType_NODE, []string{"ROOT"})

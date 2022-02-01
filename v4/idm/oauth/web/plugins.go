@@ -23,7 +23,6 @@ package web
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -53,7 +52,7 @@ func init() {
 				router := mux.NewRouter()
 				hh := config.GetSitesAllowedURLs()
 				for _, u := range hh {
-					fmt.Println("Registering router for host", u.Host)
+					// fmt.Println("Registering router for host", u.Host)
 					// Two-level check : Host() is regexp based, fast, but only on Hostname, then custom check to take port into account
 					host := u.Host
 					hostname := u.Hostname()
@@ -86,7 +85,7 @@ func init() {
 					})
 
 					/*
-						//todo v4 - not clear :-)
+						// seems not necessary
 							if conf.GetProvider().CORSEnabled("admin") {
 								subRouter.PathPrefix("/oidc-admin/").Handler(http.StripPrefix("/oidc-admin", cors.New(conf.CORSOptions("admin")).Handler(servicecontext.HttpWrapperMeta(admin))))
 							} else {
@@ -97,7 +96,6 @@ func init() {
 					subRouter.Handler(servicecontext.HttpWrapperMeta(ctx, public))
 					//subRouter.PathPrefix("/oidc/").Handler(http.StripPrefix("/oidc", servicecontext.HttpWrapperMeta(public)))
 				}
-				fmt.Println("Attach router to /oidc/")
 
 				serveMux.Handle("/oidc/", http.StripPrefix("/oidc", cors.New(cors.Options{
 					AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE"},

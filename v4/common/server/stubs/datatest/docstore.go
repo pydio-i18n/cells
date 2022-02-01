@@ -55,11 +55,10 @@ func NewDocStoreService() (grpc.ClientConnInterface, error) {
 	pBleve := newPath("docstore" + suffix + ".bleve")
 
 	store, _ := docstore2.NewBoltStore(pBolt, true)
-	indexer, _ := docstore2.NewBleveEngine(pBleve, true)
+	indexer, _ := docstore2.NewBleveEngine(store, pBleve, true)
 
 	h := &srv.Handler{
-		Db:      store,
-		Indexer: indexer,
+		DAO: indexer,
 	}
 	serv := &docstore.DocStoreStub{}
 	serv.DocStoreServer = h

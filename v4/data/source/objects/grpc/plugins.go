@@ -68,7 +68,7 @@ func init() {
 					object.RegisterObjectsEndpointEnhancedServer(server, engine)
 					var startErr error
 					go func() {
-						startErr = engine.StartMinioServer(ctx, datasource)
+						startErr = engine.StartMinioServer(c, datasource)
 					}()
 					<-time.After(1 * time.Second)
 					return startErr

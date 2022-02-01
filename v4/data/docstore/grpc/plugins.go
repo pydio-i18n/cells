@@ -23,14 +23,12 @@ package grpc
 
 import (
 	"context"
-	"path"
-
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
 	proto "github.com/pydio/cells/v4/common/proto/docstore"
@@ -50,30 +48,14 @@ func init() {
 			service.Tag(common.ServiceTagData),
 			service.Description("Generic document store"),
 			service.Unique(true),
+			service.WithStorage(docstore.NewDAO, "docstore"),
 			service.WithGRPC(func(c context.Context, server *grpc.Server) error {
 
-				serviceDir, e := config.ServiceDataDir(common.ServiceGrpcNamespace_ + common.ServiceDocStore)
-				if e != nil {
-					return e
-				}
-
-				store, err := docstore.NewBoltStore(path.Join(serviceDir, "docstore.db"))
-				if err != nil {
-					return err
-				}
-
-				indexer, err := docstore.NewBleveEngine(path.Join(serviceDir, "docstore.bleve"))
-				if err != nil {
-					return err
-				}
-
-				handler := &Handler{
-					Db:      store,
-					Indexer: indexer,
-				}
+				dao := servicecontext.GetDAO(c).(docstore.DAO)
+				handler := &Handler{DAO: dao}
 
 				for id, json := range defaults() {
-					if doc, e := store.GetDocument(common.DocStoreIdVirtualNodes, id); e == nil && doc != nil {
+					if doc, e := dao.GetDocument(common.DocStoreIdVirtualNodes, id); e == nil && doc != nil {
 						var reStore bool
 						if id == "my-files" {
 							// Check if my-files is up-to-date

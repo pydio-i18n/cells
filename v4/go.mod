@@ -101,6 +101,7 @@ require (
 	github.com/zalando/go-keyring v0.1.1
 	go.etcd.io/bbolt v1.3.6
 	go.etcd.io/etcd/client/v3 v3.5.0
+	go.mongodb.org/mongo-driver v1.8.2
 	go.uber.org/zap v1.20.0
 	gocloud.dev v0.20.0
 	gocloud.dev/pubsub/natspubsub v0.20.0

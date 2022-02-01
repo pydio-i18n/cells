@@ -24,7 +24,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/pydio/cells/v4/common/utils/uuid"
 	"log"
 	"os"
 	"strconv"
@@ -36,10 +35,11 @@ import (
 
 	"github.com/pydio/cells/v4/broker/activity"
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/boltdb"
 	"github.com/pydio/cells/v4/common/client/grpc"
+	"github.com/pydio/cells/v4/common/dao/boltdb"
 	activity2 "github.com/pydio/cells/v4/common/proto/activity"
 	"github.com/pydio/cells/v4/common/proto/jobs"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 var (

@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/pydio/cells/v4/common/boltdb"
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/dao"
+	"github.com/pydio/cells/v4/common/dao/boltdb"
+	"github.com/pydio/cells/v4/common/dao/mongodb"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/sql"
 )
@@ -46,6 +47,10 @@ func WithStorage(fd func(dao.DAO) dao.DAO, prefix ...interface{}) ServiceOption 
 				}
 			case "boltdb":
 				if c := boltdb.NewDAO(driver, dsn, prefix); c != nil {
+					d = fd(c)
+				}
+			case "mongodb":
+				if c := mongodb.NewDAO(driver, dsn, prefix); c != nil {
 					d = fd(c)
 				}
 			default:

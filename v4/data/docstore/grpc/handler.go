@@ -35,8 +35,7 @@ import (
 type Handler struct {
 	proto.UnimplementedDocStoreServer
 	sync.UnimplementedSyncEndpointServer
-	Db      docstore.Store
-	Indexer docstore.Indexer
+	DAO docstore.DAO
 }
 
 func (h *Handler) Name() string {
@@ -45,24 +44,18 @@ func (h *Handler) Name() string {
 
 func (h *Handler) Close() error {
 	var err error
-	err = h.Db.Close()
+	err = h.DAO.CloseDAO()
 	if err != nil {
 		fmt.Println("[error] Could not close docstore database")
 	}
-	err = h.Indexer.Close()
 	return err
 }
 
 func (h *Handler) PutDocument(ctx context.Context, request *proto.PutDocumentRequest) (*proto.PutDocumentResponse, error) {
-	e := h.Db.PutDocument(request.StoreID, request.Document)
+	e := h.DAO.PutDocument(request.StoreID, request.Document)
 	log.Logger(ctx).Debug("PutDocument", zap.String("store", request.StoreID), zap.String("docId", request.Document.ID))
 	if e != nil {
 		log.Logger(ctx).Error("PutDocument", zap.Error(e))
-		return nil, e
-	}
-	e = h.Indexer.IndexDocument(request.StoreID, request.Document)
-	if e != nil {
-		log.Logger(ctx).Error("PutDocument:Index", zap.Error(e))
 		return nil, e
 	}
 	return &proto.PutDocumentResponse{Document: request.Document}, nil
@@ -70,7 +63,7 @@ func (h *Handler) PutDocument(ctx context.Context, request *proto.PutDocumentReq
 
 func (h *Handler) GetDocument(ctx context.Context, request *proto.GetDocumentRequest) (*proto.GetDocumentResponse, error) {
 	log.Logger(ctx).Debug("GetDocument", zap.String("store", request.StoreID), zap.String("docId", request.DocumentID))
-	doc, e := h.Db.GetDocument(request.StoreID, request.DocumentID)
+	doc, e := h.DAO.GetDocument(request.StoreID, request.DocumentID)
 	if e != nil {
 		return nil, fmt.Errorf("document not found")
 	}
@@ -83,32 +76,21 @@ func (h *Handler) DeleteDocuments(ctx context.Context, request *proto.DeleteDocu
 
 	if request.Query != nil && request.Query.MetaQuery != "" {
 
-		docIds, _, err := h.Indexer.SearchDocuments(request.StoreID, request.Query, false)
-		if err != nil {
-			return nil, err
+		count, er := h.DAO.DeleteDocuments(request.StoreID, request.Query)
+		if er != nil {
+			return nil, er
 		}
-
-		for _, docId := range docIds {
-			log.Logger(ctx).Info("DeleteDocument", zap.String("store", request.StoreID), zap.String("docId", docId))
-			if e := h.Db.DeleteDocument(request.StoreID, docId); e == nil {
-				// Remove from indexer as well
-				h.Indexer.DeleteDocument(request.StoreID, docId)
-				response.DeletionCount++
-			}
-
-		}
-		response.Success = true
-		return response, nil
+		return &proto.DeleteDocumentsResponse{DeletionCount: int32(count), Success: true}, nil
 
 	} else {
 
-		err := h.Db.DeleteDocument(request.StoreID, request.DocumentID)
+		err := h.DAO.DeleteDocument(request.StoreID, request.DocumentID)
 		if err != nil {
 			return nil, err
 		}
 		response.Success = true
 		response.DeletionCount = 1
-		return response, h.Indexer.DeleteDocument(request.StoreID, request.DocumentID)
+		return response, nil
 
 	}
 }
@@ -120,12 +102,12 @@ func (h *Handler) CountDocuments(ctx context.Context, request *proto.ListDocumen
 	if request.Query == nil || request.Query.MetaQuery == "" {
 		return nil, fmt.Errorf("Please provide at least a meta query")
 	}
-	_, total, err := h.Indexer.SearchDocuments(request.StoreID, request.Query, true)
+	total, err := h.DAO.CountDocuments(request.StoreID, request.Query)
 	if err != nil {
 		return nil, err
 	}
 
-	return &proto.CountDocumentsResponse{Total: total}, nil
+	return &proto.CountDocumentsResponse{Total: int64(total)}, nil
 
 }
 
@@ -134,76 +116,54 @@ func (h *Handler) ListDocuments(request *proto.ListDocumentsRequest, stream prot
 	ctx := stream.Context()
 	log.Logger(ctx).Debug("ListDocuments", zap.Any("req", request))
 
-	if request.Query != nil && request.Query.MetaQuery != "" {
-
-		docIds, _, err := h.Indexer.SearchDocuments(request.StoreID, request.Query, false)
-		if err != nil {
+	results, err := h.DAO.QueryDocuments(request.StoreID, request.Query)
+	if err != nil {
+		return err
+	}
+	for doc := range results {
+		if err := stream.Send(&proto.ListDocumentsResponse{Document: doc}); err != nil {
 			return err
 		}
-		for _, docId := range docIds {
-			if doc, e := h.Db.GetDocument(request.StoreID, docId); e == nil && doc != nil {
-				doc.ID = docId
-				if e := stream.Send(&proto.ListDocumentsResponse{Document: doc}); e != nil {
-					return e
-				}
-
-			}
-		}
-
-	} else {
-
-		results, done, err := h.Db.ListDocuments(request.StoreID, request.Query)
-
-		if err != nil {
-			return err
-		}
-
-		defer close(results)
-		for {
-			select {
-			case doc := <-results:
-				if e := stream.Send(&proto.ListDocumentsResponse{Document: doc}); e != nil {
-					return e
-				}
-			case <-done:
-				return nil
-			}
-		}
-
 	}
 
 	return nil
+
 }
 
 // TriggerResync clear search index and reindex all docs from DB
 func (h *Handler) TriggerResync(ctx context.Context, request *sync.ResyncRequest) (*sync.ResyncResponse, error) {
 
-	stores, e := h.Db.ListStores()
-	if e != nil {
-		return nil, e
-	}
-	if e := h.Indexer.Reset(); e != nil {
-		return nil, e
-	}
-	go func() {
-		for _, s := range stores {
-			log.Logger(ctx).Info("Browsing store", zap.String("store", s))
-			docs, done, e := h.Db.ListDocuments(s, &proto.DocumentQuery{})
-			if e != nil {
-				continue
-			}
-		loop:
-			for {
-				select {
-				case doc := <-docs:
-					log.Logger(ctx).Info("-- Reindexing", zap.String("docID", doc.ID))
-					h.Indexer.IndexDocument(s, doc)
-				case <-done:
-					break loop
+	/*
+		stores, e := h.DAO.ListStores()
+		if e != nil {
+			return nil, e
+		}
+		if e := h.DAO.Reset(); e != nil {
+			return nil, e
+		}
+
+		// TODO
+		go func() {
+			for _, s := range stores {
+				log.Logger(ctx).Info("Browsing store", zap.String("store", s))
+				docs, done, e := h.Db.ListDocuments(s, &proto.DocumentQuery{})
+				if e != nil {
+					continue
+				}
+			loop:
+				for {
+					select {
+					case doc := <-docs:
+						log.Logger(ctx).Info("-- Reindexing", zap.String("docID", doc.ID))
+						h.Indexer.IndexDocument(s, doc)
+					case <-done:
+						break loop
+					}
 				}
 			}
-		}
-	}()
+		}()
+
+	*/
 
 	return &sync.ResyncResponse{Success: true}, nil
 }

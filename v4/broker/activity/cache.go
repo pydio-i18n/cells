@@ -179,8 +179,8 @@ func (c *Cache) ActivitiesFor(ownerType activity.OwnerType, ownerId string, boxN
 	return c.dao.ActivitiesFor(ownerType, ownerId, boxName, refBoxOffset, reverseOffset, limit, result, done)
 }
 
-func (c *Cache) StoreLastUserInbox(userId string, boxName BoxName, last []byte, activityId string) error {
-	return c.dao.StoreLastUserInbox(userId, boxName, last, activityId)
+func (c *Cache) StoreLastUserInbox(userId string, boxName BoxName, activityId string) error {
+	return c.dao.StoreLastUserInbox(userId, boxName, activityId)
 }
 
 func (c *Cache) Delete(ownerType activity.OwnerType, ownerId string) error {

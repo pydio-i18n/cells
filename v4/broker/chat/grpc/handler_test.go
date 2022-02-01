@@ -23,14 +23,16 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"github.com/pydio/cells/v4/common/dao/boltdb"
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 
 	chat2 "github.com/pydio/cells/v4/broker/chat"
-	"github.com/pydio/cells/v4/common/boltdb"
+	"github.com/pydio/cells/v4/common/dao/mongodb"
 	"github.com/pydio/cells/v4/common/nodes/mocks"
 	"github.com/pydio/cells/v4/common/proto/chat"
 	"github.com/pydio/cells/v4/common/server/stubs"
@@ -60,22 +62,43 @@ func (s *roomsSrvStub) Send(response *chat.ListRoomsResponse) error {
 }
 
 func initializedHandler() (context.Context, *ChatHandler, func(), error) {
-	tmpFile := filepath.Join(os.TempDir(), uuid.New()+".db")
-	coreDao := boltdb.NewDAO("boltdb", tmpFile, "")
-	dao := chat2.NewDAO(coreDao).(chat2.DAO)
-	if e := dao.Init(configx.New()); e != nil {
-		return nil, nil, nil, e
+
+	if mDsn := os.Getenv("CELLS_TEST_MONGODB_DSN"); mDsn != "" {
+		fmt.Println("Testing on MONGO DB")
+		coreDao := mongodb.NewDAO("mongodb", mDsn, "chat-test")
+		dao := chat2.NewDAO(coreDao).(chat2.DAO)
+		if e := dao.Init(configx.New()); e != nil {
+			return nil, nil, nil, e
+		}
+		closer := func() {
+			dao.CloseConn()
+		}
+		ctx := servicecontext.WithDAO(context.Background(), dao)
+		handler := &ChatHandler{dao: dao}
+		return ctx, handler, closer, nil
+
+	} else {
+
+		tmpFile := filepath.Join(os.TempDir(), uuid.New()+".db")
+		coreDao := boltdb.NewDAO("boltdb", tmpFile, "")
+		dao := chat2.NewDAO(coreDao).(chat2.DAO)
+		if e := dao.Init(configx.New()); e != nil {
+			return nil, nil, nil, e
+		}
+		closer := func() {
+			dao.CloseConn()
+			os.Remove(tmpFile)
+		}
+		ctx := servicecontext.WithDAO(context.Background(), dao)
+		handler := &ChatHandler{dao: dao}
+		return ctx, handler, closer, nil
 	}
-	closer := func() {
-		dao.CloseConn()
-		os.Remove(tmpFile)
-	}
-	ctx := servicecontext.WithDAO(context.Background(), dao)
-	handler := &ChatHandler{dao: dao}
-	return ctx, handler, closer, nil
 }
 
 func TestChatHandler_PutRoom(t *testing.T) {
+
+	roomUuid := uuid.New()
+	nodeUuid := uuid.New()
 
 	Convey("Test Chat DAO / CRUD ROOMS", t, func() {
 		ctx, handler, closer, e := initializedHandler()
@@ -83,8 +106,8 @@ func TestChatHandler_PutRoom(t *testing.T) {
 		defer closer()
 		_, e = handler.PutRoom(ctx, &chat.PutRoomRequest{Room: &chat.ChatRoom{
 			Type:           chat.RoomType_NODE,
-			Uuid:           "room-uuid",
-			RoomTypeObject: "node-uuid",
+			Uuid:           roomUuid,
+			RoomTypeObject: nodeUuid,
 			RoomLabel:      "Comments",
 		}})
 		So(e, ShouldBeNil)
@@ -93,7 +116,7 @@ func TestChatHandler_PutRoom(t *testing.T) {
 		stub.Ctx = ctx
 		e = handler.ListRooms(&chat.ListRoomsRequest{
 			ByType:     chat.RoomType_NODE,
-			TypeObject: "node-uuid",
+			TypeObject: nodeUuid,
 		}, stub)
 		So(e, ShouldBeNil)
 		So(stub.rr, ShouldHaveLength, 1)
@@ -104,12 +127,12 @@ func TestChatHandler_PutRoom(t *testing.T) {
 			ByType: chat.RoomType_NODE,
 		}, stub)
 		So(e, ShouldBeNil)
-		So(stub.rr, ShouldHaveLength, 1)
+		So(len(stub.rr), ShouldBeGreaterThanOrEqualTo, 1)
 
 		_, e = handler.DeleteRoom(ctx, &chat.DeleteRoomRequest{Room: &chat.ChatRoom{
 			Type:           chat.RoomType_NODE,
-			Uuid:           "room-uuid",
-			RoomTypeObject: "node-uuid",
+			Uuid:           roomUuid,
+			RoomTypeObject: nodeUuid,
 		}})
 		So(e, ShouldBeNil)
 
@@ -124,7 +147,7 @@ func TestChatHandler_PutRoom(t *testing.T) {
 		stub.Ctx = ctx
 		e = handler.ListRooms(&chat.ListRoomsRequest{
 			ByType:     chat.RoomType_NODE,
-			TypeObject: "node-uuid",
+			TypeObject: nodeUuid,
 		}, stub)
 		So(e, ShouldBeNil)
 		So(stub.rr, ShouldHaveLength, 0)
@@ -187,6 +210,8 @@ func TestChatHandler_PutMessage(t *testing.T) {
 
 func TestChatHandler_ListMessages(t *testing.T) {
 
+	roomUuid := uuid.New()
+
 	Convey("Test Chat DAO / CRUD MESSAGES", t, func() {
 		metaClient = &mocks.NodeReceiverClient{}
 		ctx, handler, closer, e := initializedHandler()
@@ -194,7 +219,7 @@ func TestChatHandler_ListMessages(t *testing.T) {
 		defer closer()
 		_, e = handler.PutRoom(ctx, &chat.PutRoomRequest{Room: &chat.ChatRoom{
 			Type:           chat.RoomType_NODE,
-			Uuid:           "room",
+			Uuid:           roomUuid,
 			RoomTypeObject: "node",
 			RoomLabel:      "Comments",
 		}})
@@ -204,9 +229,10 @@ func TestChatHandler_ListMessages(t *testing.T) {
 		size := 35
 		for i := 0; i < size; i++ {
 			resp, e := handler.PostMessage(ctx, &chat.PostMessageRequest{Messages: []*chat.ChatMessage{{
-				RoomUuid: "room",
-				Message:  fmt.Sprintf("Hello World %d", i),
-				Author:   "tester",
+				RoomUuid:  roomUuid,
+				Message:   fmt.Sprintf("Hello World %d", i),
+				Author:    "tester",
+				Timestamp: time.Now().UnixNano(),
 			}}})
 			So(e, ShouldBeNil)
 			ids = append(ids, resp.Messages[0].Uuid)
@@ -216,7 +242,7 @@ func TestChatHandler_ListMessages(t *testing.T) {
 		// Returns the last N starting from the last, but in ASC order
 		stub := &msgSrvStub{}
 		stub.Ctx = ctx
-		e = handler.ListMessages(&chat.ListMessagesRequest{RoomUuid: "room", Offset: 0, Limit: 10}, stub)
+		e = handler.ListMessages(&chat.ListMessagesRequest{RoomUuid: roomUuid, Offset: 0, Limit: 10}, stub)
 		So(e, ShouldBeNil)
 		So(stub.mm, ShouldHaveLength, 10)
 		So(stub.mm[0].Message.Uuid, ShouldEqual, ids[size-10])
@@ -224,7 +250,7 @@ func TestChatHandler_ListMessages(t *testing.T) {
 
 		stub = &msgSrvStub{}
 		stub.Ctx = ctx
-		e = handler.ListMessages(&chat.ListMessagesRequest{RoomUuid: "room", Offset: 10, Limit: 10}, stub)
+		e = handler.ListMessages(&chat.ListMessagesRequest{RoomUuid: roomUuid, Offset: 10, Limit: 10}, stub)
 		So(e, ShouldBeNil)
 		So(stub.mm, ShouldHaveLength, 10)
 		So(stub.mm[0].Message.Uuid, ShouldEqual, ids[size-10-10])
@@ -232,7 +258,7 @@ func TestChatHandler_ListMessages(t *testing.T) {
 
 		stub = &msgSrvStub{}
 		stub.Ctx = ctx
-		e = handler.ListMessages(&chat.ListMessagesRequest{RoomUuid: "room", Offset: 30, Limit: 10}, stub)
+		e = handler.ListMessages(&chat.ListMessagesRequest{RoomUuid: roomUuid, Offset: 30, Limit: 10}, stub)
 		So(e, ShouldBeNil)
 		So(stub.mm, ShouldHaveLength, 5)
 		So(stub.mm[0].Message.Uuid, ShouldEqual, ids[0])
@@ -240,10 +266,10 @@ func TestChatHandler_ListMessages(t *testing.T) {
 
 		dR, e := handler.DeleteMessage(ctx, &chat.DeleteMessageRequest{Messages: []*chat.ChatMessage{{
 			Uuid:     ids[0],
-			RoomUuid: "room",
+			RoomUuid: roomUuid,
 		}, {
 			Uuid:     ids[1],
-			RoomUuid: "room",
+			RoomUuid: roomUuid,
 		}}})
 		So(e, ShouldBeNil)
 		So(dR.Success, ShouldBeTrue)
