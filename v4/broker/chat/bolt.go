@@ -27,7 +27,7 @@ import (
 	bolt "go.etcd.io/bbolt"
 
 	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/boltdb"
+	"github.com/pydio/cells/v4/common/dao/boltdb"
 	"github.com/pydio/cells/v4/common/proto/chat"
 	"github.com/pydio/cells/v4/common/service/errors"
 	"github.com/pydio/cells/v4/common/utils/configx"

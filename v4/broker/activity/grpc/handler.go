@@ -208,7 +208,7 @@ func (h *Handler) SetUserLastActivity(ctx context.Context, request *proto.UserLa
 		return nil, fmt.Errorf("invalid box name")
 	}
 
-	if err := h.dao.StoreLastUserInbox(request.UserId, boxName, nil, request.ActivityId); err == nil {
+	if err := h.dao.StoreLastUserInbox(request.UserId, boxName, request.ActivityId); err == nil {
 		return &proto.UserLastActivityResponse{Success: true}, nil
 	} else {
 		return nil, err

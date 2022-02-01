@@ -23,7 +23,6 @@ package grpc
 
 import (
 	"context"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 
 	"google.golang.org/grpc"
 
@@ -32,6 +31,7 @@ import (
 	"github.com/pydio/cells/v4/common/plugins"
 	proto "github.com/pydio/cells/v4/common/proto/chat"
 	"github.com/pydio/cells/v4/common/service"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 )
 
 var ServiceName = common.ServiceGrpcNamespace_ + common.ServiceChat
