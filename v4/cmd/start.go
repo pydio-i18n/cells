@@ -88,6 +88,23 @@ to quickly create a Cobra application.`,
 			return err
 		}
 
+		//pluginsRegStore, err := file.New("/tmp/registry.json", true, configregistry.WithJSONItem())
+		//if err != nil {
+		//	return err
+		//}
+		//pluginsReg := configregistry.NewConfigRegistry(pluginsRegStore)
+
+		//etcdconn, err := clientv3.New(clientv3.Config{
+		//	Endpoints:   []string{"http://192.168.1.92:2379"},
+		//	DialTimeout: 2 * time.Second,
+		//})
+		//if err != nil {
+		//	log.Fatal("could not start etcd", zap.Error(err))
+		//}
+		//
+		//regStore := etcd.NewSource(cmd.Context(), etcdconn, "registry", configregistry.WithJSONItem())
+		//reg := configregistry.NewConfigRegistry(regStore)
+
 		reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
 		if err != nil {
 			return err
@@ -337,12 +354,39 @@ to quickly create a Cobra application.`,
 				return
 			}(srv)
 		}
-
 		wg.Wait()
 
 		select {
 		case <-cmd.Context().Done():
 		}
+
+		for _, srv := range srvs {
+			if err := srv.Stop(); err != nil {
+				fmt.Println(err)
+			}
+		}
+		//
+		//pid := fmt.Sprintf("%d", os.Getpid())
+		//runningServices, _ := reg.List(registry.WithFilter(func(i registry.Item) bool {
+		//	var service registry.Service
+		//	if !i.As(&service) {
+		//		return false
+		//	}
+		//
+		//	for _, node := range service.Nodes() {
+		//		if node.Metadata()["PID"] == pid {
+		//			return true
+		//		}
+		//	}
+		//	return false
+		//}))
+		//
+		//for _, service := range runningServices {
+		//	var rs registry.Service
+		//	if service.As(&rs) {
+		//		rs.Stop()
+		//	}
+		//}
 
 		return nil
 	},

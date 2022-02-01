@@ -21,23 +21,15 @@
 package oauth
 
 import (
-	"context"
 	sql2 "database/sql"
 	"embed"
 	"fmt"
 	"time"
 
-	migrate "github.com/rubenv/sql-migrate"
-
-	"github.com/pydio/cells/v4/common"
-	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/proto/auth"
-	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/common/utils/configx"
 	json "github.com/pydio/cells/v4/common/utils/jsonx"
-	"github.com/pydio/cells/v4/common/utils/statics"
-	"github.com/pydio/cells/v4/common/utils/std"
 )
 
 var (
@@ -71,7 +63,7 @@ func (s *sqlImpl) Init(options configx.Values) error {
 	s.DAO.Init(options)
 
 	// Doing the database migrations
-	migrations := &sql.FSMigrationSource{
+	/*migrations := &sql.FSMigrationSource{
 		Box:         statics.AsFS(migrationsFS, "migrations"),
 		Dir:         s.Driver(),
 		TablePrefix: s.Prefix(),
@@ -92,7 +84,7 @@ func (s *sqlImpl) Init(options configx.Values) error {
 	if err != nil {
 		return err
 	}
-
+	*/
 	// Preparing the db statements
 	if options.Val("prepare").Default(true).Bool() {
 		for key, query := range queries {

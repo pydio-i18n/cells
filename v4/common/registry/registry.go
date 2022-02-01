@@ -21,6 +21,8 @@ type Item interface {
 	ID() string
 	Metadata() map[string]string
 	As(interface{}) bool
+
+	// models.Differ
 }
 
 type Context interface {

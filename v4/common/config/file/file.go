@@ -33,7 +33,7 @@ func New(path string, autoUpdate bool, opts ...configx.Option) (config.Store, er
 		return nil, err
 	}
 
-	opts = append(opts, configx.WithJSON())
+	opts = append([]configx.Option{configx.WithJSON()}, opts...)
 
 	mtx := &sync.RWMutex{}
 	v := configx.New(
@@ -154,7 +154,7 @@ func (f *file) Save(ctxUser string, ctxMessage string) error {
 	f.mtx.RLock()
 	defer f.mtx.RUnlock()
 
-	return filex.Save(f.path, f.v.Get())
+	return filex.Save(f.path, f.v.Bytes())
 }
 
 func (f *file) Watch(path ...string) (configx.Receiver, error) {

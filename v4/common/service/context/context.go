@@ -30,7 +30,6 @@ import (
 
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/registry"
-	"github.com/pydio/cells/v4/common/server"
 	"github.com/pydio/cells/v4/common/utils/configx"
 )
 
@@ -90,13 +89,6 @@ func WithRegistry(ctx context.Context, reg registry.Registry) context.Context {
 	return context.WithValue(ctx, registryKey, reg)
 }
 
-// WithServer links a grpc server to the context
-func WithServer(ctx context.Context, name string, server server.Server) context.Context {
-	servers := getServers(ctx)
-	servers[name] = server
-	return context.WithValue(ctx, serversKey, servers)
-}
-
 // GetServiceName returns the service name associated to this context
 func GetServiceName(ctx context.Context) string {
 	if name, ok := ctx.Value(serviceNameKey).(string); ok {
@@ -150,38 +142,6 @@ func GetRegistry(ctx context.Context) registry.Registry {
 func GetKeyring(ctx context.Context) crypto.Keyring {
 	if keyring, ok := ctx.Value(keyringKey).(crypto.Keyring); ok {
 		return keyring
-	}
-	return nil
-}
-
-func getServers(ctx context.Context) map[string]server.Server {
-	if conf, ok := ctx.Value(serversKey).(map[string]server.Server); ok {
-		return conf
-	}
-	return map[string]server.Server{}
-}
-
-// GetServer returns the server from the context and name in argument
-func GetServer(ctx context.Context, name string) server.Server {
-	if srv, ok := getServers(ctx)[name]; ok {
-		return srv
-	}
-
-	return nil
-}
-
-// GetRegistry returns the registry from the context in argument
-func GetHTTP(ctx context.Context) registry.Registry {
-	if conf, ok := ctx.Value(registryKey).(registry.Registry); ok {
-		return conf
-	}
-	return nil
-}
-
-// GetRegistry returns the registry from the context in argument
-func GetGeneric(ctx context.Context) registry.Registry {
-	if conf, ok := ctx.Value(registryKey).(registry.Registry); ok {
-		return conf
 	}
 	return nil
 }

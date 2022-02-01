@@ -404,8 +404,6 @@ func performBrowserInstall(cmd *cobra.Command, proxyConf *install.ProxyConfig) {
 
 	// broker.Connect()
 
-	ctx = servicecontext.WithServer(ctx, "http", srvHTTP)
-
 	plugins.Init(ctx, "install")
 
 	/*

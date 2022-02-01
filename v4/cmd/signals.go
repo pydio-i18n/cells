@@ -57,19 +57,12 @@ func handleSignals(args []string) {
 			switch sig {
 			case syscall.SIGTERM:
 				fallthrough
+			case syscall.SIGKILL:
+				fallthrough
 			case syscall.SIGINT:
-				// Start services that have not been deregistered via flags and filtering.
-				//for _, service := range allServices {
-				//	service.Stop()
-				//}
-
 				// Stopping the main context will trigger the stop of all services
 				log.Info("Cancelling main context")
 				cancel()
-
-				//log.Info("Disconnecting broker")
-				//// Disconnecting the broker so that we are not flooded with messages
-				//broker.Disconnect()
 			case syscall.SIGUSR1, syscall.SIGUSR2:
 
 				if !profiling {

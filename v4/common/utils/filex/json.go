@@ -4,8 +4,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-
-	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 // Read reads the content of a file
@@ -33,12 +31,12 @@ func Read(filename string) ([]byte, error) {
 }
 
 // Save writes configs to json file
-func Save(filename string, data interface{}) error {
+func Save(filename string, b []byte) error {
 
-	b, err := json.MarshalIndent(data, "", "  ")
+	/*b, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		return err
-	}
+	}*/
 
 	if err := os.MkdirAll(filepath.Dir(filename), 0755); err != nil {
 		return err

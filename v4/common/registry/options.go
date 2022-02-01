@@ -33,6 +33,13 @@ func WithType(t pb.ItemType) Option {
 	}
 }
 
+func WithFilter(f func(Item) bool) Option {
+	return func(o *Options) error {
+		o.Filter = f
+		return nil
+	}
+}
+
 func WithMeta(name, value string) Option {
 	return func(options *Options) error {
 		options.Filter = func(item Item) bool {

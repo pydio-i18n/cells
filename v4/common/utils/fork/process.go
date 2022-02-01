@@ -4,11 +4,13 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"go.uber.org/zap"
 	"os"
 	"os/exec"
 	"strings"
+	"syscall"
 	"time"
+
+	"go.uber.org/zap"
 
 	"github.com/spf13/viper"
 
@@ -59,15 +61,13 @@ type Process struct {
 	serviceName string
 	o           *Options
 	lastErr     error
+	cmd         *exec.Cmd
 	ctx         context.Context
-	cancel      context.CancelFunc
 }
 
 func NewProcess(ctx context.Context, serviceName string, oo ...Option) *Process {
-	c, cancel := context.WithCancel(ctx)
 	p := &Process{
-		ctx:         c,
-		cancel:      cancel,
+		ctx:         ctx,
 		serviceName: serviceName,
 		o: &Options{
 			watch: func(event string, p *Process) {},
@@ -84,16 +84,22 @@ func (p *Process) Err() error {
 }
 
 func (p *Process) Stop() {
-	p.cancel()
+	if p.cmd != nil {
+		if e := p.cmd.Process.Signal(syscall.SIGINT); e != nil {
+			p.cmd.Process.Kill()
+		}
+	}
 }
 
 func (p *Process) StartAndWait(retry ...int) error {
 
-	cmd := exec.CommandContext(p.ctx, os.Args[0], p.buildForkStartParams()...)
+	cmd := exec.Command(os.Args[0], p.buildForkStartParams()...)
 	if err := p.pipeOutputs(cmd); err != nil {
 		p.lastErr = err
 		return err
 	}
+
+	p.cmd = cmd
 
 	p.o.watch("start", p)
 	if err := cmd.Start(); err != nil {
@@ -117,6 +123,7 @@ func (p *Process) StartAndWait(retry ...int) error {
 		}
 		return err
 	}
+
 	p.o.watch("stop", p)
 
 	return nil

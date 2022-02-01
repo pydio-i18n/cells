@@ -7,8 +7,6 @@ import (
 	"time"
 
 	"github.com/spf13/cast"
-
-	json "github.com/pydio/cells/v4/common/utils/jsonx"
 )
 
 var (
@@ -134,6 +132,10 @@ func (c *config) get() interface{} {
 				default:
 					return vvvv
 				}
+			}
+		case []byte:
+			if len(vv) == 0 {
+				useDefault = true
 			}
 		case string:
 			if vv == "default" {
@@ -398,9 +400,13 @@ func (c *config) Scan(val interface{}) error {
 		return ErrNoMarshallerDefined
 	}
 
-	str, err := marshaller.Marshal(v)
+	b, err := marshaller.Marshal(v)
 	if err != nil {
 		return err
+	}
+	if string(b) == "\"\"" {
+		// shouldn't unmarshal empty string
+		return nil
 	}
 
 	unmarshaler := c.opts.Unmarshaler
@@ -408,7 +414,7 @@ func (c *config) Scan(val interface{}) error {
 		return ErrNoUnmarshalerDefined
 	}
 
-	return unmarshaler.Unmarshal(str, val)
+	return unmarshaler.Unmarshal(b, val)
 }
 
 func (c *config) Bool() bool {
@@ -434,7 +440,12 @@ func (c *config) Bytes() []byte {
 		return []byte{}
 	}
 	switch v := c.v.(type) {
-	case []interface{}, map[string]interface{}:
+	case string:
+		// Need to handle it differently
+		if v == "default" {
+			c.v = nil
+		}
+	case interface{}, []interface{}, map[string]interface{}:
 		if m := c.opts.Marshaller; m != nil {
 			data, err := m.Marshal(v)
 			if err != nil {
@@ -445,12 +456,8 @@ func (c *config) Bytes() []byte {
 		}
 
 		return []byte{}
-	case string:
-		// Need to handle it differently
-		if v == "default" {
-			c.v = nil
-		}
 	}
+
 	return []byte(cast.ToString(v))
 }
 func (c *config) Int() int {
@@ -570,7 +577,7 @@ func (c *config) Map() map[string]interface{} {
 func (c *config) UnmarshalJSON(data []byte) error {
 	var m map[string]interface{}
 
-	err := json.Unmarshal(data, &m)
+	err := c.opts.Unmarshaler.Unmarshal(data, &m)
 	if err != nil {
 		return err
 	}
@@ -581,5 +588,5 @@ func (c *config) UnmarshalJSON(data []byte) error {
 }
 
 func (c *config) MarshalJSON() ([]byte, error) {
-	return json.Marshal(c.v)
+	return c.opts.Marshaller.Marshal(c.v)
 }

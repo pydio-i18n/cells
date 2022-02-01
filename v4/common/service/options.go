@@ -15,50 +15,50 @@ type ServerProvider func(ctx context.Context) (server.Server, error)
 
 // ServiceOptions stores all options for a pydio service
 type ServiceOptions struct {
-	Name string
-	ID   string
-	Tags []string
+	Name string   `json:"name"`
+	ID   string   `json:"id"`
+	Tags []string `json:"tags"`
 
-	Version     string
-	Description string
-	Source      string
+	Version     string `json:"version"`
+	Description string `json:"description"`
+	Source      string `json:"source"`
 
-	Metadata map[string]string
+	Metadata map[string]string `json:"metadata"`
 
-	Context context.Context
-	Cancel  context.CancelFunc
+	Context context.Context    `json:"-"`
+	Cancel  context.CancelFunc `json:"-"`
 
-	DAO        func(dao.DAO) dao.DAO
-	Prefix     interface{}
-	Migrations []*Migration
+	DAO        func(dao.DAO) dao.DAO `json:"-"`
+	Prefix     interface{}           `json:"-"`
+	Migrations []*Migration          `json:"-"`
 
 	// Port      string
 	TLSConfig *tls.Config
 
-	Server         server.Server
-	ServerProvider ServerProvider
-	serverType     server.ServerType
-	serverStart    func() error
-	serverStop     func() error
+	Server         server.Server     `json:"-"`
+	ServerProvider ServerProvider    `json:"-"`
+	serverType     server.ServerType `json:"-"`
+	serverStart    func() error      `json:"-"`
+	serverStop     func() error      `json:"-"`
 
-	Dependencies []*dependency
+	Dependencies []*dependency `json:"-"`
 
 	// Starting options
-	AutoStart   bool
-	AutoRestart bool
-	Fork        bool
-	Unique      bool
+	AutoStart   bool `json:"-"`
+	AutoRestart bool `json:"-"`
+	Fork        bool `json:"-"`
+	Unique      bool `json:"-"`
 
 	// Before and After funcs
-	BeforeStart []func(context.Context) error
-	AfterStart  []func(context.Context) error
-	AfterServe  []func(context.Context) error
+	BeforeStart []func(context.Context) error `json:"-"`
+	AfterStart  []func(context.Context) error `json:"-"`
+	AfterServe  []func(context.Context) error `json:"-"`
 
-	BeforeStop []func(context.Context) error
-	AfterStop  []func(context.Context) error
+	BeforeStop []func(context.Context) error `json:"-"`
+	AfterStop  []func(context.Context) error `json:"-"`
 
-	UseWebSession      bool
-	WebSessionExcludes []string
+	UseWebSession      bool     `json:"-"`
+	WebSessionExcludes []string `json:"-"`
 }
 
 type dependency struct {

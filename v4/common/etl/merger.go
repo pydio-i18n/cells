@@ -49,6 +49,18 @@ type MergeOperation struct {
 	Error       error
 }
 
+type Converter interface {
+	Convert(interface{}) ([]models.Differ, bool)
+}
+
+var (
+	converters []Converter
+)
+
+func RegisterConverter(converter Converter) {
+	converters = append(converters, converter)
+}
+
 func NewMerger(source models.ReadableStore, target models.WritableStore, options *models.MergeOptions) *Merger {
 	return &Merger{
 		Source:  source,
@@ -554,7 +566,6 @@ func (m *Merger) convert(i interface{}) []models.Differ {
 		for _, a := range v {
 			res = append(res, (*models.ACL)(a))
 		}
-
 	case *source.ChangeSet:
 		res = append(res, (*models.Config)(v))
 
@@ -566,7 +577,14 @@ func (m *Merger) convert(i interface{}) []models.Differ {
 		for _, s := range v {
 			res = append(res, (*models.Role)(s))
 		}
+	default:
+		for _, converter := range converters {
+			if r, ok := converter.Convert(v); ok {
+				res = r
+			}
+		}
 	}
+
 	return res
 }
 

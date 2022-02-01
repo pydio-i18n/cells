@@ -7,6 +7,9 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
+type Marshaler json.Marshaler
+type Unmarshaler json.Unmarshaler
+
 func Marshal(v interface{}) ([]byte, error) {
 	return jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(v)
 }

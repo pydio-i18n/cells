@@ -25,18 +25,19 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/pydio/cells/v4/common/config/memory"
-	"github.com/pydio/cells/v4/common/crypto"
-	"github.com/pydio/cells/v4/common/utils/configx"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/pydio/cells/v4/common/config/memory"
+	"github.com/pydio/cells/v4/common/crypto"
+	"github.com/pydio/cells/v4/common/utils/configx"
+	clientv3 "go.etcd.io/etcd/client/v3"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"go.etcd.io/etcd/client/v3"
 	"go.uber.org/zap"
 
 	"github.com/pydio/cells/v4/common"
@@ -170,7 +171,7 @@ func initConfig() (new bool) {
 			log.Fatal("could not start keyring store")
 		}
 
-		if err := filex.Save(keyringPath, mem.Get()); err != nil {
+		if err := filex.Save(keyringPath, mem.Get().Bytes()); err != nil {
 			log.Fatal("could not start keyring store")
 		}
 
@@ -198,7 +199,7 @@ func initConfig() (new bool) {
 	config.RegisterVersionStore(versionsStore)
 
 	// Local configuration file
-	lc, err := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), true)
+	lc, err := file.New(filepath.Join(config.PydioConfigDir, config.PydioConfigFile), true, configx.WithMarshaller(jsonIndent{}))
 	if err != nil {
 		log.Fatal("could not start local file", zap.Error(err))
 	}
@@ -239,6 +240,7 @@ func initConfig() (new bool) {
 		vaultConfig, err := file.New(
 			filepath.Join(config.PydioConfigDir, "pydio-vault.json"),
 			true,
+			configx.WithMarshaller(jsonIndent{}),
 			configx.WithEncrypt(e),
 			configx.WithDecrypt(e),
 		)
@@ -345,6 +347,13 @@ func initLogLevelListener(ctx context.Context) {
 	if er != nil {
 		fmt.Println("Cannot subscribe to broker for TopicLogLevelEvent", er.Error())
 	}
+}
+
+type jsonIndent struct {
+}
+
+func (j jsonIndent) Marshal(v interface{}) ([]byte, error) {
+	return json.MarshalIndent(v, "", "  ")
 }
 
 // Encryption with key

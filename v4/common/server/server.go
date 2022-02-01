@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+
 	servercontext "github.com/pydio/cells/v4/common/server/context"
 	"golang.org/x/sync/errgroup"
 )
@@ -69,8 +70,9 @@ func (s *server) Serve() error {
 	}
 
 	// Making sure we register the endpoints
-	reg := servercontext.GetRegistry(s.opts.Context)
-	reg.Register(s)
+	if reg := servercontext.GetRegistry(s.opts.Context); reg != nil {
+		reg.Register(s)
+	}
 
 	return nil
 }
@@ -86,6 +88,11 @@ func (s *server) Stop() error {
 
 	if err := s.doAfterStop(); err != nil {
 		return err
+	}
+
+	// Making sure we register the endpoints
+	if reg := servercontext.GetRegistry(s.opts.Context); reg != nil {
+		reg.Deregister(s)
 	}
 
 	return nil

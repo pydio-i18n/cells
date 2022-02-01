@@ -84,6 +84,18 @@ func WithYAML() Option {
 	}
 }
 
+func WithMarshaller(m Marshaller) Option {
+	return func(o *Options) {
+		o.Marshaller = m
+	}
+}
+
+func WithUnmarshaler(u Unmarshaler) Option {
+	return func(o *Options) {
+		o.Unmarshaler = u
+	}
+}
+
 func WithEncrypt(e Encrypter) Option {
 	return func(o *Options) {
 		o.Encrypter = e

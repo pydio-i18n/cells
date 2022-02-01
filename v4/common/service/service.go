@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
+
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 
@@ -60,9 +62,13 @@ func NewService(opts ...ServiceOption) Service {
 
 	s.opts.Context = servicecontext.WithServiceName(s.opts.Context, name)
 
-	reg := servicecontext.GetRegistry(s.opts.Context)
-
-	reg.Register(s)
+	if reg := servicecontext.GetRegistry(s.opts.Context); reg != nil {
+		if err := reg.Register(s); err != nil {
+			log.Logger(s.opts.Context).Warn("could not register", zap.Error(err))
+		}
+	} else {
+		log.Logger(s.opts.Context).Warn("no registry attached")
+	}
 
 	return s
 }
@@ -135,6 +141,14 @@ func (s *service) Start() (er error) {
 		})
 	}
 
+	if reg := servicecontext.GetRegistry(s.opts.Context); reg != nil {
+		if err := reg.Register(s); err != nil {
+			log.Logger(s.opts.Context).Warn("could not register", zap.Error(err))
+		}
+	} else {
+		log.Logger(s.opts.Context).Warn("no registry attached")
+	}
+
 	// fmt.Println("Going through here ? for ", s.opts.Name)
 	log.Logger(s.opts.Context).Info("started")
 
@@ -158,6 +172,14 @@ func (s *service) Stop() error {
 		if err := after(s.opts.Context); err != nil {
 			return err
 		}
+	}
+
+	if reg := servicecontext.GetRegistry(s.opts.Context); reg != nil {
+		if err := reg.Deregister(s); err != nil {
+			log.Logger(s.opts.Context).Warn("could not deregister", zap.Error(err))
+		}
+	} else {
+		log.Logger(s.opts.Context).Warn("no registry attached")
 	}
 
 	log.Logger(s.opts.Context).Info("stopped")
@@ -228,4 +250,12 @@ func (s *service) IsGRPC() bool {
 }
 func (s *service) IsREST() bool {
 	return s.opts.serverType == server.ServerType_HTTP
+}
+
+func (s *service) MarshalJSON() ([]byte, error) {
+	return json.Marshal(s.opts)
+}
+
+func (s *service) UnmarshalJSON(b []byte) error {
+	return json.Unmarshal(b, s.opts)
 }

@@ -44,8 +44,10 @@ type etcd struct {
 	receivers []*receiver
 }
 
-func NewSource(ctx context.Context, cli *clientv3.Client, path string) config.Store {
-	v := configx.New(configx.WithJSON())
+func NewSource(ctx context.Context, cli *clientv3.Client, path string, opts ...configx.Option) config.Store {
+	opts = append([]configx.Option{configx.WithJSON()}, opts...)
+
+	v := configx.New(opts...)
 
 	resp, _ := cli.Get(context.Background(), path, clientv3.WithLimit(1))
 
