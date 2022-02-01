@@ -21,6 +21,7 @@
 package chat
 
 import (
+	"os"
 	"testing"
 	"time"
 
@@ -34,8 +35,13 @@ import (
 
 func TestMongoDAO_Init(t *testing.T) {
 
-	const uri = "mongodb://localhost:8282/?maxPoolSize=20&w=majority"
-	h := mongodb.NewDAO("mongodb", uri, "chat-test")
+	mDsn := os.Getenv("CELLS_TEST_MONGODB_DSN");
+	if mDsn == "" {
+		t.Log("Skipping Mongodb Test, no URI set")
+		return
+	}
+	
+	h := mongodb.NewDAO("mongodb", mDsn, "chat-test")
 	m := NewDAO(h).(DAO)
 	conf := configx.New()
 	er := m.Init(conf)

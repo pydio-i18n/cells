@@ -57,24 +57,26 @@ func init() {
 
 func initDao() (DAO, func()) {
 
-	/*
-		tmpdao := boltdb.NewDAO("boltdb", tmpDbFilePath, "")
-		dao := NewDAO(tmpdao).(DAO)
-		dao.Init(conf)
-		return dao, func() {
-			dao.CloseConn()
-			os.Remove(tmpDbFilePath)
-		}
-	*/
+	if mDsn := os.Getenv("CELLS_TEST_MONGODB_DSN"); mDsn != "" {
 
-	const uri = "mongodb://localhost:8282/?maxPoolSize=20&w=majority"
-	h := mongodb.NewDAO("mongodb", uri, "activity-test")
-	m := NewDAO(h).(DAO)
-	conf := configx.New()
-	m.Init(conf)
-	return m, func() {
-		h.DB().Drop(context.Background())
-		h.CloseConn()
+		fmt.Println("Testing on MONGO")
+		h := mongodb.NewDAO("mongodb", mDsn, "activity-test")
+		m := NewDAO(h).(DAO)
+		conf := configx.New()
+		m.Init(conf)
+		return m, func() {
+			h.DB().Drop(context.Background())
+			h.CloseConn()
+		}
+
+	}
+
+	tmpdao := boltdb.NewDAO("boltdb", tmpDbFilePath, "")
+	dao := NewDAO(tmpdao).(DAO)
+	dao.Init(conf)
+	return dao, func() {
+		dao.CloseConn()
+		os.Remove(tmpDbFilePath)
 	}
 }
 
