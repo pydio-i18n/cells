@@ -87,7 +87,6 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			return err
 		}
-
 		//pluginsRegStore, err := file.New("/tmp/registry.json", true, configregistry.WithJSONItem())
 		//if err != nil {
 		//	return err
@@ -104,7 +103,6 @@ to quickly create a Cobra application.`,
 		//
 		//regStore := etcd.NewSource(cmd.Context(), etcdconn, "registry", configregistry.WithJSONItem())
 		//reg := configregistry.NewConfigRegistry(regStore)
-
 		reg, err := registry.OpenRegistry(ctx, viper.GetString("registry"))
 		if err != nil {
 			return err
@@ -366,31 +364,9 @@ to quickly create a Cobra application.`,
 
 		for _, srv := range srvs {
 			if err := srv.Stop(); err != nil {
-				fmt.Println(err)
+				fmt.Println("Error stopping server ", err)
 			}
 		}
-		//
-		//pid := fmt.Sprintf("%d", os.Getpid())
-		//runningServices, _ := reg.List(registry.WithFilter(func(i registry.Item) bool {
-		//	var service registry.Service
-		//	if !i.As(&service) {
-		//		return false
-		//	}
-		//
-		//	for _, node := range service.Nodes() {
-		//		if node.Metadata()["PID"] == pid {
-		//			return true
-		//		}
-		//	}
-		//	return false
-		//}))
-		//
-		//for _, service := range runningServices {
-		//	var rs registry.Service
-		//	if service.As(&rs) {
-		//		rs.Stop()
-		//	}
-		//}
 
 		return nil
 	},

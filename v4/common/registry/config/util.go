@@ -214,7 +214,8 @@ func ToProtoService(s registry.Service) *pb.Service {
 	var nodes []*pb.Node
 
 	for _, n := range s.Nodes() {
-		nodes = append(nodes, ToProtoNode(n))
+		// No need to store more than the id
+		nodes = append(nodes, &pb.Node{Id: n.ID()})
 	}
 
 	return &pb.Service{

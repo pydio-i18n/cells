@@ -125,6 +125,8 @@ func (c *configRegistry) Register(item registry.Item) error {
 		fmt.Println("And the error is ? ", err)
 	}
 
+	var found bool
+
 	// Then register all services
 	for k, v := range items {
 		if v == nil {
@@ -132,12 +134,14 @@ func (c *configRegistry) Register(item registry.Item) error {
 		}
 		if v.ID() == item.ID() || (byName && v.Name() == item.Name()) {
 			items[k] = item
-			return nil
+			found = true
 		}
 	}
 
 	// not found - adding it
-	items = append(items, item)
+	if !found {
+		items = append(items, item)
+	}
 
 	if err := c.store.Set(items); err != nil {
 		return err
