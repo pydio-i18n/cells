@@ -201,11 +201,11 @@ func (m *mongoImpl) PutTask(task *jobs.Task) error {
 		Task:   task,
 	}
 	upsert := true
-	res, e := m.DB().Collection(collTasks).ReplaceOne(c, bson.D{{"id", task.ID}}, mj, &options.ReplaceOptions{Upsert: &upsert})
+	_, e := m.DB().Collection(collTasks).ReplaceOne(c, bson.D{{"id", task.ID}}, mj, &options.ReplaceOptions{Upsert: &upsert})
 	if e != nil {
 		return e
 	}
-	fmt.Println("Upserted task ", task.ID, res.UpsertedCount, res.ModifiedCount)
+	//fmt.Println("Upserted task ", task.ID, res.UpsertedCount, res.ModifiedCount)
 	return nil
 }
 
