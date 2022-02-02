@@ -21,6 +21,7 @@
 package mailer
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -29,6 +30,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
+	"github.com/pydio/cells/v4/common/dao/mongodb"
 	"github.com/pydio/cells/v4/common/proto/mailer"
 	"github.com/pydio/cells/v4/common/utils/configx"
 )
@@ -61,6 +63,73 @@ func TestEmptyDao(t *testing.T) {
 
 }
 
+func testQueue(t *testing.T, queue Queue) {
+
+	email := &mailer.Mail{
+		To: []*mailer.User{{
+			Address: "recipient@example.com",
+			Name:    "Recipient",
+		}},
+		From: &mailer.User{
+			Address: "sender@example.com",
+			Name:    "Sender",
+		},
+		Subject:      "Pydio Services coverage test",
+		ContentPlain: "This is a test",
+	}
+
+	email2 := &mailer.Mail{}
+	*email2 = *email
+	email2.Subject = "Second email"
+
+	err := queue.Push(email)
+	So(err, ShouldBeNil)
+
+	var consumedMail *mailer.Mail
+	queue.Consume(func(email *mailer.Mail) error {
+		consumedMail = email
+		return nil
+	})
+
+	So(consumedMail, ShouldNotBeNil)
+	So(consumedMail.GetFrom().Name, ShouldEqual, "Sender")
+
+	err = queue.Push(email2)
+	So(err, ShouldBeNil)
+
+	// We should only retrieve 2nd email
+	i := 0
+	queue.Consume(func(email *mailer.Mail) error {
+		consumedMail = email
+		i++
+		return nil
+	})
+	So(consumedMail, ShouldNotBeNil)
+	So(consumedMail.GetSubject(), ShouldEqual, "Second email")
+	So(i, ShouldEqual, 1)
+
+	email2.Subject = "Test 3 With Fail"
+	err = queue.Push(email2)
+	So(err, ShouldBeNil)
+	queue.Consume(func(email *mailer.Mail) error {
+		return fmt.Errorf("Failed Sending Email - Should Update Retry")
+	})
+
+	queue.Consume(func(email *mailer.Mail) error {
+		return fmt.Errorf("Failed Sending Email - Should Update Retry _ 2")
+	})
+
+	i = 0
+	queue.Consume(func(email *mailer.Mail) error {
+		i++
+		consumedMail = email
+		return nil
+	})
+	So(i, ShouldEqual, 1)
+	So(consumedMail.Retries, ShouldEqual, 2)
+
+}
+
 func TestEnqueueMail(t *testing.T) {
 
 	Convey("Test push", t, func() {
@@ -73,47 +142,28 @@ func TestEnqueueMail(t *testing.T) {
 		So(e, ShouldBeNil)
 		defer queue.Close()
 
-		email := &mailer.Mail{
-			To: []*mailer.User{{
-				Address: "recipient@example.com",
-				Name:    "Recipient",
-			}},
-			From: &mailer.User{
-				Address: "sender@example.com",
-				Name:    "Sender",
-			},
-			Subject:      "Pydio Services coverage test",
-			ContentPlain: "This is a test",
-		}
+		testQueue(t, queue)
 
-		email2 := &mailer.Mail{}
-		*email2 = *email
-		email2.Subject = "Second email"
-
-		err := queue.Push(email)
-		So(err, ShouldBeNil)
-
-		var consumedMail *mailer.Mail
-		queue.Consume(func(email *mailer.Mail) error {
-			consumedMail = email
-			return nil
-		})
-
-		So(consumedMail, ShouldNotBeNil)
-		So(consumedMail.GetFrom().Name, ShouldEqual, "Sender")
-
-		err = queue.Push(email2)
-		So(err, ShouldBeNil)
-
-		// We should only retrieve 2nd email
-		i := 0
-		queue.Consume(func(email *mailer.Mail) error {
-			consumedMail = email
-			i++
-			return nil
-		})
-		So(consumedMail, ShouldNotBeNil)
-		So(consumedMail.GetSubject(), ShouldEqual, "Second email")
-		So(i, ShouldEqual, 1)
 	})
+
+	mDsn := os.Getenv("CELLS_TEST_MONGODB_DSN")
+	if mDsn == "" {
+		return
+	}
+
+	Convey("Test Mongo if found in ENV", t, func() {
+
+		dao := mongodb.NewDAO("mongodb", mDsn, "mailqueue-test")
+		queue, e := NewMongoQueue(dao, configx.New())
+		So(e, ShouldBeNil)
+		defer func() {
+			queue.(*mongoQueue).DB().Drop(context.Background())
+			queue.Close()
+
+		}()
+
+		testQueue(t, queue)
+
+	})
+
 }
