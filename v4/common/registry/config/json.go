@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"reflect"
 
+	"google.golang.org/protobuf/encoding/protojson"
+
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry"
 	"github.com/pydio/cells/v4/common/utils/configx"
-	"google.golang.org/protobuf/proto"
 )
 
 type jsonReader struct{}
@@ -15,7 +16,7 @@ type jsonReader struct{}
 func (j *jsonReader) Unmarshal(data []byte, out interface{}) error {
 	i := new(pb.ListResponse)
 
-	if err := proto.Unmarshal(data, i); err != nil {
+	if err := protojson.Unmarshal(data, i); err != nil {
 		return err
 	}
 
@@ -40,7 +41,7 @@ func (j *jsonWriter) Marshal(in interface{}) ([]byte, error) {
 			items = append(items, ToProtoItem(i))
 		}
 
-		return proto.Marshal(&pb.ListResponse{Items: items})
+		return protojson.MarshalOptions{Indent: "  "}.Marshal(&pb.ListResponse{Items: items})
 	}
 
 	return nil, fmt.Errorf("should not be here")

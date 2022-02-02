@@ -106,10 +106,9 @@ func (s *Server) Serve() error {
 }
 
 func (s *Server) Stop() error {
-	s.Server.Stop()
+	s.Server.GracefulStop()
 
-	return s.opts.Listener.Close()
-
+	return nil
 }
 
 func (s *Server) ID() string {

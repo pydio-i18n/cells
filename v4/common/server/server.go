@@ -39,18 +39,19 @@ const (
 
 type server struct {
 	s    RawServer
-	opts ServerOptions
+	opts *ServerOptions
 }
 
 func NewServer(ctx context.Context, s RawServer) Server {
-	reg := servercontext.GetRegistry(ctx)
+
 	srv := &server{
 		s: s,
-		opts: ServerOptions{
+		opts: &ServerOptions{
 			Context: ctx,
 		},
 	}
 
+	reg := servercontext.GetRegistry(ctx)
 	reg.Register(srv)
 
 	return srv
