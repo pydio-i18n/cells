@@ -128,7 +128,7 @@ func (s *EventSubscriber) Handle(ctx context.Context, msg *tree.NodeChangeEvent)
 				uuid = target.Uuid
 				s.TreeServer.updateDataSourceNode(target, target.GetStringMeta(common.MetaNamespaceDatasourceName))
 			}
-			log.Logger(ctx).Info("Got move metadata from context - Skip event", zap.Any("uuid", uuid), zap.Any("event", msg))
+			log.Logger(ctx).Debug("Got move metadata from context - Skip event", zap.Any("uuid", uuid), zap.Any("event", msg))
 			s.enqueueMoves(ctx, uuid, msg)
 			return nil
 		}
