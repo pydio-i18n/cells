@@ -40,6 +40,14 @@ var json = `{
     "pydio.grpc.chat": {
       "driver": "boltdb",
       "dsn": "/home/user/.config/pydio/cells/services/pydio.grpc.chat/chat.db"
+    },
+    "pydio.grpc.docstore": {
+      "driver": "boltdb",
+      "dsn": "/home/user/.config/pydio/cells/services/pydio.grpc.docstore/docstore.db"
+    },
+    "pydio.grpc.versions": {
+      "driver": "boltdb",
+      "dsn": "/home/user/.config/pydio/cells/services/pydio.grpc.versions/versions.db"
     }
   },
   "defaults": {

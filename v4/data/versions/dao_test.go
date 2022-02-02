@@ -21,21 +21,26 @@
 package versions
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 
+	"github.com/pydio/cells/v4/common/dao/boltdb"
+	"github.com/pydio/cells/v4/common/dao/mongodb"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/utils/configx"
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 func TestNewBoltStore(t *testing.T) {
 
 	Convey("Test NewBoltStore", t, func() {
-
 		p := filepath.Join(os.TempDir(), "bolt-test1.db")
-		bs, e := NewBoltStore(p, true)
+		bd := boltdb.NewDAO("boltdb", p, "test")
+		bs, e := NewBoltStore(bd, p, true)
 		So(e, ShouldBeNil)
 		So(bs, ShouldNotBeNil)
 
@@ -44,11 +49,35 @@ func TestNewBoltStore(t *testing.T) {
 		stat, _ := os.Stat(p)
 		So(stat, ShouldBeNil)
 
-		bs, e = NewBoltStore(os.DevNull, true)
-		So(e, ShouldNotBeNil)
-		So(bs, ShouldBeNil)
-
 	})
+
+}
+
+func initTestDAO(name string) (DAO, func()) {
+
+	mDsn := os.Getenv("CELLS_TEST_MONGODB_DSN")
+	if mDsn != "" {
+
+		coreDao := mongodb.NewDAO("mongodb", mDsn, "versions-test")
+		dao := NewDAO(coreDao).(DAO)
+		dao.Init(configx.New())
+		closer := func() {
+			dao.(*mongoStore).DB().Drop(context.Background())
+			dao.CloseConn()
+		}
+
+		return dao, closer
+
+	} else {
+		p := filepath.Join(os.TempDir(), name+".db")
+		bd := boltdb.NewDAO("boltdb", p, "test")
+		bs, _ := NewBoltStore(bd, p, true)
+		closer := func() {
+			bs.Close()
+		}
+		return bs, closer
+
+	}
 
 }
 
@@ -56,13 +85,11 @@ func TestBoltStore_CRUD(t *testing.T) {
 
 	Convey("Test CRUD", t, func() {
 
-		p := filepath.Join(os.TempDir(), "bolt-test1.db")
-		bs, e := NewBoltStore(p, true)
-		So(e, ShouldBeNil)
-		defer bs.Close()
-		defer os.Remove(p)
+		bs, closer := initTestDAO("versions-" + uuid.New())
+		So(bs, ShouldNotBeNil)
+		defer closer()
 
-		e = bs.StoreVersion("uuid", &tree.ChangeLog{Uuid: "version1", Data: []byte("etag1")})
+		e := bs.StoreVersion("uuid", &tree.ChangeLog{Uuid: "version1", Data: []byte("etag1")})
 		So(e, ShouldBeNil)
 		e = bs.StoreVersion("uuid", &tree.ChangeLog{Uuid: "version2", Data: []byte("etag2")})
 		So(e, ShouldBeNil)
@@ -100,10 +127,12 @@ func TestBoltStore_CRUD(t *testing.T) {
 		So(versionIds, ShouldHaveLength, 1)
 
 		last, e := bs.GetLastVersion("uuid")
-		So(last, ShouldResemble, &tree.ChangeLog{Uuid: "version3", Data: []byte("etag3")})
+		So(last.Uuid, ShouldEqual, "version3")
+		So(string(last.Data), ShouldEqual, "etag3")
 
 		specific, e := bs.GetVersion("uuid", "version2")
-		So(specific, ShouldResemble, &tree.ChangeLog{Uuid: "version2", Data: []byte("etag2")})
+		So(specific.Uuid, ShouldEqual, "version2")
+		So(string(specific.Data), ShouldEqual, "etag2")
 
 		nonExisting, e := bs.GetLastVersion("noid")
 		So(e, ShouldBeNil)
@@ -111,7 +140,7 @@ func TestBoltStore_CRUD(t *testing.T) {
 
 		nonExisting, e = bs.GetVersion("uuid", "wrongVersion")
 		So(e, ShouldBeNil)
-		So(nonExisting, ShouldResemble, &tree.ChangeLog{})
+		So(nonExisting.Uuid, ShouldEqual, "")
 
 		ee := bs.DeleteVersionsForNode("uuid")
 		So(ee, ShouldBeNil)
@@ -133,13 +162,11 @@ func TestBoltStore_CRUD(t *testing.T) {
 
 	Convey("Test DeleteVersionsForNode", t, func() {
 
-		p := filepath.Join(os.TempDir(), "bolt-test2.db")
-		bs, e := NewBoltStore(p, true)
-		So(e, ShouldBeNil)
-		defer bs.Close()
-		defer os.Remove(p)
+		bs, closer := initTestDAO("versions-" + uuid.New())
+		So(bs, ShouldNotBeNil)
+		defer closer()
 
-		e = bs.StoreVersion("uuid", &tree.ChangeLog{Uuid: "version1", Data: []byte("etag1")})
+		e := bs.StoreVersion("uuid", &tree.ChangeLog{Uuid: "version1", Data: []byte("etag1")})
 		So(e, ShouldBeNil)
 		e = bs.StoreVersion("uuid", &tree.ChangeLog{Uuid: "version2", Data: []byte("etag2")})
 		So(e, ShouldBeNil)

@@ -23,7 +23,6 @@ package grpc
 
 import (
 	"context"
-	"path"
 	"time"
 
 	"google.golang.org/grpc"
@@ -37,6 +36,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/common/utils/std"
 	"github.com/pydio/cells/v4/data/versions"
@@ -65,6 +65,7 @@ func init() {
 					Up:            InitDefaults,
 				},
 			}),
+			service.WithStorage(versions.NewDAO, "versions"),
 			//service.Unique(true),
 			service.AfterServe(func(ctx context.Context) error {
 				return std.Retry(ctx, func() error {
@@ -88,18 +89,10 @@ func init() {
 			}),
 			service.WithGRPC(func(ctx context.Context, server *grpc.Server) error {
 
-				serviceDir, e := config.ServiceDataDir(common.ServiceGrpcNamespace_ + common.ServiceVersions)
-				if e != nil {
-					return e
-				}
-				store, err := versions.NewBoltStore(path.Join(serviceDir, "versions.db"))
-				if err != nil {
-					return err
-				}
-
+				dao := servicecontext.GetDAO(ctx).(versions.DAO)
 				engine := &Handler{
 					srvName: Name,
-					db:      store,
+					db:      dao,
 				}
 
 				tree.RegisterNodeVersionerEnhancedServer(server, engine)
