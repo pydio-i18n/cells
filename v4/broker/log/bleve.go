@@ -274,7 +274,11 @@ func MarshallLogMsg(line *log.Log) (*IndexableLog, error) {
 	// Concatenate msg and error in the full text msg field.
 	text := ""
 	if m, ok := data["msg"]; ok {
-		text = m.(string)
+		if t, o := m.(string); o {
+			text = t
+		} else {
+			fmt.Println("Error while unmarshaling log data, data['msg'] not a string", m)
+		}
 	}
 	if m, ok := data["error"]; ok {
 		text += " - " + m.(string)
