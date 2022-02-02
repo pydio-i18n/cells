@@ -21,9 +21,11 @@
 package jobs
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"sync"
 	"testing"
 	"time"
@@ -32,68 +34,64 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 
+	"github.com/pydio/cells/v4/common/dao/boltdb"
+	"github.com/pydio/cells/v4/common/dao/mongodb"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	"github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/service/errors"
+	"github.com/pydio/cells/v4/common/utils/configx"
 )
 
 func TestNewBoltStore(t *testing.T) {
 
 	Convey("Test open bolt db", t, func() {
 		dbFile := os.TempDir() + "/bolt-test.db"
+		dao := boltdb.NewDAO("boltdb", dbFile, "test-jobs")
 		defer os.Remove(dbFile)
-		db, err := NewBoltStore(dbFile)
-		defer db.Close()
+		db, err := NewBoltStore(dao)
+		defer dao.CloseConn()
 		So(err, ShouldBeNil)
 		So(db, ShouldNotBeNil)
 	})
 
-	Convey("Test open wrong file", t, func() {
-		dbFile := os.TempDir() + "/watever-non-existing-folder/toto.db"
-		_, err := NewBoltStore(dbFile)
-		So(err, ShouldNotBeNil)
-	})
-
 }
 
-func listAndCount(db *BoltStore, owner string, eventsOnly bool, timersOnly bool, withTasks jobs.TaskStatus, taskCursor ...int32) (map[string]*jobs.Job, int, error) {
+func initDAO(name string) (DAO, func()) {
 
-	resCount := 0
-	res, done, err := db.ListJobs(owner, eventsOnly, timersOnly, withTasks, []string{}, taskCursor...)
-	So(err, ShouldBeNil)
-	wg := &sync.WaitGroup{}
-	wg.Add(1)
-	list := make(map[string]*jobs.Job)
-	go func() {
-		defer wg.Done()
-		for {
-			select {
-			case job := <-res:
-				if job != nil {
-					log.Println(job)
-					list[job.ID] = job
-					resCount++
-				}
-			case <-done:
-				return
-			}
+	mDsn := os.Getenv("CELLS_TEST_MONGODB_DSN")
+	if mDsn != "" {
+
+		coreDao := mongodb.NewDAO("mongodb", mDsn, "versions-test")
+		dao := NewDAO(coreDao).(DAO)
+		dao.Init(configx.New())
+		closer := func() {
+			coreDao.DB().Drop(context.Background())
+			dao.CloseConn()
 		}
-	}()
-	wg.Wait()
 
-	return list, resCount, err
+		return dao, closer
+
+	} else {
+		p := filepath.Join(os.TempDir(), name+".db")
+		bd := boltdb.NewDAO("boltdb", p, "test")
+		bs, _ := NewBoltStore(bd)
+		closer := func() {
+			bd.CloseConn()
+			os.Remove(p)
+		}
+		return bs, closer
+
+	}
+
 }
 
 func TestBoltStore_CRUD(t *testing.T) {
 
 	Convey("Test Put / Get / Delete", t, func() {
 
-		dbFile := os.TempDir() + "/bolt-test-put.db"
-		defer os.Remove(dbFile)
-		db, err := NewBoltStore(dbFile)
-		defer db.Close()
-		So(err, ShouldBeNil)
+		db, closer := initDAO("bolt-test-put")
+		defer closer()
 
 		searchQuery, _ := anypb.New(&tree.Query{
 			Extension: "jpg",
@@ -143,11 +141,8 @@ func TestBoltStore_ListJobs(t *testing.T) {
 
 	Convey("Test List Jobs", t, func() {
 
-		dbFile := os.TempDir() + "/bolt-test-list.db"
-		defer os.Remove(dbFile)
-		db, err := NewBoltStore(dbFile)
-		defer db.Close()
-		So(err, ShouldBeNil)
+		db, closer := initDAO("bolt-test-put")
+		defer closer()
 
 		db.PutJob(&jobs.Job{
 			ID:             "unique-job-id",
@@ -281,7 +276,35 @@ func TestBoltStore_ListJobs(t *testing.T) {
 
 }
 
-func loadTasks(db *BoltStore, jobId string, jobStatus jobs.TaskStatus, offset ...int32) ([]*jobs.Task, error) {
+func listAndCount(db DAO, owner string, eventsOnly bool, timersOnly bool, withTasks jobs.TaskStatus, taskCursor ...int32) (map[string]*jobs.Job, int, error) {
+
+	resCount := 0
+	res, done, err := db.ListJobs(owner, eventsOnly, timersOnly, withTasks, []string{}, taskCursor...)
+	So(err, ShouldBeNil)
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	list := make(map[string]*jobs.Job)
+	go func() {
+		defer wg.Done()
+		for {
+			select {
+			case job := <-res:
+				if job != nil {
+					log.Println(job)
+					list[job.ID] = job
+					resCount++
+				}
+			case <-done:
+				return
+			}
+		}
+	}()
+	wg.Wait()
+
+	return list, resCount, err
+}
+
+func loadTasks(db DAO, jobId string, jobStatus jobs.TaskStatus, offset ...int32) ([]*jobs.Task, error) {
 
 	tasksChan, doneChan, err := db.ListTasks(jobId, jobStatus, offset...)
 	var allTasks []*jobs.Task
@@ -309,11 +332,8 @@ func TestBoltStore_PutTask(t *testing.T) {
 
 	Convey("Test Put Task", t, func() {
 
-		dbFile := os.TempDir() + "/bolt-test-tasks.db"
-		defer os.Remove(dbFile)
-		db, err := NewBoltStore(dbFile)
-		So(err, ShouldBeNil)
-		defer db.Close()
+		db, closer := initDAO("bolt-test-put")
+		defer closer()
 
 		e := db.PutTask(&jobs.Task{
 			ID:        "unique-task-id",
@@ -335,11 +355,8 @@ func TestBoltStore_listTask(t *testing.T) {
 
 	Convey("Test Put Task", t, func() {
 
-		dbFile := os.TempDir() + "/bolt-test-tasks-list.db"
-		defer os.Remove(dbFile)
-		db, err := NewBoltStore(dbFile)
-		So(err, ShouldBeNil)
-		defer db.Close()
+		db, closer := initDAO("bolt-test-put")
+		defer closer()
 
 		e := db.PutTask(&jobs.Task{
 			ID:        "unique-task-id",

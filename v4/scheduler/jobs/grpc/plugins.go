@@ -25,19 +25,20 @@ import (
 	"context"
 	"path"
 
-	"github.com/pydio/cells/v4/broker/log"
-	"github.com/pydio/cells/v4/common/config"
-	log3 "github.com/pydio/cells/v4/common/log"
-	proto "github.com/pydio/cells/v4/common/proto/jobs"
-	log2 "github.com/pydio/cells/v4/common/proto/log"
-	"github.com/pydio/cells/v4/common/proto/sync"
-	"github.com/pydio/cells/v4/scheduler/jobs"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
+	"github.com/pydio/cells/v4/broker/log"
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/config"
+	log3 "github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/plugins"
+	proto "github.com/pydio/cells/v4/common/proto/jobs"
+	log2 "github.com/pydio/cells/v4/common/proto/log"
+	"github.com/pydio/cells/v4/common/proto/sync"
 	"github.com/pydio/cells/v4/common/service"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
+	"github.com/pydio/cells/v4/scheduler/jobs"
 )
 
 var (
@@ -57,6 +58,7 @@ func init() {
 			service.Description("Store for scheduler jobs description"),
 			service.Unique(true),
 			service.Fork(true),
+			service.WithStorage(jobs.NewDAO, "jobs"),
 			service.Migrations([]*service.Migration{
 				{
 					TargetVersion: service.ValidVersion("1.4.0"),
@@ -89,10 +91,8 @@ func init() {
 				if e != nil {
 					return e
 				}
-				store, err := jobs.NewBoltStore(path.Join(serviceDir, "jobs.db"))
-				if err != nil {
-					return err
-				}
+				store := servicecontext.GetDAO(c).(jobs.DAO)
+
 				logStore, err := log.NewSyslogServer(path.Join(serviceDir, "tasklogs.bleve"), "tasksLog", -1)
 				if err != nil {
 					return err
@@ -160,7 +160,6 @@ func init() {
 					<-c.Done()
 					handler.Close()
 					logStore.Close()
-					store.Close()
 				}()
 				return nil
 			}),
