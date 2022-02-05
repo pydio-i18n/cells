@@ -18,7 +18,7 @@
  * The latest code can be found at <https://pydio.com>.
  */
 
-package service
+package util
 
 import (
 	"errors"
@@ -137,6 +137,16 @@ func (e *endpoint) Name() string {
 
 func (e *endpoint) Metadata() map[string]string {
 	return e.e.Metadata
+}
+
+func ToProtoItems(ii []registry.Item) []*pb.Item {
+	var items []*pb.Item
+
+	for _, i := range ii {
+		items = append(items, ToProtoItem(i))
+	}
+
+	return items
 }
 
 func ToProtoItem(i registry.Item) *pb.Item {
