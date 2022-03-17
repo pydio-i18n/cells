@@ -126,16 +126,16 @@
     "other": "Analyzing..."
   },
   "status.dir.new": {
-    "other": "Folder awaiting upload..."
+    "other": "Ordner wartet auf Upload..."
   },
   "status.file.new": {
-    "other": "File awaiting upload..."
+    "other": "Datei wartet auf Upload..."
   },
   "status.dir.analyse": {
-    "other": "Analyzing folder..."
+    "other": "Ordner wird analysiert..."
   },
   "status.file.analyse": {
-    "other": "Analyzing file..."
+    "other": "Datei wird analysiert..."
   },
   "status.dir.loading": {
     "other": "Ordner wird erstellt"
