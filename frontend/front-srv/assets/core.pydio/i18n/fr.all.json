@@ -2400,9 +2400,9 @@
     "other": "Aller au dossier"
   },
   "action.copymove.recent": {
-    "other": "Recent Locations"
+    "other": "Emplacements récents"
   },
   "action.copymove.root": {
-    "other": "Top Folder"
+    "other": "Répertoire principal"
   }
 }
