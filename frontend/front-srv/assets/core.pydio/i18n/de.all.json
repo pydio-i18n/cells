@@ -2400,9 +2400,9 @@
     "other": "Zum Ordner"
   },
   "action.copymove.recent": {
-    "other": "Recent Locations"
+    "other": "Aktuelle Standorte"
   },
   "action.copymove.root": {
-    "other": "Top Folder"
+    "other": "Hauptordner"
   }
 }
