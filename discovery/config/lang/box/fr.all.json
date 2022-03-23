@@ -99,10 +99,10 @@
     "other": "occurrences (expr. reg)"
   },
   "conditionPathGlobCondition.glob": {
-    "other": "pattern"
+    "other": "motif"
   },
   "conditionBooleanCondition.value": {
-    "other": "True"
+    "other": "Vrai"
   },
   "contextMetaCondition.CIDRCondition": {
     "other": "Condition CIDR"
@@ -135,10 +135,10 @@
     "other": "Date postérieure à"
   },
   "contextMetaCondition.PathGlobCondition": {
-    "other": "Glob Matcher"
+    "other": "Expression Glob"
   },
   "contextMetaCondition.BooleanCondition": {
-    "other": "Boolean Value"
+    "other": "Valeur booléenne"
   },
   "contextMetaField.ContentType": {
     "other": "Type de contenu"
