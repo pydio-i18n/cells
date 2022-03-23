@@ -99,10 +99,10 @@
     "other": "trefferliste"
   },
   "conditionPathGlobCondition.glob": {
-    "other": "pattern"
+    "other": "Muster"
   },
   "conditionBooleanCondition.value": {
-    "other": "True"
+    "other": "Wahr"
   },
   "contextMetaCondition.CIDRCondition": {
     "other": "CIDRBedingung"
@@ -135,10 +135,10 @@
     "other": "Datum ist nach"
   },
   "contextMetaCondition.PathGlobCondition": {
-    "other": "Glob Matcher"
+    "other": "Glob-Matcher"
   },
   "contextMetaCondition.BooleanCondition": {
-    "other": "Boolean Value"
+    "other": "Boolescher Wert"
   },
   "contextMetaField.ContentType": {
     "other": "Inhaltstyp"
