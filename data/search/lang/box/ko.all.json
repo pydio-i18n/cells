@@ -9,12 +9,12 @@
     "other": "파일 이름 분석"
   },
   "Search.Config.BasenameAnalyze.Description": {
-    "other": "Analyzer used on file names"
+    "other": "파일 이름에 사용되는 분석"
   },
   "Search.Config.ContentAnalyzer.Label": {
     "other": "내용 분석"
   },
   "Search.Config.ContentAnalyzer.Description": {
-    "other": "Analyzer used on contents"
+    "other": "컨텐츠에 사용되는 분석"
   }
 }
