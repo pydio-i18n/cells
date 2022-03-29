@@ -65,39 +65,39 @@
     "other": "~보다 큰 파일 무시"
   },
   "Config.GroupSizes.IgnoreFilesGreaterThan.Description": {
-    "other": "Do NOT version files with size greater than this limit. Use -1 for no limit"
+    "other": "크기가 이 제한을 초과하는 버전 파일은 사용하지 않음. 제한없이 사용시 -1 사용"
   },
   "Config.GroupRetention.Title": {
-    "other": "Retention Periods"
+    "other": "보존 기간"
   },
   "Config.GroupRetention.Description": {
-    "other": "Number of versions to keep per period"
+    "other": "기간당 유지할 버전의 수"
   },
   "Config.GroupRetention.IntervalStart.Name": {
-    "other": "Period Start"
+    "other": "기간 시작"
   },
   "Config.GroupRetention.IntervalStart.Description": {
-    "other": "Start point used for computing period. 0 is the time of the last version set, use another Period to set an limit"
+    "other": "계산 기간에 사용되는 시작점임. 0은 마지막 버전의 집합 시간임. 제한을 설정하려면 다른 기간을 사용"
   },
   "Config.GroupRetention.MaxNumber.Name": {
-    "other": "Maximum Number of Versions"
+    "other": "최대 버전 수"
   },
   "Config.GroupRetention.MaxNumber.Description": {
-    "other": "Max number of versions to keep over this period. Use -1 to keep all versions, 0 to delete all."
+    "other": "기간동안 유지할 최대 버전 수. 모든 버전을 유지하려면 -1을 사용, 모두 삭제하려면 0을 사용"
   },
   "Config.GroupRetention.NodeDeletedStrategy.Name": {
-    "other": "After original file deletion"
+    "other": "원본 파일 삭제 후"
   },
   "Config.GroupRetention.NodeDeletedStrategy.Description": {
-    "other": "Number of versions to keep after original file deletion."
+    "other": "원본 파일 삭제 후 유지할 버전의 수"
   },
   "Config.GroupRetention.NodeDeletedStrategy.KeepAll": {
-    "other": "Backup all existing versions"
+    "other": "모든 기존 버전 백업"
   },
   "Config.GroupRetention.NodeDeletedStrategy.KeepLast": {
-    "other": "Backup most recent version only"
+    "other": "가장 최근 버전만 백업"
   },
   "Config.GroupRetention.NodeDeletedStrategy.KeepNone": {
-    "other": "Delete all existing versions"
+    "other": "기존 버전 모두 삭제"
   }
 }
