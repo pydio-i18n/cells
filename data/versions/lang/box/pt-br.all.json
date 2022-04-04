@@ -16,8 +16,8 @@
     "other": "Limpando arquivos de versões para nodes excluídos"
   },
   "Job.Pruning.StatusDone": {
-    "one": "Successfully removed {{.Count}} version",
-    "other": "Successfully removed {{.Count}} versions."
+    "one": "Versão {{.Count}} removida com sucesso",
+    "other": "Versões {{.Count}} removidas com sucesso."
   },
   "Config.GroupPolicy.Title": {
     "other": "Política"
