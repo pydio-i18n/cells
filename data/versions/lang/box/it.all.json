@@ -16,8 +16,8 @@
     "other": "Pulizia delle versioni dei file per i nodi cancellati"
   },
   "Job.Pruning.StatusDone": {
-    "one": "Versione {{.Count}} rimossa con successo",
-    "other": "Versioni {{.Count}} rimosse con successo."
+    "one": "Successfully removed {{.Count}} version",
+    "other": "Successfully removed {{.Count}} versions."
   },
   "Config.GroupPolicy.Title": {
     "other": "Policy"
