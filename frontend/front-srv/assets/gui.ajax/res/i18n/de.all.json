@@ -120,7 +120,7 @@
     "other": "Authentifizierung fehlgeschlagen"
   },
   "oauth.authentication.code": {
-    "other": "Sie wurden erfolgreich authentifiziert. Bitte kopieren Sie den Code und fügen Sie ihn in Ihr Kommandozeilenterminal ein"
+    "other": "You were successfully authenticated. Please copy and paste the code to your command line terminal"
   },
   "oauth.authentication.copy-code": {
     "other": "In die Zwischenablage kopieren"
