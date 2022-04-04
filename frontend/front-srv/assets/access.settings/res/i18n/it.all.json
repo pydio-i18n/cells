@@ -108,7 +108,7 @@
     "other": "Elimina la cache dei plugin. Può essere necessario per visualizzare i nuovi plugin nella lista."
   },
   "131": {
-    "other": "Plugins cache files were deleted successfully!"
+    "other": "I file della cache dei plugin sono stati cancellati con successo!"
   },
   "132": {
     "other": "Cache pulita, ma sei in modalità SKIP_CACHE (si veda 'bootstrap_context.php')."
