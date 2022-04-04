@@ -120,7 +120,7 @@
     "other": "Error de Autenticación"
   },
   "oauth.authentication.code": {
-    "other": "You were successfully authenticated. Please copy and paste the code to your command line terminal"
+    "other": "Se ha autenticado correctamente. Por favor, copie y pegue el código en su terminal de línea de comandos"
   },
   "oauth.authentication.copy-code": {
     "other": "Copiar código al portapaples"
