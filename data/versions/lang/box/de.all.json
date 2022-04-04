@@ -16,8 +16,8 @@
     "other": "Bereinigung von Versionsdateien für gelöschte Knoten"
   },
   "Job.Pruning.StatusDone": {
-    "one": "{{.Count}} Version erfolgreich gelöscht",
-    "other": "{{.Count}} Versionen erfolgreich entfernt."
+    "one": "Successfully removed {{.Count}} version",
+    "other": "Successfully removed {{.Count}} versions."
   },
   "Config.GroupPolicy.Title": {
     "other": "Richtlinie"
