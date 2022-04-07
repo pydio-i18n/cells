@@ -15,16 +15,16 @@
     "other": "允许用户在共享文件夹时创建新用户"
   },
   "Allow the users to pick an existing user when sharing a folder": {
-    "other": "Allow the users to pick an existing user when sharing a folder"
+    "other": "允许用户在共享文件夹时选择已有用户"
   },
   "Allow to search users from other groups through auto completer (can be handy if previous option is set to false) and share workspaces with them": {
-    "other": "Allow to search users from other groups through auto completer (can be handy if previous option is set to false) and share workspaces with them"
+    "other": "允许通过自动完成从其他组中搜索用户 (如果先前的选项设置为 false) 并与他们共享工作区"
   },
   "Always Override": {
     "other": "总是覆盖"
   },
   "Always override other roles, included group roles.": {
-    "other": "Always override other roles, included group roles."
+    "other": "总是覆盖其他角色，包括组角色。"
   },
   "Avatar": {
     "other": "头像"
@@ -57,10 +57,10 @@
     "other": "显示角色和/或群组"
   },
   "Do not display real login in parenthesis": {
-    "other": "Do not display real login in parenthesis"
+    "other": "不要在括号中显示真实的登录信息"
   },
   "Do not load groups and users list if no regexp is entered. Avoid sending large search on LDAP.": {
-    "other": "Do not load groups and users list if no regexp is entered. Avoid sending large search on LDAP."
+    "other": "如果没有输入正则表达式，请不要加载组和用户列表。避免在 LDAP 上发送大规模搜索。"
   },
   "Email": {
     "other": "电子邮件"
@@ -84,10 +84,10 @@
     "other": "隐藏真实登录名"
   },
   "If previous option is set to True, directly display a full list of users from all groups": {
-    "other": "If previous option is set to True, directly display a full list of users from all groups"
+    "other": "如果之前的选项设置为 True，直接显示来自所有组的完整用户列表"
   },
   "If set, this action will be triggered automatically at users login. Can be logout (to lock out the users), pass_change (to force password change), or anything else": {
-    "other": "If set, this action will be triggered automatically at users login. Can be logout (to lock out the users), pass_change (to force password change), or anything else"
+    "other": "如果设置，此操作将在用户登录时自动触发。 可以登出(锁定用户)、密码更改(强制密码更改) 或其他任何内容"
   },
   "If the 'guest' user is enabled, remember her preferences accross sessions.": {
     "other": "If the 'guest' user is enabled, remember her preferences accross sessions."
