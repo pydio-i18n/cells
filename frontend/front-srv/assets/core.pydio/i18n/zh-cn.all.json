@@ -1107,7 +1107,7 @@
     "other": "工作区已成功删除"
   },
   "429": {
-    "other": "This is how the workspace will appear in your list."
+    "other": "这就是工作区在列表中的显示方式。"
   },
   "43": {
     "other": "已存在(名称不区分大小写)"
@@ -1227,7 +1227,7 @@
     "other": "一次下载所有工作区内容（zip压缩）"
   },
   "465": {
-    "other": "Show alternative URLs (mount workspaces separately)"
+    "other": "显示可选的 URLs (分开挂载工作区)"
   },
   "466": {
     "other": "加载中..."
@@ -1287,7 +1287,7 @@
     "other": "快速访问您加标签的项目"
   },
   "483": {
-    "other": "You are not authorized to create more users!"
+    "other": "您无权创建更多用户！"
   },
   "484": {
     "other": "创建用户"
