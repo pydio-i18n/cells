@@ -1086,7 +1086,7 @@
     "other": "+ 添加用户"
   },
   "user.10": {
-    "other": "Access to %i workspaces"
+    "other": "访问 %i 个工作区"
   },
   "user.11": {
     "other": "%i 角色"
@@ -1413,7 +1413,7 @@
     "other": "选择一项功能"
   },
   "ws.48": {
-    "other": "Beware, this workspace/template is not editable, as it is defined directly in the conf/bootstrap_repositories.php file."
+    "other": "请注意，这个工作区/模板不可编辑，因为它是直接在 conf/bootstrap_replies.php 文件中定义的。"
   },
   "ws.49": {
     "other": ""
@@ -1434,7 +1434,7 @@
     "other": "Please note: as this worksace has user-specific contents, indexation will be launched for each user."
   },
   "ws.53": {
-    "other": "Launch indexation now"
+    "other": "立即启动索引"
   },
   "ws.54": {
     "other": "计划每日上午3点"
@@ -1464,7 +1464,7 @@
     "other": "Activity of the workspace is displayed to the users in the right-hand panel. You can clear all activity\n                            for this workspace, which can be handy e.g. if you are going \"live\" in production after a staging period where you have\n                            made some tests in this workspace."
   },
   "ws.62": {
-    "other": "Clear Activity"
+    "other": "清除活动日志"
   },
   "ws.63": {
     "other": "警告，这将清除显示给用户的此工作区的所有活动。您确定要这样做吗？"
@@ -1482,7 +1482,7 @@
     "other": "没有正在运行的任务"
   },
   "ws.68": {
-    "other": "No Parameters"
+    "other": "没有参数"
   },
   "ws.69": {
     "other": "Template-based workspace"
