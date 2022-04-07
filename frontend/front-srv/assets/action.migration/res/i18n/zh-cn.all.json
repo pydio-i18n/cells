@@ -327,15 +327,15 @@
     "other": "以下元数据将被导入： "
   },
   "action.meta.files": {
-    "other": "For files metadata, the following mapping will be used: "
+    "other": "对于文件元数据，将使用以下映射： "
   },
   "action.meta.success": {
     "other": "已创建元数据命名空间"
   },
   "action.meta.fail": {
-    "other": "Error while creating metadata namespace : %s"
+    "other": "创建元数据命名空间时发生错误： %s"
   },
   "logs.empty": {
-    "other": "No activity found"
+    "other": "未找到活动"
   }
 }
