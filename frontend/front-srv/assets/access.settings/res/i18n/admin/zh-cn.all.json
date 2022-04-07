@@ -42,7 +42,7 @@
     "other": "创建数据源"
   },
   "ds.format-picker.legend": {
-    "other": "DataSources are mount points allowing you to attach actual storage to the application. First select the way data is organized inside storage."
+    "other": "数据源是挂载点，允许您将实际存储附加到应用程序。首先选择存储中数据的组织方式。"
   },
   "ds.format-picker.submit": {
     "other": "开始"
@@ -60,7 +60,7 @@
     "other": "文件和文件夹按原样存储，实时同步反映内部索引中的存储结构。"
   },
   "ds.format-picker.internal.title": {
-    "other": "Cells Internals"
+    "other": "单元格"
   },
   "ds.format-picker.internal.legend": {
     "other": "Used to store internal binaries (e.g. files versions, thumbnails). Limited features, data is not indexed in search engines."
@@ -138,10 +138,10 @@
     "other": "使用标准的 API Key/ Api Secret进行身份验证，使用官方Amazon S3则将URL留空， 或填写您自己的S3兼容存储的URL。"
   },
   "ds.editor.storage.legend.fs": {
-    "other": "Browse data from a local or network-attached file system."
+    "other": "浏览本地或网络附加文件系统的数据。"
   },
   "ds.editor.storage.legend.fs.peer": {
-    "other": "Restricting datasource to a peer address will start the service only a specific node. Using \"Any\" value will start service on all nodes where Cells is running, which can be handy if a shared filesystem is mounted on all nodes at the same location, or if your node may change its IP on restart. To avoid conflicts, it is better to either use ANY for all datasources or select specific nodes for all datasources."
+    "other": "限制数据源到对等地址将仅启动一个特定节点。 使用“Any”值将在单元格运行的所有节点上启动服务, 当共享文件系统挂载在同一位置的所有节点上时，它可以是便捷的， 或者如果您的节点可能在重启时更改其IP。 为了避免冲突，最好是要么对所有数据源使用ANY，要么选择所有数据源的特定节点。"
   },
   "ds.editor.storage.legend.fs.path": {
     "other": "请确保最后一个文件夹名是小写的，其父文件夹是可写的。 如果您现有的文件夹是大写，您可以使用别名链接来处理此限制。"
@@ -228,7 +228,7 @@
     "other": "本地目录"
   },
   "ds.editor.selector.folder.hint": {
-    "other": "Select a peer to load folders"
+    "other": "选择一个对等点加载文件夹"
   },
   "ds.editor.selector.peer": {
     "other": "Peer Address"
