@@ -108,13 +108,13 @@
     "other": "CIDRCondition"
   },
   "contextMetaCondition.EqualsSubjectCondition": {
-    "other": "Subject equals"
+    "other": "Субъект равен"
   },
   "contextMetaCondition.ResourceContainsCondition": {
-    "other": "Resource contains"
+    "other": "Ресурс содержит"
   },
   "contextMetaCondition.StringEqualCondition": {
-    "other": "String equals"
+    "other": "Строка равна"
   },
   "contextMetaCondition.StringMatchCondition": {
     "other": "String matches"
