@@ -309,19 +309,19 @@
     "other": "Uuid"
   },
   "userSingleQuery.not": {
-    "other": "not"
+    "other": "не"
   },
   "workspaceSingleQuery.AttributeName": {
-    "other": "Attribute Name"
+    "other": "Название атрибута"
   },
   "workspaceSingleQuery.AttributeValue": {
-    "other": "Attribute Value"
+    "other": "Значение атрибута"
   },
   "workspaceSingleQuery.Description": {
     "other": "Описание"
   },
   "workspaceSingleQuery.HasAttribute": {
-    "other": "Has Attribute"
+    "other": "Имеет атрибут"
   },
   "workspaceSingleQuery.Label": {
     "other": "Метка"
@@ -330,10 +330,10 @@
     "other": "Последнее обновление"
   },
   "workspaceSingleQuery.Not": {
-    "other": "Not"
+    "other": "Не"
   },
   "workspaceSingleQuery.Scope": {
-    "other": "Scope"
+    "other": "Область видимости"
   },
   "workspaceSingleQuery.Slug": {
     "other": "Метка"
@@ -348,19 +348,19 @@
     "other": "Метка"
   },
   "workspaceSingleQuery.not": {
-    "other": "not"
+    "other": "не"
   },
   "workspaceSingleQuery.scope": {
-    "other": "Workspace Type"
+    "other": "Тип рабочего пространства"
   },
   "workspaceSingleQuery.scope.ADMIN": {
     "other": "Рабочее пространство"
   },
   "workspaceSingleQuery.scope.ANY": {
-    "other": "Any"
+    "other": "Любой"
   },
   "workspaceSingleQuery.scope.LINK": {
-    "other": "Public Link"
+    "other": "Публичная ссылка"
   },
   "workspaceSingleQuery.scope.ROOM": {
     "other": "Сотовый"
@@ -375,49 +375,49 @@
     "other": "Наименование"
   },
   "dataSourceSingleQuery.IsDisabled": {
-    "other": "Is Disabled"
+    "other": "Отключено"
   },
   "dataSourceSingleQuery.StorageType": {
     "other": "Тип хранилища"
   },
   "dataSourceSingleQuery.StorageType.REMOTE": {
-    "other": "Remote"
+    "other": "Удаленный"
   },
   "dataSourceSingleQuery.StorageType.ANY": {
-    "other": "Any"
+    "other": "Любой"
   },
   "dataSourceSingleQuery.StorageType.LOCALFS": {
-    "other": "Local"
+    "other": "Локальный"
   },
   "dataSourceSingleQuery.PeerAddress": {
     "other": "Адрес пира"
   },
   "dataSourceSingleQuery.FlatStorage": {
-    "other": "Flat Storage"
+    "other": "Фиксированное хранилище"
   },
   "dataSourceSingleQuery.SkipSyncOnRestart": {
-    "other": "Skip sync on restart"
+    "other": "Пропустить синхронизацию при перезапуске"
   },
   "dataSourceSingleQuery.IsVersioned": {
-    "other": "Is Versioned"
+    "other": "Подвержено контролю версий"
   },
   "dataSourceSingleQuery.IsEncrypted": {
-    "other": "Is Encrypted"
+    "other": "Зашифровано"
   },
   "dataSourceSingleQuery.EncryptionMode": {
-    "other": "Encryption Mode"
+    "other": "Режим шифрования"
   },
   "dataSourceSingleQuery.EncryptionMode.USER": {
-    "other": "User-key"
+    "other": "Пользовательский ключ"
   },
   "dataSourceSingleQuery.EncryptionMode.USER_PWD": {
-    "other": "User-pwd"
+    "other": "Пользовательский пароль"
   },
   "dataSourceSingleQuery.EncryptionMode.CLEAR": {
     "other": "Очистить"
   },
   "dataSourceSingleQuery.EncryptionMode.MASTER": {
-    "other": "Master-key"
+    "other": "Мастер-ключ"
   },
   "dataSourceSingleQuery.EncryptionKey": {
     "other": "Ключ шифрования"
@@ -426,19 +426,19 @@
     "other": "Политика контроля версиями"
   },
   "dataSourceSingleQuery.StorageConfigurationName": {
-    "other": "Configuration Key"
+    "other": "Ключ конфигурации"
   },
   "dataSourceSingleQuery.StorageConfigurationValue": {
-    "other": "Configuration Value"
+    "other": "Значение конфигурации"
   },
   "dataSourceSingleQuery.ObjectServiceName": {
-    "other": "Object Service"
+    "other": "Служба объектов"
   },
   "dataSourceSingleQuery.Not": {
-    "other": "Not"
+    "other": "Не"
   },
   "triggerFilterQuery.IsSchedule": {
-    "other": "Scheduled Trigger"
+    "other": "Запланированный триггер"
   },
   "triggerFilterQuery.IsManual": {
     "other": "Ручной триггер"
