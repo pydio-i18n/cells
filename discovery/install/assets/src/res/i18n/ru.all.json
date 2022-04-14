@@ -30,10 +30,10 @@
     "other": "повторить попытку с новым значением"
   },
   "database.useDefaultsSet": {
-    "other": "A default database is already configured, just click next to validate connection."
+    "other": "База данных по умолчанию уже настроена, просто нажмите далее для проверки соединения."
   },
   "database.forceConfigure": {
-    "other": "Configure another database."
+    "other": "Настроить другую базу данных."
   },
   "admin.stepLabel": {
     "other": "Администратор"
