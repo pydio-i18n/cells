@@ -24,58 +24,58 @@
     "other": "Значение"
   },
   "aclSingleQuery.Actions": {
-    "other": "Actions"
+    "other": "Действия"
   },
   "aclSingleQuery.NodeIDs": {
-    "other": "Node Identifiers"
+    "other": "Идентификаторы узла"
   },
   "aclSingleQuery.Not": {
-    "other": "Not"
+    "other": "Не"
   },
   "aclSingleQuery.RoleIDs": {
-    "other": "Role Identifiers"
+    "other": "Идентификаторы роли"
   },
   "aclSingleQuery.WorkspaceIDs": {
-    "other": "Workspace Identifiers"
+    "other": "Идентификаторы рабочей области"
   },
   "aclSingleQuery.not": {
-    "other": "not"
+    "other": "не"
   },
   "actionOutputSingleQuery.ErrorStringRegexp": {
-    "other": "Search on error string (regexp)"
+    "other": "Поиск по строке ошибки (regexp)"
   },
   "actionOutputSingleQuery.IsSuccess": {
-    "other": "Is Success"
+    "other": "Успешно"
   },
   "actionOutputSingleQuery.JsonBodyHasKey": {
-    "other": "Json body has key..."
+    "other": "В теле Json есть ключ..."
   },
   "actionOutputSingleQuery.JsonBodyRegexp": {
-    "other": "Search on Json body (regexp)"
+    "other": "Поиск по телу Json (regexp)"
   },
   "actionOutputSingleQuery.JsonBodySizeGreaterThan": {
-    "other": "Size of Json body is greater than"
+    "other": "Размер тела Json больше, чем"
   },
   "actionOutputSingleQuery.JsonBodySizeSmallerThan": {
-    "other": "Size of Json body is smaller than"
+    "other": "Размер тела Json меньше, чем"
   },
   "actionOutputSingleQuery.Not": {
-    "other": "Not"
+    "other": "Не"
   },
   "actionOutputSingleQuery.StringBodyRegexp": {
-    "other": "Search on String body (regexp)"
+    "other": "Поиск по телу строки (regexp)"
   },
   "actionOutputSingleQuery.StringBodySizeGreaterThan": {
-    "other": "Size of string body is greater than"
+    "other": "Размер тела строки больше, чем"
   },
   "actionOutputSingleQuery.StringBodySizeSmallerThan": {
-    "other": "Size of string body is smaller than"
+    "other": "Размер тела строки меньше, чем"
   },
   "actionOutputSingleQuery.TaskTimeGt": {
-    "other": "Task time greater than"
+    "other": "Время задачи больше, чем"
   },
   "actionOutputSingleQuery.TaskTimeLt": {
-    "other": "Task time lower than"
+    "other": "Время задачи меньше, чем"
   },
   "actionOutputSingleQuery.FreeCondition": {
     "other": "Free Condition"
