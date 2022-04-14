@@ -285,25 +285,25 @@
     "other": "Логин"
   },
   "userSingleQuery.NodeType": {
-    "other": "Object Type"
+    "other": "Тип объекта"
   },
   "userSingleQuery.NodeType.GROUP": {
     "other": "Группа"
   },
   "userSingleQuery.NodeType.UNKNOWN": {
-    "other": "Any"
+    "other": "Любой"
   },
   "userSingleQuery.NodeType.USER": {
     "other": "Пользователь"
   },
   "userSingleQuery.Not": {
-    "other": "Not"
+    "other": "Не"
   },
   "userSingleQuery.Password": {
     "other": "Пароль"
   },
   "userSingleQuery.Recursive": {
-    "other": "Recursive"
+    "other": "Рекурсивный"
   },
   "userSingleQuery.Uuid": {
     "other": "Uuid"
