@@ -87,19 +87,19 @@
     "other": "cidr"
   },
   "conditionStringEqualCondition.Equals": {
-    "other": "Equals"
+    "other": "Равно"
   },
   "conditionStringEqualCondition.equals": {
-    "other": "equals"
+    "other": "равно"
   },
   "conditionStringMatchCondition.Matches": {
-    "other": "Matches"
+    "other": "Совпадения"
   },
   "conditionStringMatchCondition.matches": {
-    "other": "matches"
+    "other": "совпадения"
   },
   "conditionPathGlobCondition.glob": {
-    "other": "pattern"
+    "other": "шаблон"
   },
   "conditionBooleanCondition.value": {
     "other": "True"
