@@ -63,7 +63,7 @@
     "other": "Beim Start wird eine Standarddatenquelle zum Speichern persönlicher Daten und Zellendaten des Benutzers erstellt. Sie können später weitere Datenquellen erstellen."
   },
   "advanced.mongo.title": {
-    "other": "Configure a MongoDB connection. This is better for scalability, and required for clustering deployment. If you do not have a Mongo DB ready, this can be done later."
+    "other": "Konfigurieren Sie eine MongoDB-Verbindung. Dies ist besser für die Skalierbarkeit und für den Einsatz von Clustern erforderlich. Wenn Sie noch keine Mongo-DB bereit haben, können Sie dies später nachholen."
   },
   "advanced.mongo.label": {
     "other": "Mongo DSN (user:pass@host:port/?key=value)"
