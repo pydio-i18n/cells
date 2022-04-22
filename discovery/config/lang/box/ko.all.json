@@ -27,16 +27,16 @@
     "other": "Actions"
   },
   "aclSingleQuery.NodeIDs": {
-    "other": "Node Identifiers"
+    "other": "노드 식별자"
   },
   "aclSingleQuery.Not": {
     "other": "Not"
   },
   "aclSingleQuery.RoleIDs": {
-    "other": "Role Identifiers"
+    "other": "역할 식별자"
   },
   "aclSingleQuery.WorkspaceIDs": {
-    "other": "Workspace Identifiers"
+    "other": "작업 영역 식별자"
   },
   "aclSingleQuery.not": {
     "other": "not"
