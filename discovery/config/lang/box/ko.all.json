@@ -1,18 +1,18 @@
 {
   "30 days max": {
-    "other": "30 days max"
+    "other": "최대 30일"
   },
   "Remove versions after 30 days": {
-    "other": "Remove versions after 30 days"
+    "other": "30일 후 버전 제거"
   },
   "Keep All": {
-    "other": "Keep All"
+    "other": "모두 유지"
   },
   "Keep all versions forever": {
-    "other": "Keep all versions forever"
+    "other": "모든 버전 영구 보존"
   },
   "Regular Pruning": {
-    "other": "Regular Pruning"
+    "other": "규칙적인 잘라내기"
   },
   "Prune versions regularly at various intervals": {
     "other": "Prune versions regularly at various intervals"
