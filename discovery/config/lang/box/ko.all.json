@@ -57,22 +57,22 @@
     "other": "Json body의 크기가 다음 크기보다 큽니다."
   },
   "actionOutputSingleQuery.JsonBodySizeSmallerThan": {
-    "other": "Size of Json body is smaller than"
+    "other": "Json body의 크기가 다음 크기보다 작습니다."
   },
   "actionOutputSingleQuery.Not": {
     "other": "Not"
   },
   "actionOutputSingleQuery.StringBodyRegexp": {
-    "other": "Search on String body (regexp)"
+    "other": "문자열 본문 검색(regexp)"
   },
   "actionOutputSingleQuery.StringBodySizeGreaterThan": {
-    "other": "Size of string body is greater than"
+    "other": "문자열 본문의 크기가 다음 값보다 큽니다."
   },
   "actionOutputSingleQuery.StringBodySizeSmallerThan": {
-    "other": "Size of string body is smaller than"
+    "other": "문자열 본문의 크기가 다음 크기보다 작습니다."
   },
   "actionOutputSingleQuery.TaskTimeGt": {
-    "other": "Task time greater than"
+    "other": "작업 시간이 다음 시간보다 큼"
   },
   "actionOutputSingleQuery.TaskTimeLt": {
     "other": "Task time lower than"
