@@ -3,10 +3,10 @@
     "other": "이용약관"
   },
   "welcome.title": {
-    "other": "Welcome to Pydio Cells Installation Wizard"
+    "other": "Pydio Cells 설치 마법사에 오신 것을 환영합니다."
   },
   "welcome.legend": {
-    "other": "This will install all services on the current server. Please agree with the terms of the license below before starting"
+    "other": "현재 서버에 모든 서비스를 설치할 것입니다. 시작하기 전에 아래의 라이선스 약관에 동의해주세요."
   },
   "welcome.agreed": {
     "other": "I agree with the terms"
