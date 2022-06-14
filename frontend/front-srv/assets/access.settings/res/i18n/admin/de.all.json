@@ -1740,37 +1740,37 @@
     "other": "Scheduler"
   },
   "scheduler.legend": {
-    "other": "Jobs, die regelmäßig im Hintergrund laufen oder durch Ereignisse ausgelöst werden"
+    "other": "Flows running in background on a periodical basis or triggered by events"
   },
   "scheduler.system.title": {
-    "other": "Systemjobs"
+    "other": "System Flows"
   },
   "scheduler.system.legend": {
-    "other": "Diese Jobs werden standardmäßig in der Anwendung registriert. Sie sind im Allgemeinen dafür verantwortlich, Informationen von Nodes im Hintergrund zu extrahieren oder einige Reinigungsvorgänge auszuführen."
+    "other": "These Flows are registered by default inside the application. They are generally in charge of extracting information from node in background, or doing some cleaning operations."
   },
   "scheduler.inactives.title": {
-    "other": "Inaktive Jobs"
+    "other": "Inactive Flows"
   },
   "scheduler.inactives.legend": {
-    "other": "Diese Jobs sind inaktiv, klicken Sie auf einen Job, um ihn zu aktivieren."
+    "other": "These Flows are inactive, click on a Flow to enable it."
   },
   "scheduler.system.empty": {
-    "other": "Keine Jobs geplant."
+    "other": "No Flows scheduled."
   },
   "scheduler.users.title": {
-    "other": "Benutzer-Jobs"
+    "other": "Users Flows"
   },
   "scheduler.users.legend": {
-    "other": "Diese Jobs werden dynamisch erstellt und trigged durch Benutzeraktionen."
+    "other": "These Flows are dynamically created and trigged by user actions."
   },
   "scheduler.users.empty": {
-    "other": "Keine Jobs von Benutzern gestartet"
+    "other": "No Flows launched by users"
   },
   "scheduler.cellsflows.cta.button": {
-    "other": "+ Eigener Job"
+    "other": "+ Custom Flow"
   },
   "scheduler.cellsflows.cta.text": {
-    "other": "Müssen Sie Ihren eigenen Job erstellen? Entdecken Sie, wie Cells Flow die Automatisierung Ihrer wiederholten manuellen Aufgaben in Cells vereinfachen."
+    "other": "Do you need to create your own Flow? Discover how Cells Flows makes it easy to automate your repetitive manual tasks in Cells."
   },
   "scheduler.cellsflows.dialog.button": {
     "other": "Mehr erfahren"
@@ -1797,10 +1797,10 @@
     "other": "Löschen"
   },
   "scheduler.job.delete.confirm": {
-    "other": "Soll der Aufgabe wirklich gelöscht werden? Dies kann nicht rückgängig gemacht werden!"
+    "other": "Are you sure you want to delete this Flow? This operation cannot be reverted!"
   },
   "scheduler.tasks.delete.confirm": {
-    "other": "Möchten Sie wirklich alle Aufgaben für diesen Job löschen?"
+    "other": "Are you sure you want to clear all tasks for this Flow?"
   },
   "scheduler.trigger.create.node": {
     "other": "Node erstellen"
@@ -1869,13 +1869,13 @@
     "other": "Löschen"
   },
   "scheduler.task.action.enable": {
-    "other": "Job aktivieren"
+    "other": "Enable Flow"
   },
   "scheduler.task.action.run": {
     "other": "Jetzt starten"
   },
   "scheduler.task.action.disable": {
-    "other": "Job deaktivieren"
+    "other": "Disable Flow"
   },
   "scheduler.task.id": {
     "other": "ID"
@@ -1953,7 +1953,7 @@
     "other": "Jeder %1"
   },
   "scheduler.schedule.title": {
-    "other": "Job-Zeitplan"
+    "other": "Flow Schedule"
   },
   "scheduler.schedule.type": {
     "other": "Zeitplan Typ"
@@ -1986,7 +1986,7 @@
     "other": "Zeitraum in Minuten"
   },
   "scheduler.job-parameters.dialog": {
-    "other": "Job Parameter"
+    "other": "Flow Parameters"
   },
   "scheduler.job-parameters.button": {
     "other": "Einstellungen"
