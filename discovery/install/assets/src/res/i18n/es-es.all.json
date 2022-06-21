@@ -66,7 +66,7 @@
     "other": "Configurar una conexión MongoDB. Esto es mejor para la escalabilidad, y es necesario para el despliegue en clúster. Si no tiene una base de datos Mongo lista, esto se puede hacer más tarde."
   },
   "advanced.mongo.label": {
-    "other": "Mongo DSN (user:pass@host:port/?key=value)"
+    "other": "Mongo DSN (usuario:contraseña@host:puerto/?clave=valor)"
   },
   "license.stepLabel": {
     "other": "Licencia Enterprise"
