@@ -537,13 +537,13 @@
     "other": "セル内で共有"
   },
   "254b": {
-    "other": "With users or groups"
+    "other": "ユーザーまたはグループで"
   },
   "254c": {
-    "other": "Shared in %d cells"
+    "other": "%d 個のセルを共有"
   },
   "254d": {
-    "other": "Shared in '%s'"
+    "other": "'%s ' で共有"
   },
   "255": {
     "other": "このアイテムのすべてのセルとリンクを削除してもよろしいですか？"
@@ -909,16 +909,16 @@
     "other": "既存のフォルダを共有"
   },
   "cells.remove.node": {
-    "other": "Remove from this cell"
+    "other": "このセルから削除"
   },
   "cell.visibility.advanced": {
     "other": "この高度な機能を使用すると、このセルのプロパティを編集できるユーザーを決定できます（ユーザーを追加/削除したり、セルのルートにあるフォルダーを追加/削除したりする権利）。 データへの実際のアクセスを簡単に管理するには、代わりに[共有] タブを使用してください。"
   },
   "cell.add.existing-or-new": {
-    "other": "Add to existing or new Cell"
+    "other": "既存または新規セルに追加"
   },
   "cell.add.existing": {
-    "other": "Add to existing Cell"
+    "other": "既存のセルに追加"
   },
   "cell.add.new": {
     "other": "Create a new Cell"
