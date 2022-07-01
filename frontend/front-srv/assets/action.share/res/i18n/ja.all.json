@@ -921,10 +921,10 @@
     "other": "既存のセルに追加"
   },
   "cell.add.new": {
-    "other": "Create a new Cell"
+    "other": "新しいセルを作成"
   },
   "link.visibility.title": {
-    "other": "[Advanced] Visibility"
+    "other": "[Advanced] 可視性"
   },
   "link.visibility.advanced": {
     "other": "この高度な機能を使用すると、他のユーザーがこのファイルを表示したときにこのリンクを表示できるかどうか、およびそのプロパティを編集できるかどうかを決定できます。 デフォルトでは、作成したリンクは自分だけに表示されます。 リンクの所有権は、他のユーザーに編集させることで譲渡できます。"
@@ -933,7 +933,7 @@
     "other": "保存されていない変更があります。本当に閉じますか？"
   },
   "dialog.link.confirm.remove": {
-    "other": "Are you sure that you want to disable this link?"
+    "other": "このリンクを無効にしてもよろしいですか？"
   },
   "sharelist.quick-filter": {
     "other": "クイックフィルター..."
@@ -942,27 +942,27 @@
     "other": "すべての共有を無効にする"
   },
   "link.active": {
-    "other": "active"
+    "other": "有効"
   },
   "link.disable": {
-    "other": "Disable Link"
+    "other": "リンクを無効にする"
   },
   "link.floatingLabel": {
-    "other": "Copy and send this link for direct access"
+    "other": "このリンクをコピーして直接アクセスする"
   },
   "link.secure.title": {
-    "other": "Access Restrictions"
+    "other": "アクセス制限"
   },
   "link.secure.expires": {
-    "other": "expires"
+    "other": "有効期限"
   },
   "link.secure.expired": {
-    "other": "expired"
+    "other": "期限切れ"
   },
   "link.secure.hasPassword": {
-    "other": "password required"
+    "other": "パスワードが必要です"
   },
   "link.secure.maxdownloads": {
-    "other": "%d downloads only"
+    "other": "%d個に制限してダウンロード"
   }
 }
