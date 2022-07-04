@@ -162,10 +162,10 @@
     "other": "Phần mềm gửi mail đang được sử dụng"
   },
   "Mail.Config.Disabled.Label": {
-    "other": "Disabled (do not enable emails)"
+    "other": "Đang tắt (không sử dụng chức năng email)"
   },
   "Mail.Config.NoOp.Label": {
-    "other": "No-Op (enable emails but do not send anything)"
+    "other": "No-Op(bật chức năng tạo email nhứng không gửi đi)"
   },
   "Mail.Config.NoOp.Dump": {
     "other": "Write emails to file for debugging purpose"
