@@ -27,40 +27,40 @@
     "other": "Các hành động"
   },
   "aclSingleQuery.NodeIDs": {
-    "other": "Node Identifiers"
+    "other": "Node Id"
   },
   "aclSingleQuery.Not": {
-    "other": "Not"
+    "other": "Phủ định"
   },
   "aclSingleQuery.RoleIDs": {
-    "other": "Role Identifiers"
+    "other": "Role Id"
   },
   "aclSingleQuery.WorkspaceIDs": {
-    "other": "Workspace Identifiers"
+    "other": "Workspace Id"
   },
   "aclSingleQuery.not": {
-    "other": "not"
+    "other": "phủ định"
   },
   "actionOutputSingleQuery.ErrorStringRegexp": {
-    "other": "Search on error string (regexp)"
+    "other": "Tìm kiếm trên mã lỗi (regexp dùng biểu thức chính quy)"
   },
   "actionOutputSingleQuery.IsSuccess": {
-    "other": "Is Success"
+    "other": "Thành công"
   },
   "actionOutputSingleQuery.JsonBodyHasKey": {
-    "other": "Json body has key..."
+    "other": "Dữ liệu json có chứa key..."
   },
   "actionOutputSingleQuery.JsonBodyRegexp": {
-    "other": "Search on Json body (regexp)"
+    "other": "Tìm kiếm trên dữ liệu json (regexp)"
   },
   "actionOutputSingleQuery.JsonBodySizeGreaterThan": {
-    "other": "Size of Json body is greater than"
+    "other": "Kích thước dữ liệu json lớn hơn"
   },
   "actionOutputSingleQuery.JsonBodySizeSmallerThan": {
-    "other": "Size of Json body is smaller than"
+    "other": "Kích thước dữ liệu json nhỏ hơn"
   },
   "actionOutputSingleQuery.Not": {
-    "other": "Not"
+    "other": "Phủ định"
   },
   "actionOutputSingleQuery.StringBodyRegexp": {
     "other": "Search on String body (regexp)"
