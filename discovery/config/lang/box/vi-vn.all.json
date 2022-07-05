@@ -108,16 +108,16 @@
     "other": "Điều kiện CIDR"
   },
   "contextMetaCondition.EqualsSubjectCondition": {
-    "other": "Subject equals"
+    "other": "Subject so sánh bằng"
   },
   "contextMetaCondition.ResourceContainsCondition": {
-    "other": "Resource contains"
+    "other": "Resource chứa"
   },
   "contextMetaCondition.StringEqualCondition": {
-    "other": "String equals"
+    "other": "String so sánh bằng"
   },
   "contextMetaCondition.StringMatchCondition": {
-    "other": "String matches"
+    "other": "String khớp"
   },
   "contextMetaCondition.StringPairsEqualCondition": {
     "other": "StringPairs equals"
@@ -126,37 +126,37 @@
     "other": "String does not match"
   },
   "contextMetaCondition.WithinPeriodCondition": {
-    "other": "Date period"
+    "other": "Khung thời gian"
   },
   "contextMetaCondition.OfficeHoursCondition": {
-    "other": "Office Hours"
+    "other": "Giờ làm việc"
   },
   "contextMetaCondition.DateAfterCondition": {
-    "other": "Date after"
+    "other": "Sau ngày"
   },
   "contextMetaCondition.PathGlobCondition": {
-    "other": "Glob Matcher"
+    "other": "Glob matcher"
   },
   "contextMetaCondition.BooleanCondition": {
-    "other": "Boolean Value"
+    "other": "Giá trị boolean"
   },
   "contextMetaField.ContentType": {
-    "other": "Content Type"
+    "other": "Loại Nội Dung"
   },
   "contextMetaField.CookiesString": {
-    "other": "Cookies String"
+    "other": "Giá trị Cookies"
   },
   "contextMetaField.HttpProtocol": {
-    "other": "HTTP Protocol"
+    "other": "Giao thức HTTP"
   },
   "contextMetaField.RemoteAddress": {
-    "other": "Remote Address"
+    "other": "Địa chỉ Ip của máy truy cập"
   },
   "contextMetaField.RequestHostname": {
-    "other": "Request Hostname"
+    "other": "Tên máy truy cập"
   },
   "contextMetaField.RequestMethod": {
-    "other": "Request Method"
+    "other": "Phương thức truy cập"
   },
   "contextMetaField.RequestURI": {
     "other": "Request URI"
