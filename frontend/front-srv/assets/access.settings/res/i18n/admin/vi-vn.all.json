@@ -138,7 +138,7 @@
     "other": "Sử dụng API Key / Api Secret để xác thực, để trống URL nếu sử dụng AmazonS3 hoặc sử dụng URL của riêng bạn."
   },
   "ds.editor.storage.legend.fs": {
-    "other": "Browse data from a local or network-attached file system."
+    "other": "Xem dữ liệu trên máy chủ hoặc từ một máy chủ NAT."
   },
   "ds.editor.storage.legend.fs.peer": {
     "other": "Restricting datasource to a peer address will start the service only a specific node. Using \"Any\" value will start service on all nodes where Cells is running, which can be handy if a shared filesystem is mounted on all nodes at the same location, or if your node may change its IP on restart. To avoid conflicts, it is better to either use ANY for all datasources or select specific nodes for all datasources."
