@@ -30,10 +30,10 @@
     "other": "hãy thử lại với giá trị mới"
   },
   "database.useDefaultsSet": {
-    "other": "A default database is already configured, just click next to validate connection."
+    "other": "Mặc định thì kết nối tới cơ sở dữ liệu đã được thiết lập, chỉ cần tiếp tục để xác kiểm tra kết nối."
   },
   "database.forceConfigure": {
-    "other": "Configure another database."
+    "other": "Thêm mới một database."
   },
   "admin.stepLabel": {
     "other": "Admin User"
@@ -63,7 +63,7 @@
     "other": "Một datasource để lưu trữ dữ liệu cá nhân và dữ liệu của cells được tạo khi khởi động. Bạn có thể tạo các datasources sau quá trình cài đặt."
   },
   "advanced.mongo.title": {
-    "other": "Configure a MongoDB connection. This is better for scalability, and required for clustering deployment. If you do not have a Mongo DB ready, this can be done later."
+    "other": "Cấu hình kết nối tới MongoDB. MongoDB giúp việc nâng cấp dễ dàng hơn và là yêu cầu bắt buộc nếu bạn xây dựng một cluster. Nếu bạn chưa có sẵn MongoDB thì thiết lập này có thể làm sau khi đã cài đặt Cells thành công."
   },
   "advanced.mongo.label": {
     "other": "Mongo DSN (user:pass@host:port/?key=value)"
@@ -96,7 +96,7 @@
     "other": "Áp dụng cài đặt"
   },
   "apply.title": {
-    "other": "Please be patient while Pydio Cells is being installed..."
+    "other": "Xin vui lòng chờ khi Pydio Cells đang thực hiện việc cài đặt..."
   },
   "apply.success": {
     "other": "Cài đặt thành công, các dịch vụ đang khởi động, quá trình này sẽ tải lại các trang khi các dịch vụ được khởi động."
