@@ -276,52 +276,52 @@
     "other": "Đường dẫn nhóm"
   },
   "userSingleQuery.HasProfile": {
-    "other": "Has Profile"
+    "other": "Có kiểu hồ sơ"
   },
   "userSingleQuery.HasRole": {
-    "other": "Has Role"
+    "other": "Có role"
   },
   "userSingleQuery.Login": {
     "other": "Đăng nhập"
   },
   "userSingleQuery.NodeType": {
-    "other": "Object Type"
+    "other": "Kiểu đối tượng"
   },
   "userSingleQuery.NodeType.GROUP": {
     "other": "Nhóm"
   },
   "userSingleQuery.NodeType.UNKNOWN": {
-    "other": "Any"
+    "other": "Bất kỳ"
   },
   "userSingleQuery.NodeType.USER": {
     "other": "User"
   },
   "userSingleQuery.Not": {
-    "other": "Not"
+    "other": "Không"
   },
   "userSingleQuery.Password": {
     "other": "Mật khẩu"
   },
   "userSingleQuery.Recursive": {
-    "other": "Recursive"
+    "other": "Đệ quy"
   },
   "userSingleQuery.Uuid": {
     "other": "Uuid"
   },
   "userSingleQuery.not": {
-    "other": "not"
+    "other": "phủ định"
   },
   "workspaceSingleQuery.AttributeName": {
-    "other": "Attribute Name"
+    "other": "Tên thuộc tính"
   },
   "workspaceSingleQuery.AttributeValue": {
-    "other": "Attribute Value"
+    "other": "Giá trị thuộc tính"
   },
   "workspaceSingleQuery.Description": {
     "other": "Mô tả"
   },
   "workspaceSingleQuery.HasAttribute": {
-    "other": "Has Attribute"
+    "other": "Chứa thuộc tính"
   },
   "workspaceSingleQuery.Label": {
     "other": "Nhãn"
@@ -330,7 +330,7 @@
     "other": "Lần cập nhật trước"
   },
   "workspaceSingleQuery.Not": {
-    "other": "Not"
+    "other": "Không"
   },
   "workspaceSingleQuery.Scope": {
     "other": "Phạm vi"
@@ -348,22 +348,22 @@
     "other": "Nhãn"
   },
   "workspaceSingleQuery.not": {
-    "other": "not"
+    "other": "phủ định"
   },
   "workspaceSingleQuery.scope": {
-    "other": "Workspace Type"
+    "other": "Workspace loại"
   },
   "workspaceSingleQuery.scope.ADMIN": {
     "other": "Workspace"
   },
   "workspaceSingleQuery.scope.ANY": {
-    "other": "Any"
+    "other": "Bất kỳ"
   },
   "workspaceSingleQuery.scope.LINK": {
-    "other": "Public Link"
+    "other": "Public Links"
   },
   "workspaceSingleQuery.scope.ROOM": {
-    "other": "Cell"
+    "other": "Cells"
   },
   "workspaceSingleQuery.slug": {
     "other": "Slug"
@@ -375,37 +375,37 @@
     "other": "Tên"
   },
   "dataSourceSingleQuery.IsDisabled": {
-    "other": "Is Disabled"
+    "other": "Bị tắt"
   },
   "dataSourceSingleQuery.StorageType": {
     "other": "Kiểu storage"
   },
   "dataSourceSingleQuery.StorageType.REMOTE": {
-    "other": "Remote"
+    "other": "Từ xa"
   },
   "dataSourceSingleQuery.StorageType.ANY": {
-    "other": "Any"
+    "other": "Bất kỳ"
   },
   "dataSourceSingleQuery.StorageType.LOCALFS": {
-    "other": "Local"
+    "other": "Cục bộ"
   },
   "dataSourceSingleQuery.PeerAddress": {
     "other": "Peer Address"
   },
   "dataSourceSingleQuery.FlatStorage": {
-    "other": "Flat Storage"
+    "other": "Bộ lưu trữ theo định dạng phẳng"
   },
   "dataSourceSingleQuery.SkipSyncOnRestart": {
-    "other": "Skip sync on restart"
+    "other": "Không thực hiện việc đồng bộ lúc khởi động"
   },
   "dataSourceSingleQuery.IsVersioned": {
-    "other": "Is Versioned"
+    "other": "Đã có phiên bản trước"
   },
   "dataSourceSingleQuery.IsEncrypted": {
-    "other": "Is Encrypted"
+    "other": "Được mã hoá"
   },
   "dataSourceSingleQuery.EncryptionMode": {
-    "other": "Encryption Mode"
+    "other": "Phương thức mã hóa"
   },
   "dataSourceSingleQuery.EncryptionMode.USER": {
     "other": "User-key"
