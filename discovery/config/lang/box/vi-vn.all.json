@@ -165,58 +165,58 @@
     "other": "Server Time"
   },
   "contextMetaField.UserAgent": {
-    "other": "User Agent"
+    "other": "Tên thiết bị kết nối"
   },
   "contextMetaSingleQuery.Condition": {
-    "other": "Condition"
+    "other": "Điều kiện"
   },
   "contextMetaSingleQuery.FieldName": {
-    "other": "Field Name"
+    "other": "Tên Trường"
   },
   "roleSingleQuery.HasAutoApply": {
-    "other": "Has AutoApply"
+    "other": "Có tính năng AutoApply"
   },
   "roleSingleQuery.IsGroupRole": {
-    "other": "Is Group Role"
+    "other": "Là Group Role"
   },
   "roleSingleQuery.IsTeam": {
-    "other": "Is Team"
+    "other": "Là nhóm"
   },
   "roleSingleQuery.IsUserRole": {
-    "other": "Is User Role"
+    "other": "Là User Role"
   },
   "roleSingleQuery.Label": {
     "other": "Nhãn"
   },
   "roleSingleQuery.Not": {
-    "other": "Not"
+    "other": "Phủ định"
   },
   "roleSingleQuery.Uuid": {
     "other": "Uuid"
   },
   "roleSingleQuery.not": {
-    "other": "not"
+    "other": "phủ định"
   },
   "treeQuery.Content": {
     "other": "Nội Dung"
   },
   "treeQuery.DurationDate": {
-    "other": "Modification date (use comparison)"
+    "other": "Ngày sửa (dùng để so sánh)"
   },
   "treeQuery.Extension": {
-    "other": "File Extension"
+    "other": "Phần mở rộng"
   },
   "treeQuery.FileName": {
-    "other": "File name"
+    "other": "Tên tệp"
   },
   "treeQuery.FileNameOrContent": {
-    "other": "File name or Content"
+    "other": "Tên tệp hoặc nội dung tệp"
   },
   "treeQuery.FreeString": {
-    "other": "Bleve-like search string"
+    "other": "Tìm kiếm chuỗi theo cách của Bleve"
   },
   "treeQuery.GeoQuery": {
-    "other": "Geolocation Query"
+    "other": "Truy vấn vị trí địa lý"
   },
   "treeQuery.MaxDate": {
     "other": "Modified before"
@@ -417,28 +417,28 @@
     "other": "Xóa"
   },
   "dataSourceSingleQuery.EncryptionMode.MASTER": {
-    "other": "Master-key"
+    "other": "Khóa chính"
   },
   "dataSourceSingleQuery.EncryptionKey": {
-    "other": "Encryption Key"
+    "other": "Khóa dùng để mã hóa"
   },
   "dataSourceSingleQuery.VersioningPolicyName": {
-    "other": "Versioning Policy"
+    "other": "Chính sách quản lý phiên bản"
   },
   "dataSourceSingleQuery.StorageConfigurationName": {
-    "other": "Configuration Key"
+    "other": "Khóa để mã hóa cấu hình"
   },
   "dataSourceSingleQuery.StorageConfigurationValue": {
-    "other": "Configuration Value"
+    "other": "Cấu hình kho lưu trữ"
   },
   "dataSourceSingleQuery.ObjectServiceName": {
     "other": "Object Service"
   },
   "dataSourceSingleQuery.Not": {
-    "other": "Not"
+    "other": "Phủ định"
   },
   "triggerFilterQuery.IsSchedule": {
-    "other": "Scheduled Trigger"
+    "other": "Bộ kích hoạt"
   },
   "triggerFilterQuery.IsManual": {
     "other": "Hướng dẫn kích hoạt"
