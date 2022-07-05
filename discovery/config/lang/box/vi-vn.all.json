@@ -30,7 +30,7 @@
     "other": "Node Id"
   },
   "aclSingleQuery.Not": {
-    "other": "Phủ định"
+    "other": "Không"
   },
   "aclSingleQuery.RoleIDs": {
     "other": "Role Id"
@@ -219,22 +219,22 @@
     "other": "Truy vấn vị trí địa lý"
   },
   "treeQuery.MaxDate": {
-    "other": "Modified before"
+    "other": "Đã được sửa trước ngày"
   },
   "treeQuery.MaxSize": {
-    "other": "MaxSize"
+    "other": "Kích thước lớn nhất là"
   },
   "treeQuery.MinDate": {
-    "other": "Modified since"
+    "other": "Đã được sửa kể từ"
   },
   "treeQuery.MinSize": {
-    "other": "Size greater than"
+    "other": "Kích thước lớn hơn"
   },
   "treeQuery.Not": {
-    "other": "Not"
+    "other": "Phủ định"
   },
   "treeQuery.PathDepth": {
-    "other": "Path Depth"
+    "other": "Cấp thư mục"
   },
   "treeQuery.PathPrefix": {
     "other": "Path Prefix"
