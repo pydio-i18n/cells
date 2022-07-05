@@ -207,7 +207,7 @@
     "other": "S3-Compatible storage endpoint"
   },
   "form.dsS3Custom.legend": {
-    "other": "Leave empty for Amazon"
+    "other": "Để trống nếu bạn dùng Amazon S3"
   },
   "form.dsS3CustomRegion.label": {
     "other": "S3 Custom region"
