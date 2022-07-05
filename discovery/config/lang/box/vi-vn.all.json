@@ -237,10 +237,10 @@
     "other": "Cấp thư mục"
   },
   "treeQuery.PathPrefix": {
-    "other": "Path Prefix"
+    "other": "Đường dẫn chứa tiền tố"
   },
   "treeQuery.Paths": {
-    "other": "Absolute Paths"
+    "other": "Đường dẫn"
   },
   "treeQuery.Type": {
     "other": "Kiểu"
@@ -252,25 +252,25 @@
     "other": "Tệp tin"
   },
   "treeQuery.Type.UNKNOWN": {
-    "other": "Any"
+    "other": "Bất kỳ"
   },
   "treeQuery.UUIDs": {
-    "other": "Node UUIDs"
+    "other": "UUID của nodes"
   },
   "userSingleQuery.AttributeAnyValue": {
-    "other": "Has any value"
+    "other": "Có giá trị bất kỳ"
   },
   "userSingleQuery.AttributeName": {
-    "other": "Attribute Name"
+    "other": "Tên Thuộc Tính"
   },
   "userSingleQuery.AttributeValue": {
-    "other": "Attribute Value"
+    "other": "Giá trị thuộc tính"
   },
   "userSingleQuery.ConnectedSince": {
-    "other": "Connected Since"
+    "other": "Truy cập vào lúc"
   },
   "userSingleQuery.FullPath": {
-    "other": "Full Path"
+    "other": "Đường dẫn đầy đủ"
   },
   "userSingleQuery.GroupPath": {
     "other": "Đường dẫn nhóm"
