@@ -63,7 +63,7 @@
     "other": "Cells Internals"
   },
   "ds.format-picker.internal.legend": {
-    "other": "Used to store internal binaries (e.g. files versions, thumbnails). Limited features, data is not indexed in search engines."
+    "other": "Được sử dụng để lưu trữ dữ liệu chương trình (ví dụ các phiên bản sao lưu, thumbnails). Một vài chức năng sẽ bị hạn chế ví dụ không hỗ trợ tìm kiếm."
   },
   "ds.editor.delete.warning": {
     "other": "Bạn có chắc chắn muốn xóa datasource này? Bạn sẽ không quay lại được và sẽ mất các link được tạo ra trên dữ liệu!"
@@ -87,16 +87,16 @@
     "other": "Bạn cũng phải lưu ý rằng nó có thể cần nhiều CPU hơn để việc mã hóa / giải mã dữ liệu được nhanh chóng."
   },
   "ds.editor.enc.dialog.enable.create": {
-    "other": "Set an identifier for the new key"
+    "other": "Đặt tên cho khóa mới"
   },
   "ds.editor.enc.key": {
     "other": "Encryption Key"
   },
   "ds.editor.enc.key.clear": {
-    "other": "No Encryption"
+    "other": "Không mã hoá"
   },
   "ds.editor.enc.key.create": {
-    "other": "Set up encryption with a new key..."
+    "other": "Thiết lập mã hóa với một khóa mới..."
   },
   "ds.editor.enc.validate": {
     "other": "Tôi hiểu"
