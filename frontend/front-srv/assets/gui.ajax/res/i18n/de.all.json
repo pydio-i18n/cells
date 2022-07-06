@@ -165,9 +165,9 @@
     "other": "Alle Dateien"
   },
   "file.temporary-etag.flag": {
-    "other": "Incomplete"
+    "other": "Unvollständig"
   },
   "file.temporary-etag.tooltip": {
-    "other": "This file is being uploaded (or the upload has failed)."
+    "other": "Diese Datei wird gerade hochgeladen (oder der Upload ist fehlgeschlagen)."
   }
 }
