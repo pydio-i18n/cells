@@ -141,7 +141,7 @@
     "other": "Xem dữ liệu trên máy chủ hoặc từ một máy chủ NAT."
   },
   "ds.editor.storage.legend.fs.peer": {
-    "other": "Restricting datasource to a peer address will start the service only a specific node. Using \"Any\" value will start service on all nodes where Cells is running, which can be handy if a shared filesystem is mounted on all nodes at the same location, or if your node may change its IP on restart. To avoid conflicts, it is better to either use ANY for all datasources or select specific nodes for all datasources."
+    "other": "Trong một cụm máy chủ Cells, thiết lập dịch vụ datasource trên một địa chỉ cụ thể (peer address) sẽ chỉ cho phép dịch vụ phục vụ trên máy chủ đó mà thôi. Nếu sử dụng \"Bất kỳ\" (any) thì tất cả các node sẽ có thể dùng dịch vụ này và nó sẽ phát huy tác dụng nếu như máy chủ bị thay đổi địa chỉ. Để tránh những xung đột có thể xảy ra, chúng ta nên để chung 1 thiết lập (hoặc là peer address, hoặc là any) cho tất cả các datasources trong cụm máy chủ Cells."
   },
   "ds.editor.storage.legend.fs.path": {
     "other": "Make sure that last folder is lowercase and that its parent is writeable. If your existing folder is uppercase, you can use symbolic links to work around this limitation."
