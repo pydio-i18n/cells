@@ -2394,15 +2394,15 @@
     "other": "Xóa vĩnh viễn"
   },
   "action.delete.permanently.warning": {
-    "other": "warning, you cannot undo this operation!"
+    "other": "xin lưu ý, bạn không thể undo!"
   },
   "action.goto.label": {
-    "other": "Go To Folder"
+    "other": "Đi đến thư mục"
   },
   "action.copymove.recent": {
-    "other": "Recent Locations"
+    "other": "Thư mục truy cập gần đây"
   },
   "action.copymove.root": {
-    "other": "Top Folder"
+    "other": "Thư mục gốc"
   }
 }
