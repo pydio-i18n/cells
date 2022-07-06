@@ -144,7 +144,7 @@
     "other": "Trong một cụm máy chủ Cells, thiết lập dịch vụ datasource trên một địa chỉ cụ thể (peer address) sẽ chỉ cho phép dịch vụ phục vụ trên máy chủ đó mà thôi. Nếu sử dụng \"Bất kỳ\" (any) thì tất cả các node sẽ có thể dùng dịch vụ này và nó sẽ phát huy tác dụng nếu như máy chủ bị thay đổi địa chỉ. Để tránh những xung đột có thể xảy ra, chúng ta nên để chung 1 thiết lập (hoặc là peer address, hoặc là any) cho tất cả các datasources trong cụm máy chủ Cells."
   },
   "ds.editor.storage.legend.fs.path": {
-    "other": "Make sure that last folder is lowercase and that its parent is writeable. If your existing folder is uppercase, you can use symbolic links to work around this limitation."
+    "other": "Tên thư mục phải viết bằng ký tự thường và cells có quyên ghi/đọc trên thư mục cha. Nếu thư mục đã có sẵn với tên viết bằng ký tự in hoa, thì bạn có thể tạo cho nó một symbol link để sử dụng."
   },
   "ds.editor.storage.legend.s3": {
     "other": "Duyệt dữ liệu từ các S3 bucket."
@@ -168,16 +168,16 @@
     "other": "Hãy sử dụng chế độ Chỉ đọc nếu bạn yêu cầu Cells không bao giờ viết bất cứ tệp ẩn nào và sử dụng eTags gốc làm checksums( điều này có thể cần thiết cho buckets với các nhóm dữ liệu hiện có rất lớn). Tuy nhiên, vui lòng chú ý rằng bất cứ không gian làm việc nào được tạo trên datasource này phải được đặt là Chỉ đọc, vì tính năng di chuyển có thể hoạt động không được chính xác."
   },
   "ds.editor.storage.flatStorage": {
-    "other": "Keep data structure on storage"
+    "other": "Giữ nguyên cấu trúc thư mục của thư mục dùng để lưu trữ"
   },
   "ds.editor.storage.legend.flatStorage": {
-    "other": "Flat (unstructured) storage is best for performances. Use structured storage only if you want to make sure to see the files and folders reproduced inside the actual storage (or mapping to a folder with pre-existing data). This CANNOT be changed after datasource creation."
+    "other": "Bộ lưu trũ Flat (phi cấu trúc) có ưu điểm đem lại tốc độ xử lý cao. Dùng bộ lưu trữ kiểu có cấu trúc chỉ khi bạn đã có sẵn khối dữ liệu lưu trữ trên thư mục dùng làm nơi lưu trữ. Bạn phải quyết định một trong hai lựa chọn vì sẽ không thể thay đổi sau này."
   },
   "ds.editor.storage.skipResync": {
-    "other": "Skip full resynchronisation at restart"
+    "other": "Bỏ qua việc đồng bộ dữ liệu lúc khởi động"
   },
   "ds.editor.storage.legend.skipResync": {
-    "other": "For huge datasources, you may want to avoid full resynchronisation at restart time."
+    "other": "Nếu datasource có dung lượng lớn, bạn cần phải bỏ qua bước đồng bộ khi khởi động Cells."
   },
   "ds.editor.storage.checksumMapper": {
     "other": "Lưu trữ tổng kiểm tra cục bộ (không sửa đổi các đối tượng)"
@@ -327,7 +327,7 @@
     "other": "Objects Tags"
   },
   "ds.editor.storage.s3.bucketPathPrefix": {
-    "other": "Path prefix inside the bucket (used as a folder)"
+    "other": "Phần tiền tố của đường dẫn trong bucket (ví dụ như tên một thư mục)"
   },
   "ds.editor.title": {
     "other": "DataSource %s"
@@ -357,10 +357,10 @@
     "other": "Kiểu storage"
   },
   "ds.editor.tab.lifecycle": {
-    "other": "Data Lifecycle"
+    "other": "Vòng đời của dữ liệu"
   },
   "ds.editor.tab.advanced": {
-    "other": "Advanced Options"
+    "other": "Tùy chọn Nâng cao"
   },
   "ds.editor.initFlatFromSnapshot": {
     "other": "If this storage was previously used as a flat datasource, initialize it from an existing snapshot file (must be found inside the storage)"
