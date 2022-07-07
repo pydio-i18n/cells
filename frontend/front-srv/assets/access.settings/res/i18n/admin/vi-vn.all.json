@@ -39,28 +39,28 @@
     "other": "DataSource %s"
   },
   "ds.format-picker.title": {
-    "other": "Create DataSource"
+    "other": "Tạo Datasource"
   },
   "ds.format-picker.legend": {
-    "other": "DataSources are mount points allowing you to attach actual storage to the application. First select the way data is organized inside storage."
+    "other": "DataSource được xem là lối vào của một thiết bị lưu trữ mà bạn kết nối vào hệ thống. Bạn cần phải lựa chọn cách mà dữ liệu được tổ chức trong thiết bị lưu trữ này."
   },
   "ds.format-picker.submit": {
     "other": "Bắt đầu"
   },
   "ds.format-picker.flat.title": {
-    "other": "Flat Storage"
+    "other": "Bộ lưu trữ theo định dạng phẳng"
   },
   "ds.format-picker.flat.legend": {
-    "other": "Best for performances, files are stored as binaries inside the storage. Files and folders structure is kept in internal index only."
+    "other": "Tệp được lưu trữ trực tiếp trong một thư mục đem lại hiệu năng cao nhất. Cấu trúc thư mục được lưu trữ trong cơ sở dữ liệu riêng."
   },
   "ds.format-picker.structured.title": {
-    "other": "Import Existing Data"
+    "other": "Trích xuất từ dữ liệu đã có"
   },
   "ds.format-picker.structured.legend": {
-    "other": "Files and folders are stored as-is, real-time synchronisation reflects storage structure inside internal indexes."
+    "other": "Cấu trúc thư mục được giữ nguyên như trên thiết bị lưu trữ, cells sẽ cần phải thực hiện việc đánh chỉ mục để chép cấu trúc thư mục vào cơ sở dữ liệu."
   },
   "ds.format-picker.internal.title": {
-    "other": "Cells Internals"
+    "other": "Cells nội bộ"
   },
   "ds.format-picker.internal.legend": {
     "other": "Được sử dụng để lưu trữ dữ liệu chương trình (ví dụ các phiên bản sao lưu, thumbnails). Một vài chức năng sẽ bị hạn chế ví dụ không hỗ trợ tìm kiếm."
@@ -1353,7 +1353,7 @@
     "other": "+ workspace"
   },
   "ws.filter.workspaces": {
-    "other": "Filter workspaces..."
+    "other": "Lọc các workspaces..."
   },
   "ws.30": {
     "other": "Cài đặt chung"
@@ -1593,10 +1593,10 @@
     "other": "Giao diện chuyển dễ dàng (chỉ dành cho enterprise)"
   },
   "ws.editor.other.skiprecycle": {
-    "other": "Skip Recycle Bin"
+    "other": "Không đặt thùng rác"
   },
   "ws.editor.other.skiprecycle.legend": {
-    "other": "Disable recycle bin on this workspace: all files will be permanently deleted. This does not apply to Cells created inside this workspace, files will always be moved to workspace recycle to avoid human errors."
+    "other": "Nếu bạn không đặt thùng rác thì tệp bị xóa sẽ không có khả năng tìm lại. Tuy nhiên nếu một Cells được tạo từ một thư mục trong một workspace đã có sẵn, thì file bị xóa sẽ luôn nằm ở thùng rác chung của workspace đó."
   },
   "ws.editor.other.sync": {
     "other": "Cho phép đồng bộ hóa desktop"
@@ -1650,10 +1650,10 @@
     "other": "Hiển thị chi tiết"
   },
   "services.empty.loading": {
-    "other": "Loading services status"
+    "other": "Đang lấy thông tin về trạng thái của các dịch vụ"
   },
   "services.empty.noservice": {
-    "other": "No service"
+    "other": "Không có dịch vụ nào"
   },
   "services.column.name": {
     "other": "Tên dịch vụ"
@@ -1740,28 +1740,28 @@
     "other": "Lập kế hoạch"
   },
   "scheduler.legend": {
-    "other": "Flows running in background on a periodical basis or triggered by events"
+    "other": "Flows chạy trong nền trên cơ sở định kỳ hoặc được kích hoạt bởi các sự kiện"
   },
   "scheduler.system.title": {
-    "other": "System Flows"
+    "other": "Các Flow trong hệ thống"
   },
   "scheduler.system.legend": {
-    "other": "These Flows are registered by default inside the application. They are generally in charge of extracting information from node in background, or doing some cleaning operations."
+    "other": "Những Flows này được đi kèm mặc định bên trong ứng dụng. Chúng chịu trách nhiệm trích xuất thông tin từ node tự động hoặc thực hiện một số nhiệm vụ dọn dẹp."
   },
   "scheduler.inactives.title": {
-    "other": "Inactive Flows"
+    "other": "Flows không hoạt động"
   },
   "scheduler.inactives.legend": {
-    "other": "These Flows are inactive, click on a Flow to enable it."
+    "other": "Những Flows này đang không hoạt động, ấn vào để bật chúng."
   },
   "scheduler.system.empty": {
-    "other": "No Flows scheduled."
+    "other": "Không có Flows trong kế hoạch."
   },
   "scheduler.users.title": {
-    "other": "Users Flows"
+    "other": "Những Flows của người dùng"
   },
   "scheduler.users.legend": {
-    "other": "These Flows are dynamically created and trigged by user actions."
+    "other": "Những Flow này được tạo ra tự động và kích hoạt dựa theo thao tác của người sử dụng."
   },
   "scheduler.users.empty": {
     "other": "No Flows launched by users"
