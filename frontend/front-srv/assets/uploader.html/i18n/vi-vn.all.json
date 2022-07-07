@@ -168,9 +168,9 @@
     "other": "đã bị dừng bởi người dùng"
   },
   "status.error.403": {
-    "other": "you are not allowed to upload here"
+    "other": "bạn không được phép tải lên tập tin này ở đây"
   },
   "status.error.422": {
-    "other": "quota reached, cannot upload more"
+    "other": "không thể tải lên thêm được vi bạn đã dùng quá giới hạn dung lượng lưu trữ"
   }
 }
