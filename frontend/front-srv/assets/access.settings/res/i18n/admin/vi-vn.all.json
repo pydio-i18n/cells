@@ -1764,13 +1764,13 @@
     "other": "Những Flow này được tạo ra tự động và kích hoạt dựa theo thao tác của người sử dụng."
   },
   "scheduler.users.empty": {
-    "other": "No Flows launched by users"
+    "other": "Không có Flow nào được khởi động bởi người dùng"
   },
   "scheduler.cellsflows.cta.button": {
-    "other": "+ Custom Flow"
+    "other": "+ Thêm mới Flow"
   },
   "scheduler.cellsflows.cta.text": {
-    "other": "Do you need to create your own Flow? Discover how Cells Flows makes it easy to automate your repetitive manual tasks in Cells."
+    "other": "Bạn cần tạo một Flow mới? Tìm hiểu làm thế nào Cells Flows có thể tự động hóa những công việc thức tạp trong Cells."
   },
   "scheduler.cellsflows.dialog.button": {
     "other": "Find out more"
