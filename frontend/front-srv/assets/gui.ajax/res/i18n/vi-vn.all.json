@@ -159,10 +159,10 @@
     "other": "Đưa các đánh dấu lên đầu"
   },
   "infopanel.empty.select.file": {
-    "other": "Select a file to display informations"
+    "other": "Ấn vào tệp để có thêm thông tin"
   },
   "pinned-bookmarks.other": {
-    "other": "All files"
+    "other": "Tất cả tập tin"
   },
   "file.temporary-etag.flag": {
     "other": "Incomplete"
