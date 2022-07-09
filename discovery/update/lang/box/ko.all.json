@@ -1,18 +1,18 @@
 {
   "Update.Config.Title": {
-    "other": "Update Configuration"
+    "other": "업데이트 설정"
   },
   "Update.Config.Url.Label": {
-    "other": "Update Server"
+    "other": "업데이트 서버"
   },
   "Update.Config.Url.Description": {
-    "other": "Http URL of the update server"
+    "other": "업데이트 서버의 Http URL"
   },
   "Update.Config.PublicKey.Label": {
-    "other": "Public Key"
+    "other": "공개 키"
   },
   "Update.Config.PublicKey.Description": {
-    "other": "Official key used to verify binaries signature."
+    "other": "바이너리 서명을 확인하기 위해 공식 키가 사용되었습니다."
   },
   "Update.Config.Channel.Label": {
     "other": "Update Channel"
