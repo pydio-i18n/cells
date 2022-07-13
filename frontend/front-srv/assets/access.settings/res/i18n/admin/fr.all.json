@@ -1635,7 +1635,7 @@
     "other": "Identifiant technique utilisé par exemple dans les URLs, calculé automatiquement à moins que vous ne le personnalisiez."
   },
   "services.text-filter.hint": {
-    "other": "Filter..."
+    "other": "Filtrer..."
   },
   "services.filter.nofilter": {
     "other": "Tous les services"
