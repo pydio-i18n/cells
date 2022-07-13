@@ -1634,6 +1634,9 @@
   "ws.editor.slug.legend": {
     "other": "Tên kỹ thuật được sử dụng ví dụ trong URL, được tính toán tự động nhưng bạn có thể tùy chỉnh nó."
   },
+  "services.text-filter.hint": {
+    "other": "Filter..."
+  },
   "services.filter.nofilter": {
     "other": "Tất cả dịch vụ"
   },
