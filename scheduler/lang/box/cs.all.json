@@ -24,10 +24,10 @@
     "other": "Automatic archiving of changes service"
   },
   "Jobs.User.Compress": {
-    "other": "Compressing Selection..."
+    "other": "Komprimování vybraného…"
   },
   "Jobs.User.Extract": {
-    "other": "Extracting archive..."
+    "other": "Rozbalování archivu…"
   },
   "Jobs.User.Delete": {
     "other": "Deleting selection in background..."
@@ -60,7 +60,7 @@
     "other": "Downloading file in background..."
   },
   "Jobs.User.DeletingItem": {
-    "other": "Deleting %s"
+    "other": "Mazání %s"
   },
   "Jobs.User.CopyingItem": {
     "other": "Copying %s"
