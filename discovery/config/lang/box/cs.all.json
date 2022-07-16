@@ -6,10 +6,10 @@
     "other": "Remove versions after 30 days"
   },
   "Keep All": {
-    "other": "Keep All"
+    "other": "Ponechat vše"
   },
   "Keep all versions forever": {
-    "other": "Keep all versions forever"
+    "other": "Ponechat všechny verze napořád"
   },
   "Regular Pruning": {
     "other": "Regular Pruning"
@@ -39,7 +39,7 @@
     "other": "Workspace Identifiers"
   },
   "aclSingleQuery.not": {
-    "other": "not"
+    "other": "ne"
   },
   "actionOutputSingleQuery.ErrorStringRegexp": {
     "other": "Search on error string (regexp)"
@@ -129,10 +129,10 @@
     "other": "Date period"
   },
   "contextMetaCondition.OfficeHoursCondition": {
-    "other": "Office Hours"
+    "other": "Pracovní doba"
   },
   "contextMetaCondition.DateAfterCondition": {
-    "other": "Date after"
+    "other": "Datum po"
   },
   "contextMetaCondition.PathGlobCondition": {
     "other": "Glob Matcher"
@@ -141,7 +141,7 @@
     "other": "Boolean Value"
   },
   "contextMetaField.ContentType": {
-    "other": "Content Type"
+    "other": "Typ obsahu"
   },
   "contextMetaField.CookiesString": {
     "other": "Cookies String"
@@ -150,7 +150,7 @@
     "other": "HTTP Protocol"
   },
   "contextMetaField.RemoteAddress": {
-    "other": "Remote Address"
+    "other": "Adresa protějšku"
   },
   "contextMetaField.RequestHostname": {
     "other": "Request Hostname"
@@ -162,16 +162,16 @@
     "other": "Request URI"
   },
   "contextMetaField.ServerTime": {
-    "other": "Server Time"
+    "other": "Čas na serveru"
   },
   "contextMetaField.UserAgent": {
     "other": "User Agent"
   },
   "contextMetaSingleQuery.Condition": {
-    "other": "Condition"
+    "other": "Podmínka"
   },
   "contextMetaSingleQuery.FieldName": {
-    "other": "Field Name"
+    "other": "Název kolonky"
   },
   "roleSingleQuery.HasAutoApply": {
     "other": "Has AutoApply"
