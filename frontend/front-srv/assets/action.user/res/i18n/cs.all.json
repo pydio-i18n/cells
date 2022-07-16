@@ -39,10 +39,10 @@
     "other": "Downloads"
   },
   "21": {
-    "other": "Yes"
+    "other": "Ano"
   },
   "22": {
-    "other": "No"
+    "other": "Ne"
   },
   "23": {
     "other": "Successfully deleted %s files."
@@ -117,7 +117,7 @@
     "other": "All my personal data"
   },
   "44": {
-    "other": "My Account"
+    "other": "Můj účet"
   },
   "45": {
     "other": "Personal data"
@@ -135,7 +135,7 @@
     "other": "External users that you created"
   },
   "5": {
-    "other": "Repository"
+    "other": "Repozitář"
   },
   "50": {
     "other": "My Teams"
@@ -159,7 +159,7 @@
     "other": "Add one user per line, type in the textarea to see the auto-completion list appear."
   },
   "57": {
-    "other": "Create a Team"
+    "other": "Vytvořit tým"
   },
   "58": {
     "other": "Teams are used as a shortcut to quickly share a folder with a predefined set of users"
@@ -195,10 +195,10 @@
     "other": "Pick a day of the week"
   },
   "68": {
-    "other": "Monday"
+    "other": "pondělí"
   },
   "69": {
-    "other": "Tuesday"
+    "other": "úterý"
   },
   "7": {
     "other": "Expiration"
