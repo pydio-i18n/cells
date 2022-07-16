@@ -129,7 +129,7 @@
     "other": "Open Cells"
   },
   "Mail.AdminTestMail.LinkInstructions": {
-    "other": "Click to open the frontend"
+    "other": "Kliknutím otevřete nadstavbu"
   },
   "Mail.AdminTestMail.Outros": {
     "other": "{{.Configs.Title}} File Sharing platform is used by teams to efficiently collaborate on documents."
@@ -144,7 +144,7 @@
     "other": "Address to use as default when sending emails. You should use a proper support email instead of no-reply email."
   },
   "Mail.Config.Queue.Label": {
-    "other": "Queue Type"
+    "other": "Typ fronty"
   },
   "Mail.Config.Queue.Description": {
     "other": "Persistence layer for storing pending emails"
@@ -174,7 +174,7 @@
     "other": "Target folder for writing emails"
   },
   "Mail.Config.Smtp.Label": {
-    "other": "SMTP Server"
+    "other": "SMTP server"
   },
   "Mail.Config.Smtp.Host.Label": {
     "other": "Server Hostname"
@@ -183,7 +183,7 @@
     "other": "Host of the SMTP server, e.g. smtp.gmail.com"
   },
   "Mail.Config.Smtp.Port.Label": {
-    "other": "Server Port"
+    "other": "Port serveru"
   },
   "Mail.Config.Smtp.Port.Description": {
     "other": "Port of the SMTP Server, e.g. 587 (non-secure) or 465 (TLS)"
@@ -216,7 +216,7 @@
     "other": "SendGrid Service"
   },
   "Mail.Config.SendGrid.ApiKey.Label": {
-    "other": "Api Key"
+    "other": "Klíč k API"
   },
   "Mail.Config.SendGrid.ApiKey.Description": {
     "other": "Api Key provided by SendGrid to connect to the service"
