@@ -23,16 +23,16 @@
     "other": "Policy"
   },
   "Config.GroupPolicy.Name.Label": {
-    "other": "Name"
+    "other": "Název"
   },
   "Config.GroupPolicy.Name.Description": {
-    "other": "Policy Name"
+    "other": "Název zásady"
   },
   "Config.GroupPolicy.Description.Label": {
-    "other": "Description"
+    "other": "Popis"
   },
   "Config.GroupPolicy.Description.Description": {
-    "other": "Policy description"
+    "other": "Popis zásady"
   },
   "Config.GroupPolicy.VersionsDataSourceName.Label": {
     "other": "Store"
@@ -47,7 +47,7 @@
     "other": "Bucket used inside this datasource"
   },
   "Config.GroupSizes.Title": {
-    "other": "Size Limits"
+    "other": "Limity velikosti"
   },
   "Config.GroupSizes.MaxTotalSize.Label": {
     "other": "Global size of all versions kept in this bucket"
