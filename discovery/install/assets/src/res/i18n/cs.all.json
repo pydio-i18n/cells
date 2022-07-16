@@ -9,13 +9,13 @@
     "other": "This will install all services on the current server. Please agree with the terms of the license below before starting"
   },
   "welcome.agreed": {
-    "other": "I agree with the terms"
+    "other": "Souhlasím s podmínkami"
   },
   "database.stepLabel": {
-    "other": "Database Connection"
+    "other": "Připojení k databázi"
   },
   "database.title": {
-    "other": "Database Configuration"
+    "other": "Nastavení pro databázi"
   },
   "database.legend": {
     "other": "Pydio requires at least one SQL storage for configuration and data indexation. Configure here the connection to your MySQL/MariaDB server."
@@ -36,7 +36,7 @@
     "other": "Configure another database."
   },
   "admin.stepLabel": {
-    "other": "Admin User"
+    "other": "Uživatel s právy pro správu"
   },
   "admin.title": {
     "other": "Admin user and frontend defaults"
@@ -48,7 +48,7 @@
     "other": "An administrative user was already found in the DB. Check if you wish to create a new one."
   },
   "advanced.stepLabel": {
-    "other": "Advanced Settings"
+    "other": "Pokročilá nastavení"
   },
   "advanced.title": {
     "other": "Advanced Settings (optional)"
@@ -75,13 +75,13 @@
     "other": "Server port"
   },
   "advanced.mongo.db": {
-    "other": "Database Name"
+    "other": "Název databáze"
   },
   "advanced.mongo.username": {
-    "other": "Username"
+    "other": "Uživatelské jméno"
   },
   "advanced.mongo.password": {
-    "other": "Password"
+    "other": "Heslo"
   },
   "advanced.mongo.authSource": {
     "other": "Auth DB"
@@ -90,7 +90,7 @@
     "other": "Test connection"
   },
   "license.stepLabel": {
-    "other": "Enterprise License"
+    "other": "Licence pro podniky"
   },
   "license.title": {
     "other": "Pydio Cells Enterprise License"
@@ -108,7 +108,7 @@
     "other": "A valid license key is required to run the Enterprise Distribution. To get a 30 days trial license or a sales quotation, please contact"
   },
   "license.fieldLabel": {
-    "other": "License String"
+    "other": "Řetězec licence"
   },
   "license.fieldLegend": {
     "other": "Please copy/paste the license key provided to you."
@@ -129,10 +129,10 @@
     "other": "There was an error while performing installation! Please check your configuration."
   },
   "apply.error.detail": {
-    "other": "Error was: "
+    "other": "Chyba byla: "
   },
   "form.dbConnectionType.label": {
-    "other": "Connection Type"
+    "other": "Typ připojení"
   },
   "form.dbConnectionType.tcp": {
     "other": "TCP"
@@ -141,16 +141,16 @@
     "other": "Socket"
   },
   "form.dbConnectionType.manual": {
-    "other": "Manual"
+    "other": "Ručně"
   },
   "form.dbTCPHostname.label": {
-    "other": "Host Name"
+    "other": "Název hostitele"
   },
   "form.dbTCPHostname.legend": {
-    "other": "Server where mysql is running"
+    "other": "Server na kterém je provozováno mysql"
   },
   "form.dbName.label": {
-    "other": "Database Name"
+    "other": "Název databáze"
   },
   "form.dbName.legend": {
     "other": "Database to use (will be created if it does not exist)"
@@ -168,13 +168,13 @@
     "other": "Leave blank if not required"
   },
   "form.dbPassword.label": {
-    "other": "Database Password"
+    "other": "Heslo k databázi"
   },
   "form.dbPassword.legend": {
     "other": "Leave blank if not required"
   },
   "form.dbSocketFile.label": {
-    "other": "Socket"
+    "other": "Soket"
   },
   "form.dbSocketFile.legend": {
     "other": "Enter the location of the socket file to use to connect"
@@ -246,7 +246,7 @@
     "other": "S3 Api Secret"
   },
   "form.dsS3ApiSecret.legend": {
-    "other": "Secret Key"
+    "other": "Tajný klíč"
   },
   "form.dsS3ValidateKeys": {
     "other": "Connect to S3 to define buckets"
@@ -270,15 +270,15 @@
     "other": "You are not allowed to create buckets, make sure to create them manually!"
   },
   "stepper.button.next": {
-    "other": "Next"
+    "other": "Další"
   },
   "stepper.button.back": {
-    "other": "Back"
+    "other": "Zpět"
   },
   "stepper.button.last": {
-    "other": "Install Now"
+    "other": "Nainstalovat nyní"
   },
   "stepper.button.reload": {
-    "other": "Reload"
+    "other": "Znovu načíst"
   }
 }
