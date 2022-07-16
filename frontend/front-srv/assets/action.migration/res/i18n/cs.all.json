@@ -18,7 +18,7 @@
     "other": "Use checkboxes below to select the data you want to import. If required, the wizard will lead you through specific configuration for each feature and you will validate your choices before launching proper importation job. To have best control over the import process, you may select only one step and run the import tools many times."
   },
   "step.categories.summary": {
-    "other": "Validation"
+    "other": "Ověření"
   },
   "step.categories.summary.legend": {
     "other": "Here is a summary of the configuration. Please review it before launching importation in background."
@@ -54,10 +54,10 @@
     "other": "Administrator login"
   },
   "step.connection.field.pwd": {
-    "other": "Admin password"
+    "other": "Heslo správce"
   },
   "step.connection.button.connect": {
-    "other": "Connect"
+    "other": "Připojit"
   },
   "step.meta.title": {
     "other": "Import Metadata"
@@ -102,7 +102,7 @@
     "other": "Contact Support"
   },
   "step.disclaimer.quote": {
-    "other": "Ask for a quote"
+    "other": "Poptat cenovou nabídku"
   },
   "step.disclaimer.start": {
     "other": "Start Migration"
@@ -153,7 +153,7 @@
     "other": "All set! Let's start"
   },
   "step.shares.feature.links": {
-    "other": "Public Links"
+    "other": "Veřejné odkazy"
   },
   "step.shares.feature.cells": {
     "other": "Shared Folders"
