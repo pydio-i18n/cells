@@ -12,7 +12,7 @@
     "other": "Cell"
   },
   "CreatedBy": {
-    "other": "Created by {{.Actor}}"
+    "other": "Vytvořil {{.Actor}}"
   },
   "CreatedObject": {
     "other": "Created {{.Object}}"
@@ -39,10 +39,10 @@
     "other": "This is your Pydio Daily Digest"
   },
   "Document": {
-    "other": "Document"
+    "other": "Dokument"
   },
   "Folder": {
-    "other": "Folder"
+    "other": "Složka"
   },
   "ModifiedBy": {
     "other": "Modified by {{.Actor}}"
