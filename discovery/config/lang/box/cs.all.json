@@ -219,7 +219,7 @@
     "other": "Geolocation Query"
   },
   "treeQuery.MaxDate": {
-    "other": "Modified before"
+    "other": "Upraveno před"
   },
   "treeQuery.MaxSize": {
     "other": "MaxSize"
@@ -234,22 +234,22 @@
     "other": "Not"
   },
   "treeQuery.PathDepth": {
-    "other": "Path Depth"
+    "other": "Hloubka popisu umístění"
   },
   "treeQuery.PathPrefix": {
-    "other": "Path Prefix"
+    "other": "Předpona popisu umístění"
   },
   "treeQuery.Paths": {
-    "other": "Absolute Paths"
+    "other": "Úplný popis umístění"
   },
   "treeQuery.Type": {
-    "other": "Type"
+    "other": "Typ"
   },
   "treeQuery.Type.COLLECTION": {
-    "other": "Folder"
+    "other": "Složka"
   },
   "treeQuery.Type.LEAF": {
-    "other": "File"
+    "other": "Soubor"
   },
   "treeQuery.Type.UNKNOWN": {
     "other": "Any"
@@ -270,25 +270,25 @@
     "other": "Connected Since"
   },
   "userSingleQuery.FullPath": {
-    "other": "Full Path"
+    "other": "Úplný popis umístění"
   },
   "userSingleQuery.GroupPath": {
-    "other": "Group Path"
+    "other": "Popis umístění skupiny"
   },
   "userSingleQuery.HasProfile": {
-    "other": "Has Profile"
+    "other": "Má profil"
   },
   "userSingleQuery.HasRole": {
-    "other": "Has Role"
+    "other": "Má roli"
   },
   "userSingleQuery.Login": {
     "other": "Login"
   },
   "userSingleQuery.NodeType": {
-    "other": "Object Type"
+    "other": "Typ objektu"
   },
   "userSingleQuery.NodeType.GROUP": {
-    "other": "Group"
+    "other": "Skupina"
   },
   "userSingleQuery.NodeType.UNKNOWN": {
     "other": "Any"
@@ -300,10 +300,10 @@
     "other": "Not"
   },
   "userSingleQuery.Password": {
-    "other": "Password"
+    "other": "Heslo"
   },
   "userSingleQuery.Recursive": {
-    "other": "Recursive"
+    "other": "Rekurzivní"
   },
   "userSingleQuery.Uuid": {
     "other": "Uuid"
@@ -312,28 +312,28 @@
     "other": "not"
   },
   "workspaceSingleQuery.AttributeName": {
-    "other": "Attribute Name"
+    "other": "Název atributu"
   },
   "workspaceSingleQuery.AttributeValue": {
     "other": "Attribute Value"
   },
   "workspaceSingleQuery.Description": {
-    "other": "Description"
+    "other": "Popis"
   },
   "workspaceSingleQuery.HasAttribute": {
-    "other": "Has Attribute"
+    "other": "Má atribut"
   },
   "workspaceSingleQuery.Label": {
-    "other": "Label"
+    "other": "Štítek"
   },
   "workspaceSingleQuery.LastUpdated": {
-    "other": "Last updated"
+    "other": "Naposledy aktualizováno"
   },
   "workspaceSingleQuery.Not": {
     "other": "Not"
   },
   "workspaceSingleQuery.Scope": {
-    "other": "Scope"
+    "other": "Rozsah"
   },
   "workspaceSingleQuery.Slug": {
     "other": "Slug"
@@ -342,25 +342,25 @@
     "other": "Uuid"
   },
   "workspaceSingleQuery.description": {
-    "other": "Description"
+    "other": "Popis"
   },
   "workspaceSingleQuery.label": {
-    "other": "Label"
+    "other": "Štítek"
   },
   "workspaceSingleQuery.not": {
     "other": "not"
   },
   "workspaceSingleQuery.scope": {
-    "other": "Workspace Type"
+    "other": "Typ pracovního prostoru"
   },
   "workspaceSingleQuery.scope.ADMIN": {
-    "other": "Workspace"
+    "other": "Pracovní prostor"
   },
   "workspaceSingleQuery.scope.ANY": {
     "other": "Any"
   },
   "workspaceSingleQuery.scope.LINK": {
-    "other": "Public Link"
+    "other": "Veřejný odkaz"
   },
   "workspaceSingleQuery.scope.ROOM": {
     "other": "Cell"
