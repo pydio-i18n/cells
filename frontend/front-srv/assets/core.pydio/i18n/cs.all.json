@@ -498,16 +498,16 @@
     "other": "Datum"
   },
   "246": {
-    "other": "Message"
+    "other": "Zpráva"
   },
   "247": {
-    "other": "Extract"
+    "other": "Rozbalit"
   },
   "248": {
     "other": "Extract selection from zip to..."
   },
   "249": {
-    "other": "Users"
+    "other": "Uživatelé"
   },
   "25": {
     "other": "Upload one or more files (max. %s in the directory : "
