@@ -1,27 +1,27 @@
 {
   "0": {
-    "other": "Last version"
+    "other": "Nejnovější verze"
   },
   "1": {
     "other": "Filename"
   },
   "10": {
-    "other": "Text file"
+    "other": "Textový soubor"
   },
   "100": {
-    "other": "Cannot find file "
+    "other": "Soubor se nedaří nalézt "
   },
   "101": {
     "other": "The origin and destination folders are the same!"
   },
   "102": {
-    "other": "Error while creating file :"
+    "other": "Chyba při vytváření souboru:"
   },
   "103": {
-    "other": "Cannot find folder "
+    "other": "Nedaří se najít složku "
   },
   "104": {
-    "other": "Go to the given location"
+    "other": "Přejít do daného umístění"
   },
   "105": {
     "other": "Email an url to access directly to this location."
@@ -30,19 +30,19 @@
     "other": "Send Mail"
   },
   "107": {
-    "other": "Your name and/or email"
+    "other": "Vaše jméno a/nebo e-mail"
   },
   "108": {
-    "other": "The destination email"
+    "other": "Cílový e-mail"
   },
   "109": {
     "other": "Clickable URL"
   },
   "11": {
-    "other": "Javascript"
+    "other": "JavaScript"
   },
   "110": {
-    "other": "Add a comment"
+    "other": "Přidat komentář"
   },
   "111": {
     "other": "The following email has been sent :"
@@ -60,19 +60,19 @@
     "other": "The file has been saved successfully"
   },
   "116": {
-    "other": "files"
+    "other": "soubory"
   },
   "117": {
-    "other": "The folder"
+    "other": "Složka"
   },
   "118": {
-    "other": "Download Multiple File"
+    "other": "Stáhnout vícero souborů"
   },
   "119": {
     "other": "Click on each file to download it."
   },
   "12": {
-    "other": "GIF picture"
+    "other": "Obrázek GIF"
   },
   "120": {
     "other": "You are not allowed to delete the whole arborescence!"
@@ -81,7 +81,7 @@
     "other": "Image File "
   },
   "122": {
-    "other": "Recycle Bin"
+    "other": "Koš"
   },
   "123": {
     "other": "has been moved to the "
@@ -93,10 +93,10 @@
     "other": "A file/folder with that name already exists (names are case insensitive). Please choose another one!"
   },
   "126": {
-    "other": "Thumbnails"
+    "other": "Náhledy"
   },
   "127": {
-    "other": "Size"
+    "other": "Velikost"
   },
   "128": {
     "other": "files selected."
@@ -105,13 +105,13 @@
     "other": "View"
   },
   "13": {
-    "other": "JPG picture"
+    "other": "JPG obrázek"
   },
   "130": {
-    "other": "Folders"
+    "other": "Složky"
   },
   "131": {
-    "other": "Details"
+    "other": "Podrobnosti"
   },
   "132": {
     "other": "No file or folder"
@@ -120,7 +120,7 @@
     "other": "Name"
   },
   "134": {
-    "other": "Type"
+    "other": "Typ"
   },
   "135": {
     "other": "Dimensions"
@@ -132,13 +132,13 @@
     "other": "Last Modif."
   },
   "139": {
-    "other": "Edit Online"
+    "other": "Upravit online"
   },
   "14": {
-    "other": "HTML page"
+    "other": "HTML stránka"
   },
   "140": {
-    "other": "Play whole folder"
+    "other": "Přehrát celou složku"
   },
   "141": {
     "other": "Reading folder"
@@ -231,10 +231,10 @@
     "other": "Log out"
   },
   "165": {
-    "other": "Settings"
+    "other": "Nastavení"
   },
   "166": {
-    "other": "About"
+    "other": "O aplikaci"
   },
   "167": {
     "other": "O Pydio"
@@ -249,19 +249,19 @@
     "other": "REAL file"
   },
   "170": {
-    "other": "Current Folder"
+    "other": "Stávající složka"
   },
   "171": {
-    "other": "Browse"
+    "other": "Procházet"
   },
   "172": {
     "other": "Your Selection"
   },
   "173": {
-    "other": "New folder name"
+    "other": "Název pro novou složku"
   },
   "174": {
-    "other": "New file name"
+    "other": "Název pro nový soubor"
   },
   "175": {
     "other": "Select destination folder"
@@ -288,7 +288,7 @@
     "other": "Login"
   },
   "182": {
-    "other": "Password"
+    "other": "Heslo"
   },
   "183": {
     "other": "Please select a destination folder different from the origin!"
@@ -300,34 +300,34 @@
     "other": "Stop searching"
   },
   "186": {
-    "other": "Image Preview"
+    "other": "Náhled obrázku"
   },
   "187": {
     "other": "Online Edition - "
   },
   "189": {
-    "other": "Edit My Preferences"
+    "other": "Upravit mé předvolby"
   },
   "19": {
-    "other": "ZIP file"
+    "other": "ZIP soubor"
   },
   "190": {
-    "other": "Language"
+    "other": "Jazyk"
   },
   "191": {
-    "other": "Default Display"
+    "other": "Výchozí zobrazení"
   },
   "192": {
-    "other": "List"
+    "other": "Seznam"
   },
   "193": {
-    "other": "Thumbnails"
+    "other": "Náhledy"
   },
   "194": {
-    "other": "Change Password"
+    "other": "Změnit heslo"
   },
   "195": {
-    "other": "User Preferences"
+    "other": "Přednastavení uživatele"
   },
   "196": {
     "other": "Your language differs from the current language!\\n Do you want to reload the page to switch language?"
@@ -336,19 +336,19 @@
     "other": "Your password change will take effect after you logout."
   },
   "198": {
-    "other": "New"
+    "other": "Nové"
   },
   "199": {
-    "other": "Confirm"
+    "other": "Potvrdit"
   },
   "2": {
-    "other": "Size"
+    "other": "Velikost"
   },
   "20": {
     "other": "WAV file"
   },
   "200": {
-    "other": "Switch Repository to..."
+    "other": "Přepnout repozitář na…"
   },
   "201": {
     "other": "Warning, some of your changes are not saved!\\n Are you sure you want to close?"
@@ -360,10 +360,10 @@
     "other": "Destintation folder is the same as original folder!"
   },
   "204": {
-    "other": "The file \""
+    "other": "Soubor „"
   },
   "205": {
-    "other": "\" exceeds size limit ("
+    "other": "“ překračuje limit velikosti ("
   },
   "206": {
     "other": "Mb).\\nIt will not be uploaded."
@@ -432,55 +432,55 @@
     "other": "Rename bookmark"
   },
   "226": {
-    "other": "Details"
+    "other": "Podrobnosti"
   },
   "227": {
     "other": "Switch to detailed table view"
   },
   "228": {
-    "other": "Thumbs"
+    "other": "Náhledy"
   },
   "229": {
     "other": "Switch to thumbnails view"
   },
   "23": {
-    "other": "File"
+    "other": "Soubor"
   },
   "230": {
-    "other": "Play"
+    "other": "Přehrát"
   },
   "231": {
-    "other": "Play Slideshow"
+    "other": "Spustit prezentaci"
   },
   "232": {
-    "other": "Stop"
+    "other": "Zastavit"
   },
   "233": {
-    "other": "Stop Slideshow"
+    "other": "Zastavit prezentaci"
   },
   "234": {
-    "other": "View selected images"
+    "other": "Zobrazit vybrané obrázky"
   },
   "235": {
-    "other": "Fullscreen"
+    "other": "Na celou obrazovku"
   },
   "236": {
     "other": "Restore"
   },
   "237": {
-    "other": "Old password"
+    "other": "Původní heslo"
   },
   "238": {
-    "other": "Passwords differ!"
+    "other": "Zadání hesla se liší!"
   },
   "239": {
-    "other": "Please fill you current password"
+    "other": "Zadejte své stávající heslo"
   },
   "24": {
-    "other": "Parent directory"
+    "other": "Nadřazená složka"
   },
   "240": {
-    "other": "Wrong password!"
+    "other": "Nesprávné heslo!"
   },
   "241": {
     "other": "Your preferences have been saved successfully!"
@@ -492,10 +492,10 @@
     "other": "Revision"
   },
   "244": {
-    "other": "Author"
+    "other": "Autor"
   },
   "245": {
-    "other": "Date"
+    "other": "Datum"
   },
   "246": {
     "other": "Message"
