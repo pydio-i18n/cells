@@ -39,19 +39,19 @@
     "other": "Info Panel"
   },
   "tour.locale.back": {
-    "other": "Back"
+    "other": "Zpět"
   },
   "tour.locale.close": {
-    "other": "Close"
+    "other": "Zavřít"
   },
   "tour.locale.last": {
-    "other": "Finish"
+    "other": "Dokončit"
   },
   "tour.locale.next": {
-    "other": "Next"
+    "other": "Další"
   },
   "tour.locale.skip": {
-    "other": "Skip"
+    "other": "Přeskočit"
   },
   "tour.openworkspace": {
     "other": "At the first connection, your history is probably empty. Enter a workspace or a cell to start adding files."
@@ -135,10 +135,10 @@
     "other": "List"
   },
   "list.display-mode.details": {
-    "other": "Details"
+    "other": "Podrobnosti"
   },
   "list.display-mode.thumbs": {
-    "other": "Thumbs"
+    "other": "Náhledy"
   },
   "list.display-mode.thumbs-large": {
     "other": "Thumbs Large"
@@ -162,7 +162,7 @@
     "other": "Select a file to display informations"
   },
   "pinned-bookmarks.other": {
-    "other": "All files"
+    "other": "Všechny soubory"
   },
   "file.temporary-etag.flag": {
     "other": "Incomplete"
