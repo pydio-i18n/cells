@@ -1008,13 +1008,13 @@
     "other": "Enter the number of pieces you want to download, then click the button and click on each file to download them."
   },
   "4": {
-    "other": "Modified"
+    "other": "Změněno"
   },
   "40": {
     "other": "This directory already exists (names are case insensitive)"
   },
   "400": {
-    "other": "Number of pieces :"
+    "other": "Počet částí:"
   },
   "401": {
     "other": "You can download and install the following software to join the pieces once on your computer : "
@@ -1032,7 +1032,7 @@
     "other": "Any WebDAV client will ask you for an adress, a login and a password. Use the URL below along with your standard name and password."
   },
   "406": {
-    "other": "Activate WebDAV shares"
+    "other": "Aktivovat WebDAV sdílení"
   },
   "407": {
     "other": "Enter your password if it's the first time that you are activating webDAV shares, or if you want to re-type a new password :"
@@ -1068,22 +1068,22 @@
     "other": "Left Pane"
   },
   "417": {
-    "other": "Create a cell..."
+    "other": "Vytvořit buňku…"
   },
   "418": {
-    "other": "Create a cell"
+    "other": "Vytvořit buňku"
   },
   "419": {
-    "other": "Loading templates..."
+    "other": "Načítání šablon…"
   },
   "42": {
-    "other": "to"
+    "other": "do"
   },
   "420": {
     "other": "Please pick a template from the list"
   },
   "421": {
-    "other": "New %s"
+    "other": "Nové %s"
   },
   "422": {
     "other": "Please fill the required parameters. Fly over the field titles with your mouse to have more information."
@@ -1122,7 +1122,7 @@
     "other": "My Files"
   },
   "433": {
-    "other": "ready"
+    "other": "připraveno"
   },
   "434": {
     "other": "sending"
@@ -1131,25 +1131,25 @@
     "other": "done"
   },
   "436": {
-    "other": "error"
+    "other": "chyba"
   },
   "437": {
     "other": "Ooops, it seems that your security token has expired! Please %s by hitting refresh or F5 in your browser!"
   },
   "438": {
-    "other": "reload the page"
+    "other": "znovu načíst stránku"
   },
   "439": {
     "other": "Main Options"
   },
   "44": {
-    "other": "has been deleted"
+    "other": "bylo smazáno"
   },
   "440": {
-    "other": "Yes"
+    "other": "Ano"
   },
   "441": {
-    "other": "No"
+    "other": "Ne"
   },
   "442": {
     "other": "My Account"
@@ -1209,10 +1209,10 @@
     "other": "Top folder"
   },
   "46": {
-    "other": "file"
+    "other": "soubor"
   },
   "460": {
-    "other": "List"
+    "other": "Seznam"
   },
   "461": {
     "other": "Switch to list view"
@@ -1269,10 +1269,10 @@
     "other": "Select a file or folder to see its details here"
   },
   "478": {
-    "other": "No results found"
+    "other": "Nenalezeny žádné výsledky"
   },
   "479": {
-    "other": "Forgot your password?"
+    "other": "Zapomněli jste heslo?"
   },
   "48": {
     "other": "OK"
@@ -1290,19 +1290,19 @@
     "other": "You are not authorized to create more users!"
   },
   "484": {
-    "other": "Create user"
+    "other": "Vytvořit uživatele"
   },
   "485": {
-    "other": "Create a shared user"
+    "other": "Vytvořit sdíleného uživatele"
   },
   "486": {
-    "other": "Advanced"
+    "other": "Pokročilé"
   },
   "487": {
-    "other": "Basic"
+    "other": "Základní"
   },
   "488": {
-    "other": "Advanced Filter"
+    "other": "Pokročilý filtr"
   },
   "489": {
     "other": "Metadata"
@@ -1314,49 +1314,49 @@
     "other": "Date range"
   },
   "491": {
-    "other": "After"
+    "other": "Po"
   },
   "492": {
     "other": "until"
   },
   "493": {
-    "other": "Today"
+    "other": "Dnes"
   },
   "494": {
-    "other": "Yesterday"
+    "other": "Včera"
   },
   "495": {
-    "other": "Last week"
+    "other": "Minulý týden"
   },
   "496": {
-    "other": "Last month"
+    "other": "Minulý měsíc"
   },
   "497": {
-    "other": "Last year"
+    "other": "Minulý rok"
   },
   "498": {
     "other": "Document Property"
   },
   "499": {
-    "other": "File"
+    "other": "Soubor"
   },
   "5": {
-    "other": "Actions"
+    "other": "Akce"
   },
   "50": {
     "other": "Exe file"
   },
   "500": {
-    "other": "Extension"
+    "other": "Přípona"
   },
   "501": {
     "other": "or"
   },
   "502": {
-    "other": "Folders only"
+    "other": "Pouze složky"
   },
   "503": {
-    "other": "Size"
+    "other": "Velikost"
   },
   "504": {
     "other": "1k,1M,1G"
@@ -1374,10 +1374,10 @@
     "other": "I just created an account for you on %s. To connect, please click on the following link %link and use these credentials:  <br><br> Login: %user <br><br> Password: %pass"
   },
   "509": {
-    "other": "Save as a team"
+    "other": "Uložit jako tým"
   },
   "51": {
-    "other": "Text Editor"
+    "other": "Textový editor"
   },
   "510": {
     "other": "Please enter a team label"
@@ -1389,19 +1389,19 @@
     "other": "Desktop Full Screen"
   },
   "513": {
-    "other": "show"
+    "other": "zobrazit"
   },
   "514": {
-    "other": "hide"
+    "other": "skrýt"
   },
   "515": {
     "other": "No bookmarks - Drop files or folders here for quick access."
   },
   "516": {
-    "other": "expand"
+    "other": "rozbalit"
   },
   "517": {
-    "other": "collapse"
+    "other": "sbalit"
   },
   "518": {
     "other": "Alternatively, you can <a class='create_file_alt_link'>create a new empty file</a>."
@@ -1500,7 +1500,7 @@
     "other": "Accept"
   },
   "548": {
-    "other": "Decline"
+    "other": "Odmítnout"
   },
   "549": {
     "other": "You have previously accepted this item that was shared with you by %%OWNER%% from a remote location. Do you want to reject it now?"
@@ -1605,16 +1605,16 @@
     "other": "%s members"
   },
   "577": {
-    "other": "No members"
+    "other": "Žádní členové"
   },
   "578": {
     "other": "Team Label"
   },
   "579": {
-    "other": "Create Team"
+    "other": "Vytvořit tým"
   },
   "58": {
-    "other": "CSS File"
+    "other": "CSS soubor"
   },
   "580": {
     "other": "Edit team label"
@@ -1623,7 +1623,7 @@
     "other": "User belongs to %s team(s)"
   },
   "582": {
-    "other": "Delete User"
+    "other": "Smazat uživatele"
   },
   "583": {
     "other": "Search Directory"
@@ -1686,7 +1686,7 @@
     "other": "RAR File"
   },
   "600": {
-    "other": "Edit user"
+    "other": "Upravit uživatele"
   },
   "601": {
     "other": "One shared cell"
@@ -1710,19 +1710,19 @@
     "other": "Your recent activity - Type in to search files inside all workspaces"
   },
   "608": {
-    "other": "Current folder"
+    "other": "Stávající složka"
   },
   "609": {
-    "other": "Whole workspace"
+    "other": "Celý pracovní prostor"
   },
   "61": {
     "other": "GZ File"
   },
   "610": {
-    "other": "All worskpaces"
+    "other": "Všechny pracovní prostory"
   },
   "611": {
-    "other": "Start typing to search"
+    "other": "Psaním vyhledáte"
   },
   "612": {
     "other": "Custom range"
@@ -1761,10 +1761,10 @@
     "other": "Error Stack"
   },
   "623": {
-    "other": "Copy"
+    "other": "Zkopírovat"
   },
   "624": {
-    "other": "Copied!"
+    "other": "Zkopírováno!"
   },
   "625": {
     "other": "Letter"
