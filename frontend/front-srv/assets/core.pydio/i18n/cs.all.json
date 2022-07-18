@@ -1770,22 +1770,22 @@
     "other": "Letter"
   },
   "626": {
-    "other": "Files Shared with me"
+    "other": "Soubory, které mi někdo nasdílel"
   },
   "627": {
     "other": "Shares from remote servers"
   },
   "628": {
-    "other": "Revert"
+    "other": "Vzít zpět"
   },
   "629": {
-    "other": "No records yet"
+    "other": "Zatím žádné záznamy"
   },
   "63": {
-    "other": "Log out"
+    "other": "Odhlásit se"
   },
   "630": {
-    "other": "Folders shared with me"
+    "other": "Složky, které mi někdo nasdílel"
   },
   "631": {
     "other": "This cell is empty!"
@@ -1797,13 +1797,13 @@
     "other": "Cells are spaces shared with others to collaborate on documents"
   },
   "634": {
-    "other": "You"
+    "other": "Vy"
   },
   "634b": {
-    "other": "Your group"
+    "other": "Vaše skupina"
   },
   "634c": {
-    "other": "All users"
+    "other": "Všichni uživatelé"
   },
   "635": {
     "other": "Chat Room"
@@ -1854,7 +1854,7 @@
     "other": "Or select another directory"
   },
   "7": {
-    "other": "Delete"
+    "other": "Smazat"
   },
   "70": {
     "other": "Move"
@@ -1884,10 +1884,10 @@
     "other": "Pass"
   },
   "79": {
-    "other": "PDF File"
+    "other": "PDF soubor"
   },
   "8": {
-    "other": "Directory"
+    "other": "Složka"
   },
   "80": {
     "other": "MOV File"
@@ -1902,16 +1902,16 @@
     "other": "MPEG File"
   },
   "84": {
-    "other": "Help"
+    "other": "Nápověda"
   },
   "85": {
     "other": "Refresh"
   },
   "86": {
-    "other": "Close"
+    "other": "Zavřít"
   },
   "87": {
-    "other": "Search"
+    "other": "Hledat"
   },
   "88": {
     "other": "Download"
@@ -1923,13 +1923,13 @@
     "other": "Midi File"
   },
   "90": {
-    "other": "Print"
+    "other": "Tisk"
   },
   "91": {
     "other": "FLASH File"
   },
   "92": {
-    "other": "Language"
+    "other": "Jazyk"
   },
   "93": {
     "other": "To choose your language, your browser must accept cookies."
@@ -1983,7 +1983,7 @@
     "other": "F, jS Y"
   },
   "date_relative_days_ago": {
-    "other": "%s days ago"
+    "other": "před %s dny"
   },
   "date_relative_days_ahead": {
     "other": "in %s days"
@@ -1995,10 +1995,10 @@
     "other": "H:i"
   },
   "date_relative_today": {
-    "other": "today at TIME"
+    "other": "dnes v ČAS"
   },
   "date_relative_tomorrow": {
-    "other": "tomorrow at TIME"
+    "other": "zítra v ČAS"
   },
   "date_relative_yesterday": {
     "other": "yesterday at TIME"
@@ -2145,7 +2145,7 @@
     "other": "Helper"
   },
   "plugtype.title.index": {
-    "other": "Indexing"
+    "other": "Vytváření rejstřík"
   },
   "plugtype.title.log": {
     "other": "Loggers"
@@ -2166,7 +2166,7 @@
     "other": "Instant Messaging"
   },
   "plugtype.title.sec": {
-    "other": "Security"
+    "other": "Zabezpečení"
   },
   "plugtype.title.shorten": {
     "other": "URL Shortening"
@@ -2322,7 +2322,7 @@
     "other": "Select group"
   },
   "confirm.dialog.title": {
-    "other": "Confirm"
+    "other": "Potvrdit"
   },
   "confirm.dialog.destructive": {
     "other": "You are about to delete"
@@ -2349,7 +2349,7 @@
     "other": "Please use images smaller than 5MB"
   },
   "searchengine.searching": {
-    "other": "Searching..."
+    "other": "Vyhledávání…"
   },
   "searchengine.main.placeholder": {
     "other": "Search..."
@@ -2370,7 +2370,7 @@
     "other": "Showing %1, load more..."
   },
   "searchengine.query.action.save": {
-    "other": "Save"
+    "other": "Uložit"
   },
   "searchengine.query.action.clear": {
     "other": "Clear"
