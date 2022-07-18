@@ -534,19 +534,19 @@
     "other": "Uploaded"
   },
   "257": {
-    "other": "Remove"
+    "other": "Odebrat"
   },
   "258": {
-    "other": "File count :"
+    "other": "Počet souborů:"
   },
   "259": {
-    "other": "Total size :"
+    "other": "Celková velikost:"
   },
   "26": {
-    "other": "Create a new directory in : "
+    "other": "Vytvořit novou složku v: "
   },
   "260": {
-    "other": "bytes"
+    "other": "bajtů"
   },
   "261": {
     "other": "Remember Me"
@@ -555,10 +555,10 @@
     "other": "One or more files appear to exist \\nalready in the destination folder.\\nWhat do you want to do?"
   },
   "263": {
-    "other": "Overwrite"
+    "other": "Přepsat"
   },
   "264": {
-    "other": "Skip"
+    "other": "Přeskočit"
   },
   "265": {
     "other": "Files"
@@ -567,19 +567,19 @@
     "other": "B"
   },
   "267": {
-    "other": "Create"
+    "other": "Vytvořit"
   },
   "268": {
-    "other": "Create a new table"
+    "other": "Vytvořit novou tabulku"
   },
   "269": {
-    "other": "Structure"
+    "other": "Struktura"
   },
   "27": {
-    "other": "Upload"
+    "other": "Nahrát"
   },
   "270": {
-    "other": "Edit table structure"
+    "other": "Upravit strukturu tabulky"
   },
   "271": {
     "other": "Drop"
@@ -687,31 +687,31 @@
     "other": "Edit configuration"
   },
   "302": {
-    "other": "Copy as Text"
+    "other": "Zkopírovat jako text"
   },
   "303": {
     "other": "Copy selection as tab-separated text."
   },
   "304": {
-    "other": "Back"
+    "other": "Zpět"
   },
   "305": {
     "other": "Go back to main page"
   },
   "306": {
-    "other": "Too many items"
+    "other": "Příliš mnoho položek"
   },
   "307": {
     "other": "Fill optional fields"
   },
   "308": {
-    "other": "Generate Link"
+    "other": "Vytvořit odkaz"
   },
   "309": {
-    "other": "Generate"
+    "other": "Vytvořit"
   },
   "31": {
-    "other": "You must select a file"
+    "other": "Je třeba vybrat soubor"
   },
   "310": {
     "other": "Options"
@@ -732,7 +732,7 @@
     "other": "Compress selection to"
   },
   "316": {
-    "other": "View/Edit"
+    "other": "Zobrazit/upravit"
   },
   "317": {
     "other": "Source Editor"
@@ -741,25 +741,25 @@
     "other": "CodePress source code viewer"
   },
   "319": {
-    "other": "HTML Editor"
+    "other": "HTML editor"
   },
   "32": {
-    "other": "Explore"
+    "other": "Prozkoumat"
   },
   "320": {
     "other": "WYSIWYG editor for HTML"
   },
   "321": {
-    "other": "Select"
+    "other": "Vybrat"
   },
   "322": {
     "other": "Select the current file"
   },
   "323": {
-    "other": "E-mail this URL"
+    "other": "Poslat tuto URL e-mailem"
   },
   "324": {
-    "other": "No editor available"
+    "other": "Není k dispozici žádný editor"
   },
   "325": {
     "other": "Fit Best"
@@ -771,22 +771,22 @@
     "other": "100%"
   },
   "328": {
-    "other": "Document Reader"
+    "other": "Prohlížeč dokumentů"
   },
   "329": {
     "other": "View pdf,svg, tif and more online"
   },
   "33": {
-    "other": "Error uploading file !"
+    "other": "Chyba při nahrávání souboru!"
   },
   "330": {
     "other": "Please wait while the pages are being rendered..."
   },
   "331": {
-    "other": "Page"
+    "other": "Stránka"
   },
   "332": {
-    "other": "of"
+    "other": "z"
   },
   "333": {
     "other": "Pixlr image editor"
@@ -810,19 +810,19 @@
     "other": "Existing Files"
   },
   "34": {
-    "other": "The file"
+    "other": "Soubor"
   },
   "340": {
-    "other": "Alert"
+    "other": "Výstraha"
   },
   "341": {
-    "other": "File Info"
+    "other": "Informace o souboru"
   },
   "342": {
-    "other": "Folder Info"
+    "other": "Informace o složce"
   },
   "343": {
-    "other": "Image Info"
+    "other": "Informace o obrázku"
   },
   "344": {
     "other": "Search on"
@@ -942,10 +942,10 @@
     "other": "Unsafe word!"
   },
   "38": {
-    "other": "The directory"
+    "other": "Složka"
   },
   "380": {
-    "other": "Too short"
+    "other": "Příliš krátké"
   },
   "381": {
     "other": "Very weak"
@@ -978,7 +978,7 @@
     "other": "has been created in"
   },
   "390": {
-    "other": "Code"
+    "other": "Kód"
   },
   "391": {
     "other": "No Repository"
