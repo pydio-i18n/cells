@@ -1,12 +1,12 @@
 {
   "1": {
-    "other": "Lock"
+    "other": "Zamknout"
   },
   "2": {
     "other": "Lock selected item"
   },
   "3": {
-    "other": "Unlock"
+    "other": "Odemknout"
   },
   "4": {
     "other": "Remove lock"
