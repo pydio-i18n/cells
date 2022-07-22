@@ -20,7 +20,7 @@
     "other": "Successfully removed {{.Count}} versions."
   },
   "Config.GroupPolicy.Title": {
-    "other": "Policy"
+    "other": "Zásada"
   },
   "Config.GroupPolicy.Name.Label": {
     "other": "Název"
@@ -62,7 +62,7 @@
     "other": "Limit the size taken by all versions of one file. If limit is hit, oldest versions will be deleted. Use -1 for no limit"
   },
   "Config.GroupSizes.IgnoreFilesGreaterThan.Label": {
-    "other": "Ignore files greater than..."
+    "other": "Ignorovat soubory větší než…"
   },
   "Config.GroupSizes.IgnoreFilesGreaterThan.Description": {
     "other": "Do NOT version files with size greater than this limit. Use -1 for no limit"
@@ -71,10 +71,10 @@
     "other": "Retention Periods"
   },
   "Config.GroupRetention.Description": {
-    "other": "Number of versions to keep per period"
+    "other": "Kolik verzí za dané období uchovávat"
   },
   "Config.GroupRetention.IntervalStart.Name": {
-    "other": "Period Start"
+    "other": "Začátek období"
   },
   "Config.GroupRetention.IntervalStart.Description": {
     "other": "Start point used for computing period. 0 is the time of the last version set, use another Period to set an limit"
