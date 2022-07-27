@@ -81,13 +81,13 @@
     "other": "Všechna nastavení"
   },
   "123": {
-    "other": "Other plugins"
+    "other": "Ostatní zásuvné moduly"
   },
   "124": {
-    "other": "Source"
+    "other": "Zdrojové kódy"
   },
   "125": {
-    "other": "Alias"
+    "other": "Alternativní název"
   },
   "126": {
     "other": "Are you sure that you want to delete the selected element(s)?"
@@ -132,7 +132,7 @@
     "other": "Create and delete workspaces, add features to them using meta sources."
   },
   "139": {
-    "other": "Manage users and groups"
+    "other": "Spravovat uživatele a skupiny"
   },
   "14": {
     "other": "True"
@@ -150,7 +150,7 @@
     "other": "Read the start-up diagnostic"
   },
   "144": {
-    "other": "Developer Resources"
+    "other": "Informace pro vývojáře"
   },
   "145": {
     "other": "Generated documentations for developers"
@@ -237,7 +237,7 @@
     "other": "Enable %1 (%2)"
   },
   "171": {
-    "other": "Import Users (Enterprise only)"
+    "other": "Naimportovat uživatele (pouze varianta pro podniky)"
   },
   "172": {
     "other": "Služby"
@@ -297,7 +297,7 @@
     "other": "User has admin rights?"
   },
   "29": {
-    "other": "Read"
+    "other": "Číst"
   },
   "2b": {
     "other": "Správa dat"
@@ -321,25 +321,25 @@
     "other": "Are you sure you want to delete this workspace? This operation is not reversible!"
   },
   "36": {
-    "other": "Mandatory fields are missing!"
+    "other": "Nejsou vyplněné potřebné kolonky!"
   },
   "37": {
-    "other": "Warning, password and confirmation differ!"
+    "other": "Varování – heslo a jeho potvrzení se liší!"
   },
   "38": {
-    "other": "Please fill the login field!"
+    "other": "Vyplňte kolonku přihlašovací jméno!"
   },
   "39": {
-    "other": "Please fill both password fields!"
+    "other": "Vyplňte obě kolonky pro zadání hesla!"
   },
   "3b": {
-    "other": "Storage"
+    "other": "Úložiště"
   },
   "3c": {
-    "other": "Template Paths"
+    "other": "Popis umístění šablon"
   },
   "4": {
-    "other": "Logs"
+    "other": "Záznamy událostí"
   },
   "40": {
     "other": "Please check the box to confirm!"
@@ -348,13 +348,13 @@
     "other": "Datasource Nodes"
   },
   "42": {
-    "other": "Please choose a driver!"
+    "other": "Vyberte ovladač!"
   },
   "43": {
-    "other": "User already exists, please choose another login!"
+    "other": "Takový uživatel už existuje – zvolte jiné přihlašovací jméno!"
   },
   "44": {
-    "other": "User created successfully"
+    "other": "Uživatel úspěšně vytvořen"
   },
   "45": {
     "other": "Changed admin right for user "
@@ -405,16 +405,16 @@
     "other": "Successfully deleted workspace"
   },
   "6": {
-    "other": "User Name"
+    "other": "Uživatelské jméno"
   },
   "60": {
-    "other": "User successfully erased"
+    "other": "Uživatel úspěšně vymazán"
   },
   "61": {
-    "other": "Wrong arguments!"
+    "other": "Nesprávné argumenty!"
   },
   "62": {
-    "other": "Rights Summary"
+    "other": "Souhrn oprávnění"
   },
   "63": {
     "other": "Vše"
@@ -429,7 +429,7 @@
     "other": "Role successfully created"
   },
   "67": {
-    "other": "Cannot find role "
+    "other": "Roli se nedaří nalézt "
   },
   "68": {
     "other": "Successfully deleted role"
@@ -441,10 +441,10 @@
     "other": "Je správce"
   },
   "70": {
-    "other": "User Roles"
+    "other": "Uživatelské role"
   },
   "71": {
-    "other": "Available Roles"
+    "other": "Role k dispozici"
   },
   "72": {
     "other": "Drag'n'drop roles to assign them to the user"
@@ -453,7 +453,7 @@
     "other": "Role added to user "
   },
   "74": {
-    "other": "Role deleted from user "
+    "other": "Role uživateli odebrána "
   },
   "75": {
     "other": "Nová role"
