@@ -372,13 +372,13 @@
     "other": "Uuid"
   },
   "dataSourceSingleQuery.Name": {
-    "other": "Name"
+    "other": "Název"
   },
   "dataSourceSingleQuery.IsDisabled": {
-    "other": "Is Disabled"
+    "other": "Je vypnuté"
   },
   "dataSourceSingleQuery.StorageType": {
-    "other": "Storage Type"
+    "other": "Typ úložiště"
   },
   "dataSourceSingleQuery.StorageType.REMOTE": {
     "other": "Remote"
@@ -387,10 +387,10 @@
     "other": "Any"
   },
   "dataSourceSingleQuery.StorageType.LOCALFS": {
-    "other": "Local"
+    "other": "Místní"
   },
   "dataSourceSingleQuery.PeerAddress": {
-    "other": "Peer Address"
+    "other": "Adresa partnera"
   },
   "dataSourceSingleQuery.FlatStorage": {
     "other": "Flat Storage"
@@ -399,13 +399,13 @@
     "other": "Skip sync on restart"
   },
   "dataSourceSingleQuery.IsVersioned": {
-    "other": "Is Versioned"
+    "other": "Je verzováno"
   },
   "dataSourceSingleQuery.IsEncrypted": {
-    "other": "Is Encrypted"
+    "other": "Je šifrováno"
   },
   "dataSourceSingleQuery.EncryptionMode": {
-    "other": "Encryption Mode"
+    "other": "Režim šifrování"
   },
   "dataSourceSingleQuery.EncryptionMode.USER": {
     "other": "User-key"
@@ -417,33 +417,33 @@
     "other": "Clear"
   },
   "dataSourceSingleQuery.EncryptionMode.MASTER": {
-    "other": "Master-key"
+    "other": "Hlavní klíč"
   },
   "dataSourceSingleQuery.EncryptionKey": {
-    "other": "Encryption Key"
+    "other": "Šifrovací klíč"
   },
   "dataSourceSingleQuery.VersioningPolicyName": {
     "other": "Versioning Policy"
   },
   "dataSourceSingleQuery.StorageConfigurationName": {
-    "other": "Configuration Key"
+    "other": "Klíč nastavení"
   },
   "dataSourceSingleQuery.StorageConfigurationValue": {
-    "other": "Configuration Value"
+    "other": "Hodnota nastavení"
   },
   "dataSourceSingleQuery.ObjectServiceName": {
     "other": "Object Service"
   },
   "dataSourceSingleQuery.Not": {
-    "other": "Not"
+    "other": "Ne"
   },
   "triggerFilterQuery.IsSchedule": {
-    "other": "Scheduled Trigger"
+    "other": "Naplánovaný spouštěč"
   },
   "triggerFilterQuery.IsManual": {
-    "other": "Manual Trigger"
+    "other": "Ruční spouštěč"
   },
   "triggerFilterQuery.EventNames": {
-    "other": "Events"
+    "other": "Události"
   }
 }
