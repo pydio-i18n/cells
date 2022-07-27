@@ -33,7 +33,7 @@
     "other": "A default database is already configured, just click next to validate connection."
   },
   "database.forceConfigure": {
-    "other": "Configure another database."
+    "other": "Konfigurace jiné databáze."
   },
   "admin.stepLabel": {
     "other": "Uživatel s právy pro správu"
@@ -96,10 +96,10 @@
     "other": "Pydio Cells Enterprise License"
   },
   "license.success": {
-    "other": "License file was successfully detected."
+    "other": "Licenční soubor byl úspěšně detekován."
   },
   "license.details": {
-    "other": "This installation is valid for %count users until %expiration."
+    "other": "Tato instalace je platná pro %cpřipojit uživatele do %expirace."
   },
   "license.failed": {
     "other": "Error while trying to verify this license key. Please contact the support."
@@ -114,7 +114,7 @@
     "other": "Please copy/paste the license key provided to you."
   },
   "apply.stepLabel": {
-    "other": "Apply Installation"
+    "other": "Provést instalaci"
   },
   "apply.title": {
     "other": "Please be patient while Pydio Cells is being installed..."
@@ -186,13 +186,13 @@
     "other": "Use Golang-style DSN to describe the database connection"
   },
   "form.frontendApplicationTitle.label": {
-    "other": "Application Title"
+    "other": "Název aplikace"
   },
   "form.frontendApplicationTitle.legend": {
-    "other": "Main title of your installation"
+    "other": "Hlavní nadpis vaší instalace"
   },
   "form.frontendDefaultLanguage.label": {
-    "other": "Default Language"
+    "other": "Výchozí jazyk"
   },
   "form.frontendLogin.label": {
     "other": "Admin user login *"
@@ -201,7 +201,7 @@
     "other": "Identifier used to log in"
   },
   "form.frontendPassword.label": {
-    "other": "Admin password *"
+    "other": "Heslo správce *"
   },
   "form.frontendPassword.legend": {
     "other": "Password used to log in"
@@ -219,7 +219,7 @@
     "other": "Use an absolute path on the server"
   },
   "form.dsType.FS": {
-    "other": "Local FS (store all data on this server)"
+    "other": "Místní souborový systém (ukládat veškerá data na tomto serveru)"
   },
   "form.dsType.S3": {
     "other": "Amazon S3 / S3-compatible (store inside S3 buckets)"
