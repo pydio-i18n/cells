@@ -90,28 +90,28 @@
     "other": "If you are not %s, %logout."
   },
   "68": {
-    "other": "Download Sync Client for Windows"
+    "other": "Stáhnout si synchronizačního klienta pro Windows"
   },
   "69": {
-    "other": "Download Sync Client for Mac OSX"
+    "other": "Stáhnout si synchronizačního klienta pro macOS"
   },
   "70": {
-    "other": "Native application for iOS devices"
+    "other": "Nativní aplikace pro iOS zařízení"
   },
   "71": {
-    "other": "Native application for Android Devices"
+    "other": "Nativní aplikace pro Android zařízení"
   },
   "72": {
-    "other": "Server QRCode"
+    "other": "QR kód serveru"
   },
   "73": {
     "other": "Jednoduše připojte své mobilní aplikace"
   },
   "74": {
-    "other": "Scan this QRCode to easily configure your mobile application"
+    "other": "Naskenováním tohoto QR kódu snadno nastavíte mobilní aplikaci"
   },
   "75": {
-    "other": "Search all files..."
+    "other": "Prohledat všechny soubory…"
   },
   "76": {
     "other": "Access the %1 through the top-right menu"
@@ -144,34 +144,34 @@
     "other": "<h2>[How-to] Collaborative edition</h2>\n            This video shows you how to collaborate on office docs, thanks to Collabora online office suite\n            <ul>\n                <li>Work on text docs, presentations, spreadsheets</li>\n                <li>Edit docs collaboratively in real time</li>\n                <li>Create new documents directly from your browser</li>\n            </ul>\n            "
   },
   "86": {
-    "other": "Play video"
+    "other": "Přehrát video"
   },
   "87": {
-    "other": "My Recent Activity"
+    "other": "Má nedávná aktivita"
   },
   "88": {
-    "other": "Drop a file here from your desktop"
+    "other": "Přetáhněte sem soubor ze svého počítače"
   },
   "89": {
-    "other": "Selected file for upload"
+    "other": "Vyberte soubor k nahrání"
   },
   "90": {
-    "other": "Select target workspace"
+    "other": "Vyberte cílový pracovní prostor"
   },
   "91": {
     "other": "Keep your files offline with our Desktop Sync Client"
   },
   "92": {
-    "other": "Applications Download"
+    "other": "Stahování aplikací"
   },
   "93": {
-    "other": "Quick Upload"
+    "other": "Pohotové nahrání"
   },
   "94": {
-    "other": "Video Tutorial"
+    "other": "Video úvod"
   },
   "desc": {
-    "other": "Welcome page"
+    "other": "Uvítací stránka"
   },
   "title": {
     "other": "Domů"
