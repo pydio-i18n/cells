@@ -741,22 +741,22 @@
     "other": "Rejstřík ve vyhledávači"
   },
   "metadata.toggle.read": {
-    "other": "Restrict visibility to admins"
+    "other": "Viditelné pouze správcům"
   },
   "metadata.toggle.write": {
-    "other": "Restrict edition to admins"
+    "other": "Upravitelné pouze správci"
   },
   "metadata.type": {
-    "other": "Type"
+    "other": "Typ"
   },
   "metadata.type.string": {
     "other": "Short Text"
   },
   "metadata.type.textarea": {
-    "other": "Paragraph"
+    "other": "Odstavec"
   },
   "metadata.type.integer": {
-    "other": "Number"
+    "other": "Číslo"
   },
   "metadata.type.boolean": {
     "other": "True/False value"
@@ -885,7 +885,7 @@
     "other": "A high server load may indicate that your server is missing CPU or RAM given your usage of Pydio."
   },
   "perfs.load.title": {
-    "other": "Server Load"
+    "other": "Vytížení serveru"
   },
   "perfs.mailer.description": {
     "other": "Checks that mailer is using the Queue feature"
@@ -927,61 +927,61 @@
     "other": "Add widget to dashboard"
   },
   "plugins.1": {
-    "other": "General Options"
+    "other": "Obecné Nastavení"
   },
   "plugins.2": {
-    "other": "Master Driver"
+    "other": "Hlavní ovladač"
   },
   "plugins.3": {
-    "other": "Secondary Driver"
+    "other": "Pomocný ovladač"
   },
   "plugins.4": {
     "other": "Editor plugins are the previewers/editors associated to any file types in the application.\n                    These plugins are handle specifically in the GUI (extensions) and can declare the mimetypes they support.\n                    The order parameter also allows to define a priority for the 'open with...' action."
   },
   "plugins.5": {
-    "other": "Save Changes"
+    "other": "Uložit změny"
   },
   "plugins.6": {
     "other": "Revert"
   },
   "plugins.list.column.enabled": {
-    "other": "Enabled"
+    "other": "Zapnuto"
   },
   "plugins.list.column.label": {
     "other": "Label"
   },
   "plugins.list.column.id": {
-    "other": "Id"
+    "other": "Identif."
   },
   "plugins.list.column.description": {
-    "other": "Description"
+    "other": "Popis"
   },
   "plugins.list.action.edit": {
-    "other": "Edit plugin parameters"
+    "other": "Upravit parametry zásuvného modulu"
   },
   "plugins.documentation": {
-    "other": "Documentation"
+    "other": "Dokumentace"
   },
   "policies.policy.create": {
-    "other": "Create"
+    "other": "Vytvořit"
   },
   "policies.policy.description": {
-    "other": "Policy Description"
+    "other": "Popis zásady"
   },
   "policies.policy.name": {
-    "other": "Policy Name"
+    "other": "Název zásady"
   },
   "policies.policy.rules": {
     "other": "# Rules"
   },
   "policies.policy.display": {
-    "other": "Show policy rules"
+    "other": "Zobrazit pravidla zásady"
   },
   "policies.policy.edit": {
-    "other": "Edit policy rules"
+    "other": "Upravit pravidla zásady"
   },
   "policies.policy.editLabels": {
-    "other": "Edit Labels"
+    "other": "Upravit štítky"
   },
   "policies.policy.saveLabels": {
     "other": "Save Changes"
@@ -1041,31 +1041,31 @@
     "other": "Show full permissions"
   },
   "react.14": {
-    "other": "Show resulting tree"
+    "other": "Zobrazit výsledný strom"
   },
   "react.2": {
-    "other": "bulk actions"
+    "other": "hromadné akce"
   },
   "react.3": {
-    "other": "Search Results for '%s'"
+    "other": "Výsledky hledání pro „%s“"
   },
   "react.4": {
-    "other": "Close Results"
+    "other": "Zavřít výsledky"
   },
   "react.5": {
-    "other": "deny"
+    "other": "odepřít"
   },
   "react.5a": {
-    "other": "read"
+    "other": "čtení"
   },
   "react.5b": {
-    "other": "write"
+    "other": "zápis"
   },
   "react.6": {
-    "other": "children"
+    "other": "podřízené"
   },
   "react.7": {
-    "other": "Create a rule"
+    "other": "Vytvořit pravidlo"
   },
   "react.8": {
     "other": "You are about to manage permissions at the lower level. This folder will be read\n                        only by default, and you will manage permissions selectively on its children. Choose\n                        whether to copy the current permissions to its children, or to clear their permissions, which would make\n                        them inaccessible by default."
@@ -1080,7 +1080,7 @@
     "other": "Command-line is not enabled in the %1, the scheduler will not be able to run the jobs."
   },
   "scheduler.3": {
-    "other": "global configurations"
+    "other": "globální nastavení"
   },
   "user.1": {
     "other": "+ User"
@@ -1089,49 +1089,49 @@
     "other": "Access to %i workspaces"
   },
   "user.11": {
-    "other": "%i roles"
+    "other": "%i rolí"
   },
   "user.12": {
-    "other": "Group path"
+    "other": "Popis umístění skupiny"
   },
   "user.13": {
     "other": "shared"
   },
   "user.14": {
-    "other": "Create a new role"
+    "other": "Vytvořit novou roli"
   },
   "user.15": {
-    "other": "Create a new group"
+    "other": "Vytvořit novou skupinu"
   },
   "user.16": {
-    "other": "Group Identifier"
+    "other": "Identifikátor skupiny"
   },
   "user.16.empty": {
-    "other": "Please provide a unique identifier"
+    "other": "Zadejte neopakující se identifikátor"
   },
   "user.16.format": {
-    "other": "Please use only alphanumeric characters"
+    "other": "Použijte pouze písmena a číslice"
   },
   "user.17": {
-    "other": "Group Label"
+    "other": "Popisek skupiny"
   },
   "user.17.empty": {
     "other": "Please provide a label for this group"
   },
   "user.18": {
-    "other": "Role Identifier"
+    "other": "Identifikátor role"
   },
   "user.18.empty": {
-    "other": "Please provide a label for this role"
+    "other": "Zadejte popisek pro tuto roli"
   },
   "user.19": {
-    "other": "Create a new user"
+    "other": "Vytvořit nového uživatele"
   },
   "user.2": {
     "other": "+ Group"
   },
   "user.20": {
-    "other": "User will be created in group %s"
+    "other": "Uživatel bude vytvořen ve skupiny %s"
   },
   "user.21": {
     "other": "User login"
@@ -1143,7 +1143,7 @@
     "other": "Confirm password"
   },
   "user.24": {
-    "other": "Root Group"
+    "other": "Kořenová skupina"
   },
   "user.25": {
     "other": "Root Group Role"
@@ -1155,10 +1155,10 @@
     "other": "User Personal Role"
   },
   "user.3": {
-    "other": "Groups"
+    "other": "Skupiny"
   },
   "user.4": {
-    "other": "Roles"
+    "other": "Role"
   },
   "user.5": {
     "other": "Groups & Users"
@@ -1167,13 +1167,13 @@
     "other": "+ Role"
   },
   "user.7": {
-    "other": "Search users & groups"
+    "other": "Hledat uživatele a skupiny"
   },
   "user.8": {
     "other": "Set parameters on this group to apply them all groups and users."
   },
   "user.9": {
-    "other": "Last connected"
+    "other": "Naposledy připojeno"
   },
   "user.moveto.hint": {
     "other": "Select destination group, leave '/' for root group."
@@ -1263,22 +1263,22 @@
     "other": "Save template"
   },
   "virtual.delete": {
-    "other": "Delete template"
+    "other": "Smazat šablonu"
   },
   "virtual.delete.confirm": {
     "other": "Are you sure you wish to delete this template path? Operation is not reversible!"
   },
   "virtual.code": {
-    "other": "Template code"
+    "other": "Kód šablony"
   },
   "virtual.code.display": {
-    "other": "Display code"
+    "other": "Zobrazit kód"
   },
   "virtual.code.edit": {
-    "other": "Edit code"
+    "other": "Upravit kód"
   },
   "virtual.card.title": {
-    "other": "Dynamically computed path"
+    "other": "Dynamicky vypočítaný popis umístění"
   },
   "virtual.card.cleanOnDelete": {
     "other": "Upon user deletion, rename data to {deleted-NAME-UUID}."
@@ -1293,10 +1293,10 @@
     "other": "Workspace based on ..."
   },
   "ws.12": {
-    "other": "Template %s"
+    "other": "Šablona %s"
   },
   "ws.13": {
-    "other": "Template Options"
+    "other": "Možnosti šablony"
   },
   "ws.14": {
     "other": "Set Generic Options"
@@ -1305,67 +1305,67 @@
     "other": "Workspace Options"
   },
   "ws.16": {
-    "other": "Choose Storage Driver"
+    "other": "Zvolte ovladač úložiště"
   },
   "ws.17": {
-    "other": "Select Storage Type"
+    "other": "Vyberte typ úložiště"
   },
   "ws.18": {
-    "other": "Loading drivers"
+    "other": "Načítání ovladačů"
   },
   "ws.19": {
-    "other": "Save to add features"
+    "other": "Uložte a přidejte funkce"
   },
   "ws.2": {
     "other": "Close DataSources"
   },
   "ws.20": {
-    "other": "Create"
+    "other": "Vytvořit"
   },
   "ws.21": {
-    "other": "Template General Options"
+    "other": "Obecné předvolby pro šablonu"
   },
   "ws.22": {
     "other": "Workspace General Options"
   },
   "ws.23": {
-    "other": "Delete workspace"
+    "other": "Smazat pracovní prostor"
   },
   "ws.24": {
-    "other": "Children Workspaces"
+    "other": "Podřízené pracovní prostory"
   },
   "ws.25": {
     "other": "Shares"
   },
   "ws.26": {
-    "other": "Folders Permissions"
+    "other": "Oprávnění složek"
   },
   "ws.27": {
-    "other": "Additional Features"
+    "other": "Další funkce"
   },
   "ws.28": {
-    "other": "Summary"
+    "other": "Souhrn"
   },
   "ws.29": {
-    "other": "Parameters"
+    "other": "Parametry"
   },
   "ws.3": {
     "other": "+ workspace"
   },
   "ws.filter.workspaces": {
-    "other": "Filter workspaces..."
+    "other": "Filtrovat pracovní prostory…"
   },
   "ws.30": {
     "other": "General Options"
   },
   "ws.31": {
-    "other": "Remove Feature"
+    "other": "Odebrat funkci"
   },
   "ws.32": {
-    "other": "Add a feature..."
+    "other": "Přidat funkci…"
   },
   "ws.33": {
-    "other": "Recent Activity"
+    "other": "Nedávná aktivita"
   },
   "ws.34": {
     "other": "Last events on this workspace"
@@ -1407,10 +1407,10 @@
     "other": "As its parameters are using 'PYDIO_USER' or 'PYDIO_GROUP_*' keywords, the contents of\n                                this workspace will vary depending on the currently authenticated user. For this reason, you cannot browse the\n                                folders directly and assign permissions to them, but you can freely define some generic pathes that will be used as masks."
   },
   "ws.46": {
-    "other": "Add a feature"
+    "other": "Přidat funkci"
   },
   "ws.47": {
-    "other": "Select a feature"
+    "other": "Vybrat prvek"
   },
   "ws.48": {
     "other": "Beware, this workspace/template is not editable, as it is defined directly in the conf/bootstrap_repositories.php file."
