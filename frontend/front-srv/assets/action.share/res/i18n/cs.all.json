@@ -594,7 +594,7 @@
     "other": "You will create a cell shared with %USERS. Pick some folders you want to share or just let Pydio create an empty folder for you!"
   },
   "27": {
-    "other": "Share file"
+    "other": "Nasdílet soubor"
   },
   "270": {
     "other": "uživatelé"
@@ -618,7 +618,7 @@
     "other": "Title of your cell"
   },
   "277": {
-    "other": "Optionally add a description"
+    "other": "Volitelně přidejte popis"
   },
   "278": {
     "other": "Choose who you will share data with"
@@ -627,7 +627,7 @@
     "other": "Create cell now!"
   },
   "28": {
-    "other": "Share folder"
+    "other": "Nasdílet složku"
   },
   "280": {
     "other": "Cell has its own folder"
@@ -648,7 +648,7 @@
     "other": "WebLink"
   },
   "3": {
-    "other": "Wrong password"
+    "other": "Nesprávné heslo"
   },
   "30": {
     "other": "Share with..."
@@ -663,10 +663,10 @@
     "other": "Watch"
   },
   "34": {
-    "other": "Existing or new user"
+    "other": "Stávající nebo nový uživatel"
   },
   "35": {
-    "other": "Label"
+    "other": "Štítek"
   },
   "36": {
     "other": "Set a label and a short description"
@@ -705,7 +705,7 @@
     "other": "Open workspace %s1 directly in %s2"
   },
   "46_file": {
-    "other": "Open file %s1"
+    "other": "Otevřít soubor %s1"
   },
   "46_mini": {
     "other": "Open mini %s1"
@@ -717,7 +717,7 @@
     "other": "You are not allowed to access this data"
   },
   "49": {
-    "other": "create user"
+    "other": "vytvořit uživatele"
   },
   "5": {
     "other": "heslo"
@@ -726,13 +726,13 @@
     "other": "Shared"
   },
   "51": {
-    "other": "Downloaded"
+    "other": "Staženo"
   },
   "52": {
     "other": "Nastavení"
   },
   "53": {
-    "other": "none"
+    "other": "žádné"
   },
   "54": {
     "other": "Shared with"
@@ -798,10 +798,10 @@
     "other": "Permissions granted to the users accessing this link"
   },
   "71": {
-    "other": "Permissions"
+    "other": "Oprávnění"
   },
   "72": {
-    "other": "Preview"
+    "other": "Náhled"
   },
   "73": {
     "other": "Download"
@@ -837,7 +837,7 @@
     "other": "Invite by email the selected users to visit this workspace"
   },
   "81": {
-    "other": "stop watching"
+    "other": "přestat sledovat"
   },
   "82": {
     "other": "watch"
@@ -876,16 +876,16 @@
     "other": "Tags (Enter to save)"
   },
   "92": {
-    "other": "Create link"
+    "other": "Vytvořit odkaz"
   },
   "93": {
     "other": "Existing links"
   },
   "94": {
-    "other": "QR Code"
+    "other": "QR kód"
   },
   "95": {
-    "other": "QR code"
+    "other": "QR kód"
   },
   "96": {
     "other": "stop sharing"
@@ -897,7 +897,7 @@
     "other": "Má sdílení"
   },
   "99": {
-    "other": "All shared elements"
+    "other": "Všechny sdílené prvky"
   },
   "cells.create.advanced": {
     "other": "Add users/data"
