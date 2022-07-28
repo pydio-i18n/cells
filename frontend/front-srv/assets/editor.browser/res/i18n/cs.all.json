@@ -1,9 +1,9 @@
 {
   "1": {
-    "other": "External window"
+    "other": "Externí okno"
   },
   "2": {
-    "other": "External browser window"
+    "other": "Okno externího prohlížeče"
   },
   "3": {
     "other": "Opening file in external window, please wait, this window should close automatically."
@@ -21,6 +21,6 @@
     "other": "URL Bookmark"
   },
   "8": {
-    "other": "Enter a label for this bookmark"
+    "other": "Zadejte štítek pro tuto záložku"
   }
 }
