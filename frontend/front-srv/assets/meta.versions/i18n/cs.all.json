@@ -1,12 +1,12 @@
 {
   "1": {
-    "other": "Versions"
+    "other": "Verze"
   },
   "10": {
-    "other": "Date"
+    "other": "Datum"
   },
   "11": {
-    "other": "Author"
+    "other": "Autor"
   },
   "12": {
     "other": "Modification"
@@ -27,7 +27,7 @@
     "other": "Document previous versions"
   },
   "3": {
-    "other": "Download"
+    "other": "Stáhnout"
   },
   "4": {
     "other": "Download selected version to your computer"
@@ -45,21 +45,21 @@
     "other": "Revert the file to the selected revision on the server"
   },
   "9": {
-    "other": "#"
+    "other": "č."
   },
   "CREATION": {
-    "other": "File created"
+    "other": "Soubor vytvořen"
   },
   "DELETION": {
-    "other": "File deleted"
+    "other": "Soubor smazán"
   },
   "MODIFICATION": {
-    "other": "Content modified"
+    "other": "Obsah změněn"
   },
   "MOVE": {
-    "other": "File moved"
+    "other": "Soubor přesunut"
   },
   "RENAME": {
-    "other": "File renamed"
+    "other": "Soubor přejmenován"
   }
 }
