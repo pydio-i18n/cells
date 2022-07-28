@@ -903,10 +903,10 @@
     "other": "Add users/data"
   },
   "cells.create.buttons.separator": {
-    "other": "or"
+    "other": "nebo"
   },
   "cells.create.title.fill.folders": {
-    "other": "Share existing folder(s)"
+    "other": "Nasdílet existující složky"
   },
   "cells.remove.node": {
     "other": "Remove from this cell"
@@ -936,7 +936,7 @@
     "other": "Are you sure that you want to disable this link?"
   },
   "sharelist.quick-filter": {
-    "other": "Quick filter..."
+    "other": "Rychlý filtr…"
   },
   "composite.deleteAll": {
     "other": "Disable all shares"
