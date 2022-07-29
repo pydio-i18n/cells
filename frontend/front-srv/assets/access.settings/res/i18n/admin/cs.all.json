@@ -2064,6 +2064,6 @@
     "other": "Bez TLS"
   },
   "sites.configs.tls.notls-reverse": {
-    "other": "No TLS behind proxy"
+    "other": "Za proxy bez TLS"
   }
 }
