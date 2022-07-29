@@ -21,7 +21,7 @@
     "other": "I implemented a new feature: github Pull Requests"
   },
   "cont.topic.report": {
-    "other": "I think I found a bug! Post in the forum."
+    "other": "Myslím, že jsem našel chybu! Napište to do diskuzního fóra."
   },
   "cont.topic.report.2": {
     "other": "My bug is qualified: open a github issue."
@@ -30,7 +30,7 @@
     "other": "How-to create or complete a language translation ?"
   },
   "ent.advanced": {
-    "other": "Advanced Administrator Dashboard"
+    "other": "Pokročílá nástěnka správce"
   },
   "ent.advanced.legend": {
     "other": "Unique admin dashboard for real-time monitoring of platform usage."
@@ -117,13 +117,13 @@
     "other": "Errors"
   },
   "recentLogs.emptyState": {
-    "other": "No activity found"
+    "other": "Nenalezena žádná aktivita"
   },
   "recentLogs.more": {
-    "other": "All Activities"
+    "other": "Veškeré aktivity"
   },
   "graph.files": {
-    "other": "Files Activity"
+    "other": "Aktivita souborů"
   },
   "graph.connections": {
     "other": "Web Connections"
