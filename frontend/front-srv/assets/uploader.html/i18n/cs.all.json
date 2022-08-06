@@ -1,9 +1,9 @@
 {
   "start": {
-    "other": "Start"
+    "other": "Spustit"
   },
   "pause": {
-    "other": "Pause"
+    "other": "Pozastavit"
   },
   "clear": {
     "other": "Clear"
@@ -60,13 +60,13 @@
     "other": "Uploading files to server..."
   },
   "task.status.folders": {
-    "other": "Creating Folders"
+    "other": "Vytváření složek"
   },
   "task.message.folder-one": {
-    "other": "Creating one folder"
+    "other": "Vytváření jedné složky"
   },
   "task.message.folder-many": {
-    "other": "Creating %s folders"
+    "other": "Vytváření %s složek"
   },
   "task.status.analyse": {
     "other": "Preparing files for upload"
@@ -135,7 +135,7 @@
     "other": "Analyzing folder..."
   },
   "status.file.analyse": {
-    "other": "Analyzing file..."
+    "other": "Analyzování souboru…"
   },
   "status.dir.loading": {
     "other": "Vytváření složky"
