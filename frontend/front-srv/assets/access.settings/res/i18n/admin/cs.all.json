@@ -162,7 +162,7 @@
     "other": "Encryption at rest can be used to make sure files are never stored in clear format inside the storage. This may be useful if you do not trust the storage provider."
   },
   "ds.editor.storage.readOnly": {
-    "other": "Read-only mode"
+    "other": "Režim pouze pro čtení"
   },
   "ds.editor.storage.legend.readOnly": {
     "other": "Use read-only mode if you require Cells to never write any hidden files and to use native eTags as checksums (this can be necessary for buckets with huge amount of existing data). However, please note that any workspaces created on this datasource should be set as Read Only, as move feature cannot function properly."
@@ -189,7 +189,7 @@
     "other": "For proper changes detection, files checksums (md5) are computed by Cells (or by the storage with an in-place copy, when possible) and attached as metadata to objects. For best performances, use Native ETags flag to keep the storage original values, but beware that this will disable Desktop Synchronization on this datasource. You can also simply prevent objects modification, while still computing checksums, by storing metadata locally."
   },
   "ds.editor.new": {
-    "other": "New DataSource"
+    "other": "Nový datový zdroj"
   },
   "ds.editor.name.inuse": {
     "other": "This name is already in use, make sure to pick another one!"
@@ -237,7 +237,7 @@
     "other": "Any peer (unique node or distributed FS)"
   },
   "ds.editor.selector.peer.word": {
-    "other": "Peer"
+    "other": "Protějšek"
   },
   "ds.editor.selector.peer.invalid": {
     "other": "neplatné"
@@ -339,28 +339,28 @@
     "other": "Do not enable versioning"
   },
   "ds.editor.tab.button-back": {
-    "other": "Back"
+    "other": "Zpět"
   },
   "ds.editor.tab.button-next": {
-    "other": "Next"
+    "other": "Další"
   },
   "ds.editor.tab.button-create": {
-    "other": "Create"
+    "other": "Vytvořit"
   },
   "ds.editor.tab.identifier": {
-    "other": "Identifier"
+    "other": "Identifikátor"
   },
   "ds.editor.tab.main": {
     "other": "Main Options"
   },
   "ds.editor.tab.storage": {
-    "other": "Storage Type"
+    "other": "Typ úložiště"
   },
   "ds.editor.tab.lifecycle": {
-    "other": "Data Lifecycle"
+    "other": "Životní cyklus dat"
   },
   "ds.editor.tab.advanced": {
-    "other": "Advanced Options"
+    "other": "Pokročilé předvolby"
   },
   "ds.editor.initFlatFromSnapshot": {
     "other": "If this storage was previously used as a flat datasource, initialize it from an existing snapshot file (must be found inside the storage)"
@@ -510,16 +510,16 @@
     "other": "Exportovat jako…"
   },
   "logs.2": {
-    "other": "Pick a day"
+    "other": "Vyberte den"
   },
   "logs.filter.legend": {
-    "other": "Filter by..."
+    "other": "Filtrovat podle…"
   },
   "logs.export.disabled": {
     "other": "Pick a date or filter result"
   },
   "logs.export.clicklink": {
-    "other": "Click on the link to download"
+    "other": "Stáhnete si kliknutím na odkaz"
   },
   "logs.filter.period": {
     "other": "Time Period"
@@ -555,7 +555,7 @@
     "other": "Light/Dark Theme"
   },
   "logs.sys.note": {
-    "other": "Please Note:"
+    "other": "Uvědomte si že:"
   },
   "logs.sys.note.content": {
     "other": "Empty logs entries may mean that the server is not running in production mode. Make sure to set this log level by passing the --log=production argument or setting the environment variable PYDIO_LOGS_LEVEL=production."
@@ -567,7 +567,7 @@
     "other": "Click on a row for details"
   },
   "logs.5": {
-    "other": "Event Detail"
+    "other": "Podrobnosti události"
   },
   "logs.6": {
     "other": "Export logs"
@@ -585,25 +585,25 @@
     "other": "Level"
   },
   "logs.service": {
-    "other": "Service"
+    "other": "Služba"
   },
   "logs.message": {
-    "other": "Message"
+    "other": "Zpráva"
   },
   "logs.noentries": {
-    "other": "No entries"
+    "other": "Žádné položky"
   },
   "logs.noresults": {
-    "other": "No results"
+    "other": "Bez výsledku"
   },
   "menu.0": {
-    "other": "Dashboard"
+    "other": "Nástěnka"
   },
   "menu.1": {
-    "other": "Activity"
+    "other": "Aktivita"
   },
   "menu.10": {
-    "other": "Extensions for sending files through the Web UI"
+    "other": "Rozšíření pro odesílání souborů prostřednictvím webového rozhraní"
   },
   "menu.11": {
     "other": "Authentication"
@@ -633,16 +633,16 @@
     "other": "Všechny zásuvné moduly"
   },
   "menu.19": {
-    "other": "Available Plugins"
+    "other": "Zásuvné moduly k dispozici"
   },
   "menu.2": {
     "other": "Záznamy událostí na serveru"
   },
   "menu.20": {
-    "other": "User Features"
+    "other": "Uživatelské funkce"
   },
   "menu.21": {
-    "other": "End-user parameters"
+    "other": "Parametry koncového uživatele"
   },
   "menu.22": {
     "other": "Uvítací stránka"
@@ -654,7 +654,7 @@
     "other": "Vzhled"
   },
   "menu.4": {
-    "other": "Theme, logos, appearance options"
+    "other": "Motivy, loga, možnosti vzhledu"
   },
   "menu.5": {
     "other": "Funkce pro sdílení"
@@ -714,7 +714,7 @@
     "other": "Vytvořit jmenný prostor"
   },
   "metadata.empty": {
-    "other": "No metadata defined"
+    "other": "Nejsou definována žádná metadata"
   },
   "metadata.indexable": {
     "other": "Indexovatelné"
@@ -750,7 +750,7 @@
     "other": "Typ"
   },
   "metadata.type.string": {
-    "other": "Short Text"
+    "other": "Stručný text"
   },
   "metadata.type.textarea": {
     "other": "Odstavec"
@@ -762,7 +762,7 @@
     "other": "True/False value"
   },
   "metadata.type.date": {
-    "other": "Date or Time"
+    "other": "Datum nebo čas"
   },
   "metadata.type.stars_rate": {
     "other": "Stars Rating"
