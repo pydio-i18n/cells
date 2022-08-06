@@ -153,10 +153,10 @@
     "other": "Files extensions"
   },
   "list.extensions.show": {
-    "other": "Show extensions"
+    "other": "Zobrazovat přípony"
   },
   "list.pin.bookmarks": {
-    "other": "Pin bookmarks to top"
+    "other": "Připnout záložky na začátek"
   },
   "infopanel.empty.select.file": {
     "other": "Select a file to display informations"
@@ -165,7 +165,7 @@
     "other": "Všechny soubory"
   },
   "file.temporary-etag.flag": {
-    "other": "Incomplete"
+    "other": "Neúplné"
   },
   "file.temporary-etag.tooltip": {
     "other": "This file is being uploaded (or the upload has failed)."
