@@ -6,7 +6,7 @@
     "other": "Download to APPLICATION_TITLE"
   },
   "10a": {
-    "other": "Download to %s"
+    "other": "Stáhnout do %s"
   },
   "10b": {
     "other": "DL to %s"
@@ -57,7 +57,7 @@
     "other": "Stahování"
   },
   "7": {
-    "other": "to server"
+    "other": "na server"
   },
   "8": {
     "other": "File downloaded, reloading the client!"
