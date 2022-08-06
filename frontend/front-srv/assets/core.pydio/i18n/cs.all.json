@@ -192,7 +192,7 @@
     "other": "Remove Bookmark"
   },
   "153-off": {
-    "other": "Remove item from MyBookmarks"
+    "other": "Odebrat položku z MyBookmarks"
   },
   "154": {
     "other": "Nová složka"
@@ -216,7 +216,7 @@
     "other": "SKUTEČNÝ soubor"
   },
   "160": {
-    "other": "Move selected files to ..."
+    "other": "Přesunout vybrané soubory do…"
   },
   "161": {
     "other": "Smazat označené soubory."
@@ -240,10 +240,10 @@
     "other": "O Pydio"
   },
   "168": {
-    "other": "Connect to APPLICATION_TITLE"
+    "other": "Připojit k APPLICATION_TITLE"
   },
   "169": {
-    "other": "Disconnect from APPLICATION_TITLE"
+    "other": "Odpojit od APPLICATION_TITLE"
   },
   "17": {
     "other": "REAL file"
@@ -255,7 +255,7 @@
     "other": "Procházet"
   },
   "172": {
-    "other": "Your Selection"
+    "other": "Váš výběr"
   },
   "173": {
     "other": "Název pro novou složku"
@@ -267,10 +267,10 @@
     "other": "Vybrat cílovou složku"
   },
   "176": {
-    "other": "The selected files will be moved to the Recycle Bin."
+    "other": "Vybrané soubory budou přesunuty do Koše."
   },
   "177": {
-    "other": "Are you sure you want to permanently delete the selected files?"
+    "other": "Opravdu chcete vybrané soubory nenávratně smazat?"
   },
   "178": {
     "other": "Předchozí"
@@ -279,7 +279,7 @@
     "other": "Další"
   },
   "18": {
-    "other": "PERL script"
+    "other": "PERL skript"
   },
   "180": {
     "other": "Zadejte přihlašovací jméno a heslo"
@@ -291,10 +291,10 @@
     "other": "Heslo"
   },
   "183": {
-    "other": "Please select a destination folder different from the origin!"
+    "other": "Vyberte cílovou složku, která není stejná, jako ta zdrojová!"
   },
   "184": {
-    "other": "Search in current folder and sub-folders"
+    "other": "Hledat ve stávající složce a podsložkách"
   },
   "185": {
     "other": "Zastavit hledání"
@@ -333,7 +333,7 @@
     "other": "Your language differs from the current language!\\n Do you want to reload the page to switch language?"
   },
   "197": {
-    "other": "Your password change will take effect after you logout."
+    "other": "Změna hesla se projeví poté, co se odhlásíte."
   },
   "198": {
     "other": "Nové"
