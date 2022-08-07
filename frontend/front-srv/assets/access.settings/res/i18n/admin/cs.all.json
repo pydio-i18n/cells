@@ -765,19 +765,19 @@
     "other": "Datum nebo čas"
   },
   "metadata.type.stars_rate": {
-    "other": "Stars Rating"
+    "other": "Hodnocení hvězdičkami"
   },
   "metadata.type.css_label": {
-    "other": "Color Labels"
+    "other": "Barevné štítky"
   },
   "metadata.type.tags": {
-    "other": "Extensible Tags"
+    "other": "Rozšiřitelné štítky"
   },
   "metadata.type.choice": {
-    "other": "Select from values"
+    "other": "Vybrat z hodnot"
   },
   "metadata.type.json": {
-    "other": "JSON (internal format)"
+    "other": "JSON (interní formát)"
   },
   "metadata.type.date.format": {
     "other": "Format"
@@ -870,7 +870,7 @@
     "other": "Make sure to disable debug modes on the server. This is done manually by editing the conf/booststrap_context.php (or /etc/pydio/bootstrap_context.php) file."
   },
   "perfs.debug.title": {
-    "other": "Debug Modes"
+    "other": "Ladící režimy"
   },
   "perfs.desc": {
     "other": "Checking system configurations for possible improvements."
@@ -900,7 +900,7 @@
     "other": "Mailer Queue"
   },
   "perfs.more": {
-    "other": "More info"
+    "other": "Další informace"
   },
   "perfs.opcache.description": {
     "other": "Checks that a PHP Opcode cache is active"
@@ -918,10 +918,10 @@
     "other": "Performance Score"
   },
   "perfs.tests": {
-    "other": "Performances Tests"
+    "other": "Zkoušky výkonů"
   },
   "perfs.title": {
-    "other": "System Performances"
+    "other": "Výkonnosti systému"
   },
   "perfs.widget": {
     "other": "Add widget to dashboard"
@@ -942,13 +942,13 @@
     "other": "Uložit změny"
   },
   "plugins.6": {
-    "other": "Revert"
+    "other": "Vrátit zpět"
   },
   "plugins.list.column.enabled": {
     "other": "Zapnuto"
   },
   "plugins.list.column.label": {
-    "other": "Label"
+    "other": "Popisek"
   },
   "plugins.list.column.id": {
     "other": "Identif."
@@ -972,7 +972,7 @@
     "other": "Název zásady"
   },
   "policies.policy.rules": {
-    "other": "# Rules"
+    "other": "Počet pravidel"
   },
   "policies.policy.display": {
     "other": "Zobrazit pravidla zásady"
@@ -984,7 +984,7 @@
     "other": "Upravit štítky"
   },
   "policies.policy.saveLabels": {
-    "other": "Save Changes"
+    "other": "Uložit změny"
   },
   "policies.policy.delete": {
     "other": "Delete policy"
