@@ -987,22 +987,22 @@
     "other": "Uložit změny"
   },
   "policies.policy.delete": {
-    "other": "Delete policy"
+    "other": "Smazat zásadu"
   },
   "policies.policy.delete.confirm": {
     "other": "Are you sure you want to delete this policy? Make sure it does not break the security of the application!"
   },
   "policies.policy.new": {
-    "other": "+ New Policy"
+    "other": "+ Nová zásada"
   },
   "policies.policy.type": {
-    "other": "Policy Type"
+    "other": "Typ zásady"
   },
   "policies.rule.create": {
-    "other": "Add new rule"
+    "other": "Přidat nové pravidlo"
   },
   "policies.rule.delete": {
-    "other": "Delete Rule"
+    "other": "Smazat pravidlo"
   },
   "policies.rule.delete.confirm": {
     "other": "Are you sure you want to remove this security rule? This could break the security model of the application!"
@@ -1026,10 +1026,10 @@
     "other": "REST Resources"
   },
   "react.1": {
-    "other": "parent folder"
+    "other": "nadřazená složka"
   },
   "react.10": {
-    "other": "Inherit Permissions"
+    "other": "Převzít oprávnění"
   },
   "react.11": {
     "other": "Empty Permissions"
@@ -1038,7 +1038,7 @@
     "other": "Clear Permissions"
   },
   "react.13": {
-    "other": "Show full permissions"
+    "other": "Zobrazit všechna oprávnění"
   },
   "react.14": {
     "other": "Zobrazit výsledný strom"
@@ -1182,22 +1182,22 @@
     "other": "Filter users list..."
   },
   "user.filter.internal": {
-    "other": "Internal users"
+    "other": "Interní uživatelé"
   },
   "user.filter.shared": {
     "other": "Shared users"
   },
   "user.filter.admins": {
-    "other": "Admins only"
+    "other": "Pouze správci"
   },
   "user.filter.all": {
-    "other": "All users"
+    "other": "Všichni uživatelé"
   },
   "user.filter.anon": {
-    "other": "Show anonymous"
+    "other": "Zobrazit anonymní"
   },
   "versions.editor.delete": {
-    "other": "Delete Policy"
+    "other": "Smazat zásadu"
   },
   "versions.editor.delete.confirm": {
     "other": "Are you sure you want to delete this policy? This is undoable!"
@@ -1206,28 +1206,28 @@
     "other": "The last period is configured to delete all versions, you cannot add a new one!"
   },
   "versions.editor.title": {
-    "other": "Policy %s"
+    "other": "Zásada %s"
   },
   "versions.period.keep-all": {
-    "other": "Keep all"
+    "other": "Ponechat vše"
   },
   "versions.period.keep-all.always": {
-    "other": "Always keep all versions"
+    "other": "Vždy uchovávat všechny verze"
   },
   "versions.period.keep-n": {
-    "other": "Keep %s versions"
+    "other": "Ponechat %s verzí"
   },
   "versions.period.keep-n-after": {
     "other": "Keep %1 versions after %2"
   },
   "versions.period.max-n": {
-    "other": "Max. %s versions"
+    "other": "Nejvýše %s verzí"
   },
   "versions.period.remove-all": {
-    "other": "Remove all"
+    "other": "Odstranit vše"
   },
   "versions.period.remove-all-after": {
-    "other": "Remove all after %s"
+    "other": "Odstranit vše po %s"
   },
   "versions.period.retentions-n": {
     "other": "%s retention periods"
@@ -1236,19 +1236,19 @@
     "other": "+ Template Path"
   },
   "virtual.create.button": {
-    "other": "Create"
+    "other": "Vytvořit"
   },
   "virtual.label": {
-    "other": "Label"
+    "other": "Popisek"
   },
   "virtual.col.id": {
-    "other": "Template ID"
+    "other": "Identif. šablony"
   },
   "virtual.col.code": {
-    "other": "Template Code"
+    "other": "Kód šablony"
   },
   "virtual.label.new": {
-    "other": "Label for template"
+    "other": "Popisek pro šablonu"
   },
   "virtual.legend.1": {
     "other": "Template Paths are dynamically computed depending on the context. They can be used as roots for workspaces in replacement of a fixed datasource path.     They are used by default to create the Personal Files workspace that points to a different folder for each users, and for computing the location of the users Cells folders."
@@ -1257,10 +1257,10 @@
     "other": "Use Ctrl+Space inside the editor to get hint about the possible values. Current values supported are: User.Name (dynamically resolved to the current user logged login) and DataSources (to pick a datasource dynamically)."
   },
   "virtual.title": {
-    "other": "Template Paths"
+    "other": "Popisy umístění šablon"
   },
   "virtual.save": {
-    "other": "Save template"
+    "other": "Uložit šablonu"
   },
   "virtual.delete": {
     "other": "Smazat šablonu"
@@ -1284,13 +1284,13 @@
     "other": "Upon user deletion, rename data to {deleted-NAME-UUID}."
   },
   "ws.1": {
-    "other": "Manage DataSources"
+    "other": "Spravovat zdroje dat"
   },
   "ws.10": {
-    "other": "Select a DataSource"
+    "other": "Vyberte zdroj dat"
   },
   "ws.11": {
-    "other": "Workspace based on ..."
+    "other": "Pracovní prostor založený na…"
   },
   "ws.12": {
     "other": "Šablona %s"
@@ -1299,10 +1299,10 @@
     "other": "Možnosti šablony"
   },
   "ws.14": {
-    "other": "Set Generic Options"
+    "other": "Nastavit obecné možnosti"
   },
   "ws.15": {
-    "other": "Workspace Options"
+    "other": "Předvolby pracovního prostoru"
   },
   "ws.16": {
     "other": "Zvolte ovladač úložiště"
@@ -1317,7 +1317,7 @@
     "other": "Uložte a přidejte funkce"
   },
   "ws.2": {
-    "other": "Close DataSources"
+    "other": "Zavřít zdroje dat"
   },
   "ws.20": {
     "other": "Vytvořit"
@@ -1326,7 +1326,7 @@
     "other": "Obecné předvolby pro šablonu"
   },
   "ws.22": {
-    "other": "Workspace General Options"
+    "other": "Obecné předvolby pro pracovní prostor"
   },
   "ws.23": {
     "other": "Smazat pracovní prostor"
@@ -1335,7 +1335,7 @@
     "other": "Podřízené pracovní prostory"
   },
   "ws.25": {
-    "other": "Shares"
+    "other": "Sdílení"
   },
   "ws.26": {
     "other": "Oprávnění složek"
@@ -1350,7 +1350,7 @@
     "other": "Parametry"
   },
   "ws.3": {
-    "other": "+ workspace"
+    "other": "+ pracovní prostor"
   },
   "ws.filter.workspaces": {
     "other": "Filtrovat pracovní prostory…"
@@ -1371,19 +1371,19 @@
     "other": "Last events on this workspace"
   },
   "ws.35": {
-    "other": "Accessible to %i users"
+    "other": "Přístuné %i uživatelům"
   },
   "ws.36": {
     "other": "+ %i files or folders shared"
   },
   "ws.37": {
-    "other": "Workspaces using this template"
+    "other": "Pracovní prostory používající tuto šablonu"
   },
   "ws.38": {
     "other": "Shared Items in this workspace"
   },
   "ws.39": {
-    "other": "Owner"
+    "other": "Vlastník"
   },
   "ws.4": {
     "other": "+ datasource"
@@ -1524,7 +1524,7 @@
     "other": "Kořeny pracovních prostorů"
   },
   "ws.board.syncable": {
-    "other": "Sync"
+    "other": "Synchronizace"
   },
   "ws.complete.datasources": {
     "other": "Datové zdroje a složky"
@@ -1551,7 +1551,7 @@
     "other": "Set up default permissions to this workspace (applied to all internal users of the application). You can override these permissions on a per-user / per-role / per-group basis in the People section."
   },
   "ws.editor.default_rights.none": {
-    "other": "None"
+    "other": "Žádné"
   },
   "ws.editor.default_rights.read": {
     "other": "Jen pro čtení"
@@ -1572,7 +1572,7 @@
     "other": "It is important to properly organize how data will be presented to your users. You may create workspaces for various parts of your organization (finance, marketing, technical data, etc.), on a per-project basis, etc. You can then assign accesses to workspaces on a per-user / per-role / per-group basis."
   },
   "ws.editor.help.delete": {
-    "other": "Warning, dangerous operation! This is not reversible."
+    "other": "Varování – nebezpečná oprace! Toto nelze vzít zpět."
   },
   "ws.editor.label.legend": {
     "other": "Člověku srozumitelnější popisek pro tento pracovní prostor"
@@ -1605,7 +1605,7 @@
     "other": "Desktop synchronisation allows users to synchronize their files offline on their computer. Warning, this feature is currently supported for personal files only, as shared workspaces may create conflicts if many users synchronize docs in the same folder. For personal files, you can also enable/disable this feature on a per-role basis using Security Policies."
   },
   "ws.editor.other.sync-personal": {
-    "other": "(personal workspaces only)"
+    "other": "(pouze osobní pracovní prostory)"
   },
   "ws.editor.sync.warning": {
     "other": "Varování!"
@@ -1635,52 +1635,52 @@
     "other": "Technical name used for example in URLs, automatically computed but you can customize it."
   },
   "services.text-filter.hint": {
-    "other": "Filter..."
+    "other": "Filtrovat…"
   },
   "services.filter.nofilter": {
     "other": "Všechny služby"
   },
   "services.filter.started": {
-    "other": "Running Only"
+    "other": "Pouze spuštěné"
   },
   "services.filter.stopped": {
-    "other": "Stopped Only"
+    "other": "Pouze zastavené"
   },
   "services.peerfilter.title": {
-    "other": "Select Node"
+    "other": "Vybrat uzel"
   },
   "services.toggle.details": {
-    "other": "Show Details"
+    "other": "Zobrazit podrobnosti"
   },
   "services.empty.loading": {
-    "other": "Loading services status"
+    "other": "Stav načítání služeb"
   },
   "services.empty.noservice": {
-    "other": "No service"
+    "other": "Žádná služba"
   },
   "services.column.name": {
-    "other": "Service Name"
+    "other": "Název služby"
   },
   "services.column.description": {
-    "other": "Description"
+    "other": "Popis"
   },
   "services.column.version": {
-    "other": "Version"
+    "other": "Verze"
   },
   "services.column.tag": {
-    "other": "Tag"
+    "other": "Štítek"
   },
   "services.column.peers": {
     "other": "Peers"
   },
   "services.tag.gateway.title": {
-    "other": "Gateways"
+    "other": "Brány"
   },
   "services.tag.gateway.description": {
     "other": "World-facing services for accessing the platform"
   },
   "services.tag.datasource.title": {
-    "other": "Data Sources"
+    "other": "Zdroje dat"
   },
   "services.tag.datasource.description": {
     "other": "Storage endpoints used to access concrete file storages. Main services are in charge of starting sub services (per datasource)."
@@ -1692,13 +1692,13 @@
     "other": "Services handling data and metadata."
   },
   "services.tag.idm.title": {
-    "other": "Identity Management"
+    "other": "Správa identit"
   },
   "services.tag.idm.description": {
     "other": "All services related to authentication and authorizations, roles, security policies, etc."
   },
   "services.tag.scheduler.title": {
-    "other": "Scheduler"
+    "other": "Plánovač"
   },
   "services.tag.scheduler.description": {
     "other": "Services for managing background jobs. The task server can be dispatched across various peers."
@@ -1710,10 +1710,10 @@
     "other": "Services dispatching and processing events (generally toward users) across the application."
   },
   "services.tag.frontend.title": {
-    "other": "Frontend"
+    "other": "Nadstavba"
   },
   "services.tag.frontend.description": {
-    "other": "Web services for user interfaces in the browser"
+    "other": "Webové služby pro uživatelská rozhraní v prohlížeči"
   },
   "services.tag.discovery.title": {
     "other": "Discovery"
@@ -1881,28 +1881,28 @@
     "other": "Disable Flow"
   },
   "scheduler.task.id": {
-    "other": "ID"
+    "other": "Identif."
   },
   "scheduler.task.start": {
-    "other": "Start"
+    "other": "Začátek"
   },
   "scheduler.task.end": {
-    "other": "End"
+    "other": "Konec"
   },
   "scheduler.task.duration": {
-    "other": "Duration"
+    "other": "Doba trvání"
   },
   "scheduler.task.status": {
-    "other": "Status"
+    "other": "Stav"
   },
   "scheduler.task.message": {
-    "other": "Message"
+    "other": "Zpráva"
   },
   "scheduler.tasks.running": {
-    "other": "Running Tasks"
+    "other": "Spuštěné úlohy"
   },
   "scheduler.tasks.history": {
-    "other": "Tasks History"
+    "other": "Historie úkolů"
   },
   "scheduler.tasks.history.empty": {
     "other": "No tasks have run yet"
@@ -1914,7 +1914,7 @@
     "other": "No tasks currently running"
   },
   "scheduler.tasks.bulk.delete": {
-    "other": "Delete Tasks"
+    "other": "Smazat úlohy"
   },
   "scheduler.tasks.bulk.enable": {
     "other": "Enable Multiple"
@@ -1923,7 +1923,7 @@
     "other": "Disable Multiple"
   },
   "scheduler.tasks.bulk.clear": {
-    "other": "Clear All"
+    "other": "Vymazat vše"
   },
   "scheduler.tasks.activity.title": {
     "other": "Task Activity"
@@ -1932,7 +1932,7 @@
     "other": "Loading activity..."
   },
   "scheduler.tasks.activity.empty": {
-    "other": "No logs found"
+    "other": "Nenalezeny žádné záznamy"
   },
   "scheduler.schedule.monthly": {
     "other": "Every %1 of each month at %2"
@@ -1944,13 +1944,13 @@
     "other": "Every %1 at %2"
   },
   "scheduler.schedule.weekly.short": {
-    "other": "Every %1"
+    "other": "Každé %1"
   },
   "scheduler.schedule.daily": {
-    "other": "Every day at %1"
+    "other": "Každý den v %1"
   },
   "scheduler.schedule.daily.short": {
-    "other": "At %1"
+    "other": "V %1"
   },
   "scheduler.schedule.timely": {
     "other": "Every %1"
