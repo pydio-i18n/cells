@@ -9,7 +9,7 @@
     "other": "Hello"
   },
   "Mail.Main.Signature": {
-    "other": "Sincerely"
+    "other": "S pozdravem"
   },
   "Mail.ResetPassword.Subject": {
     "other": "Reset password requested for {{.Configs.Title}}"
