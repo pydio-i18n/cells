@@ -18,7 +18,7 @@
     "other": "Creation of random users (for testing purpose)"
   },
   "Jobs.Default.FakeGrpcJob": {
-    "other": "Sample RPC job (for testing purpose)"
+    "other": "RPC úloha pro ukázku (pro testovací účely)"
   },
   "Jobs.Default.ArchiveJobs": {
     "other": "Automatic archiving of changes service"
@@ -36,22 +36,22 @@
     "other": "Copying folder in background..."
   },
   "Jobs.User.DirMove": {
-    "other": "Moving folder in background..."
+    "other": "Přesouvání složky na pozadí…"
   },
   "Jobs.User.FileCopy": {
-    "other": "Copying file in background..."
+    "other": "Kopírování souboru na pozadí…"
   },
   "Jobs.User.FileMove": {
-    "other": "Moving file in background..."
+    "other": "Přesouvání souboru na pozadí…"
   },
   "Jobs.User.MultipleCopy": {
-    "other": "Copying selection in background..."
+    "other": "Kopírování výběru na pozadí…"
   },
   "Jobs.User.MultipleMove": {
-    "other": "Moving selection in background..."
+    "other": "Kopírování výběru na pozadí…"
   },
   "Jobs.User.MoveRecycle": {
-    "other": "Moving to recycle bin in background..."
+    "other": "Přesouvání do koše na pozadí…"
   },
   "Jobs.User.ResyncDS": {
     "other": "Re-indexing datasource {{.DsName}}..."
@@ -66,6 +66,6 @@
     "other": "Kopírování %s"
   },
   "Jobs.User.MovingItem": {
-    "other": "Moving %s"
+    "other": "Přesouvání %s"
   }
 }
