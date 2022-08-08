@@ -27,7 +27,7 @@
     "other": "There seem to be a Cells installation already setup in this database. Please confirm to continue or "
   },
   "database.installDetected.retry": {
-    "other": "retry with new value"
+    "other": "zkusit znovu s novou hodnotou"
   },
   "database.useDefaultsSet": {
     "other": "A default database is already configured, just click next to validate connection."
@@ -51,19 +51,19 @@
     "other": "Pokročilá nastavení"
   },
   "advanced.title": {
-    "other": "Advanced Settings (optional)"
+    "other": "Pokročilá nastavení (volitelné)"
   },
   "advanced.legend": {
     "other": "Pydio Cells services will be deployed on this machine. You may review some advanced settings below for fine-tuning your configuration."
   },
   "advanced.toggle": {
-    "other": "Show Advanced Settings"
+    "other": "Zobrazit pokročilá nastavení"
   },
   "advanced.default.datasource": {
     "other": "A default data source to store users personal data and cells data is created at startup. You can create other datasources later on."
   },
   "advanced.mongo.title": {
-    "other": "Configure a MongoDB Connection"
+    "other": "Nastavit připojení k MongoDB"
   },
   "advanced.mongo.legend": {
     "other": "This is better for scalability, and required for clustering deployment. If you do not have a Mongo DB ready, this can be done later."
@@ -93,7 +93,7 @@
     "other": "Licence pro podniky"
   },
   "license.title": {
-    "other": "Pydio Cells Enterprise License"
+    "other": "Licence Pydio Cells pro podniky"
   },
   "license.success": {
     "other": "Licenční soubor byl úspěšně detekován."
@@ -159,10 +159,10 @@
     "other": "Port"
   },
   "form.dbTCPPort.legend": {
-    "other": "Port to connect to mysql"
+    "other": "Port pro připojení k mysql"
   },
   "form.dbUser.label": {
-    "other": "Database User"
+    "other": "Uživatel databáze"
   },
   "form.dbUser.legend": {
     "other": "Leave blank if not required"
