@@ -56,7 +56,7 @@
     "other": "Limit the overall size taken. If limit is hit, oldest versions will be deleted. Use -1 for no limit"
   },
   "Config.GroupSizes.MaxSizePerFile.Label": {
-    "other": "Cumulated sizes for versions of one given file"
+    "other": "Nasčítané velikosti verzí daného jednoho souboru"
   },
   "Config.GroupSizes.MaxSizePerFile.Description": {
     "other": "Limit the size taken by all versions of one file. If limit is hit, oldest versions will be deleted. Use -1 for no limit"
@@ -80,13 +80,13 @@
     "other": "Start point used for computing period. 0 is the time of the last version set, use another Period to set an limit"
   },
   "Config.GroupRetention.MaxNumber.Name": {
-    "other": "Maximum Number of Versions"
+    "other": "Nejvyšší umožněný počet verzí"
   },
   "Config.GroupRetention.MaxNumber.Description": {
     "other": "Max number of versions to keep over this period. Use -1 to keep all versions, 0 to delete all."
   },
   "Config.GroupRetention.NodeDeletedStrategy.Name": {
-    "other": "After original file deletion"
+    "other": "Po smazání původního souboru"
   },
   "Config.GroupRetention.NodeDeletedStrategy.Description": {
     "other": "Number of versions to keep after original file deletion."
