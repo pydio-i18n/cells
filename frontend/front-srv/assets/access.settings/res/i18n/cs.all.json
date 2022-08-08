@@ -24,22 +24,22 @@
     "other": "Automatické kontroly"
   },
   "106": {
-    "other": "Unique Identifier"
+    "other": "Neopakující se identifikátor"
   },
   "107": {
-    "other": "Plugin Configurations"
+    "other": "Nastavení přídavných modulů"
   },
   "108": {
-    "other": "Documentation"
+    "other": "Dokumentace"
   },
   "109": {
-    "other": "Application Parameters"
+    "other": "Parametry aplikace"
   },
   "11": {
-    "other": "Add a source"
+    "other": "Přidat zdroj"
   },
   "110": {
-    "other": "Workspaces & Users"
+    "other": "Pracovní prostory a uživatelé"
   },
   "111": {
     "other": "Backend"
@@ -51,19 +51,19 @@
     "other": "Role status was successfully modified"
   },
   "114": {
-    "other": "Applies to"
+    "other": "Platí pro"
   },
   "115": {
     "other": "Schéma"
   },
   "116": {
-    "other": "Template Label"
+    "other": "Popisek šablony"
   },
   "117": {
     "other": "Template Driver"
   },
   "118": {
-    "other": "New group"
+    "other": "Nová skupina"
   },
   "119": {
     "other": "Set user group"
@@ -75,7 +75,7 @@
     "other": "Go Pro"
   },
   "121": {
-    "other": "Get professional support for your install"
+    "other": "Získejte profesionální podporu pro vaši instalaci"
   },
   "122": {
     "other": "Všechna nastavení"
@@ -195,7 +195,7 @@
     "other": "Správce"
   },
   "158": {
-    "other": "Shared"
+    "other": "Sdílené"
   },
   "159": {
     "other": "Host"
@@ -294,7 +294,7 @@
     "other": "Admin Right"
   },
   "28": {
-    "other": "User has admin rights?"
+    "other": "Uživatel má práva pro správu?"
   },
   "29": {
     "other": "Číst"
@@ -369,7 +369,7 @@
     "other": "Password changed successfully for user "
   },
   "49": {
-    "other": "Cannot update password"
+    "other": "Heslo se nedaří zaktualizovat"
   },
   "5": {
     "other": "PHP"
@@ -378,7 +378,7 @@
     "other": "Error: a workspace with the same name already exists"
   },
   "51": {
-    "other": "The conf directory is not writeable"
+    "other": "Do složky s nastaveními se nedaří zapisovat"
   },
   "52": {
     "other": "Successfully created workspace! You can now add some 'Metadata Sources' to enrich the data, add automatic indexation, etc"
@@ -450,7 +450,7 @@
     "other": "Drag'n'drop roles to assign them to the user"
   },
   "73": {
-    "other": "Role added to user "
+    "other": "Uživateli přidána role "
   },
   "74": {
     "other": "Role uživateli odebrána "
@@ -486,7 +486,7 @@
     "other": "Drag'n'drop roles to apply them to all selected users (shared users are skipped)"
   },
   "84": {
-    "other": "Users Roles"
+    "other": "Role uživatele"
   },
   "85": {
     "other": "Manual actions filtering"
@@ -531,7 +531,7 @@
     "other": "Plugin options successfully updated"
   },
   "98": {
-    "other": "Main Settings"
+    "other": "Hlavní nastavení"
   },
   "99": {
     "other": "Feature plugins"
@@ -540,10 +540,10 @@
     "other": "Cells Console"
   },
   "topbar.button.advanced": {
-    "other": "Show/hide advanced parameters"
+    "other": "Zobrazit/skrýt pokročilé parametry"
   },
   "topbar.button.about": {
-    "other": "Learn more about Pydio Cells"
+    "other": "Více o Pidyo Cells"
   },
   "group_access": {
     "other": "g"
