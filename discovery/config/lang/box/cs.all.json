@@ -294,7 +294,7 @@
     "other": "Any"
   },
   "userSingleQuery.NodeType.USER": {
-    "other": "User"
+    "other": "Uživatel"
   },
   "userSingleQuery.Not": {
     "other": "Not"
@@ -315,7 +315,7 @@
     "other": "Název atributu"
   },
   "workspaceSingleQuery.AttributeValue": {
-    "other": "Attribute Value"
+    "other": "Hodnota atributu"
   },
   "workspaceSingleQuery.Description": {
     "other": "Popis"
@@ -423,7 +423,7 @@
     "other": "Šifrovací klíč"
   },
   "dataSourceSingleQuery.VersioningPolicyName": {
-    "other": "Versioning Policy"
+    "other": "Zásada verzování"
   },
   "dataSourceSingleQuery.StorageConfigurationName": {
     "other": "Klíč nastavení"
@@ -432,7 +432,7 @@
     "other": "Hodnota nastavení"
   },
   "dataSourceSingleQuery.ObjectServiceName": {
-    "other": "Object Service"
+    "other": "Služba objektů"
   },
   "dataSourceSingleQuery.Not": {
     "other": "Ne"
