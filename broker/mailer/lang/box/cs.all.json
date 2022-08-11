@@ -39,25 +39,25 @@
     "other": "Your {{.Configs.Title}} notifications"
   },
   "Mail.Digest.Intros": {
-    "other": "Below is a summary of all the notifications your received on {{.Configs.Title}}"
+    "other": "Níže je shrnutí všech oznámení, která jste obdrželi dne {{.Configs.Title}}"
   },
   "Mail.DM.Subject": {
-    "other": "{{.TplData.From}} sent you a message!"
+    "other": "{{.TplData.From}} vám poslal(a) zprávu!"
   },
   "Mail.DM.Intros": {
     "other": "{{.TplData.From}} sent you a message using {{.Configs.Title}} application: {{.TplData.Message}}"
   },
   "Mail.Welcome.Subject": {
-    "other": "Welcome on {{.Configs.Title}}"
+    "other": "Vítejte v {{.Configs.Title}}"
   },
   "Mail.Welcome.Intros": {
-    "other": "An account has been created for you on {{.Configs.Title}}. \n Your login is {{.TplData.Login}}{{if .TplData.Password}} and your password is {{.TplData.Password}}. You may change it at first login{{end}}."
+    "other": "Byl pro Vás vytvořen účet na {{.Configs.Title}}. \n Uživatelské jméno je {{.TplData.Login}}{{if .TplData.Password}} a heslo {{.TplData.Password}}. To si můžete (už) při prvním přihlášení{{end}}."
   },
   "Mail.Welcome.LinkInstructions": {
     "other": "Click to login"
   },
   "Mail.Welcome.LinkLabel": {
-    "other": "Login to {{.Configs.Title}}"
+    "other": "Přihlásit se k {{.Configs.Title}}"
   },
   "Mail.Welcome.Outros": {
     "other": "{{.Configs.Title}} File Sharing platform is used by your team to efficiently collaborate on documents. We're glad to have you on board!"
@@ -72,10 +72,10 @@
     "other": "Click to login"
   },
   "Mail.Invite.LinkLabel": {
-    "other": "Login to {{.Configs.Title}}"
+    "other": "Přihlásit se k {{.Configs.Title}}"
   },
   "Mail.Invite.Outros": {
-    "other": "{{.Configs.Title}} File Sharing platform is used by {{.TplData.Inviter}} team to efficiently collaborate on documents. We're glad to have you on board!"
+    "other": "{{.Configs.Title}} – platforma pro sdílení souborů používaná kolektivem {{.TplData.Inviter}} k účinné spolupráci na dokumentech. Jsme rádi, že jste se přidali!"
   },
   "Mail.Cell.Subject": {
     "other": "{{.TplData.Inviter}} added you to the cell {{.TplData.Cell}}"
