@@ -78,7 +78,7 @@
     "other": "{{.Configs.Title}} – platforma pro sdílení souborů používaná kolektivem {{.TplData.Inviter}} k účinné spolupráci na dokumentech. Jsme rádi, že jste se přidali!"
   },
   "Mail.Cell.Subject": {
-    "other": "{{.TplData.Inviter}} added you to the cell {{.TplData.Cell}}"
+    "other": "{{.TplData.Inviter}} vás přidal(a) do buňky {{.TplData.Cell}}"
   },
   "Mail.Cell.Intros": {
     "other": "{{.TplData.Inviter}} has included you in the cell {{.TplData.Cell}} on {{.Configs.Title}}! You can start sharing files and folders together and collaborate efficiently."
@@ -90,7 +90,7 @@
     "other": "Open {{.TplData.Cell}}"
   },
   "Mail.PublicFile.Subject": {
-    "other": "{{.TplData.Inviter}} is sharing a file with you"
+    "other": "{{.TplData.Inviter}} vám nasdílel(a) soubor"
   },
   "Mail.PublicFile.Intros": {
     "other": "{{.TplData.Inviter}} is sharing a file with you.\n\n '{{.TplData.Message}}' \n\n {{if .TplData.Expire}}Link will expire on {{.TplData.Expire}}{{end}}\n\n{{if .TplData.MaxDownloads}}Maximum downloads :{{.TplData.MaxDownloads}}{{end}}"
@@ -105,19 +105,19 @@
     "other": "{{.Configs.Title}} File Sharing platform is used by {{.TplData.Inviter}} team to efficiently collaborate on documents."
   },
   "Mail.PublicFolder.Subject": {
-    "other": "{{.TplData.Inviter}} is sharing a folder with you"
+    "other": "{{.TplData.Inviter}} vám nasdílel(a) složku"
   },
   "Mail.PublicFolder.Intros": {
-    "other": "{{.TplData.Inviter}} is sharing a folder with you.\n\n '{{.TplData.Message}}' \n\n {{if .TplData.Expire}}Link will expire on {{.TplData.Expire}}{{end}}\n\n{{if .TplData.MaxDownloads}}Maximum downloads :{{.TplData.MaxDownloads}}{{end}}"
+    "other": "{{.TplData.Inviter}} vám nasdílel(a) složku.\n\n '{{.TplData.Message}}' \n\n {{if .TplData.Expire}}Platnost odkazu skončí {{.TplData.Expire}}{{end}}\n\n{{if .TplData.MaxDownloads}}Stáhnout si je možné nejvýše tolikrát:{{.TplData.MaxDownloads}}{{end}}"
   },
   "Mail.PublicFolder.LinkLabel": {
     "other": "Otevřít {{.TplData.FolderName}}"
   },
   "Mail.PublicFolder.LinkInstructions": {
-    "other": "Click to preview the documents in your browser"
+    "other": "Kliknutím zobrazíte náhledy dokumentů ve svém prohlížeči"
   },
   "Mail.PublicFolder.Outros": {
-    "other": "{{.Configs.Title}} File Sharing platform is used by {{.TplData.Inviter}} team to efficiently collaborate on documents."
+    "other": "{{.Configs.Title}} – platforma pro sdílení souborů používaná kolektivem {{.TplData.Inviter}} k účinné spolupráci na dokumentech."
   },
   "Mail.AdminTestMail.Subject": {
     "other": "{{.Configs.Title}} is sending you a test email"
@@ -192,19 +192,19 @@
     "other": "Uživatel pro toto připojení"
   },
   "Mail.Config.Smtp.User.Description": {
-    "other": "Username required to connect to the SMTP server"
+    "other": "Pro připojení k SMTP serveru je vyžadováno uživatelské jméno"
   },
   "Mail.Config.Smtp.Password.Label": {
     "other": "Heslo pro toto připojení"
   },
   "Mail.Config.Smtp.Password.Description": {
-    "other": "Password required to connect to the SMTP server"
+    "other": "Pro připojení k SMTP serveru je vyžadováno heslo"
   },
   "Mail.Config.Smtp.SkipVerify.Label": {
     "other": "Certifikát podepsaný sám sebou"
   },
   "Mail.Config.Smtp.SkipVerify.Description": {
-    "other": "Disable certificate verification if your SMTP server certificate is self-signed"
+    "other": "Pokud je certifikát SMTP serveru typu sám sebou podepsaný, pak ho neověřovat"
   },
   "Mail.Config.Smtp.LocalName.Label": {
     "other": "Dialer Local Name"
@@ -213,7 +213,7 @@
     "other": "SMTP dialer sends 'localhost' in EHLO command by default, use this field to set a custom local name"
   },
   "Mail.Config.SendGrid.Label": {
-    "other": "SendGrid Service"
+    "other": "Služba SendGrid"
   },
   "Mail.Config.SendGrid.ApiKey.Label": {
     "other": "Klíč k API"
@@ -231,30 +231,30 @@
     "other": "Popis umístění spustitelného souboru"
   },
   "Mail.Config.Sendmail.Executable.Description": {
-    "other": "Full path of the sendmail executable on the server"
+    "other": "Úplný popis umístění spustitelného souboru se sendmail na serveru"
   },
   "Mail.Config.Sendmail.Executable.Other": {
-    "other": "Other path (set manually in pydio.json config file)"
+    "other": "Jiné umístění (ručně nastavte v souboru s nastaveními pydio.json)"
   },
   "Mail.Config.FromName.Label": {
-    "other": "Default senders display name"
+    "other": "Výchozí zobrazované jméno odesílatele"
   },
   "Mail.Config.FromName.Description": {
-    "other": "Display name to use as default when sending emails."
+    "other": "Zobrazované jméno, které při odesílání e-mailů bude použito jako výchozí."
   },
   "Mail.Config.FromCtl.Label": {
-    "other": "From/Sender address and name to use"
+    "other": "Adresa a jméno od/odesilatel, které použít"
   },
   "Mail.Config.FromCtl.Description": {
     "other": "Define which sender address/name to use. If no user email address is configured the default FROM address and name will be used in all cases."
   },
   "Mail.Config.FromCtlUser.Label": {
-    "other": "Send mail FROM the user"
+    "other": "Poslat e-mail OD uživatele"
   },
   "Mail.Config.FromCtlSender.Label": {
-    "other": "Send mail ON BEHALF OF the user"
+    "other": "Poslat e-mail V ZASTOUPENÍ uživatele"
   },
   "Mail.Config.FromCtlDefault.Label": {
-    "other": "Always send from the Default FROM address/name"
+    "other": "Vždy odesÍlat z výchozí adresy/jména OD"
   }
 }
