@@ -279,13 +279,16 @@
     "other": "Amazon S3"
   },
   "ds.editor.storage.s3.endpoint.custom": {
-    "other": "S3 kompatibler Speicher"
+    "other": "Other S3-Compatible Storage"
+  },
+  "ds.editor.storage.s3.endpoint.minio": {
+    "other": "Minio Server"
   },
   "ds.editor.storage.s3.endpoint": {
     "other": "Benutzerdefinierte Endpunkt-URL"
   },
   "ds.editor.storage.s3.endpoint.hint": {
-    "other": "Für Amazon S3 leer lassen"
+    "other": "include http(s)://"
   },
   "ds.editor.storage.s3.region": {
     "other": "S3 Api Region"
