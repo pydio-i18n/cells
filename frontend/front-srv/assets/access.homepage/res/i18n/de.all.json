@@ -240,12 +240,12 @@
     "other": "Dateiname"
   },
   "reco.bookmark": {
-    "other": "Bookmark"
+    "other": "Lesezeichen"
   },
   "reco.workspace": {
     "other": "Workspace"
   },
   "reco.cell": {
-    "other": "Cell"
+    "other": "Zelle"
   }
 }
