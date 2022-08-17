@@ -63,7 +63,7 @@
     "other": "Al comenzar se crea un datasource por defecto para almacenar los datos personales de los usuarios y datos de Cells. Puede crear otros datasources más adelante."
   },
   "advanced.mongo.title": {
-    "other": "Configure a MongoDB Connection"
+    "other": "Configurar una conexión a MongoDB"
   },
   "advanced.mongo.legend": {
     "other": "This is better for scalability, and required for clustering deployment. If you do not have a Mongo DB ready, this can be done later."
