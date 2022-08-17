@@ -238,5 +238,14 @@
   },
   "facet.label.found.basename": {
     "other": "Název souboru"
+  },
+  "reco.bookmark": {
+    "other": "Bookmark"
+  },
+  "reco.workspace": {
+    "other": "Workspace"
+  },
+  "reco.cell": {
+    "other": "Cell"
   }
 }
