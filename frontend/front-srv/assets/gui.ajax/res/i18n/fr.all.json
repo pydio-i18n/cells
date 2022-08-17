@@ -171,27 +171,27 @@
     "other": "Fichier en cours de téléchargement (ou le téléchargement a échoué)."
   },
   "mimegroup.byextension": {
-    "other": "By File Extension..."
+    "other": "Par extension..."
   },
   "mimegroup.word": {
-    "other": "Word documents"
+    "other": "Documents Word"
   },
   "mimegroup.spreadsheet": {
-    "other": "Spreadsheets"
+    "other": "Feuilles de calcul"
   },
   "mimegroup.presentation": {
-    "other": "Presentations"
+    "other": "Présentations"
   },
   "mimegroup.pdf": {
-    "other": "PDFs"
+    "other": "Fichiers PDF"
   },
   "mimegroup.image": {
     "other": "Images"
   },
   "mimegroup.video": {
-    "other": "Videos"
+    "other": "Vidéos"
   },
   "mimegroup.audio": {
-    "other": "Audios"
+    "other": "Fichiers audio"
   }
 }
