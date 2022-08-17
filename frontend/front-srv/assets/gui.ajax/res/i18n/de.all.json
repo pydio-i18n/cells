@@ -171,22 +171,22 @@
     "other": "Diese Datei wird gerade hochgeladen (oder der Upload ist fehlgeschlagen)."
   },
   "mimegroup.byextension": {
-    "other": "By File Extension..."
+    "other": "Nach Dateierweiterung..."
   },
   "mimegroup.word": {
-    "other": "Word documents"
+    "other": "Word Dokumente"
   },
   "mimegroup.spreadsheet": {
-    "other": "Spreadsheets"
+    "other": "Tabellendokumente"
   },
   "mimegroup.presentation": {
-    "other": "Presentations"
+    "other": "Präsentationen"
   },
   "mimegroup.pdf": {
     "other": "PDFs"
   },
   "mimegroup.image": {
-    "other": "Images"
+    "other": "Bilder"
   },
   "mimegroup.video": {
     "other": "Videos"
