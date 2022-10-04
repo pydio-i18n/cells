@@ -306,10 +306,10 @@
     "other": "Buckets neu laden"
   },
   "ds.editor.storage.buckets.create": {
-    "other": "Create Bucket"
+    "other": "Bucket erstellen"
   },
   "ds.editor.storage.buckets.create.hint": {
-    "other": "Bucket name"
+    "other": "Bucket Name"
   },
   "ds.editor.storage.buckets.regexp": {
     "other": "Verwenden Sie reguläre Ausdrücke"
