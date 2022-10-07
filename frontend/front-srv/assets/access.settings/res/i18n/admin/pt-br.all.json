@@ -1791,7 +1791,7 @@
     "other": "+ Fluxo personalizado"
   },
   "scheduler.cellsflows.cta.text": {
-    "other": "Do you need to create your own Flow? Discover how Cells Flows makes it easy to automate your repetitive manual tasks in Cells."
+    "other": "Você precisa criar seu próprio fluxo? Descubra como os fluxos de células tornam fácil automatizar suas tarefas manuais repetitivas em células."
   },
   "scheduler.cellsflows.dialog.button": {
     "other": "Saiba mais"
@@ -1818,10 +1818,10 @@
     "other": "Apagar"
   },
   "scheduler.job.delete.confirm": {
-    "other": "Are you sure you want to delete this Flow? This operation cannot be reverted!"
+    "other": "Tem certeza que deseja excluir este fluxo? Esta operação não pode ser revertida!"
   },
   "scheduler.tasks.delete.confirm": {
-    "other": "Are you sure you want to clear all tasks for this Flow?"
+    "other": "Tem certeza que deseja limpar todas as tarefas para este fluxo?"
   },
   "scheduler.trigger.create.node": {
     "other": "Criar Nó"
@@ -1890,13 +1890,13 @@
     "other": "Apagar"
   },
   "scheduler.task.action.enable": {
-    "other": "Enable Flow"
+    "other": "Habilitar Fluxo"
   },
   "scheduler.task.action.run": {
     "other": "Executar Agora"
   },
   "scheduler.task.action.disable": {
-    "other": "Disable Flow"
+    "other": "Desabilitar Fluxo"
   },
   "scheduler.task.id": {
     "other": "ID"
@@ -1974,7 +1974,7 @@
     "other": "A cada %1"
   },
   "scheduler.schedule.title": {
-    "other": "Flow Schedule"
+    "other": "Cronograma do Fluxo"
   },
   "scheduler.schedule.type": {
     "other": "Tipo de Agendamento"
@@ -2007,7 +2007,7 @@
     "other": "Período em minutos"
   },
   "scheduler.job-parameters.dialog": {
-    "other": "Flow Parameters"
+    "other": "Parâmetos do Fluxo"
   },
   "scheduler.job-parameters.button": {
     "other": "Parametros"
