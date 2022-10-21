@@ -1,15 +1,15 @@
 {
   "1": {
-    "other": "Notifications"
+    "other": "통지"
   },
   "10": {
     "other": "Folder Activity"
   },
   "11": {
-    "other": "File Activity"
+    "other": "파일 활동"
   },
   "12": {
-    "other": "Depending on your browser, this will ask for a specific permission. To disable, go through your browser preferences and exceptions. If you have already enabled this feature, probably nothing will happen."
+    "other": "브라우저에 따라 특정 권한을 묻는 메시지가 표시됩니다. 비활성화하려면 브라우저 기본 설정 및 예외를 확인하십시오. 이 기능을 이미 사용 가능으로 설정한 경우 아무 일도 일어나지 않을 수 있습니다."
   },
   "13": {
     "other": "Your browser does not seem to support Desktop Notifications yet."
@@ -39,13 +39,13 @@
     "other": "Loading feed..."
   },
   "3": {
-    "other": "Alerts"
+    "other": "경고"
   },
   "4": {
     "other": "Notifications"
   },
   "5": {
-    "other": "All Events"
+    "other": "모든 이벤트"
   },
   "6": {
     "other": "Go to ..."
