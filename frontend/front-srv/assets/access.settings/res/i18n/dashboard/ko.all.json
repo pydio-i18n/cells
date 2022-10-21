@@ -69,7 +69,7 @@
     "other": "고급"
   },
   "welc.btn.parameters": {
-    "other": "About Parameters"
+    "other": "매개 변수 정보"
   },
   "welc.btn.start": {
     "other": "Getting Started"
@@ -99,7 +99,7 @@
     "other": "Quick Access"
   },
   "card.quick-access.add": {
-    "other": "Add a shortcut ..."
+    "other": "바로가기 추가"
   },
   "card.update.current": {
     "other": "Software Version"
