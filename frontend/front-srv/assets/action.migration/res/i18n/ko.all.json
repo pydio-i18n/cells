@@ -51,10 +51,10 @@
     "other": "Skip SSL verification (self-signed)"
   },
   "step.connection.field.login": {
-    "other": "Administrator login"
+    "other": "관리자 로그인"
   },
   "step.connection.field.pwd": {
-    "other": "Admin password"
+    "other": "관리자 비밀번호"
   },
   "step.connection.button.connect": {
     "other": "Connect"
@@ -84,7 +84,7 @@
     "other": "Workspace %s"
   },
   "step.meta.map.values": {
-    "other": " (Values %s)"
+    "other": " (값 %s)"
   },
   "step.disclaimer.title": {
     "other": "Disclaimer"
