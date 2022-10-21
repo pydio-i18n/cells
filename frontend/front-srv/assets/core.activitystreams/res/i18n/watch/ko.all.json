@@ -12,7 +12,7 @@
     "other": "Anyone is exploring the folder"
   },
   "11": {
-    "other": "Modification"
+    "other": "수정"
   },
   "12": {
     "other": "Anyone is modifying the file"
@@ -21,7 +21,7 @@
     "other": "Anyone is modifying a file inside this folder"
   },
   "13": {
-    "other": "Both"
+    "other": "양쪽 모두"
   },
   "14": {
     "other": "Anyone opening or writing into the file"
@@ -69,7 +69,7 @@
     "other": "Content is accessed or modified"
   },
   "selector.mixed": {
-    "other": "Mixed values"
+    "other": "혼합된 값"
   },
   "selector.saving": {
     "other": "Saving status"
