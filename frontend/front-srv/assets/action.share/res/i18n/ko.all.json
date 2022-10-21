@@ -393,7 +393,7 @@
     "other": "pending"
   },
   "212": {
-    "other": "accepted"
+    "other": "수락됨"
   },
   "213": {
     "other": "rejected"
@@ -528,7 +528,7 @@
     "other": "Link"
   },
   "252": {
-    "other": "Access"
+    "other": "접근"
   },
   "253": {
     "other": "Visibility"
