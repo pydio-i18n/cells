@@ -30,7 +30,7 @@
     "other": "How-to create or complete a language translation ?"
   },
   "ent.advanced": {
-    "other": "Advanced Administrator Dashboard"
+    "other": "고급 관리자 대시보드"
   },
   "ent.advanced.legend": {
     "other": "Unique admin dashboard for real-time monitoring of platform usage."
@@ -66,7 +66,7 @@
     "other": "In-app upgrade Cells Enterprise (license required)"
   },
   "welc.btn.advanced": {
-    "other": "Advanced"
+    "other": "고급"
   },
   "welc.btn.parameters": {
     "other": "About Parameters"
@@ -120,7 +120,7 @@
     "other": "No activity found"
   },
   "recentLogs.more": {
-    "other": "All Activities"
+    "other": "모든 활동"
   },
   "graph.files": {
     "other": "Files Activity"
