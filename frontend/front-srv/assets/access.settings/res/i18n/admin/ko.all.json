@@ -744,7 +744,7 @@
     "other": "이름"
   },
   "metadata.namespace.add": {
-    "other": "+ Namespace"
+    "other": "+ 네임스페이스"
   },
   "metadata.namespaces": {
     "other": "Namespaces"
@@ -1011,7 +1011,7 @@
     "other": "Are you sure you want to delete this policy? Make sure it does not break the security of the application!"
   },
   "policies.policy.new": {
-    "other": "+ New Policy"
+    "other": "+ 새로운 정책"
   },
   "policies.policy.type": {
     "other": "Policy Type"
@@ -1101,13 +1101,13 @@
     "other": "global configurations"
   },
   "user.1": {
-    "other": "+ User"
+    "other": "+ 사용자"
   },
   "user.10": {
     "other": "Access to %i workspaces"
   },
   "user.11": {
-    "other": "%i roles"
+    "other": "%i 역할"
   },
   "user.12": {
     "other": "Group path"
@@ -1167,7 +1167,7 @@
     "other": "Root Group Role"
   },
   "user.26": {
-    "other": "%s Group Role"
+    "other": "%s 그룹 역할"
   },
   "user.27": {
     "other": "User Personal Role"
@@ -1182,7 +1182,7 @@
     "other": "Groups & Users"
   },
   "user.6": {
-    "other": "+ Role"
+    "other": "+ 역할"
   },
   "user.7": {
     "other": "Search users & groups"
@@ -1251,7 +1251,7 @@
     "other": "%s retention periods"
   },
   "virtual.create": {
-    "other": "+ Template Path"
+    "other": "+ 템플릿 경로"
   },
   "virtual.create.button": {
     "other": "Create"
@@ -1368,7 +1368,7 @@
     "other": "Parameters"
   },
   "ws.3": {
-    "other": "+ workspace"
+    "other": "+ 작업공간"
   },
   "ws.filter.workspaces": {
     "other": "Filter workspaces..."
@@ -1437,7 +1437,7 @@
     "other": ""
   },
   "ws.4b": {
-    "other": "+ version policy"
+    "other": "+ 버전 정책"
   },
   "ws.5": {
     "other": "Slug"
