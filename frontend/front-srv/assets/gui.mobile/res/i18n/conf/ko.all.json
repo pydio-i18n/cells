@@ -24,7 +24,7 @@
     "other": "I don't care, let me use the web version of %s."
   },
   "Mobile": {
-    "other": "Mobile"
+    "other": "모바일"
   },
   "Template extending gui.ajax for small screen terminals.": {
     "other": "Template extending gui.ajax for small screen terminals."
@@ -45,12 +45,12 @@
     "other": "iOS Application ID on the store"
   },
   "Android Application ID": {
-    "other": "Android Application ID"
+    "other": "안드로이드앱 ID"
   },
   "Android App ID": {
-    "other": "Android App ID"
+    "other": "안드로이드앱 ID"
   },
   "Android App Icon": {
-    "other": "Android Application Icon"
+    "other": "안드로이드 앱 아이콘"
   }
 }
