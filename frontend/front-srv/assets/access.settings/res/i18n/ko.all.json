@@ -45,7 +45,7 @@
     "other": "Backend"
   },
   "112": {
-    "other": "<b>Apply this role by default</b> to all new users."
+    "other": "모든 사용자에 <b>기본적으로 이 역할을 적용</b>"
   },
   "113": {
     "other": "Role status was successfully modified"
@@ -156,7 +156,7 @@
     "other": "Generated documentations for developers"
   },
   "146": {
-    "other": "Actions API"
+    "other": "동작 API"
   },
   "147": {
     "other": "List all actions contributed by all plugins and visualize their input parameters"
@@ -462,7 +462,7 @@
     "other": "Role Id"
   },
   "77": {
-    "other": "Access Control"
+    "other": "접근 제어"
   },
   "78": {
     "other": "Personal data"
