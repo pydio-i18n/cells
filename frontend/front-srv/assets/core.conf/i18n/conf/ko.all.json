@@ -1,6 +1,6 @@
 {
   "Address used for notifications": {
-    "other": "Address used for notifications"
+    "other": "통지에 사용된 주소"
   },
   "All roles": {
     "other": "All roles"
@@ -21,10 +21,10 @@
     "other": "Allow to search users from other groups through auto completer (can be handy if previous option is set to false) and share workspaces with them"
   },
   "Always Override": {
-    "other": "Always Override"
+    "other": "항상 재정의"
   },
   "Always override other roles, included group roles.": {
-    "other": "Always override other roles, included group roles."
+    "other": "그룹 역할을 포함해서 다른 역할을 항상 재정의"
   },
   "Avatar": {
     "other": "Avatar"
@@ -63,7 +63,7 @@
     "other": "Do not load groups and users list if no regexp is entered. Avoid sending large search on LDAP."
   },
   "Email": {
-    "other": "Email"
+    "other": "이메일"
   },
   "Excluded Roles": {
     "other": "Excluded Roles"
