@@ -267,7 +267,7 @@
     "other": "Please set a password and make sure it's long enough!"
   },
   "176": {
-    "other": "(Mandatory)"
+    "other": "(필수)"
   },
   "177": {
     "other": "View parameters"
@@ -576,7 +576,7 @@
     "other": "Add to Cell..."
   },
   "264": {
-    "other": "+ New Cell"
+    "other": "+ 새로운 셀"
   },
   "265": {
     "other": "Link Label"
@@ -963,6 +963,6 @@
     "other": "password required"
   },
   "link.secure.maxdownloads": {
-    "other": "%d downloads only"
+    "other": "%d 만 다운로드"
   }
 }
