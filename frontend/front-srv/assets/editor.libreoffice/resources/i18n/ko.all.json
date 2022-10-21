@@ -24,10 +24,10 @@
     "other": "Libre Office External browser window"
   },
   "ext.doc": {
-    "other": "Microsoft Word 97/2000/XP/2003"
+    "other": "마이크로소프트 워드 97/2000/XP/2003"
   },
   "ext.docx": {
-    "other": "Microsoft Word 2007/2010/2013 XML"
+    "other": "마이크로소프트 워드 2007/2010/2013 XML"
   },
   "ext.odg": {
     "other": "ODF Drawing"
@@ -42,18 +42,18 @@
     "other": "ODF Text Document"
   },
   "ext.ppt": {
-    "other": "Microsoft PowerPoint 97/2000/XP/2003"
+    "other": "마이크로소프트 파워포인트 97/2000/2003 XML"
   },
   "ext.pptx": {
-    "other": "Microsoft PowerPoint 2007/2010/2013 XML"
+    "other": "마이크로소프트 파워포인트 2007/2010/2013 XML"
   },
   "ext.rtf": {
     "other": "Rich Text"
   },
   "ext.xls": {
-    "other": "Microsoft Excel 97/2000/XP/2003"
+    "other": "마이크로소프트 엑셀 97/2000/XP/2003"
   },
   "ext.xlsx": {
-    "other": "Microsoft Excel 2007/2010/2013 XML"
+    "other": "마이크로소프트 엑셀 2007/2010/2013 XML"
   }
 }
