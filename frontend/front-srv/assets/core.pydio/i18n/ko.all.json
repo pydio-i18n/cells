@@ -111,7 +111,7 @@
     "other": "Folders"
   },
   "131": {
-    "other": "Details"
+    "other": "세부사항"
   },
   "132": {
     "other": "No file or folder"
@@ -156,10 +156,10 @@
     "other": "My Bookmarks"
   },
   "146": {
-    "other": "Delete Bookmark"
+    "other": "즐겨찾기 삭제"
   },
   "147": {
-    "other": "Bookmarks"
+    "other": "즐겨찾기"
   },
   "148": {
     "other": "Parent"
@@ -183,7 +183,7 @@
     "other": "Add/remove item to MyBookmarks"
   },
   "152-on": {
-    "other": "Bookmark"
+    "other": "즐겨찾기"
   },
   "153-on": {
     "other": "Add item to MyBookmarks"
@@ -252,7 +252,7 @@
     "other": "Current Folder"
   },
   "171": {
-    "other": "Browse"
+    "other": "탐색"
   },
   "172": {
     "other": "Your Selection"
@@ -363,7 +363,7 @@
     "other": "The file \""
   },
   "205": {
-    "other": "\" exceeds size limit ("
+    "other": "\" 제한된 크기를 초과함 ("
   },
   "206": {
     "other": "Mb).\\nIt will not be uploaded."
@@ -393,16 +393,16 @@
     "other": "Error while copying file to current folder"
   },
   "214": {
-    "other": "Browse"
+    "other": "탐색"
   },
   "215": {
     "other": "Start Upload"
   },
   "216": {
-    "other": "Clear"
+    "other": "지우기"
   },
   "217": {
-    "other": "Clear Completed"
+    "other": "완료작업 지우기"
   },
   "218": {
     "other": "Remove from queue"
@@ -432,7 +432,7 @@
     "other": "Rename bookmark"
   },
   "226": {
-    "other": "Details"
+    "other": "세부사항"
   },
   "227": {
     "other": "Switch to detailed table view"
@@ -444,7 +444,7 @@
     "other": "Switch to thumbnails view"
   },
   "23": {
-    "other": "File"
+    "other": "파일"
   },
   "230": {
     "other": "Play"
@@ -495,7 +495,7 @@
     "other": "Author"
   },
   "245": {
-    "other": "Date"
+    "other": "날짜"
   },
   "246": {
     "other": "Message"
@@ -537,7 +537,7 @@
     "other": "Remove"
   },
   "258": {
-    "other": "File count :"
+    "other": "파일 수:"
   },
   "259": {
     "other": "Total size :"
@@ -645,7 +645,7 @@
     "other": "Create"
   },
   "290": {
-    "other": "All"
+    "other": "전체"
   },
   "291": {
     "other": "Apply recursively?"
@@ -744,7 +744,7 @@
     "other": "HTML Editor"
   },
   "32": {
-    "other": "Explore"
+    "other": "탐색"
   },
   "320": {
     "other": "WYSIWYG editor for HTML"
@@ -807,13 +807,13 @@
     "other": "Close panel after upload is finished"
   },
   "339": {
-    "other": "Existing Files"
+    "other": "존재하는 파일"
   },
   "34": {
     "other": "The file"
   },
   "340": {
-    "other": "Alert"
+    "other": "경고"
   },
   "341": {
     "other": "File Info"
@@ -999,7 +999,7 @@
     "other": "Auth. Method"
   },
   "397": {
-    "other": "Download chunked"
+    "other": "청크 다운로드"
   },
   "398": {
     "other": "Download selected file by pieces"
@@ -1089,7 +1089,7 @@
     "other": "Please fill the required parameters. Fly over the field titles with your mouse to have more information."
   },
   "423": {
-    "other": "Delete workspace"
+    "other": "작업공간 삭제"
   },
   "424": {
     "other": "Are you sure you want to delete this workspace? The operation is irreversible."
@@ -1128,7 +1128,7 @@
     "other": "sending"
   },
   "435": {
-    "other": "done"
+    "other": "완료"
   },
   "436": {
     "other": "error"
@@ -1140,7 +1140,7 @@
     "other": "reload the page"
   },
   "439": {
-    "other": "Main Options"
+    "other": "메인 옵션"
   },
   "44": {
     "other": "has been deleted"
@@ -1176,7 +1176,7 @@
     "other": "Creating %s, choose a password"
   },
   "45": {
-    "other": "directory"
+    "other": "디렉토리"
   },
   "450": {
     "other": "Sort by ..."
@@ -1209,7 +1209,7 @@
     "other": "Top folder"
   },
   "46": {
-    "other": "file"
+    "other": "파일"
   },
   "460": {
     "other": "List"
@@ -1221,10 +1221,10 @@
     "other": "Preview"
   },
   "463": {
-    "other": "Download all"
+    "other": "전체 다운로드"
   },
   "464": {
-    "other": "Download all workspace content at once (zipped)"
+    "other": "모든 작업공간을 한번에 다운로드 (Zip압축)"
   },
   "465": {
     "other": "Show alternative URLs (mount workspaces separately)"
@@ -1296,25 +1296,25 @@
     "other": "Create a shared user"
   },
   "486": {
-    "other": "Advanced"
+    "other": "고급"
   },
   "487": {
-    "other": "Basic"
+    "other": "기본"
   },
   "488": {
-    "other": "Advanced Filter"
+    "other": "고급 필터"
   },
   "489": {
-    "other": "Metadata"
+    "other": "메타데이터"
   },
   "49": {
     "other": "CANCEL"
   },
   "490": {
-    "other": "Date range"
+    "other": "날짜 범위"
   },
   "491": {
-    "other": "After"
+    "other": "이후"
   },
   "492": {
     "other": "until"
@@ -1338,7 +1338,7 @@
     "other": "Document Property"
   },
   "499": {
-    "other": "File"
+    "other": "파일"
   },
   "5": {
     "other": "Actions"
@@ -1398,7 +1398,7 @@
     "other": "No bookmarks - Drop files or folders here for quick access."
   },
   "516": {
-    "other": "expand"
+    "other": "확장"
   },
   "517": {
     "other": "collapse"
@@ -1536,7 +1536,7 @@
     "other": "Authentication failed for this workspace."
   },
   "56": {
-    "other": "BMP picture"
+    "other": "BMP 사진"
   },
   "560": {
     "other": "Authentication required"
@@ -1629,7 +1629,7 @@
     "other": "Search Directory"
   },
   "584": {
-    "other": "Directory"
+    "other": "디렉토리"
   },
   "585": {
     "other": "No External Users"
@@ -1656,7 +1656,7 @@
     "other": "Choose a name for the team, and you will be able to add users to it after creation."
   },
   "592": {
-    "other": "Address Book"
+    "other": "주소록"
   },
   "593": {
     "other": "Shared Users"
@@ -1671,7 +1671,7 @@
     "other": "Server '%s'"
   },
   "597": {
-    "other": "all"
+    "other": "전체"
   },
   "598": {
     "other": "Send a message"
@@ -1692,7 +1692,7 @@
     "other": "One shared cell"
   },
   "602": {
-    "other": "%1 shared cells"
+    "other": "%1 공유된 셀"
   },
   "603": {
     "other": "Team"
@@ -1854,7 +1854,7 @@
     "other": "Or select another directory"
   },
   "7": {
-    "other": "Delete"
+    "other": "삭제"
   },
   "70": {
     "other": "Move"
@@ -1887,7 +1887,7 @@
     "other": "PDF File"
   },
   "8": {
-    "other": "Directory"
+    "other": "디렉토리"
   },
   "80": {
     "other": "MOV File"
@@ -1914,13 +1914,13 @@
     "other": "Search"
   },
   "88": {
-    "other": "Download"
+    "other": "다운로드"
   },
   "89": {
     "other": "Unable to open file"
   },
   "9": {
-    "other": "Midi File"
+    "other": "미디 파일"
   },
   "90": {
     "other": "Print"
@@ -2100,7 +2100,7 @@
     "other": "Implementations of a simple PUB/SUB server"
   },
   "plugtype.desc.sec": {
-    "other": "Advanced Security Features"
+    "other": "고급 보안 기능"
   },
   "plugtype.desc.shorten": {
     "other": "Webservices bridges for shortening public links"
@@ -2115,7 +2115,7 @@
     "other": "Action plugins"
   },
   "plugtype.title.auth": {
-    "other": "Authentication Backends"
+    "other": "인증 백엔드"
   },
   "plugtype.title.authfront": {
     "other": "Authentication Frontends"
@@ -2130,7 +2130,7 @@
     "other": "Configuration Storage"
   },
   "plugtype.title.cypher": {
-    "other": "Encryption Tools"
+    "other": "암호화 도구"
   },
   "plugtype.title.editor": {
     "other": "Editors"
@@ -2244,13 +2244,13 @@
     "other": "Folder is bookmarked"
   },
   "bookmark.button.tip.add": {
-    "other": "Bookmark this element"
+    "other": "이 요소를 즐겨찾기"
   },
   "bookmark.button.tip.remove": {
     "other": "Remove this bookmark"
   },
   "bookmark.button.tip.mixed": {
-    "other": "Mixed values, click to bookmark all"
+    "other": "혼합된 값, 모두 즐겨찾기하려면 클릭하세요."
   },
   "bookmark.button.tip.saving": {
     "other": "Saving bookmark status"
@@ -2286,7 +2286,7 @@
     "other": "View"
   },
   "visibility.panel.right-edit": {
-    "other": "Edit"
+    "other": "편집"
   },
   "visibility.panel.list.users": {
     "other": "Users"
@@ -2304,7 +2304,7 @@
     "other": "Revert changes"
   },
   "visibility.panel.error": {
-    "other": "An error occured"
+    "other": "오류 발생함"
   },
   "visibility.panel.pickuser": {
     "other": "Pick a user..."
@@ -2361,10 +2361,10 @@
     "other": "Search In..."
   },
   "searchengine.advanced-filter.tooltip": {
-    "other": "Advanced Filters"
+    "other": "고급 필터"
   },
   "searchengine.results.foundN": {
-    "other": "%1 results found"
+    "other": "%1 개의 결과를 발견"
   },
   "searchengine.results.withMore": {
     "other": "Showing %1, load more..."
@@ -2373,10 +2373,10 @@
     "other": "Save"
   },
   "searchengine.query.action.clear": {
-    "other": "Clear"
+    "other": "지우기"
   },
   "searchengine.query.action.delete": {
-    "other": "Delete"
+    "other": "삭제"
   },
   "searchengine.query.save-label": {
     "other": "Enter a label"
