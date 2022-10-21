@@ -1602,7 +1602,7 @@
     "other": "Team Members"
   },
   "576": {
-    "other": "%s members"
+    "other": "%s 회원"
   },
   "577": {
     "other": "No members"
@@ -1983,7 +1983,7 @@
     "other": "F, jS Y"
   },
   "date_relative_days_ago": {
-    "other": "%s days ago"
+    "other": "%s 일 전"
   },
   "date_relative_days_ahead": {
     "other": "in %s days"
