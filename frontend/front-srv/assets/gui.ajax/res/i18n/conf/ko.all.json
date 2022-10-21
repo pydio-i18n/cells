@@ -1,51 +1,51 @@
 {
   "Additional JS frameworks": {
-    "other": "Additional JS frameworks"
+    "other": "추가적인 JS 프레임워크"
   },
   "Additional JS frameworks description": {
-    "other": "List of comma separated pathes to JS files, which must be loaded BEFORE the main Pydio framework is loaded. The preferred way should be using plugin resources declarations. Loading JS files at the very start up of the page might be option in some cases only."
+    "other": "기본 Pydio 프레임워크를 로드하기 전에 로드해야 하는 JS 파일의 쉼표로 구분된 경로 목록입니다. 선호하는 방법은 플러그인 리소스 선언을 사용하는 것입니다. 페이지의 시작 부분에서 JS 파일을 로드하는 것은 경우에 따라 옵션일 수 있습니다."
   },
   "An additionnal message displayed in the start up screen": {
-    "other": "An additional message displayed in the start up screen"
+    "other": "시작 화면에 표시되는 추가 메시지"
   },
   "Analytics Domain": {
-    "other": "Analytics Domain"
+    "other": "분석 도메인"
   },
   "Analytics Events": {
-    "other": "Analytics Events"
+    "other": "분석 이벤트"
   },
   "Analytics ID": {
-    "other": "Analytics ID"
+    "other": "분석 ID"
   },
   "Append a title to the image logo": {
-    "other": "Append a title to the image logo"
+    "other": "이미지 로고에 제목 추가"
   },
   "Application Title": {
-    "other": "Application Title"
+    "other": "응용 프로그램 제목"
   },
   "Attributes of the image used as a background": {
     "other": "Attributes of the image used as a background"
   },
   "Background Attributes (1)": {
-    "other": "Background attributes (1)"
+    "other": "배경 속성 (1)"
   },
   "Background Attributes (2)": {
-    "other": "Background attributes (2)"
+    "other": "배경 속성 (2)"
   },
   "Background Attributes (3)": {
-    "other": "Background attributes (3)"
+    "other": "배경 속성 (3)"
   },
   "Background Attributes (4)": {
-    "other": "Background attributes (4)"
+    "other": "배경 속성 (4)"
   },
   "Background Attributes (5)": {
-    "other": "Background attributes (5)"
+    "other": "배경 속성 (5)"
   },
   "Background Attributes (6)": {
-    "other": "Background attributes (6)"
+    "other": "배경 속성 (6)"
   },
   "Background Attributes (Low Resolution)": {
-    "other": "Background Attributes (Low Resolution)"
+    "other": "배경 속성 (저해상도)"
   },
   "Browser-based rich interface. Contains configurations for theming, custom welcome message, etc.": {
     "other": "Browser-based rich interface. Contains configurations for theming, custom welcome message, etc."
@@ -63,37 +63,37 @@
     "other": "Client Timeout"
   },
   "Custom Background (1)": {
-    "other": "Custom background (1)"
+    "other": "사용자 지정 배경 (1)"
   },
   "Custom Background (2)": {
-    "other": "Custom background (2)"
+    "other": "사용자 지정 배경 (2)"
   },
   "Custom Background (3)": {
-    "other": "Custom background (3)"
+    "other": "사용자 지정 배경 (3)"
   },
   "Custom Background (4)": {
-    "other": "Custom background (4)"
+    "other": "사용자 지정 배경 (4)"
   },
   "Custom Background (5)": {
-    "other": "Custom background (5)"
+    "other": "사용자 지정 배경 (5)"
   },
   "Custom Background (6)": {
-    "other": "Custom background (6)"
+    "other": "사용자 지정 배경 (6)"
   },
   "Custom Icon": {
-    "other": "Custom Icon"
+    "other": "사용자 지정 아이콘"
   },
   "Detected Encoding": {
-    "other": "Detected Encoding"
+    "other": "탐지된 인코딩"
   },
   "Detected Server Path": {
-    "other": "Detected Server Path"
+    "other": "탐지된 서버 경로"
   },
   "Display Branding Tool": {
-    "other": "Display Branding Tool"
+    "other": "디스플레이 브랜딩 도구"
   },
   "Enable Welcome Tour": {
-    "other": "Enable Welcome Tour"
+    "other": "환영 투어 활성"
   },
   "Enable the small tour triggered at first visit": {
     "other": "Enable the small tour triggered at first visit"
@@ -108,16 +108,16 @@
     "other": "Font sized used for the title in the start up screen"
   },
   "Google Analytics": {
-    "other": "Google Analytics"
+    "other": "구글 어낼리틱스"
   },
   "Google Analytics Analytics Domain": {
-    "other": "Google Analytics Analytics Domain"
+    "other": "구글 어낼리틱스 어낼리틱스 도메인"
   },
   "Google Analytics Analytics Events": {
-    "other": "Google Analytics Analytics Events"
+    "other": "구글 어낼리틱스 어낼리틱스 이벤트"
   },
   "Google Analytics Analytics ID": {
-    "other": "Google Analytics Analytics ID"
+    "other": "구글 어낼리틱스 어낼리틱스 ID"
   },
   "Height of the custom icon (with the px mention)": {
     "other": "Height of the custom icon (with the px mention)"
@@ -162,7 +162,7 @@
     "other": "Low-Resolution Background"
   },
   "Main Options": {
-    "other": "Main Options"
+    "other": "메인 옵션"
   },
   "Make sure to use a smaller resolution image, otherwise mobile loading is very slow.": {
     "other": "Make sure to use a smaller resolution image, otherwise mobile loading is very slow."
@@ -180,10 +180,10 @@
     "other": "Manually set a top offset"
   },
   "Minisite": {
-    "other": "Minisite"
+    "other": "미니 사이트"
   },
   "Minisite Logo": {
-    "other": "Minisite Logo"
+    "other": "미니 사이트 로고"
   },
   "Number of MINUTES before the session expiration for issuing an alert to the user": {
     "other": "Number of MINUTES before the session expiration for issuing an alert to the user"
@@ -276,7 +276,7 @@
     "other": "Width of the custom image (Default 35px)"
   },
   "Alert the user that the web session is about to expire. Number of minutes before session expiration": {
-    "other": "Alert the user that the web session is about to expire. Number of minutes before session expiration"
+    "other": "웹 세션이 곧 만료될 것임을 사용자에게 알립니다. 세션 만료 전 시간(분)"
   },
   "Warning Before Session Expiration": {
     "other": "Warning Before Session Expiration"
