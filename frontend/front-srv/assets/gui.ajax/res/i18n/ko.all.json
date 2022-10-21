@@ -27,7 +27,7 @@
     "other": "You can close this panel by using the info button in the display toolbar"
   },
   "tour.infopanel.file": {
-    "other": "File"
+    "other": "파일"
   },
   "tour.infopanel.folder": {
     "other": "폴더"
@@ -63,7 +63,7 @@
     "other": "Directory of all the users accessing to the platform. Create your own users, and constitute teams that can be used to share resources"
   },
   "tour.uwidget.alerts": {
-    "other": "Alerts panel will inform you when a user with whom you shared some resources did access it. They can be sent to you directly by email."
+    "other": "경고 패널은 일부 리소스를 공유한 사용자가 접근한 시기를 알려줍니다. 그것들은 이메일로 당신에게 직접 보내질 수 있습니다."
   },
   "tour.uwidget.home": {
     "other": "Go back to the welcome panel with this button"
@@ -102,7 +102,7 @@
     "other": "Workspaces & Cells"
   },
   "background.jobs.title": {
-    "other": "Background Jobs"
+    "other": "백그라운드 작업"
   },
   "background.jobs.running": {
     "other": "Jobs running"
@@ -117,7 +117,7 @@
     "other": "Authentication Success"
   },
   "oauth.authentication.failed": {
-    "other": "Authentication Failed"
+    "other": "인증 실패"
   },
   "oauth.authentication.code": {
     "other": "You were successfully authenticated. Please copy and paste the code to your command line terminal"
@@ -135,7 +135,7 @@
     "other": "List"
   },
   "list.display-mode.details": {
-    "other": "Details"
+    "other": "세부사항"
   },
   "list.display-mode.thumbs": {
     "other": "Thumbs"
@@ -162,7 +162,7 @@
     "other": "Select a file to display informations"
   },
   "pinned-bookmarks.other": {
-    "other": "All files"
+    "other": "모든 파일"
   },
   "file.temporary-etag.flag": {
     "other": "Incomplete"
