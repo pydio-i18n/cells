@@ -3,7 +3,7 @@
     "other": "Dashboard"
   },
   "dashboard.tab.activity": {
-    "other": "Activity"
+    "other": "활동"
   },
   "loading": {
     "other": "Loading..."
@@ -618,7 +618,7 @@
     "other": "Dashboard"
   },
   "menu.1": {
-    "other": "Activity"
+    "other": "활동"
   },
   "menu.10": {
     "other": "Extensions for sending files through the Web UI"
@@ -648,7 +648,7 @@
     "other": "Instant messaging and external accelerator tool"
   },
   "menu.18": {
-    "other": "All Plugins"
+    "other": "모든 플러그인"
   },
   "menu.19": {
     "other": "Available Plugins"
@@ -1209,7 +1209,7 @@
     "other": "관리자 전용"
   },
   "user.filter.all": {
-    "other": "All users"
+    "other": "전체 사용자"
   },
   "user.filter.anon": {
     "other": "Show anonymous"
@@ -1425,7 +1425,7 @@
     "other": "As its parameters are using 'PYDIO_USER' or 'PYDIO_GROUP_*' keywords, the contents of\n                                this workspace will vary depending on the currently authenticated user. For this reason, you cannot browse the\n                                folders directly and assign permissions to them, but you can freely define some generic pathes that will be used as masks."
   },
   "ws.46": {
-    "other": "Add a feature"
+    "other": "기능 추가"
   },
   "ws.47": {
     "other": "Select a feature"
@@ -1656,7 +1656,7 @@
     "other": "Filter..."
   },
   "services.filter.nofilter": {
-    "other": "All Services"
+    "other": "모든 서비스"
   },
   "services.filter.started": {
     "other": "Running Only"
@@ -2040,7 +2040,7 @@
     "other": "<div><i>Additional notes</i>\n<ol>\n<li>1. When there are no sites defined, Cells use a default configuration (https://0.0.0.0:8080 with self-signed).</li>\n<li>2. Sites can be overridden at runtime by using ‘--bind’ flag or ‘CELLS_BIND’ environment variable.\n</li>\n</ol></div>"
   },
   "sites.externals.details": {
-    "other": "<div>\nCells uses its detected public URL in some features. It will try to use the most appropriate value based on your configuration. <br/><br/>For example:\n<ul>\n<li>&bull; If a unique site is defined and it has an external URL, that one is probably correct.</li>\n<li>&bull; When multiple sites are defined, you may want to force a unique URL that will be used for all external communication.</li>\n<li>&bull; If no external URL is detected, it will fallback to the internal bind address. In that case, you probably do not want to send a private IP (or 0.0.0.0:port…) to the outside world.</li>\n</ul>\n\n<br/>\nThe fields below show the detected values. Select to edit or type in a custom value and hit enter to save.\n</div>"
+    "other": "<div>셀은 일부 기능에서 탐지된 공용 URL을 사용합니다. 사용자의 구성에 따라 가장 적절한 값을 사용하려고 시도합니다. <br/><br/>예:<ul><li>&bull; 고유 사이트가 정의되어 있고 외부 URL이 있는 경우 해당 사이트가 맞을 수 있습니다.</li><li>&bull; 여러 사이트가 정의된 경우 모든 외부 통신에 사용할 고유 URL을 강제 적용할 수 있습니다.</li><li>&bull; 외부 URL이 검색되지 않으면 내부 바인딩 주소로 폴백합니다. 이 경우 개인 IP(또는 0.0.0.0: 포트…)를 외부로 전송하지 않을 수 있습니다.</li></ul><br/>아래 필드에는 탐지된 값이 표시됩니다. 사용자 지정 값을 편집하거나 입력하려면 선택하고 Enter 키를 눌러 저장합니다.</div>"
   },
   "sites.mailer.url": {
     "other": "URL used to build links in emails"
