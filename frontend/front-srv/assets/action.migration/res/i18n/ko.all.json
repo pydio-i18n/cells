@@ -252,7 +252,7 @@
     "other": "Invalid mapping - Please select a datasource or a workspace"
   },
   "dash.feature.configs": {
-    "other": "AD/LDAP Configuration"
+    "other": "AD/LDAP 설정"
   },
   "dash.feature.configs.legend": {
     "other": "There is no specific configuration for this step. AD/LDAP configurations will be imported to a Pydio Cells external directory."
