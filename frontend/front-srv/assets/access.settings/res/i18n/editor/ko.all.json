@@ -1,6 +1,6 @@
 {
   "1": {
-    "other": "No Parameters"
+    "other": "매개변수가 없습니다"
   },
   "10": {
     "other": "Write Only"
@@ -30,10 +30,10 @@
     "other": "Plugins Settings"
   },
   "19": {
-    "other": "always overrides"
+    "other": "항상 재정의"
   },
   "2": {
-    "other": "Enabled"
+    "other": "활성화"
   },
   "20": {
     "other": "+ add role"
@@ -189,7 +189,7 @@
     "other": "Welcome page displayed after login"
   },
   "workspace.statics.settings.title": {
-    "other": "Admin Console"
+    "other": "관리 콘솔"
   },
   "workspace.statics.settings.description": {
     "other": "Pydio Cells administration dashboard"
