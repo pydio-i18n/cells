@@ -1,6 +1,6 @@
 {
   "dashboard.tab.dashboard": {
-    "other": "Dashboard"
+    "other": "대시보드"
   },
   "dashboard.tab.activity": {
     "other": "활동"
@@ -27,7 +27,7 @@
     "other": "Versioning Policies"
   },
   "ds.board.wsfromds.title": {
-    "other": "Create Workspace"
+    "other": "작업공간 생성"
   },
   "ds.board.wsfromds.legend": {
     "other": "Create a new workspace at the root of datasource %s"
@@ -261,19 +261,19 @@
     "other": "Azure Secret Key"
   },
   "ds.editor.storage.azure.bucket": {
-    "other": "Bucket Name"
+    "other": "버킷명"
   },
   "ds.editor.storage.gcs.credentials": {
     "other": "Paste content of GCS JSON credentials file"
   },
   "ds.editor.storage.gcs.bucket": {
-    "other": "Bucket Name"
+    "other": "버킷명"
   },
   "ds.editor.storage.s3.api": {
     "other": "S3 Api Key"
   },
   "ds.editor.storage.s3.bucket": {
-    "other": "Bucket Name"
+    "other": "버킷명"
   },
   "ds.editor.storage.s3.endpoint.amazon": {
     "other": "아마존 S3"
@@ -309,7 +309,7 @@
     "other": "Create Bucket"
   },
   "ds.editor.storage.buckets.create.hint": {
-    "other": "Bucket name"
+    "other": "버킷명"
   },
   "ds.editor.storage.buckets.regexp": {
     "other": "Use regular expression"
@@ -330,7 +330,7 @@
     "other": "Synchronize S3 tags from buckets or objects (use  a comma-separated list of patterns to match). Please note that this will perform additional requests to storage and may slow down sync process. Original tags will be mapped to pydio:s3-bucket-tag-NAME and pydio:s3-object-tag-NAME internally."
   },
   "ds.editor.storage.s3.bucketsTags": {
-    "other": "Buckets Tags (multiple buckets enabled)"
+    "other": "버킷 태그 (여러 버킷 사용 가능)"
   },
   "ds.editor.storage.s3.objectsTags": {
     "other": "Objects Tags"
@@ -363,7 +363,7 @@
     "other": "Next"
   },
   "ds.editor.tab.button-create": {
-    "other": "Create"
+    "other": "생성"
   },
   "ds.editor.tab.identifier": {
     "other": "Identifier"
@@ -375,7 +375,7 @@
     "other": "Storage Type"
   },
   "ds.editor.tab.lifecycle": {
-    "other": "Data Lifecycle"
+    "other": "데이터 생명주기"
   },
   "ds.editor.tab.advanced": {
     "other": "고급 옵션"
@@ -405,7 +405,7 @@
     "other": "Export Key"
   },
   "ds.encryption.key.export.confirm": {
-    "other": "Confirm password"
+    "other": "비밀번호 확인"
   },
   "ds.encryption.key.export.fail": {
     "other": "Something went wrong during export"
@@ -615,7 +615,7 @@
     "other": "No results"
   },
   "menu.0": {
-    "other": "Dashboard"
+    "other": "대시보드"
   },
   "menu.1": {
     "other": "활동"
@@ -828,7 +828,7 @@
     "other": "General"
   },
   "metadata.type.integer.format.bytesize": {
-    "other": "Byte Size"
+    "other": "바이트 크기"
   },
   "metadata.type.integer.format.percentage": {
     "other": "Percentage"
@@ -876,7 +876,7 @@
     "other": "Enable the command line in core parameters. This will greatly improve end-user performances, as time-consuming tasks are delegated to other processes."
   },
   "perfs.cli.title": {
-    "other": "Command-line PHP"
+    "other": "커맨드 라인 PHP"
   },
   "perfs.debug.description": {
     "other": "Checks if debug modes are disabled on the server"
@@ -981,7 +981,7 @@
     "other": "Documentation"
   },
   "policies.policy.create": {
-    "other": "Create"
+    "other": "생성"
   },
   "policies.policy.description": {
     "other": "Policy Description"
@@ -1029,7 +1029,7 @@
     "other": "These policies are used to dynamically provide read/write access to workspaces or nodes based on the request context and/or the node metadata. They are defined here and used in the Access Control Panel of the users and roles."
   },
   "policies.type.acl.title": {
-    "other": "Context-based ACLs"
+    "other": "컨텍스트 기반 ACL"
   },
   "policies.type.oidc.legend": {
     "other": "OpenId Connect Service is used for authentication of the user, before any access to the APIs. As such, you can totally disable the login operation for a set of users based on the requests context, e.g. disable loging from a given set of IP or at a given time."
@@ -1062,7 +1062,7 @@
     "other": "Show resulting tree"
   },
   "react.2": {
-    "other": "bulk actions"
+    "other": "대량 작업"
   },
   "react.3": {
     "other": "Search Results for '%s'"
@@ -1095,7 +1095,7 @@
     "other": "Scheduler is used to trigger tasks automatically on a regular basis. It requires the launch of a master command regularly: if you are using Pydio Booster, it should trigger this for you. Otherwise, use a CRON to launch master command every minute."
   },
   "scheduler.2": {
-    "other": "Command-line is not enabled in the %1, the scheduler will not be able to run the jobs."
+    "other": "커맨드 라인이 %1에서 활성화되지 않았으므로 스케줄러가 작업을 실행할 수 없습니다."
   },
   "scheduler.3": {
     "other": "global configurations"
@@ -1146,7 +1146,7 @@
     "other": "Create a new user"
   },
   "user.2": {
-    "other": "+ Group"
+    "other": "+ 그룹"
   },
   "user.20": {
     "other": "User will be created in group %s"
@@ -1158,7 +1158,7 @@
     "other": "User password"
   },
   "user.23": {
-    "other": "Confirm password"
+    "other": "비밀번호 확인"
   },
   "user.24": {
     "other": "Root Group"
@@ -1254,7 +1254,7 @@
     "other": "+ 템플릿 경로"
   },
   "virtual.create.button": {
-    "other": "Create"
+    "other": "생성"
   },
   "virtual.label": {
     "other": "Label"
@@ -1335,10 +1335,10 @@
     "other": "Save to add features"
   },
   "ws.2": {
-    "other": "Close DataSources"
+    "other": "데이터 소스 닫기"
   },
   "ws.20": {
-    "other": "Create"
+    "other": "생성"
   },
   "ws.21": {
     "other": "Template General Options"
@@ -1392,7 +1392,7 @@
     "other": "Accessible to %i users"
   },
   "ws.36": {
-    "other": "+ %i files or folders shared"
+    "other": "+ %i 공유된 파일 또는 폴더 공유"
   },
   "ws.37": {
     "other": "Workspaces using this template"
@@ -1404,7 +1404,7 @@
     "other": "Owner"
   },
   "ws.4": {
-    "other": "+ datasource"
+    "other": "+ 데이터 소스"
   },
   "ws.40": {
     "other": "Share Type"
@@ -1563,7 +1563,7 @@
     "other": "Workspace exposes one or many 'roots' to the users: choose one or more paths from any DataSource or a Template Path that will be resolved automatically at runtime."
   },
   "ws.editor.data.title": {
-    "other": "Data Access"
+    "other": "데이터 접근"
   },
   "ws.editor.default_rights": {
     "other": "Set up default permissions to this workspace (applied to all internal users of the application). You can override these permissions on a per-user / per-role / per-group basis in the People section."
@@ -1623,7 +1623,7 @@
     "other": "Desktop synchronisation allows users to synchronize their files offline on their computer. Warning, this feature is currently supported for personal files only, as shared workspaces may create conflicts if many users synchronize docs in the same folder. For personal files, you can also enable/disable this feature on a per-role basis using Security Policies."
   },
   "ws.editor.other.sync-personal": {
-    "other": "(personal workspaces only)"
+    "other": "(개인 작업공간만 해당)"
   },
   "ws.editor.sync.warning": {
     "other": "Warning!"
@@ -1704,7 +1704,7 @@
     "other": "Storage endpoints used to access concrete file storages. Main services are in charge of starting sub services (per datasource)."
   },
   "services.tag.data.title": {
-    "other": "Data"
+    "other": "데이터"
   },
   "services.tag.data.description": {
     "other": "Services handling data and metadata."
@@ -1788,7 +1788,7 @@
     "other": "No Flows launched by users"
   },
   "scheduler.cellsflows.cta.button": {
-    "other": "+ Custom Flow"
+    "other": "+ 사용자 지정 흐름"
   },
   "scheduler.cellsflows.cta.text": {
     "other": "Do you need to create your own Flow? Discover how Cells Flows makes it easy to automate your repetitive manual tasks in Cells."
@@ -1845,7 +1845,7 @@
     "other": "Delete Node"
   },
   "scheduler.trigger.create.user": {
-    "other": "Create User"
+    "other": "사용자 생성"
   },
   "scheduler.trigger.read.user": {
     "other": "Read User"
@@ -1875,7 +1875,7 @@
     "other": "disabled"
   },
   "scheduler.tasks.running.count": {
-    "other": "%s tasks running"
+    "other": "%s 작업 실행중"
   },
   "scheduler.task.action.pause": {
     "other": "Pause Task"
@@ -2052,7 +2052,7 @@
     "other": "No defaults set"
   },
   "sites.enter-to-save": {
-    "other": "(hit enter to save)"
+    "other": "(저장하려면 엔터키를 누르세요)"
   },
   "sites.detected.sites": {
     "other": "Sites currently detected"
