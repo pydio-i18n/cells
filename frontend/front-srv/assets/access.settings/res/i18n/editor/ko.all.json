@@ -36,7 +36,7 @@
     "other": "활성화"
   },
   "20": {
-    "other": "+ add role"
+    "other": "+ 역할 추가"
   },
   "21": {
     "other": "reloading..."
@@ -78,10 +78,10 @@
     "other": "Specific profile. May imply some roles automatically applied."
   },
   "33": {
-    "other": "Close"
+    "other": "닫기"
   },
   "34": {
-    "other": "Access Controls"
+    "other": "접근 제어"
   },
   "35": {
     "other": "Workspaces Accesses"
