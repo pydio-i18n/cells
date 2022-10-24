@@ -339,7 +339,7 @@
     "other": "New"
   },
   "199": {
-    "other": "Confirm"
+    "other": "확인"
   },
   "2": {
     "other": "Size"
@@ -804,7 +804,7 @@
     "other": "자동적으로 업로드 시작"
   },
   "338": {
-    "other": "Close panel after upload is finished"
+    "other": "업로드가 완료되면 패널 닫기"
   },
   "339": {
     "other": "존재하는 파일"
@@ -978,7 +978,7 @@
     "other": "has been created in"
   },
   "390": {
-    "other": "Code"
+    "other": "코드"
   },
   "391": {
     "other": "No Repository"
@@ -1170,7 +1170,7 @@
     "other": "My group"
   },
   "448": {
-    "other": "create user"
+    "other": "사용자 생성"
   },
   "449": {
     "other": "Creating %s, choose a password"
@@ -1290,7 +1290,7 @@
     "other": "You are not authorized to create more users!"
   },
   "484": {
-    "other": "Create user"
+    "other": "사용자 생성"
   },
   "485": {
     "other": "Create a shared user"
@@ -1761,10 +1761,10 @@
     "other": "Error Stack"
   },
   "623": {
-    "other": "Copy"
+    "other": "복사"
   },
   "624": {
-    "other": "Copied!"
+    "other": "복사됨!"
   },
   "625": {
     "other": "Letter"
@@ -1842,7 +1842,7 @@
     "other": "Word File"
   },
   "66": {
-    "other": "Copy"
+    "other": "복사"
   },
   "67": {
     "other": "Selected file"
@@ -2064,7 +2064,7 @@
     "other": "How configuration data are stored in the backend"
   },
   "plugtype.desc.cypher": {
-    "other": "Data encryption plugins"
+    "other": "데이터 암호화 플러그인"
   },
   "plugtype.desc.editor": {
     "other": "Viewers or editors for wide range of mime types"
@@ -2112,7 +2112,7 @@
     "other": "Workspaces Drivers"
   },
   "plugtype.title.action": {
-    "other": "Action plugins"
+    "other": "액션 플러그인"
   },
   "plugtype.title.auth": {
     "other": "인증 백엔드"
