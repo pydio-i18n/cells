@@ -234,7 +234,7 @@
     "other": "Older than 30 days"
   },
   "facet.label.found.contents": {
-    "other": "Contents"
+    "other": "내용"
   },
   "facet.label.found.basename": {
     "other": "File name"
