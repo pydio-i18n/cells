@@ -1,6 +1,6 @@
 {
   "title": {
-    "other": "Data Import"
+    "other": "데이터 가져오기"
   },
   "legend": {
     "other": "Import tool from Pydio 8"
@@ -57,7 +57,7 @@
     "other": "관리자 비밀번호"
   },
   "step.connection.button.connect": {
-    "other": "Connect"
+    "other": "연결"
   },
   "step.meta.title": {
     "other": "Import Metadata"
@@ -99,7 +99,7 @@
     "other": "We do not want to let you alone in the dark and the Pydio team offers a one-shot paying service to help you perform this migration on the open source version. Please contact our sales services if you wish to get help from a Pydio expert."
   },
   "step.disclaimer.support": {
-    "other": "Contact Support"
+    "other": "지원팀에 문의하기"
   },
   "step.disclaimer.quote": {
     "other": "Ask for a quote"
