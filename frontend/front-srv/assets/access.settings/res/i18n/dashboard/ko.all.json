@@ -1,12 +1,12 @@
 {
   "cont.btn.fb": {
-    "other": "Follow us"
+    "other": "팔로우 하세요"
   },
   "cont.btn.github": {
     "other": "Github Star"
   },
   "cont.btn.tw": {
-    "other": "Twitter"
+    "other": "트위터"
   },
   "cont.intro": {
     "other": "Code is available publicly on Github. Do you want to fix a bug, help others in the forum or push the next killer feature? Get involved!\n                            Or show your love on social networks!"
@@ -36,13 +36,13 @@
     "other": "Unique admin dashboard for real-time monitoring of platform usage."
   },
   "ent.btn.contact": {
-    "other": "Contact Sales"
+    "other": "영업팀에 문의"
   },
   "ent.btn.more": {
-    "other": "Learn More"
+    "other": "자세히 알아보기"
   },
   "ent.features": {
-    "other": "Enterprise-oriented features"
+    "other": "엔터프라이즈 지향 기능"
   },
   "ent.features.legend": {
     "other": "Enterprise-ready features : AD/LDAP Connectors, Auditable Logs for compliance, EasyTransfer..."
@@ -60,10 +60,10 @@
     "other": "Discover Pydio Cells Enterprise"
   },
   "ent.upgrade": {
-    "other": "Upgrade now!"
+    "other": "업그레이드 하세요!"
   },
   "ent.upgrade.legend": {
-    "other": "In-app upgrade Cells Enterprise (license required)"
+    "other": "인앱 업그레이드 Cells 엔터프라이즈 (라이센스 필수)"
   },
   "welc.btn.advanced": {
     "other": "고급"
@@ -72,13 +72,13 @@
     "other": "매개 변수 정보"
   },
   "welc.btn.start": {
-    "other": "Getting Started"
+    "other": "시작하기"
   },
   "welc.btn.users": {
-    "other": "Users"
+    "other": "사용자"
   },
   "welc.btn.ws": {
-    "other": "Workspaces"
+    "other": "작업공간"
   },
   "welc.guide": {
     "other": "If you don't know where to start, the Administrator Guide is definitely a good read!"
@@ -93,39 +93,39 @@
     "other": "The place to administrate and monitor the activity of your platform"
   },
   "welc.title": {
-    "other": "Welcome to Pydio Cells v4"
+    "other": "Pydio Cells v4에 오신 것을 환영합니다."
   },
   "card.quick-access": {
-    "other": "Quick Access"
+    "other": "퀵 액세스"
   },
   "card.quick-access.add": {
     "other": "바로가기 추가"
   },
   "card.update.current": {
-    "other": "Software Version"
+    "other": "소프트웨어 버전"
   },
   "card.update.no-updates": {
-    "other": "Software is up-to-date"
+    "other": "소프트웨어가 최신 상태임"
   },
   "card.update.new-version": {
-    "other": "A new version is available"
+    "other": "새로운 버전을 사용할 수 있습니다."
   },
   "recentLogs.title": {
-    "other": "Last Events"
+    "other": "최신 이벤트"
   },
   "recentLogs.errors": {
-    "other": "Errors"
+    "other": "오류"
   },
   "recentLogs.emptyState": {
-    "other": "No activity found"
+    "other": "활동을 찾을 수 없습니다."
   },
   "recentLogs.more": {
     "other": "모든 활동"
   },
   "graph.files": {
-    "other": "Files Activity"
+    "other": "파일 활동"
   },
   "graph.connections": {
-    "other": "Web Connections"
+    "other": "웹 연결"
   }
 }
