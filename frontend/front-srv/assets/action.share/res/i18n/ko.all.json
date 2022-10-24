@@ -174,7 +174,7 @@
     "other": "Security"
   },
   "148": {
-    "other": "(Optional)"
+    "other": "(선택사항)"
   },
   "149": {
     "other": "Leave 0 for no limit"
@@ -516,7 +516,7 @@
     "other": "셀 삭제"
   },
   "249": {
-    "other": "Contents"
+    "other": "내용"
   },
   "25": {
     "other": "No limit"
@@ -672,7 +672,7 @@
     "other": "Set a label and a short description"
   },
   "37": {
-    "other": "Confirm"
+    "other": "확인"
   },
   "38": {
     "other": "Watch this folder content"
@@ -696,7 +696,7 @@
     "other": "A user of %s is sharing a folder with you"
   },
   "44": {
-    "other": "%s Share"
+    "other": "%s 공유"
   },
   "45": {
     "other": "Send Invitation"
@@ -717,7 +717,7 @@
     "other": "You are not allowed to access this data"
   },
   "49": {
-    "other": "create user"
+    "other": "사용자 생성"
   },
   "5": {
     "other": "password"
