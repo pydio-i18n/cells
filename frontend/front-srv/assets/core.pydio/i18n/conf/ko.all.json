@@ -99,13 +99,13 @@
     "other": "Comma-separated list of specific folders to hide"
   },
   "Command Line": {
-    "other": "Command Line"
+    "other": "커맨드 라인"
   },
   "Command-line Active": {
-    "other": "Command-line Active"
+    "other": "커맨드 라인 활성"
   },
   "Command-line PHP": {
-    "other": "Command-line PHP"
+    "other": "커맨드 라인 PHP"
   },
   "Common URI to access the shares. Please READ THE DOC to safely use this feature.": {
     "other": "Common URI to access the shares. Please READ THE DOC to safely use this feature."
