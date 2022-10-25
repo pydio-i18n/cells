@@ -39,25 +39,25 @@
     "other": "Downloads"
   },
   "21": {
-    "other": "Yes"
+    "other": "예"
   },
   "22": {
-    "other": "No"
+    "other": "아니오"
   },
   "23": {
     "other": "Successfully deleted %s files."
   },
   "24": {
-    "other": "Nothing to delete."
+    "other": "삭제할 것이 없습니다."
   },
   "25": {
     "other": "만료된 것 지우기"
   },
   "26": {
-    "other": "Delete expired shared files."
+    "other": "만료된 공유 파일 삭제"
   },
   "27": {
-    "other": "Owner"
+    "other": "소유자"
   },
   "28": {
     "other": "Files shared for direct download, either protected by a password or not."
