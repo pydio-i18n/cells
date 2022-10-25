@@ -275,6 +275,12 @@
   "ds.editor.storage.s3.bucket": {
     "other": "버킷명"
   },
+  "ds.editor.storage.s3.endpoint.type": {
+    "other": "Endpoint Type"
+  },
+  "ds.editor.storage.s3.signatureVersion": {
+    "other": "Signature Version"
+  },
   "ds.editor.storage.s3.endpoint.amazon": {
     "other": "아마존 S3"
   },
