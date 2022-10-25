@@ -57,13 +57,13 @@
     "other": "복사하는 동안 알 수 없는 에러가 발생했습니다!"
   },
   "115": {
-    "other": "The file has been saved successfully"
+    "other": "파일이 성공적으로 저장되었습니다."
   },
   "116": {
     "other": "파일"
   },
   "117": {
-    "other": "The folder"
+    "other": "폴더"
   },
   "118": {
     "other": "복수 파일 다운로드"
@@ -72,28 +72,28 @@
     "other": "다운로드할 각각의 파일을 클릭하세요."
   },
   "12": {
-    "other": "GIF picture"
+    "other": "GIF 사진"
   },
   "120": {
-    "other": "You are not allowed to delete the whole arborescence!"
+    "other": "전체 가지를 삭제하는 것이 허용되지 않았습니다."
   },
   "121": {
     "other": "이미지 파일 "
   },
   "122": {
-    "other": "Recycle Bin"
+    "other": "휴지통"
   },
   "123": {
-    "other": "has been moved to the "
+    "other": "이동되었습니다. "
   },
   "124": {
     "other": "기존의 파일을 덮어 쓰시겠습니까?"
   },
   "125": {
-    "other": "A file/folder with that name already exists (names are case insensitive). Please choose another one!"
+    "other": "해당 이름을 가진 파일/폴더가 이미 존재합니다(이름은 대소문자를 구분하지 않습니다). 다른 이름을 선택하십시오!"
   },
   "126": {
-    "other": "Thumbnails"
+    "other": "썸네일"
   },
   "127": {
     "other": "Size"
@@ -558,10 +558,10 @@
     "other": "Overwrite"
   },
   "264": {
-    "other": "Skip"
+    "other": "건너뛰기"
   },
   "265": {
-    "other": "Files"
+    "other": "파일"
   },
   "266": {
     "other": "B"
@@ -570,25 +570,25 @@
     "other": "생성"
   },
   "268": {
-    "other": "Create a new table"
+    "other": "새 테이블 만들기"
   },
   "269": {
-    "other": "Structure"
+    "other": "구조"
   },
   "27": {
     "other": "업로드"
   },
   "270": {
-    "other": "Edit table structure"
+    "other": "테이블 구조 편집"
   },
   "271": {
-    "other": "Drop"
+    "other": "버리기"
   },
   "272": {
-    "other": "Drop open table"
+    "other": "열린 테이블 버리기"
   },
   "273": {
-    "other": "Insert"
+    "other": "삽입"
   },
   "274": {
     "other": "Insert a new record"
@@ -618,13 +618,13 @@
     "other": "업로드 제한"
   },
   "282": {
-    "other": "Size per File"
+    "other": "파일당 크기"
   },
   "283": {
-    "other": "Total Size"
+    "other": "전체 크기"
   },
   "284": {
-    "other": "Files Number"
+    "other": "파일 수"
   },
   "285": {
     "other": "Cannot find user, please try again.\\n Make sure your Caps Lock is not engaged!"
@@ -636,10 +636,10 @@
     "other": "File Permissions"
   },
   "288": {
-    "other": "User"
+    "other": "사용자"
   },
   "289": {
-    "other": "Group"
+    "other": "그룹"
   },
   "29": {
     "other": "생성"
@@ -648,34 +648,34 @@
     "other": "전체"
   },
   "291": {
-    "other": "Apply recursively?"
+    "other": "재귀적으로 처리하겠습니까?"
   },
   "292": {
-    "other": "Share"
+    "other": "공유"
   },
   "293": {
-    "other": "Create a public link to this file"
+    "other": "이 파일에 공용 링크를 생성"
   },
   "294": {
     "other": "Link time expiration (in days) and password (leave empty if no password)."
   },
   "295": {
-    "other": "Expiration"
+    "other": "만료"
   },
   "296": {
-    "other": "Copy the URL below:"
+    "other": "아래의 URL주소를 복사"
   },
   "297": {
-    "other": "New User"
+    "other": "새 사용자"
   },
   "298": {
-    "other": "Create a new user"
+    "other": "새 사용자 만들기"
   },
   "299": {
-    "other": "Workspaces"
+    "other": "작업공간"
   },
   "3": {
-    "other": "Type"
+    "other": "형식"
   },
   "30": {
     "other": "Write a name for the directory then click on &quot;Create&quot;"
@@ -705,16 +705,16 @@
     "other": "Fill optional fields"
   },
   "308": {
-    "other": "Generate Link"
+    "other": "링크 생성"
   },
   "309": {
-    "other": "Generate"
+    "other": "생성"
   },
   "31": {
-    "other": "You must select a file"
+    "other": "파일을 선택하세요."
   },
   "310": {
-    "other": "Options"
+    "other": "옵션"
   },
   "311": {
     "other": "파일이 추가되면 자동적으로 업로드"
@@ -723,16 +723,16 @@
     "other": "업로더 옵션"
   },
   "313": {
-    "other": "Compress..."
+    "other": "압축..."
   },
   "314": {
-    "other": "Compress selection to zip..."
+    "other": "선택항목을 zip으로 압축"
   },
   "315": {
-    "other": "Compress selection to"
+    "other": "선택항목을 압축"
   },
   "316": {
-    "other": "View/Edit"
+    "other": "보기/편집"
   },
   "317": {
     "other": "Source Editor"
