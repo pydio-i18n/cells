@@ -84,13 +84,13 @@
     "other": "어디서부터 시작해야 할지 모르겠다면 관리자 안내서를 읽어보는 것이 좋습니다!"
   },
   "welc.intro": {
-    "other": "This is your dashboard for managing Pydio. Using the left menu you can create <a class=\"doc-link\" data-path=\"/data/workspaces\">workspaces</a> and <a class=\"doc-link\" data-path=\"/idm/users\">users</a>,\n                            check all <a class=\"doc-link\" data-path=\"/admin/logs\">events</a> that happened on the platform, and manage <a class=\"doc-link\" data-path=\"/parameters/core\">configurations</a> and <a class=\"doc-link\" data-path=\"/plugins/manager\">plugins</a>."
+    "other": "Pydio 관리를 위한 대시보드입니다. 왼쪽 메뉴를 사용하여 <a class=\"doc-link\" data-path=\"/data/workspaces\">작업공간</a> 및 <a class=\"doc-link\" data-path=\"/idm/users\"> 사용자 </a>를 생성할 수 있습니다.\n플랫폼에서 발생한 모든 <a class=\"doc-link\" data-path=\"/admin/logs\">이벤트</a>를 체크하고  <a class=\"doc-link\" data-path=\"/parameters/core\"> 구성 </a> 및 <a class=\"doc-link\" data-path=\"/plugins/manager\">플러그인</a>을 관리합니다."
   },
   "welc.import": {
-    "other": "If you are currently running a Pydio 8 installation, please be aware that <u>Pydio 8 will be considered End-Of-Life at the end of 2019</u>. You can use the <a class=\"doc-link\" data-path=\"/data/migration\">Import Tool</a> to migrate all data to Pydio Cells."
+    "other": "현재 Pydio 8 설치를 실행 중인 경우 <u> Pydio 8은 2019년 말에 End-Of-Life로 간주됩니다.</u> <a class=\"doc-link\" data-path=\"/data/migration\">가져오기 도구</a>를 사용하여 모든 데이터를 Pydio Cells로 마이그레이션합니다."
   },
   "welc.subtitle": {
-    "other": "The place to administrate and monitor the activity of your platform"
+    "other": "플랫폼의 활동을 관리하고 모니터링하는 장소"
   },
   "welc.title": {
     "other": "Pydio Cells v4에 오신 것을 환영합니다."
