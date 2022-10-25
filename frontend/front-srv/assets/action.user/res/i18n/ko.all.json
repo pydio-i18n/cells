@@ -66,10 +66,10 @@
     "other": "Delegates workspaces created by users."
   },
   "3": {
-    "other": "Shared files"
+    "other": "공유된 파일"
   },
   "30": {
-    "other": "Users created to access the delegated workspaces."
+    "other": "위임된 작업공간에 액세스하기 위해 만든 사용자입니다."
   },
   "31": {
     "other": "설명"
@@ -195,39 +195,39 @@
     "other": "Pick a day of the week"
   },
   "68": {
-    "other": "Monday"
+    "other": "월요일"
   },
   "69": {
-    "other": "Tuesday"
+    "other": "화요일"
   },
   "7": {
-    "other": "Expiration"
+    "other": "만료"
   },
   "70": {
-    "other": "Wednesday"
+    "other": "수요일"
   },
   "71": {
-    "other": "Thursday"
+    "other": "목요일"
   },
   "72": {
-    "other": "Friday"
+    "other": "금요일"
   },
   "73": {
-    "other": "Saturday"
+    "other": "토요일"
   },
   "74": {
-    "other": "Sunday"
+    "other": "일요일"
   },
   "8": {
-    "other": "Elements"
+    "other": "구성요소"
   },
   "9": {
-    "other": "Associated users"
+    "other": "관련 사용자"
   },
   "desc": {
-    "other": "Manage my account preferences, my address book, shared elements, etc."
+    "other": "계정 환경설정, 주소록, 공유 요소 등을 관리"
   },
   "title": {
-    "other": "My Account"
+    "other": "내 계정"
   }
 }
