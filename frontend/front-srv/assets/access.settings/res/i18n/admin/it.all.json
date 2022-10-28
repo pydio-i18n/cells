@@ -389,6 +389,9 @@
   "ds.editor.initFlatFromSnapshot": {
     "other": "Se questo storage è stato usato in precedenza come datasource flat, inizializzatelo da un file di snapshot esistente ( si deve trovare all'interno dello storage)"
   },
+  "ds.editor.foldersShardingPattern": {
+    "other": "By default, all files are stored inside a unique folder. Use a pattern 'N:P:Q' to auto-create sub folders id[:N]/id[:P]/id[:Q]/..."
+  },
   "ds.encryption": {
     "other": "Criptato"
   },
