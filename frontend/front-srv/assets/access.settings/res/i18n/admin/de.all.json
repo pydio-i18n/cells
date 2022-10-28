@@ -390,7 +390,7 @@
     "other": "Wenn dieser Speicher zuvor als flache Datenquelle verwendet wurde, initialisieren Sie ihn anhand einer vorhandenen Snapshot-Datei (die sich innerhalb des Speichers befinden muss)"
   },
   "ds.editor.foldersShardingPattern": {
-    "other": "By default, all files are stored inside a unique folder. Use a pattern 'N:P:Q' to auto-create sub folders id[:N]/id[:P]/id[:Q]/..."
+    "other": "Standardmäßig werden alle Dateien in einem einzigen Ordner gespeichert. Verwenden Sie ein Muster 'N:P:Q', um automatisch Unterordner zu erstellen, z.B.: id[:N]/id[:P]/id[:P]/id[:Q]/..."
   },
   "ds.encryption": {
     "other": "Verschlüsselt"
