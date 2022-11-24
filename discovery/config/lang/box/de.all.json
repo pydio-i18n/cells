@@ -444,16 +444,16 @@
     "other": "Geplanter Auslöser"
   },
   "triggerFilterQuery.IsApiHook": {
-    "other": "Triggered by Webhook"
+    "other": "Ausgelöst per Webhook"
   },
   "triggerFilterQuery.ApiHookSlug": {
-    "other": "Webhook Api Slug"
+    "other": "Webhook API Slug"
   },
   "triggerFilterQuery.RunParameterName": {
     "other": "Run Parameter Name"
   },
   "triggerFilterQuery.RunParameterValue": {
-    "other": "Run Parameter Value"
+    "other": "Run Parameter Wert"
   },
   "triggerFilterQuery.IsManual": {
     "other": "Manuell Trigger"
