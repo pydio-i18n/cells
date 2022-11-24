@@ -444,16 +444,16 @@
     "other": "Programmation calendaire"
   },
   "triggerFilterQuery.IsApiHook": {
-    "other": "Triggered by Webhook"
+    "other": "Déclenché par Webhook"
   },
   "triggerFilterQuery.ApiHookSlug": {
-    "other": "Webhook Api Slug"
+    "other": "Segment de l'API du hook"
   },
   "triggerFilterQuery.RunParameterName": {
-    "other": "Run Parameter Name"
+    "other": "Nom du paramètre de Flow"
   },
   "triggerFilterQuery.RunParameterValue": {
-    "other": "Run Parameter Value"
+    "other": "Valeur du paramètre de Flow"
   },
   "triggerFilterQuery.IsManual": {
     "other": "Manuel"
