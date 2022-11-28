@@ -156,10 +156,10 @@
     "other": "Hôte de la requête"
   },
   "contextMetaField.RequestHost": {
-    "other": "Request Host"
+    "other": "Hôte (complet) de la requête"
   },
   "contextMetaField.RequestPort": {
-    "other": "Request Port"
+    "other": "Port de la requête"
   },
   "contextMetaField.RequestMethod": {
     "other": "Méthode de la requête"
