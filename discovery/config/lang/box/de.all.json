@@ -156,10 +156,10 @@
     "other": "Request Hostname"
   },
   "contextMetaField.RequestHost": {
-    "other": "Request Host"
+    "other": "Anfrage Host"
   },
   "contextMetaField.RequestPort": {
-    "other": "Request Port"
+    "other": "Anfrage Port"
   },
   "contextMetaField.RequestMethod": {
     "other": "Request Methode"
