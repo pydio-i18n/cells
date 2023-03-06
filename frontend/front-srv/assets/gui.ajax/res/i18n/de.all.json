@@ -198,27 +198,27 @@
     "other": "Audios"
   },
   "fastsearch.quick-jump.title": {
-    "other": "Quick Jump"
+    "other": "Schnellzugriff"
   },
   "fastsearch.quick-jump.legend": {
-    "other": "Hit [Enter] to jump, add a trailing [/] to search inside children, [Esc] to Close"
+    "other": "Drücken Sie [Enter] zum Springen, fügen Sie ein nachgestelltes [/] hinzu, um innerhalb der Kinder zu suchen, und [Esc] zum Schließen"
   },
   "fastsearch.quick-move.title": {
-    "other": "Quick Move"
+    "other": "Schnell bewegen"
   },
   "fastsearch.quick-move.target-error": {
-    "other": "Cannot move to this target!"
+    "other": "Dieses Ziel kann nicht angefahren werden!"
   },
   "fastsearch.quick-move.legend": {
-    "other": "Hit [Enter] to move %s selected items to target, [Esc] to Close"
+    "other": "Drücken Sie [Enter], um %s ausgewählte Elemente ins Ziel zu verschieben, [Esc] zum schließen"
   },
   "fastsearch.quick-copy.title": {
-    "other": "Quick Copy"
+    "other": "Schnellkopie"
   },
   "fastsearch.quick-copy.target-error": {
-    "other": "Cannot copy to this target!"
+    "other": "Kann nicht auf dieses Ziel kopieren!"
   },
   "fastsearch.quick-copy.legend": {
-    "other": "Hit [Enter] to copy %s selected items to target, [Esc] to Close"
+    "other": "Drücken Sie [Enter], um %s ausgewählte Elemente in das Ziel zu kopieren, [Esc] zum Schließen"
   }
 }
