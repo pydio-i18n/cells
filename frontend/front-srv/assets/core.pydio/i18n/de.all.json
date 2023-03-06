@@ -2373,19 +2373,19 @@
     "other": "Speichern"
   },
   "searchengine.query.action.save-new": {
-    "other": "Save Query"
+    "other": "Speichern"
   },
   "searchengine.query.action.clear": {
     "other": "Löschen der Warteschlange"
   },
   "searchengine.query.action.clear-all": {
-    "other": "Clear All"
+    "other": "Alles löschen"
   },
   "searchengine.query.action.delete": {
     "other": "Löschen"
   },
   "searchengine.query.action.delete-confirm": {
-    "other": "Delete this saved query?"
+    "other": "Diese gespeicherte Anfrage löschen?"
   },
   "searchengine.query.save-label": {
     "other": "Label eingeben"
@@ -2394,22 +2394,22 @@
     "other": "Name/Inhalt"
   },
   "searchengine.complete.group.saved": {
-    "other": "Saved Searches"
+    "other": "Gespeicherte Suchanfragen"
   },
   "searchengine.complete.group.history": {
-    "other": "Last Searches"
+    "other": "Letzte Suchanfragen"
   },
   "searchengine.complete.group.suggestion": {
-    "other": "Advanced Suggestion"
+    "other": "Erweiterter Vorschlag"
   },
   "searchengine.complete.suggestion.intro": {
-    "other": "Do you mean"
+    "other": "Meinen Sie"
   },
   "searchengine.complete.suggestion.remain": {
-    "other": "containing '%s'"
+    "other": "enthält '%s'"
   },
   "searchengine.complete.activefilters": {
-    "other": "Filters:"
+    "other": "Filtern:"
   },
   "chat.load-older": {
     "other": "Ältere Einträge"
