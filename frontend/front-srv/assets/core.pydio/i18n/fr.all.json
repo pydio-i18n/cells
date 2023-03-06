@@ -2373,19 +2373,19 @@
     "other": "Enregistrer"
   },
   "searchengine.query.action.save-new": {
-    "other": "Save Query"
+    "other": "Sauvegarder"
   },
   "searchengine.query.action.clear": {
     "other": "Vider"
   },
   "searchengine.query.action.clear-all": {
-    "other": "Clear All"
+    "other": "Tout effacer"
   },
   "searchengine.query.action.delete": {
     "other": "Supprimer"
   },
   "searchengine.query.action.delete-confirm": {
-    "other": "Delete this saved query?"
+    "other": "Supprimer cette recherche enregistrée ?"
   },
   "searchengine.query.save-label": {
     "other": "Entrez un nom"
@@ -2394,22 +2394,22 @@
     "other": "Nom/Contenu"
   },
   "searchengine.complete.group.saved": {
-    "other": "Saved Searches"
+    "other": "Recherches enregistrées"
   },
   "searchengine.complete.group.history": {
-    "other": "Last Searches"
+    "other": "Dernières recherches"
   },
   "searchengine.complete.group.suggestion": {
-    "other": "Advanced Suggestion"
+    "other": "Suggestions avancées"
   },
   "searchengine.complete.suggestion.intro": {
-    "other": "Do you mean"
+    "other": "Voulez-vous dire"
   },
   "searchengine.complete.suggestion.remain": {
-    "other": "containing '%s'"
+    "other": "contenant '%s'"
   },
   "searchengine.complete.activefilters": {
-    "other": "Filters:"
+    "other": "Filtres :"
   },
   "chat.load-older": {
     "other": "Messages précédents"
