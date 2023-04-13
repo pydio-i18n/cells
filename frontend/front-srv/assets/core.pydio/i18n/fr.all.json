@@ -1308,7 +1308,7 @@
     "other": "Métadonnées"
   },
   "49": {
-    "other": "Cancel"
+    "other": "Annuler"
   },
   "490": {
     "other": "Plage de dates"
@@ -1680,7 +1680,7 @@
     "other": "Ajouter un utilisateur"
   },
   "599-a": {
-    "other": "All Results"
+    "other": "Tous les résultats"
   },
   "6": {
     "other": "Renommer"
@@ -2325,7 +2325,7 @@
     "other": "Sélectionner"
   },
   "addressbook.pick.multiple": {
-    "other": "Multiple Selection"
+    "other": "Sélection multiple"
   },
   "confirm.dialog.title": {
     "other": "Confirmer"
@@ -2367,25 +2367,25 @@
     "other": "Chercher dans..."
   },
   "searchengine.share.title": {
-    "other": "Shared"
+    "other": "Partage"
   },
   "searchengine.share.hint": {
-    "other": "No status"
+    "other": "Pas de filtre"
   },
   "searchengine.share.option.link": {
-    "other": "Public Link"
+    "other": "Liens Publics"
   },
   "searchengine.share.option.cell": {
-    "other": "Shared in Cell"
+    "other": "Dans une Cell"
   },
   "searchengine.share.option.any": {
-    "other": "Public Link or Cell"
+    "other": "Liens ou Cell"
   },
   "searchengine.format.title": {
     "other": "Format"
   },
   "searchengine.format.file-only": {
-    "other": "Files Only"
+    "other": "Fichiers Seulement"
   },
   "searchengine.advanced-filter.tooltip": {
     "other": "Filtres avancés"
