@@ -663,7 +663,10 @@
     "other": "Surveiller"
   },
   "34": {
-    "other": "Utilisateur existant ou nouveau"
+    "other": "Select or Create Users"
+  },
+  "34b": {
+    "other": "Select Users"
   },
   "35": {
     "other": "Libellé"
@@ -964,5 +967,8 @@
   },
   "link.secure.maxdownloads": {
     "other": "%d téléchargements"
+  },
+  "minisite.toggle.theme": {
+    "other": "Toggle Dark/Light Theme"
   }
 }
