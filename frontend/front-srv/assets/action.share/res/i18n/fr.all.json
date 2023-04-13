@@ -663,10 +663,10 @@
     "other": "Surveiller"
   },
   "34": {
-    "other": "Select or Create Users"
+    "other": "Sélectionner ou Créer des utilisateurs"
   },
   "34b": {
-    "other": "Select Users"
+    "other": "Sélectionner des utilisateurs"
   },
   "35": {
     "other": "Libellé"
@@ -969,6 +969,6 @@
     "other": "%d téléchargements"
   },
   "minisite.toggle.theme": {
-    "other": "Toggle Dark/Light Theme"
+    "other": "Changer l'affichage en mode sombre/clair"
   }
 }
