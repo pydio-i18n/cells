@@ -30,7 +30,7 @@
     "other": "Nettoyer les fichiers orphelins après 24h"
   },
   "Jobs.Default.CleanExpiredACLs": {
-    "other": "Clean expired ACLs after 10 days"
+    "other": "Supprimer les ACL expirées après 10 jours"
   },
   "Jobs.User.Compress": {
     "other": "Compression de la selection..."
