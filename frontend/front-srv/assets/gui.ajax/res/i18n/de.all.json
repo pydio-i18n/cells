@@ -243,16 +243,16 @@
     "other": "Drücken Sie [Enter], um %s ausgewählte Elemente in das Ziel zu kopieren, [Esc] zum Schließen"
   },
   "wslist-options.title": {
-    "other": "Display Options"
+    "other": "Anzeigeoptionen"
   },
   "wslist-options.show-masked": {
-    "other": "Show masked items"
+    "other": "Maskierte Elemente anzeigen"
   },
   "wslist-options.merge-workspaces": {
-    "other": "Merge workspaces and cells"
+    "other": "Arbeitsbereiche und Zellen zusammenlegen"
   },
   "wslist-options.own-cells-first": {
-    "other": "Cells created by me first"
+    "other": "Von mir erstellte Zellen zuerst"
   },
   "leftrail.buttons.home": {
     "other": "Home"
@@ -261,6 +261,6 @@
     "other": "Directory"
   },
   "leftrail.buttons.all-files": {
-    "other": "All Files"
+    "other": "Alle Dateien"
   }
 }
