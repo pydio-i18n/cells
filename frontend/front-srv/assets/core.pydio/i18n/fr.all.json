@@ -1326,7 +1326,7 @@
     "other": "Hier"
   },
   "494t": {
-    "other": "Tomorrow"
+    "other": "Demain"
   },
   "495": {
     "other": "Semaine dernière"
@@ -2442,7 +2442,7 @@
     "other": "Filtres :"
   },
   "searchengine.complete.activefilters-edit": {
-    "other": "Click to modify"
+    "other": "Cliquer pour modifier"
   },
   "chat.load-older": {
     "other": "Messages précédents"
