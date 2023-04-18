@@ -243,24 +243,24 @@
     "other": "Appuyez sur [Entrée] pour copier les %s éléments sélectionnés vers la cible, [Esc] pour Fermer"
   },
   "wslist-options.title": {
-    "other": "Display Options"
+    "other": "Options d'affichage"
   },
   "wslist-options.show-masked": {
-    "other": "Show masked items"
+    "other": "Afficher les éléments masqués"
   },
   "wslist-options.merge-workspaces": {
-    "other": "Merge workspaces and cells"
+    "other": "Fusionner les Workspaces et les Cells"
   },
   "wslist-options.own-cells-first": {
-    "other": "Cells created by me first"
+    "other": "Cells créées par moi en premier"
   },
   "leftrail.buttons.home": {
-    "other": "Home"
+    "other": "Accueil"
   },
   "leftrail.buttons.directory": {
-    "other": "Directory"
+    "other": "Annuaire"
   },
   "leftrail.buttons.all-files": {
-    "other": "All Files"
+    "other": "Fichiers"
   }
 }
