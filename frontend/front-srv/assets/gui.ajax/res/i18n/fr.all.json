@@ -241,5 +241,26 @@
   },
   "fastsearch.quick-copy.legend": {
     "other": "Appuyez sur [Entrée] pour copier les %s éléments sélectionnés vers la cible, [Esc] pour Fermer"
+  },
+  "wslist-options.title": {
+    "other": "Display Options"
+  },
+  "wslist-options.show-masked": {
+    "other": "Show masked items"
+  },
+  "wslist-options.merge-workspaces": {
+    "other": "Merge workspaces and cells"
+  },
+  "wslist-options.own-cells-first": {
+    "other": "Cells created by me first"
+  },
+  "leftrail.buttons.home": {
+    "other": "Home"
+  },
+  "leftrail.buttons.directory": {
+    "other": "Directory"
+  },
+  "leftrail.buttons.all-files": {
+    "other": "All Files"
   }
 }
