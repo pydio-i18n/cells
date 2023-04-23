@@ -54,7 +54,7 @@
     "other": "Als neuer Workspace"
   },
   "114": {
-    "other": "Ordner als neue Arbeitsumgebung freigeben"
+    "other": "Diesen Ordner mit internen Benutzern teilen"
   },
   "115": {
     "other": "Als öffentlicher Link"
@@ -114,19 +114,19 @@
     "other": "Momentan sind keine Dateien oder Ordner freigegeben."
   },
   "132": {
-    "other": "Arbeitsumgebung"
+    "other": "Workspace"
   },
   "133": {
     "other": "Als öffentlicher Link"
   },
   "134": {
-    "other": "Als Arbeitsumgebung"
+    "other": "Als Workspace"
   },
   "135": {
     "other": "Ordner wird als öffentlicher Link freigegeben."
   },
   "136": {
-    "other": "Ordner wird als Arbeitsumgebung freigegeben."
+    "other": "Der Ordnerinhalt wird für die Anwendungsbenutzer als neuer Workspace angezeigt"
   },
   "137": {
     "other": "Die ausgewählte Datei als öffentlichen Link freigeben"
