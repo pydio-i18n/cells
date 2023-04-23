@@ -15,7 +15,7 @@
     "other": "Freigegebene Ordner"
   },
   "103": {
-    "other": "Alle Ordner als Arbeitsumgebung oder öffentlichen Link freigegeben."
+    "other": "Alle Ordner als Workspaces oder öffentlichen Link freigegeben."
   },
   "104": {
     "other": "Zeige ersten Link, es existieren %s weitere"
@@ -51,7 +51,7 @@
     "other": "Diese Seite freigeben"
   },
   "113": {
-    "other": "Als Arbeitsumgebung"
+    "other": "Als neuer Workspace"
   },
   "114": {
     "other": "Ordner als neue Arbeitsumgebung freigeben"
