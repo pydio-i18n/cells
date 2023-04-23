@@ -138,10 +138,10 @@
     "other": "Sie haben diesen Ordner als einen öffentlichen Link freigegeben, welcher jedoch aktuell inaktiv ist (ausgelaufen)."
   },
   "139": {
-    "other": "Sie haben diesen Ordner als eine Arbeitsumgebung freigegeben."
+    "other": "Sie haben diesen Ordner als Workspace mit Anwendungsbenutzern geteilt"
   },
   "139b": {
-    "other": "Sie haben diesen Ordner als Arbeitsumgebung mit Systemnutzern freigegeben, welche jedoch aktuell inaktiv ist (ausgelaufen)."
+    "other": "Sie haben diesen Ordner als Workspace mit Anwendungsbenutzern geteilt, welche jedoch aktuell inaktiv ist (ausgelaufen)."
   },
   "14": {
     "other": "Nein"
@@ -279,7 +279,7 @@
     "other": "Zurücksetzen"
   },
   "18": {
-    "other": "Ordner ist als neue Arbeitsumgebung freigegeben"
+    "other": "Ordner ist als neuer Workspace freigegeben"
   },
   "180": {
     "other": "Liste leeren"
@@ -312,7 +312,7 @@
     "other": "Als öffentlicher Link freigeben"
   },
   "19": {
-    "other": "Optionen der freigegebene Arbeitsumgebung wurden erfolgreich geändert"
+    "other": "Optionen der freigegebene Workspace wurden erfolgreich geändert"
   },
   "190": {
     "other": "Aktivieren Sie den Haken um eine öffentliche Freigabe zu erstellen. Im Tab \"Benutzerverwaltung\" kann die Datei für Pydio-Benutzer freigegeben werden."
