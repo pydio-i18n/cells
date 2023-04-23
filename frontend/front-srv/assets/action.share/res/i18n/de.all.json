@@ -357,7 +357,7 @@
     "other": "Andere Benutzer mit Zugriff auf diese Arbeitsumgebung können die Freigabe bearbeiten, nicht aber löschen oder beenden."
   },
   "202": {
-    "other": "Andere Benutzer mit Zugriff auf diese Arbeitsumgebung können die Freigabe bearbeiten. Sie sind nicht der Eigentümer dieser Freigabe und können diese daher nicht löschen oder beenden."
+    "other": "Andere Benutzer mit Zugriff auf diesen Workspace können die Freigabe bearbeiten. Sie sind nicht der Eigentümer dieser Freigabe und können diese daher nicht löschen oder beenden"
   },
   "203": {
     "other": "Eigentümer ändern"
@@ -372,7 +372,7 @@
     "other": "Ändern auf ... (Kennung)"
   },
   "206": {
-    "other": "Freigaben sind standardmäßig privat. Durch aktivieren dieser Checkbox kann die Freigabe auch durch Benutzer mit Zugriff auf diese Arbeitsumgebung eingesehen und geändert werden."
+    "other": "Freigaben sind standardmäßig privat. Durch Aktivieren dieser Checkbox kann die Freigabe auch durch Benutzer mit Zugriff auf diesen Workspace eingesehen und geändert werden."
   },
   "207": {
     "other": "Benutzer eines Remote-Systems"
