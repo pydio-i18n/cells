@@ -915,7 +915,7 @@
     "other": "Aus dieser Cell entfernen"
   },
   "cell.visibility.advanced": {
-    "other": "Mit dieser erweiterten Funktion können Sie entscheiden, wer die Eigenschaften dieser Cell bearbeiten darf (Recht zum Hinzufügen / Entfernen von Benutzern und zum Hinzufügen / Entfernen von Ordnern im Stammverzeichnis der Cell). Verwenden Sie stattdessen den \"Teilen mit\" Tab, um die tatsächlichen Zugriffe auf die Daten zu verwalten."
+    "other": "Mit dieser erweiterten Funktion können Sie entscheiden, wer die Eigenschaften dieser Cell bearbeiten darf (Recht zum Hinzufügen/Entfernen von Benutzern und zum Hinzufügen/Entfernen von Ordnern im Stammverzeichnis der Cell). Verwenden Sie stattdessen den \"Geteilt mit\" Tab, um die tatsächlichen Zugriffe auf die Daten zu verwalten."
   },
   "cell.add.existing-or-new": {
     "other": "Zur existierenden o. neuen Cell hinzufügen"
