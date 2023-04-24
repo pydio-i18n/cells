@@ -42,13 +42,13 @@
     "other": "Freigeben"
   },
   "110b": {
-    "other": "Freigeben"
+    "other": "Teilen"
   },
   "111": {
     "other": "Diese Seite freigeben"
   },
   "112": {
-    "other": "Diese Seite freigeben"
+    "other": "Diese Seite teilen"
   },
   "113": {
     "other": "Als neuer Workspace"
@@ -384,7 +384,7 @@
     "other": "Adresse"
   },
   "21": {
-    "other": "Gültigkeit (Tage): "
+    "other": "Läuft aus am"
   },
   "210": {
     "other": "Benutzerkennung"
