@@ -1095,7 +1095,7 @@
     "other": "Workspace wirklich löschen? Das Löschen kann nicht rückgängig gemacht werden."
   },
   "425": {
-    "other": "Die Arbeitsumgebung wurde erstellt und zu ihrer Liste der Arbeitsumgebungen hinzugefügt. Falls es wieder gelöscht werden soll, zunächst zu einer anderer Arbeitsumgebung wechseln und dann auf das rote Kreuz neben dem Namen der Arbeitsumgebung klicken."
+    "other": "Der Workspace ist nun erstellt und wurde Ihrer Workspace-Liste hinzugefügt. Wenn Sie ihn entfernen möchten, stellen Sie sicher, dass Sie zu einem anderen Workspace wechseln und klicken Sie dann auf das rote Kreuz neben dem Workspace-Namen."
   },
   "426": {
     "other": "Es ist ein Fehler beim Erstellen der Arbeitsumgebung aufgetreten."
