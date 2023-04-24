@@ -84,7 +84,7 @@
     "other": "Zugriffskontrolle"
   },
   "35": {
-    "other": "Zugriff auf Arbeitsumgebungen"
+    "other": "Zugriff auf Workspaces"
   },
   "36": {
     "other": "Zugriff auf Hauptseiten"
@@ -96,13 +96,13 @@
     "other": "Anwendungs-Parameter"
   },
   "39": {
-    "other": "Arbeitsumgebungs-Übergreifend"
+    "other": "Alle Workspace-Parameter"
   },
   "4": {
     "other": "Wert Leeren"
   },
   "40": {
-    "other": "Arbeitsumgebungs-Parameter"
+    "other": "Workspace-spezifische Parameter"
   },
   "41": {
     "other": "Anwendungs-Parameter"
