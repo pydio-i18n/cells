@@ -624,7 +624,7 @@
     "other": "Wählen Sie aus, mit wem Sie Daten teilen möchten"
   },
   "279": {
-    "other": "Cell jetzt erstellen!"
+    "other": "Jetzt erstellen!"
   },
   "28": {
     "other": "Ordner teilen"
@@ -903,7 +903,7 @@
     "other": "Alle freigegebenen Elemente"
   },
   "cells.create.advanced": {
-    "other": "Fügen Sie Benutzer/Daten"
+    "other": "Benutzer/Daten"
   },
   "cells.create.buttons.separator": {
     "other": "oder"
