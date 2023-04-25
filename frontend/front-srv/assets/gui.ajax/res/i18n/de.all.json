@@ -249,10 +249,10 @@
     "other": "Maskierte Elemente anzeigen"
   },
   "wslist.action.mask": {
-    "other": "Mask"
+    "other": "Masken"
   },
   "wslist.action.unmask": {
-    "other": "Unmask"
+    "other": "Demaskieren"
   },
   "wslist-options.merge-workspaces": {
     "other": "Workspaces und Cells zusammenlegen"
@@ -270,9 +270,9 @@
     "other": "Alle Dateien"
   },
   "leftrail.buttons.theme.light": {
-    "other": "Light Mode"
+    "other": "Hellmodus"
   },
   "leftrail.buttons.theme.dark": {
-    "other": "Dark Mode"
+    "other": "Dunkelmodus"
   }
 }
