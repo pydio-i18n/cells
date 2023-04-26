@@ -189,22 +189,22 @@
     "other": "Tous les fichiers"
   },
   "file.temporary-etag.flag": {
-    "other": "Incomplete"
+    "other": "Partiel"
   },
   "file.temporary-etag.tooltip": {
-    "other": "This file is being uploaded (or the upload has failed)."
+    "other": "Fichier en cours de téléchargement (ou le téléchargement a échoué)."
   },
   "mimegroup.byextension": {
-    "other": "By File Extension..."
+    "other": "Par extension..."
   },
   "mimegroup.word": {
-    "other": "Word documents"
+    "other": "Documents Word"
   },
   "mimegroup.spreadsheet": {
-    "other": "Spreadsheets"
+    "other": "Feuilles de calcul"
   },
   "mimegroup.presentation": {
-    "other": "Presentations"
+    "other": "Présentations"
   },
   "mimegroup.pdf": {
     "other": "PDFs"
