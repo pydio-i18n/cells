@@ -1308,7 +1308,7 @@
     "other": "Métadonnées"
   },
   "49": {
-    "other": "Annuler"
+    "other": "Cancel"
   },
   "490": {
     "other": "Plage de dates"
@@ -1324,6 +1324,9 @@
   },
   "494": {
     "other": "Hier"
+  },
+  "494t": {
+    "other": "Demain"
   },
   "495": {
     "other": "Semaine dernière"
@@ -1678,6 +1681,9 @@
   },
   "599": {
     "other": "Ajouter un utilisateur"
+  },
+  "599-a": {
+    "other": "All Results"
   },
   "6": {
     "other": "Renommer"
@@ -2321,6 +2327,9 @@
   "addressbook.pick.group": {
     "other": "Sélectionner"
   },
+  "addressbook.pick.multiple": {
+    "other": "Sélection multiple"
+  },
   "confirm.dialog.title": {
     "other": "Confirmer"
   },
@@ -2360,6 +2369,27 @@
   "searchengine.scope.title": {
     "other": "Chercher dans..."
   },
+  "searchengine.share.title": {
+    "other": "Partagés"
+  },
+  "searchengine.share.hint": {
+    "other": "Aucun statut"
+  },
+  "searchengine.share.option.link": {
+    "other": "Lien public"
+  },
+  "searchengine.share.option.cell": {
+    "other": "Partagé dans une cell"
+  },
+  "searchengine.share.option.any": {
+    "other": "Lien public ou cell"
+  },
+  "searchengine.format.title": {
+    "other": "Format"
+  },
+  "searchengine.format.file-only": {
+    "other": "Fichiers uniquement"
+  },
   "searchengine.advanced-filter.tooltip": {
     "other": "Filtres avancés"
   },
@@ -2373,43 +2403,46 @@
     "other": "Enregistrer"
   },
   "searchengine.query.action.save-new": {
-    "other": "Save Query"
+    "other": "Enregistrer la requête"
   },
   "searchengine.query.action.clear": {
     "other": "Vider"
   },
   "searchengine.query.action.clear-all": {
-    "other": "Clear All"
+    "other": "Tout effacer"
   },
   "searchengine.query.action.delete": {
     "other": "Supprimer"
   },
   "searchengine.query.action.delete-confirm": {
-    "other": "Delete this saved query?"
+    "other": "Supprimer cette requête enregistrée ?"
   },
   "searchengine.query.save-label": {
     "other": "Entrez un nom"
   },
   "searchengine.field.basenameOrContent": {
-    "other": "Name/Content"
+    "other": "Nom/Contenu"
   },
   "searchengine.complete.group.saved": {
-    "other": "Saved Searches"
+    "other": "Recherches enregistrées"
   },
   "searchengine.complete.group.history": {
-    "other": "Last Searches"
+    "other": "Dernières recherches"
   },
   "searchengine.complete.group.suggestion": {
-    "other": "Advanced Suggestion"
+    "other": "Suggestions avancées"
   },
   "searchengine.complete.suggestion.intro": {
-    "other": "Do you mean"
+    "other": "Voulez-vous dire"
   },
   "searchengine.complete.suggestion.remain": {
-    "other": "containing '%s'"
+    "other": "contenant '%s'"
   },
   "searchengine.complete.activefilters": {
-    "other": "Filters:"
+    "other": "Filtres :"
+  },
+  "searchengine.complete.activefilters-edit": {
+    "other": "Cliquer pour modifier"
   },
   "chat.load-older": {
     "other": "Messages précédents"
@@ -2427,9 +2460,9 @@
     "other": "Aller au dossier"
   },
   "action.copymove.recent": {
-    "other": "Recent Locations"
+    "other": "Emplacements récents"
   },
   "action.copymove.root": {
-    "other": "Top Folder"
+    "other": "Répertoire principal"
   }
 }
