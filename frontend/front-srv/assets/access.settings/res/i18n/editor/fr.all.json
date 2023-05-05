@@ -192,7 +192,7 @@
     "other": "Annuaire"
   },
   "workspace.statics.directory.description": {
-    "other": "Show address book full page (used by Mui3 Theme)"
+    "other": "Affichage du carnet d'adresses comme Page (utilisé par le thème Mui3)"
   },
   "workspace.statics.settings.title": {
     "other": "Console d'administration"
