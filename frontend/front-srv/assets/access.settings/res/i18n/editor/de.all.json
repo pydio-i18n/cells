@@ -189,10 +189,10 @@
     "other": "Startseite nach dem Login angezeigt"
   },
   "workspace.statics.directory.title": {
-    "other": "Directory"
+    "other": "Verzeichnis"
   },
   "workspace.statics.directory.description": {
-    "other": "Show address book full page (used by Mui3 Theme)"
+    "other": "Adressbuch im Vollbild anzeigen (verwendet vom Mui3-Theme)"
   },
   "workspace.statics.settings.title": {
     "other": "Administrationsoberfläche"
