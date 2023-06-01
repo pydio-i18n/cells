@@ -23,6 +23,8 @@ package grpc
 import (
 	"context"
 	"fmt"
+	grpc2 "google.golang.org/grpc"
+	"strings"
 	"time"
 
 	"go.uber.org/zap"
@@ -89,6 +91,8 @@ func InitRoles(ctx context.Context) error {
 			Acls: []*idm.ACL{
 				{RoleID: "ROOT_GROUP", Action: permissions.AclRead, WorkspaceID: common.IdmWsInternalHomepageID, NodeID: "homepage-ROOT"},
 				{RoleID: "ROOT_GROUP", Action: permissions.AclWrite, WorkspaceID: common.IdmWsInternalHomepageID, NodeID: "homepage-ROOT"},
+				{RoleID: "ROOT_GROUP", Action: permissions.AclRead, WorkspaceID: common.IdmWsInternalDirectoryID, NodeID: "directory-ROOT"},
+				{RoleID: "ROOT_GROUP", Action: permissions.AclWrite, WorkspaceID: common.IdmWsInternalDirectoryID, NodeID: "directory-ROOT"},
 				{RoleID: "ROOT_GROUP", Action: &idm.ACLAction{Name: "parameter:core.conf:lang", Value: string(langJ)}, WorkspaceID: scopeAll},
 			},
 		},
@@ -113,11 +117,13 @@ func InitRoles(ctx context.Context) error {
 			},
 			Acls: []*idm.ACL{
 				{RoleID: "EXTERNAL_USERS", Action: permissions.AclDeny, WorkspaceID: common.IdmWsInternalHomepageID, NodeID: "homepage-ROOT"},
+				{RoleID: "EXTERNAL_USERS", Action: permissions.AclDeny, WorkspaceID: common.IdmWsInternalDirectoryID, NodeID: "directory-ROOT"},
 				{RoleID: "EXTERNAL_USERS", Action: &idm.ACLAction{Name: "action:action.share:share", Value: "false"}, WorkspaceID: scopeAll},
 				{RoleID: "EXTERNAL_USERS", Action: &idm.ACLAction{Name: "action:action.share:share-edit-shared", Value: "false"}, WorkspaceID: scopeAll},
 				{RoleID: "EXTERNAL_USERS", Action: &idm.ACLAction{Name: "action:action.share:open_user_shares", Value: "false"}, WorkspaceID: scopeAll},
 				{RoleID: "EXTERNAL_USERS", Action: &idm.ACLAction{Name: "action:action.user:open_address_book", Value: "false"}, WorkspaceID: scopeAll},
 				{RoleID: "EXTERNAL_USERS", Action: &idm.ACLAction{Name: "parameter:core.auth:USER_CREATE_CELLS", Value: "false"}, WorkspaceID: scopeAll},
+				{RoleID: "EXTERNAL_USERS", Action: &idm.ACLAction{Name: "parameter:core.auth:USER_CREATE_USERS", Value: "false"}, WorkspaceID: scopeAll},
 			},
 		},
 		{
@@ -241,4 +247,39 @@ func UpgradeTo12(ctx context.Context) error {
 	}
 
 	return e
+}
+
+func UpgradeTo4199(ctx context.Context) error {
+	newACLs := []*idm.ACL{
+		{RoleID: "ROOT_GROUP", Action: permissions.AclRead, WorkspaceID: common.IdmWsInternalDirectoryID, NodeID: "directory-ROOT"},
+		{RoleID: "ROOT_GROUP", Action: permissions.AclWrite, WorkspaceID: common.IdmWsInternalDirectoryID, NodeID: "directory-ROOT"},
+	}
+	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
+	for _, acl := range newACLs {
+		_, e := aclClient.CreateACL(ctx, &idm.CreateACLRequest{ACL: acl}, grpc2.WaitForReady(true))
+		if e != nil {
+			return e
+		}
+	}
+	log.Logger(ctx).Info("Added new ACLs for root group to access 'directory' workspace")
+	return nil
+}
+
+func UpgradeTo421(ctx context.Context) error {
+	newACLs := []*idm.ACL{
+		{RoleID: "EXTERNAL_USERS", Action: &idm.ACLAction{Name: "parameter:core.auth:USER_CREATE_USERS", Value: "false"}, WorkspaceID: permissions.FrontWsScopeAll},
+	}
+	aclClient := idm.NewACLServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceAcl))
+	for _, acl := range newACLs {
+		_, e := aclClient.CreateACL(ctx, &idm.CreateACLRequest{ACL: acl}, grpc2.WaitForReady(true))
+		if e != nil {
+			if strings.Contains(strings.ToLower(e.Error()), "duplicate") {
+				log.Logger(ctx).Info("Ignoring new ACL for external users role, it's already there")
+				return nil
+			}
+			return e
+		}
+	}
+	log.Logger(ctx).Info("Added new ACLs for external users")
+	return nil
 }

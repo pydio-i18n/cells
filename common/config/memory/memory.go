@@ -10,11 +10,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mitchellh/copystructure"
 	"github.com/r3labs/diff/v3"
-	"google.golang.org/protobuf/proto"
 
 	"github.com/pydio/cells/v4/common/config"
 	"github.com/pydio/cells/v4/common/utils/configx"
+	"github.com/pydio/cells/v4/common/utils/std"
 )
 
 var (
@@ -53,26 +54,39 @@ func (o *URLOpener) OpenURL(ctx context.Context, u *url.URL) (config.Store, erro
 }
 
 type memory struct {
-	v    configx.Values
-	snap configx.Values
+	v configx.Values
 
-	opts      []configx.Option
-	receivers []*receiver
+	opts            []configx.Option
+	receiversLocker *sync.RWMutex
+	receivers       []*receiver
 
 	reset chan bool
 	timer *time.Timer
 
-	locker *sync.RWMutex
+	internalLocker *sync.RWMutex
+	externalLocker *sync.RWMutex
 }
 
-func New(opts ...configx.Option) config.Store {
+func New(opt ...configx.Option) config.Store {
+	opts := configx.Options{}
+	for _, o := range opt {
+		o(&opts)
+	}
+
+	internalLocker := opts.RWMutex
+	if internalLocker == nil {
+		internalLocker = &sync.RWMutex{}
+		opt = append(opt, configx.WithLock(internalLocker))
+	}
+
 	m := &memory{
-		v:      configx.New(opts...),
-		opts:   opts,
-		locker: &sync.RWMutex{},
-		reset:  make(chan bool),
-		timer:  time.NewTimer(timeout),
-		snap:   configx.New(opts...),
+		v:               configx.New(opt...),
+		opts:            opt,
+		internalLocker:  internalLocker,
+		externalLocker:  &sync.RWMutex{},
+		receiversLocker: &sync.RWMutex{},
+		reset:           make(chan bool),
+		timer:           time.NewTimer(timeout),
 	}
 
 	go m.flush()
@@ -81,72 +95,45 @@ func New(opts ...configx.Option) config.Store {
 }
 
 func (m *memory) flush() {
+	snap := configx.New(m.opts...)
 	for {
 		select {
 		case <-m.reset:
 			m.timer.Stop()
 			m.timer = time.NewTimer(timeout)
 		case <-m.timer.C:
-			patch, err := diff.Diff(m.snap.Interface(), m.v.Interface())
+			m.internalLocker.RLock()
+			clone := std.DeepClone(m.v.Interface())
+			m.internalLocker.RUnlock()
+
+			patch, err := diff.Diff(snap.Interface(), clone, diff.AllowTypeMismatch(true))
 			if err != nil {
 				continue
 			}
 
-			snap := configx.New(m.opts...)
-			if err := snap.Set(Clone(m.v.Interface())); err != nil {
+			copy, _ := copystructure.Copy(clone)
+			if err := snap.Set(copy); err != nil {
 				continue
 			}
-
-			m.snap = snap
 
 			for _, op := range patch {
 				var updated []*receiver
 
+				m.receiversLocker.RLock()
 				for _, r := range m.receivers {
 					if err := r.call(op); err == nil {
 						updated = append(updated, r)
 					}
 				}
+				m.receiversLocker.RUnlock()
 
+				m.receiversLocker.Lock()
 				m.receivers = updated
+				m.receiversLocker.Unlock()
 			}
 
 		}
 	}
-}
-
-type Cloneable interface {
-	Clone() interface{}
-}
-
-func Clone[T ~map[string]any | ~[]any | any](t T) T {
-
-	switch vv := (interface{})(t).(type) {
-	case map[string]any:
-		var ret = make(map[string]any, len(vv))
-		for k, v := range vv {
-			ret[k] = Clone(v)
-		}
-
-		return (interface{})(ret).(T)
-	case []any:
-		var ret = make([]any, len(vv))
-		for _, v := range vv {
-			ret = append(ret, v)
-		}
-
-		return (interface{})(ret).(T)
-	case any:
-		if msg, ok := vv.(proto.Message); ok {
-			return (interface{})(proto.Clone(msg)).(T)
-		}
-
-		if c, ok := vv.(Cloneable); ok {
-			return (c.Clone()).(T)
-		}
-	}
-
-	return t
 }
 
 func (m *memory) update() {
@@ -190,11 +177,11 @@ func (m *memory) Save(string, string) error {
 }
 
 func (m *memory) Lock() {
-	m.locker.Lock()
+	m.externalLocker.Lock()
 }
 
 func (m *memory) Unlock() {
-	m.locker.Unlock()
+	m.externalLocker.Unlock()
 }
 
 func (m *memory) Watch(opts ...configx.WatchOption) (configx.Receiver, error) {
@@ -218,7 +205,9 @@ func (m *memory) Watch(opts ...configx.WatchOption) (configx.Receiver, error) {
 		changesOnly: o.ChangesOnly,
 	}
 
+	m.receiversLocker.Lock()
 	m.receivers = append(m.receivers, r)
+	m.receiversLocker.Unlock()
 
 	return r, nil
 }

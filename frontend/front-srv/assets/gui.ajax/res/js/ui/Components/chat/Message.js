@@ -22,7 +22,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Pydio from 'pydio'
 import UserAvatar from '../users/avatar/UserAvatar'
-import {Paper, FlatButton} from 'material-ui'
+import {FlatButton} from 'material-ui'
 const {PydioContextConsumer, moment} = Pydio.requireLib('boot');
 import DOMUtils from 'pydio/util/dom'
 import Markdown from 'react-markdown'
@@ -40,7 +40,7 @@ class Message extends React.Component {
 
         const styles = {
             date: {
-                color: 'rgba(0,0,0,.23)',
+                opacity: .53,
                 textAlign: 'center',
                 display: 'flex',
                 margin: '5px 0',
@@ -48,7 +48,8 @@ class Message extends React.Component {
             dateLine: {
                 flex: 1,
                 margin: '10px 20px',
-                borderBottom: '1px solid #eee'
+                borderBottom: '1px solid',
+                opacity: .3
             },
             loader: {
                 paddingTop: 8,
@@ -79,7 +80,6 @@ class Message extends React.Component {
                 right: 0,
                 cursor: 'pointer',
                 fontSize: 16,
-                color: '#424242',
                 opacity:0,
                 transition: DOMUtils.getBeziersTransition(),
             }
@@ -117,7 +117,7 @@ class Message extends React.Component {
         }
         let text = (
             <div style={textStyle}>
-                {deleteBox} <Markdown className={"chat-message-md"} source={message.Message}/>
+                {deleteBox} <Markdown className={"chat-message-md"} source={message.Message} skipHtml={true}/>
             </div>
         );
         if(!sameAuthor){
@@ -126,7 +126,7 @@ class Message extends React.Component {
                     <div>
                         <UserAvatar labelStyle={styles.commentTitle} pydio={pydio} displayLabel={true} displayAvatar={false} userId={message.Author}/>
                     </div>
-                    <div>{deleteBox}<Markdown className={"chat-message-md"} source={message.Message}/></div>
+                    <div>{deleteBox}<Markdown className={"chat-message-md"} source={message.Message} skipHtml={true}/></div>
                 </div>
             )
         }

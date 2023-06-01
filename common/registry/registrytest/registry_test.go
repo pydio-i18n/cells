@@ -122,6 +122,23 @@ func TestServiceEtcd(t *testing.T) {
 	doTestAdd(t, reg)
 }
 
+func doRegister(ctx context.Context, m registry.Registry) chan registry.Item {
+	ch := make(chan registry.Item)
+
+	go func() {
+		for {
+			select {
+			case item := <-ch:
+				m.Register(item)
+			case <-ctx.Done():
+				return
+			}
+		}
+	}()
+
+	return ch
+}
+
 func doTestAdd(t *testing.T, m registry.Registry) {
 	Convey("Add services to the registry", t, func() {
 		numNodes := 100
@@ -136,6 +153,8 @@ func doTestAdd(t *testing.T, m registry.Registry) {
 		var createdItemIds []string
 		var updatedItemIds []string
 		var deletedItemIds []string
+
+		ch := doRegister(context.Background(), m)
 
 		go func() {
 			for {
@@ -169,7 +188,7 @@ func doTestAdd(t *testing.T, m registry.Registry) {
 		var nodes []registry.Node
 		for i := 0; i < numNodes; i++ {
 			node := util.CreateNode()
-			m.Register(node)
+			ch <- node
 			nodeIds = append(nodeIds, node.ID())
 			nodes = append(nodes, node)
 		}
@@ -179,10 +198,12 @@ func doTestAdd(t *testing.T, m registry.Registry) {
 		var servers []server.Server
 		for i := 0; i < numServers; i++ {
 			srv := grpc.New(ctx, grpc.WithName("mock"))
-			m.Register(srv)
+
+			ch <- srv
 
 			serverIds = append(serverIds, srv.ID())
 			servers = append(servers, srv)
+
 		}
 
 		var services []service.Service
@@ -192,6 +213,9 @@ func doTestAdd(t *testing.T, m registry.Registry) {
 				service.Name(fmt.Sprintf("test %d", i)),
 				service.Context(ctx),
 			)
+
+			ch <- svc
+
 			ids = append(ids, svc.ID())
 			services = append(services, svc)
 		} //
@@ -228,7 +252,7 @@ func doTestAdd(t *testing.T, m registry.Registry) {
 
 						if ms, ok := node.(registry.MetaSetter); ok {
 							ms.SetMetadata(meta)
-							m.Register(ms.(registry.Item))
+							ch <- ms.(registry.Item)
 						}
 
 						nodeUpdates = append(nodeUpdates, node.ID())
@@ -252,7 +276,7 @@ func doTestAdd(t *testing.T, m registry.Registry) {
 
 						if ms, ok := srv.(registry.MetaSetter); ok {
 							ms.SetMetadata(meta)
-							m.Register(ms.(registry.Item))
+							ch <- ms.(registry.Item)
 						}
 
 						srvUpdates = append(srvUpdates, srv.ID())
@@ -276,7 +300,7 @@ func doTestAdd(t *testing.T, m registry.Registry) {
 
 						if ms, ok := svc.(registry.MetaSetter); ok {
 							ms.SetMetadata(meta)
-							m.Register(ms.(registry.Item))
+							ch <- ms.(registry.Item)
 						}
 
 						svcUpdates = append(svcUpdates, svc.ID())

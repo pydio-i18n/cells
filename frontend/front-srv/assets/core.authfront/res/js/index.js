@@ -23,8 +23,10 @@ import Pydio from 'pydio'
 import PydioApi from "pydio/http/api"
 import createReactClass from 'create-react-class'
 import {muiThemeable, getMuiTheme, darkBaseTheme} from 'material-ui/styles';
-import {CircularProgress, TextField, MuiThemeProvider, FlatButton, Checkbox, FontIcon, MenuItem, SelectField, IconButton, IconMenu} from 'material-ui';
+import {CircularProgress, TextField, MuiThemeProvider, FlatButton, Checkbox, FontIcon, MenuItem, IconButton, IconMenu} from 'material-ui';
 import {TokenServiceApi, RestResetPasswordRequest} from 'cells-sdk';
+const {ValidPassword} = Pydio.requireLib('form')
+const {Loader} = Pydio.requireLib('boot')
 
 const LanguagePicker = (props) => {
     const items = [];
@@ -91,9 +93,15 @@ let LoginDialogMixin = {
         }else{
             login = this.refs.login.getValue();
         }
+        const pass = this.refs.password.getValue()
+        const mm = pydio.MessageHash
+        if(!login || !pass) {
+            this.setState({errorId:mm[passwordOnly?'gui.user.10':'gui.user.9'], loading: false})
+            return Promise.resolve()
+        }
+
         const {loginLanguage} = this.state;
         sessionStorage.removeItem('loginLanguage');
-
         return restClient.sessionLoginWithCredentials(login, this.refs.password.getValue(), loginLanguage)
             .then(() => this.dismiss())
             .then(() => restClient.getOrUpdateJwt().then(() => pydio.loadXmlRegistry(null, null, null)).catch(() => {}))
@@ -105,7 +113,7 @@ let LoginDialogMixin = {
                 } else if(e && e.message){
                     this.setState({errorId: e.message});
                 } else {
-                    this.setState({errorId: 'Login failed!'})
+                    this.setState({errorId: mm['gui.user.11']})
                 }
             })
     }
@@ -515,10 +523,10 @@ const ResetPasswordDialog = createReactClass({
                         floatingLabelText={mess['gui.user.4']}
                         onChange={this.onUserIdChange.bind(this)}
                     />
-                    <PydioForm.ValidPassword
+                    <ValidPassword
                         className="blurDialogTextField"
                         onChange={this.onPassChange.bind(this)}
-                        attributes={{name:'password',label:mess[198]}}
+                        attributes={{name:'password',label:mess[198], direction:'column'}}
                         value={passValue}
                         dialogField={true}
                     />
@@ -533,7 +541,7 @@ const ResetPasswordDialog = createReactClass({
             );
 
         }else{
-            return <PydioReactUI.Loader/>
+            return <Loader/>
         }
 
     }

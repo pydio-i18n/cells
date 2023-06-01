@@ -23,6 +23,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"math"
 	"strings"
 	"sync"
@@ -34,6 +35,7 @@ import (
 	logcore "github.com/pydio/cells/v4/broker/log/grpc"
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
+	"github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/log"
 	proto "github.com/pydio/cells/v4/common/proto/jobs"
 	log2 "github.com/pydio/cells/v4/common/proto/log"
@@ -474,7 +476,7 @@ func (j *JobsHandler) DetectStuckTasks(ctx context.Context, request *proto.Detec
 	if since > 0 {
 		durations = append(durations, time.Duration(since)*time.Second)
 	}
-	tasks, e := j.CleanStuckTasks(ctx, log.TasksLogger(ctx), durations...)
+	tasks, e := j.CleanStuckTasks(ctx, false, log.TasksLogger(ctx), durations...)
 	if e != nil {
 		return nil, e
 	}
@@ -493,7 +495,7 @@ func (j *JobsHandler) DetectStuckTasks(ctx context.Context, request *proto.Detec
 }
 
 // CleanStuckTasks may be run at startup to find orphan tasks and their corresponding logs, then find orphan logs as well
-func (j *JobsHandler) CleanStuckTasks(ctx context.Context, logger log.ZapLogger, duration ...time.Duration) ([]*proto.Task, error) {
+func (j *JobsHandler) CleanStuckTasks(ctx context.Context, serverStart bool, logger log.ZapLogger, duration ...time.Duration) ([]*proto.Task, error) {
 
 	if tt, er := j.store.FindOrphans(); er != nil {
 
@@ -516,14 +518,20 @@ func (j *JobsHandler) CleanStuckTasks(ctx context.Context, logger log.ZapLogger,
 
 	var fixed []*proto.Task
 
-	if running, er := j.cleanStuckByStatus(ctx, logger, proto.TaskStatus_Running, duration...); er == nil {
+	if running, shouldRetry, er := j.cleanStuckByStatus(ctx, serverStart, logger, proto.TaskStatus_Running, false, duration...); er == nil {
 		fixed = append(fixed, running...)
+		if shouldRetry {
+			logger.Info("Some tasks were killed, waiting 5s before retrying clean operation")
+			<-time.After(5 * time.Second)
+			rr, _, _ := j.cleanStuckByStatus(ctx, serverStart, logger, proto.TaskStatus_Running, true, duration...)
+			fixed = append(fixed, rr...)
+		}
 	} else {
 		logger.Error("Error while cleaning Running tasks", zap.Error(er))
 	}
 
-	if len(duration) == 0 { // This is launched at startup, clean other stuck statuses as well
-		if paused, er := j.cleanStuckByStatus(ctx, logger, proto.TaskStatus_Paused); er == nil {
+	if serverStart { // This is launched at startup, clean other stuck statuses as well
+		if paused, _, er := j.cleanStuckByStatus(ctx, serverStart, logger, proto.TaskStatus_Paused, false); er == nil {
 			fixed = append(fixed, paused...)
 		} else {
 			logger.Error("Error while cleaning paused tasks", zap.Error(er))
@@ -533,37 +541,98 @@ func (j *JobsHandler) CleanStuckTasks(ctx context.Context, logger log.ZapLogger,
 	return fixed, nil
 }
 
-func (j *JobsHandler) cleanStuckByStatus(ctx context.Context, logger log.ZapLogger, status proto.TaskStatus, duration ...time.Duration) ([]*proto.Task, error) {
+func (j *JobsHandler) cleanStuckByStatus(ctx context.Context, serverStart bool, logger log.ZapLogger, status proto.TaskStatus, isRetry bool, duration ...time.Duration) ([]*proto.Task, bool, error) {
+
+	tcli := proto.NewTaskServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceTasks))
+	shouldRetry := false
+	var currentTaskID string
+	if mm, ok := metadata.FromContextRead(ctx); ok {
+		currentTaskID = mm[servicecontext.ContextMetaTaskUuid]
+	}
+	if !isRetry {
+		if len(duration) > 0 {
+			logger.Info("Clean tasks with status " + status.String() + " and check duration " + duration[0].String())
+		} else {
+			logger.Info("Clean tasks with status " + status.String())
+		}
+	}
 
 	var fixedTasks []*proto.Task
 	res, done, err := j.store.ListTasks("", status)
 	defer close(res)
 	if err != nil {
-		return fixedTasks, err
+		return fixedTasks, false, err
 	}
 	for {
 		select {
 
 		case <-done:
 			for _, t := range fixedTasks {
-				log.Logger(ctx).Info("Setting task " + t.ID + " in error status as it was saved as running")
 				_ = j.store.PutTask(t)
 			}
-			return fixedTasks, nil
+			return fixedTasks, shouldRetry, nil
 
 		case t := <-res:
+
+			// Ignore if current task is in fact this task !
+			if t.ID == currentTaskID {
+				logger.Info("Ignore my own task!")
+				break
+			}
+
+			// Load corresponding job
+			job, e := j.store.GetJob(t.JobID, proto.TaskStatus_Unknown)
+			if e != nil {
+				break
+			}
+
+			// AutoRestart Jobs Case
+			if job.AutoRestart {
+				if serverStart {
+					logger.Warn("Should now restart " + job.Label)
+					// Mark as complete, not Error
+					t.Status = proto.TaskStatus_Interrupted
+					t.StatusMessage = "Task restarted"
+					t.EndTime = int32(time.Now().Unix())
+					fixedTasks = append(fixedTasks, t)
+				} else {
+					logger.Info("Ignoring running task for " + job.Label + " as it is not stuck ")
+				}
+				break
+			}
+
+			var runningTimeOvertime bool
+			if status == proto.TaskStatus_Running && !serverStart {
+				if len(duration) > 0 && t.StartTime > 0 && job.Timeout == "" {
+					check := duration[0]
+					startTime := time.Unix(int64(t.StartTime), 0)
+					runningTimeOvertime = time.Since(startTime) > check
+				}
+				if !runningTimeOvertime {
+					break
+				}
+			}
+
+			// Send a stop signal to kill the task and flag a retry is required
+			if !serverStart && !isRetry && runningTimeOvertime {
+				logger.Info("Kill task for job " + job.Label + " as it is running for more than " + duration[0].String() + " (no timeout set)")
+				_, e := tcli.Control(ctx, &proto.CtrlCommand{
+					Cmd:    proto.Command_Stop,
+					JobId:  t.JobID,
+					TaskId: t.ID,
+				})
+				if e != nil {
+					logger.Warn("Could not send Stop command on stuck running task", zap.Error(e))
+				}
+				shouldRetry = true
+				break
+			}
+			// Finally forcefully change task status
 			t.Status = proto.TaskStatus_Error
 			t.StatusMessage = "Task stuck"
 			t.EndTime = int32(time.Now().Unix())
-			if len(duration) > 0 && t.StartTime > 0 {
-				check := duration[0]
-				startTime := time.Unix(int64(t.StartTime), 0)
-				if time.Since(startTime) > check {
-					fixedTasks = append(fixedTasks, t)
-				}
-			} else {
-				fixedTasks = append(fixedTasks, t)
-			}
+			logger.Info("Setting task " + job.Label + "/" + t.ID + " in error status as it was saved as running")
+			fixedTasks = append(fixedTasks, t)
 		}
 	}
 
@@ -590,4 +659,19 @@ func (j *JobsHandler) CleanDeadUserJobs(ctx context.Context) error {
 		}
 	}
 	return nil
+}
+
+// ListAutoRestartJobs filters the list of restartable jobs
+func (j *JobsHandler) ListAutoRestartJobs(ctx context.Context) (out []*proto.Job, er error) {
+	jj, e := j.store.ListJobs("", false, false, proto.TaskStatus_Unknown, nil)
+	if e != nil {
+		return nil, e
+	}
+	for jo := range jj {
+		if !jo.AutoRestart {
+			continue
+		}
+		out = append(out, jo)
+	}
+	return
 }
