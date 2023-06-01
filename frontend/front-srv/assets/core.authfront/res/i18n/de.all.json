@@ -27,9 +27,9 @@
     "other": "Bitte geben Sie Ihren Benutzernamen und Passwort ein"
   },
   "10": {
-    "other": "Please enter the password you received"
+    "other": "Bitte geben Sie das Passwort ein, das Sie erhalten haben"
   },
   "11": {
-    "other": "Login failed: could not recognise your username or password"
+    "other": "Anmeldung fehlgeschlagen: Ihr Benutzername oder Ihr Passwort konnte nicht erkannt werden"
   }
 }
