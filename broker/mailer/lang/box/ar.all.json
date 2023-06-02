@@ -1,159 +1,159 @@
 {
   "Mail.Main.Copyright": {
-    "other": "File Sharing platform proudly powered by Pydio"
+    "other": "منصة مشاركة الملفات بفخر مدعومة من Pydio"
   },
   "Mail.Main.Troubleshoot": {
-    "other": "If the {ACTION}-button is not working for you, just copy and paste the URL below into your web browser."
+    "other": "إذا كان الزر {ACTION}لا يعمل لديك، فقط قم بنسخ وصق الرابط أدناه في متصفح الويب الخاص بك."
   },
   "Mail.Main.Greeting": {
     "other": "مرحبا"
   },
   "Mail.Main.Signature": {
-    "other": "Sincerely"
+    "other": "مع خالص التقدير،"
   },
   "Mail.ResetPassword.Subject": {
-    "other": "Reset password requested for {{.Configs.Title}}"
+    "other": "إعادة تعيين كلمة المرور المطلوبة لـ {{.Configs.Title}}"
   },
   "Mail.ResetPassword.Intros": {
-    "other": "A reset password request has been received for your account on {{.Configs.Title}}."
+    "other": "تم استلام طلب إعادة تعيين كلمة المرور للحساب الخاص بك في {{.Configs.Title}}."
   },
   "Mail.ResetPassword.Outros": {
-    "other": "If you did not trigger this request, you can safely ignore that. If you keep receiving emails like this, please alert your administrator as it may be a security issue."
+    "other": "إذا لم تقم بتفعيل هذا الطلب، يمكنك تجاهل ذلك بأمان. إذا كنت تواصل تلقي رسائل البريد الإلكتروني هكذا، يرجى تنبيه المسؤول الخاص بك لأنه قد يكون مشكلة أمنية."
   },
   "Mail.ResetPassword.LinkLabel": {
     "other": "إعادة تعيين كلمة مروري"
   },
   "Mail.ResetPassword.LinkInstructions": {
-    "other": "Click to reset your password"
+    "other": "انقر لإعادة تعيين كلمة المرور"
   },
   "Mail.ResetPasswordDone.Subject": {
-    "other": "Your password on {{.Configs.Title}} has been reset"
+    "other": "تم إعادة تعيين كلمة المرور الخاصة بك في {{.Configs.Title}}"
   },
   "Mail.ResetPasswordDone.Intros": {
-    "other": "Following your reset password request, your password has been successfully reset for {{.Configs.Title}}."
+    "other": "بخصوص طلب إعادة تعيين كلمة المرور الخاصة بك، تم إعادة تعيين كلمة المرور الخاصة بك بنجاح لـ {{.Configs.Title}}."
   },
   "Mail.ResetPasswordDone.Outros": {
-    "other": "If you did not trigger this operation, please alert your administrator immediately as this may be a security issue."
+    "other": "إذا لم تقم بطلب هذه العملية، يرجى تنبيه المسؤول الخاص بك على الفور لأن هذا قد يكون مشكلة أمنية."
   },
   "Mail.Digest.Subject": {
-    "other": "Your {{.Configs.Title}} notifications"
+    "other": "الإشعارات {{.Configs.Title}} الخاصة بك"
   },
   "Mail.Digest.Intros": {
-    "other": "Below is a summary of all the notifications your received on {{.Configs.Title}}"
+    "other": "فيما يلي ملخص لجميع الإشعارات التي تلقيتها في {{.Configs.Title}}"
   },
   "Mail.DM.Subject": {
-    "other": "{{.TplData.From}} sent you a message!"
+    "other": "أرسل لك {{.TplData.From}} رسالة!"
   },
   "Mail.DM.Intros": {
-    "other": "{{.TplData.From}} sent you a message using {{.Configs.Title}} application: {{.TplData.Message}}"
+    "other": "أرسل لك {{.TplData.From}} رسالة باستخدام {{.Configs.Title}} تطبيق: {{.TplData.Message}}"
   },
   "Mail.Welcome.Subject": {
-    "other": "Welcome on {{.Configs.Title}}"
+    "other": "مرحبا بكم في {{.Configs.Title}}"
   },
   "Mail.Welcome.Intros": {
-    "other": "An account has been created for you on {{.Configs.Title}}. \n Your login is {{.TplData.Login}}{{if .TplData.Password}} and your password is {{.TplData.Password}}. You may change it at first login{{end}}."
+    "other": "تم إنشاء حساب لك في {{.Configs.Title}}. \n معلومات تسجيل الدخول الخاصة بك {{.TplData.Login}}{{if .TplData.Password}} وكلمة المرور الخاصة بك {{.TplData.Password}}. يمكنك تغييرها عند تسجيل الدخول لأول مرة{{end}}."
   },
   "Mail.Welcome.LinkInstructions": {
-    "other": "Click to login"
+    "other": "انقر لتسجيل الدخول"
   },
   "Mail.Welcome.LinkLabel": {
-    "other": "Login to {{.Configs.Title}}"
+    "other": "تسجيل الدخول إلى {{.Configs.Title}}"
   },
   "Mail.Welcome.Outros": {
-    "other": "{{.Configs.Title}} File Sharing platform is used by your team to efficiently collaborate on documents. We're glad to have you on board!"
+    "other": "{{.Configs.Title}} منصة مشاركة الملفات مستخدمة من قبل فريقك للتعاون بكفاءة على الوثائق. نحن سعداء بوجودك على متنك!"
   },
   "Mail.Invite.Subject": {
-    "other": "{{.TplData.Inviter}} has invited you on {{.Configs.Title}}"
+    "other": "قام {{.TplData.Inviter}} بدعوتك في {{.Configs.Title}}"
   },
   "Mail.Invite.Intros": {
-    "other": "An account has been created for you by {{.TplData.Inviter}} on {{.Configs.Title}}. \n Your login is {{.TplData.Login}}{{if .TplData.Password}} and your password is {{.TplData.Password}}. You may change it the first time you log in{{end}}."
+    "other": "تم إنشاء حساب لك من قبل {{.TplData.Inviter}} في {{.Configs.Title}}. \n معلومات تسجيل الدخول الخاصة بك هي {{.TplData.Login}}{{if .TplData.Password}} وكلمة المرور الخاصة بك هي {{.TplData.Password}}. يمكنك تغييرها لأول مرة تقوم بتسجيل الدخول إلى{{end}}."
   },
   "Mail.Invite.LinkInstructions": {
-    "other": "Click to login"
+    "other": "انقر لتسجيل الدخول"
   },
   "Mail.Invite.LinkLabel": {
-    "other": "Login to {{.Configs.Title}}"
+    "other": "تسجيل الدخول إلى {{.Configs.Title}}"
   },
   "Mail.Invite.Outros": {
-    "other": "{{.Configs.Title}} File Sharing platform is used by {{.TplData.Inviter}} team to efficiently collaborate on documents. We're glad to have you on board!"
+    "other": "{{.Configs.Title}} منصة مشاركة الملفات مستخدمة من قبل فريق {{.TplData.Inviter}} للتعاون بكفاءة على الوثائق. نحن سعداء بوجودك على متنك!"
   },
   "Mail.Cell.Subject": {
-    "other": "{{.TplData.Inviter}} added you to the cell {{.TplData.Cell}}"
+    "other": "أضافك {{.TplData.Inviter}} إلى الخلية {{.TplData.Cell}}"
   },
   "Mail.Cell.Intros": {
-    "other": "{{.TplData.Inviter}} has included you in the cell {{.TplData.Cell}} on {{.Configs.Title}}! You can start sharing files and folders together and collaborate efficiently."
+    "other": "قام {{.TplData.Inviter}} بتضمينك في الخلية {{.TplData.Cell}} على {{.Configs.Title}}! يمكنك بدء مشاركة الملفات والمجلدات معا والتعاون بكفاءة."
   },
   "Mail.Cell.LinkInstructions": {
-    "other": "Click to open cell"
+    "other": "انقر لفتح الخلية"
   },
   "Mail.Cell.LinkLabel": {
-    "other": "Open {{.TplData.Cell}}"
+    "other": "فتح {{.TplData.Cell}}"
   },
   "Mail.PublicFile.Subject": {
-    "other": "{{.TplData.Inviter}} is sharing a file with you"
+    "other": "{{.TplData.Inviter}} يشارك ملفًا معك"
   },
   "Mail.PublicFile.Intros": {
-    "other": "{{.TplData.Inviter}} is sharing a file with you.\n\n '{{.TplData.Message}}' \n\n {{if .TplData.Expire}}Link will expire on {{.TplData.Expire}}{{end}}\n\n{{if .TplData.MaxDownloads}}Maximum downloads :{{.TplData.MaxDownloads}}{{end}}"
+    "other": "{{.TplData.Inviter}} يشارك ملفًا معك.\n\n '{{.TplData.Message}} \n\n {{if .TplData.Expire}}ستنتهي صلاحية الرابط في {{.TplData.Expire}}{{end}}\n\n{{if .TplData.MaxDownloads}}الحد الأقصى للتنزيلات:{{.TplData.MaxDownloads}}{{end}}"
   },
   "Mail.PublicFile.LinkLabel": {
-    "other": "Open {{.TplData.FileName}}"
+    "other": "فتح {{.TplData.FileName}}"
   },
   "Mail.PublicFile.LinkInstructions": {
-    "other": "Click to preview the file in your browser"
+    "other": "انقر لمعاينة الملف في المتصفح الخاص بك"
   },
   "Mail.PublicFile.Outros": {
-    "other": "{{.Configs.Title}} File Sharing platform is used by {{.TplData.Inviter}} team to efficiently collaborate on documents."
+    "other": "{{.Configs.Title}} منصة مشاركة الملفات مستخدمة من قبل فريق {{.TplData.Inviter}} للتعاون بكفاءة على الوثائق."
   },
   "Mail.PublicFolder.Subject": {
-    "other": "{{.TplData.Inviter}} is sharing a folder with you"
+    "other": "{{.TplData.Inviter}} يشارك مجلداً معك"
   },
   "Mail.PublicFolder.Intros": {
-    "other": "{{.TplData.Inviter}} is sharing a folder with you.\n\n '{{.TplData.Message}}' \n\n {{if .TplData.Expire}}Link will expire on {{.TplData.Expire}}{{end}}\n\n{{if .TplData.MaxDownloads}}Maximum downloads :{{.TplData.MaxDownloads}}{{end}}"
+    "other": "{{.TplData.Inviter}} يشارك مجلد معك.\n\n '{{.TplData.Message}} \n\n {{if .TplData.Expire}}ستنتهي صلاحية الرابط في {{.TplData.Expire}}{{end}}\n\n{{if .TplData.MaxDownloads}}الحد الأقصى للتنزيلات:{{.TplData.MaxDownloads}}{{end}}"
   },
   "Mail.PublicFolder.LinkLabel": {
-    "other": "Open {{.TplData.FolderName}}"
+    "other": "فتح {{.TplData.FolderName}}"
   },
   "Mail.PublicFolder.LinkInstructions": {
-    "other": "Click to preview the documents in your browser"
+    "other": "انقر لمعاينة الملف في المتصفح الخاص بك"
   },
   "Mail.PublicFolder.Outros": {
-    "other": "{{.Configs.Title}} File Sharing platform is used by {{.TplData.Inviter}} team to efficiently collaborate on documents."
+    "other": "{{.Configs.Title}} منصة مشاركة الملفات مستخدمة من قبل فريق {{.TplData.Inviter}} للتعاون بكفاءة على الوثائق."
   },
   "Mail.AdminTestMail.Subject": {
-    "other": "{{.Configs.Title}} is sending you a test email"
+    "other": "{{.Configs.Title}} يرسل لك بريد إلكتروني تجريبي"
   },
   "Mail.AdminTestMail.Intros": {
     "other": "{{.TplData.Message}}"
   },
   "Mail.AdminTestMail.LinkLabel": {
-    "other": "Open Cells"
+    "other": "الخلايا المفتوحة"
   },
   "Mail.AdminTestMail.LinkInstructions": {
-    "other": "Click to open the frontend"
+    "other": "انقر لفتح الواجهة الأمامية"
   },
   "Mail.AdminTestMail.Outros": {
-    "other": "{{.Configs.Title}} File Sharing platform is used by teams to efficiently collaborate on documents."
+    "other": "{{.Configs.Title}} منصة مشاركة الملفات تستخدم من قبل الفرق للتعاون بكفاءة على الوثائق."
   },
   "Mail.Config.Title": {
-    "other": "Mailer"
+    "other": "المرسال"
   },
   "Mail.Config.From.Label": {
-    "other": "Default FROM email address"
+    "other": "عنوان البريد الإلكتروني للمرسل الافتراضي"
   },
   "Mail.Config.From.Description": {
-    "other": "Address to use as default when sending emails. You should use a proper support email instead of no-reply email."
+    "other": "العنوان لاستخدامه كعنوان افتراضي عند إرسال رسائل البريد الإلكتروني. يجب عليك استخدام بريد دعم مناسب بدلاً من البريد الإلكتروني بدون-رد."
   },
   "Mail.Config.FixOutlookDisplay": {
-    "other": "Outlook Clients Fix (disable CSS inlining)"
+    "other": "إصلاح العملاء أوتلووك (تعطيل CSS بداخل الشبكة)"
   },
   "Mail.Config.Queue.Label": {
-    "other": "Queue Type"
+    "other": "نوع قائمة الانتظار"
   },
   "Mail.Config.Queue.Description": {
-    "other": "Persistence layer for storing pending emails"
+    "other": "طبقة ثابتة لتخزين رسائل البريد الإلكتروني المعلقة"
   },
   "Mail.Config.Queue.ValueBolt": {
-    "other": "On-file Database (Bolt)"
+    "other": "قاعدة بيانات في الملف (Bolt)"
   },
   "Mail.Config.Queue.ValueMemory": {
     "other": "في الذاكرة"
@@ -249,21 +249,21 @@
     "other": "اسم عرض المرسلين الافتراضي"
   },
   "Mail.Config.FromName.Description": {
-    "other": "Display name to use as default when sending emails."
+    "other": "اسم العرض الافتراضي  لاستخدامه عند إرسال رسائل البريد الإلكتروني."
   },
   "Mail.Config.FromCtl.Label": {
-    "other": "From/Sender address and name to use"
+    "other": "عنوان من/المُرسل والاسم المراد استخدامهما"
   },
   "Mail.Config.FromCtl.Description": {
-    "other": "Define which sender address/name to use. If no user email address is configured the default FROM address and name will be used in all cases."
+    "other": "تحديد عنوان المرسل / اسم المرسل الذي سيتم استخدامه. إذا لم يتم تكوين عنوان البريد الإلكتروني المستخدم الافتراضي من العنوان والاسم سيتم استخدامه في جميع الحالات."
   },
   "Mail.Config.FromCtlUser.Label": {
-    "other": "Send mail FROM the user"
+    "other": "إرسال البريد من المستخدم"
   },
   "Mail.Config.FromCtlSender.Label": {
-    "other": "Send mail ON BEHALF OF the user"
+    "other": "إرسال البريد بالنيابة عن المستخدم"
   },
   "Mail.Config.FromCtlDefault.Label": {
-    "other": "Always send from the Default FROM address/name"
+    "other": "إرسال دائمًا من العنوان الافتراضي/الاسم الافتراضي"
   }
 }
