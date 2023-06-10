@@ -24,7 +24,7 @@
     "other": "変更したサービスを自動アーカイブ"
   },
   "Jobs.Default.CleanUserData": {
-    "other": "Clean or transfer user data on deletion"
+    "other": "削除時にユーザーデータを消去または転送する"
   },
   "Jobs.Default.CleanOrphanFiles": {
     "other": "Clean orphan files after 24h"
