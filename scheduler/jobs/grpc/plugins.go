@@ -30,6 +30,8 @@ import (
 
 	"github.com/pydio/cells/v4/broker/log"
 	"github.com/pydio/cells/v4/common"
+	"github.com/pydio/cells/v4/common/broker"
+	grpc2 "github.com/pydio/cells/v4/common/client/grpc"
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/dao/bleve"
 	"github.com/pydio/cells/v4/common/dao/boltdb"
@@ -120,15 +122,15 @@ func init() {
 
 				for _, j := range getDefaultJobs() {
 					if _, e := handler.GetJob(c, &proto.GetJobRequest{JobID: j.ID}); e != nil {
-						handler.PutJob(c, &proto.PutJobRequest{Job: j})
+						_, _ = handler.PutJob(c, &proto.PutJobRequest{Job: j})
 					}
 					// Force re-adding thumbs job
 					if Migration230 && j.ID == "thumbs-job" {
-						handler.PutJob(c, &proto.PutJobRequest{Job: j})
+						_, _ = handler.PutJob(c, &proto.PutJobRequest{Job: j})
 					}
 				}
 				// Clean tasks stuck in "Running" status
-				if _, er := handler.CleanStuckTasks(c, logger); er != nil {
+				if _, er := handler.CleanStuckTasks(c, true, logger); er != nil {
 					logger.Warn("Could not run CleanStuckTasks: "+er.Error(), zap.Error(er))
 				}
 
@@ -143,7 +145,7 @@ func init() {
 						Status:     []proto.TaskStatus{proto.TaskStatus_Any},
 						PruneLimit: 1,
 					}); e == nil {
-						logger.Info("Migration 1.4.0: removed tasks on job users-activity-digest that could fill up the scheduler", zap.Any("number", len(resp.Deleted)))
+						logger.Info("Migration 1.4.0: removed tasks on job users-activity-digest that could fill up the scheduler", zap.Int("number", len(resp.Deleted)))
 					} else {
 						logger.Error("Error while trying to prune tasks for job users-activity-digest", zap.Error(e))
 					}
@@ -152,7 +154,7 @@ func init() {
 						Status:     []proto.TaskStatus{proto.TaskStatus_Any},
 						PruneLimit: 1,
 					}); e == nil {
-						logger.Info("Migration 1.4.0: removed tasks on job resync-changes-job that could fill up the scheduler", zap.Any("number", len(resp.Deleted)))
+						logger.Info("Migration 1.4.0: removed tasks on job resync-changes-job that could fill up the scheduler", zap.Int("number", len(resp.Deleted)))
 					} else {
 						logger.Error("Error while trying to prune tasks for job resync-changes-job", zap.Error(e))
 					}
@@ -180,10 +182,29 @@ func init() {
 					}
 				}
 
+				var hc grpc2.HealthMonitor
+				if jj, e := handler.ListAutoRestartJobs(ctx); e == nil && len(jj) > 0 {
+					// We should wait for service task to be started, then start jobs
+					hc = grpc2.NewHealthChecker(ctx)
+					go func() {
+						hc.Monitor(common.ServiceTasks)
+						for _, j := range jj {
+							logger.Info("Sending a start event for job '" + j.Label + "'")
+							_ = broker.Publish(c, common.TopicTimerEvent, &proto.JobTriggerEvent{
+								JobID:  j.ID,
+								RunNow: true,
+							})
+						}
+					}()
+				}
+
 				go func() {
 					<-c.Done()
 					handler.Close()
 					logStore.Close(c)
+					if hc != nil {
+						hc.Stop()
+					}
 				}()
 				return nil
 			}),

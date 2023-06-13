@@ -59,6 +59,9 @@
   "selector.legend.mui": {
     "other": "تلقي إشعارات عندما يكون المحتوى..."
   },
+  "selector.legend.mui": {
+    "other": "Receive notifications when content is..."
+  },
   "selector.ignore": {
     "other": "لا تظهر الإشعارات ابدا"
   },
@@ -68,11 +71,17 @@
   "selector.read.mui": {
     "other": "تم الوصول"
   },
+  "selector.read.mui": {
+    "other": "Accessed"
+  },
   "selector.change": {
     "other": "تم تعديل المحتوى"
   },
   "selector.change.mui": {
     "other": "معدّل"
+  },
+  "selector.change.mui": {
+    "other": "Modified"
   },
   "selector.both": {
     "other": "تم الوصول إلى المحتوى أو تعديله"

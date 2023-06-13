@@ -26,6 +26,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"sort"
 	"sync"
 	"testing"
 	"time"
@@ -122,44 +123,107 @@ func TestServiceEtcd(t *testing.T) {
 	doTestAdd(t, reg)
 }
 
+func doRegister(ctx context.Context, m registry.Registry, ids *[]string) chan registry.Item {
+	ch := make(chan registry.Item)
+
+	cnt := 0
+	go func() {
+		for {
+			select {
+			case item := <-ch:
+				cnt = cnt + 1
+				m.Register(item)
+				*ids = append(*ids, item.ID())
+			case <-ctx.Done():
+				return
+			}
+		}
+	}()
+
+	return ch
+}
+
 func doTestAdd(t *testing.T, m registry.Registry) {
 	Convey("Add services to the registry", t, func() {
+		waitForQuiet := make(chan struct{})
+
 		numNodes := 100
-		numServers := 100
+		numServers := 1000
 		numServices := 1000
+		numUpdates := 100
 
 		w, err := m.Watch(registry.WithType(pb.ItemType_NODE), registry.WithType(pb.ItemType_SERVER), registry.WithType(pb.ItemType_SERVICE))
 		if err != nil {
 			log.Fatal(err)
 		}
 
+		var itemsSentToRegisterIds []string
 		var createdItemIds []string
 		var updatedItemIds []string
 		var deletedItemIds []string
+		cnt := 0
+
+		reset := func() {
+			itemsSentToRegisterIds = nil
+			createdItemIds = nil
+			updatedItemIds = nil
+			deletedItemIds = nil
+			cnt = 0
+		}
+
+		ch := doRegister(context.Background(), m, &itemsSentToRegisterIds)
 
 		go func() {
-			for {
-				res, err := w.Next()
-				if err != nil {
-					log.Fatal(err)
-				}
+			timer := time.NewTimer(2 * time.Second)
+			resCh := make(chan registry.Result)
+			go func() {
+				for {
+					res, err := w.Next()
+					if err != nil {
+						log.Fatal(err)
+					}
 
-				switch res.Action() {
-				case pb.ActionType_CREATE:
-					for _, item := range res.Items() {
-						createdItemIds = append(createdItemIds, item.ID())
-					}
-				case pb.ActionType_UPDATE:
-					for _, item := range res.Items() {
-						updatedItemIds = append(updatedItemIds, item.ID())
-					}
-				case pb.ActionType_DELETE:
-					for _, item := range res.Items() {
-						deletedItemIds = append(deletedItemIds, item.ID())
+					resCh <- res
+				}
+			}()
+
+			go func() {
+				done := false
+				for {
+					select {
+					case <-timer.C:
+						if done {
+							waitForQuiet <- struct{}{}
+						}
+
+					case res := <-resCh:
+						done = true
+						// Resetting timer
+						timer.Stop()
+						select {
+						case <-timer.C:
+						default:
+						}
+						timer.Reset(2 * time.Second)
+
+						switch res.Action() {
+						case pb.ActionType_CREATE:
+							for _, item := range res.Items() {
+								createdItemIds = append(createdItemIds, item.ID())
+							}
+						case pb.ActionType_UPDATE:
+							for _, item := range res.Items() {
+								cnt = cnt + 1
+								updatedItemIds = append(updatedItemIds, item.ID())
+							}
+						case pb.ActionType_DELETE:
+							for _, item := range res.Items() {
+								deletedItemIds = append(deletedItemIds, item.ID())
+							}
+						}
 					}
 				}
-
-			}
+			}()
 		}()
 
 		ctx := context.Background()
@@ -169,7 +233,7 @@ func doTestAdd(t *testing.T, m registry.Registry) {
 		var nodes []registry.Node
 		for i := 0; i < numNodes; i++ {
 			node := util.CreateNode()
-			m.Register(node)
+			ch <- node
 			nodeIds = append(nodeIds, node.ID())
 			nodes = append(nodes, node)
 		}
@@ -179,10 +243,12 @@ func doTestAdd(t *testing.T, m registry.Registry) {
 		var servers []server.Server
 		for i := 0; i < numServers; i++ {
 			srv := grpc.New(ctx, grpc.WithName("mock"))
-			m.Register(srv)
+
+			ch <- srv
 
 			serverIds = append(serverIds, srv.ID())
 			servers = append(servers, srv)
+
 		}
 
 		var services []service.Service
@@ -192,6 +258,9 @@ func doTestAdd(t *testing.T, m registry.Registry) {
 				service.Name(fmt.Sprintf("test %d", i)),
 				service.Context(ctx),
 			)
+
+			ch <- svc
+
 			ids = append(ids, svc.ID())
 			services = append(services, svc)
 		} //
@@ -200,17 +269,18 @@ func doTestAdd(t *testing.T, m registry.Registry) {
 		So(err, ShouldBeNil)
 		So(len(afterCreateServices), ShouldEqual, numServices)
 
-		<-time.After(3 * time.Second)
+		<-waitForQuiet
 
+		createdItemIds = unique(createdItemIds)
+		So(len(createdItemIds), ShouldEqual, numNodes+numServices+numServers)
+
+		reset()
+
+		// Checking if updates are working correctly
 		wg := &sync.WaitGroup{}
 
-		var nodeUpdates []string
-		var srvUpdates []string
-		var svcUpdates []string
-
-		// Update
 		for j := 0; j < 2; j++ {
-			for i := 0; i < 100; i++ {
+			for i := 0; i < numUpdates; i++ {
 				if numNodes > 0 {
 					wg.Add(1)
 					go func() {
@@ -228,10 +298,8 @@ func doTestAdd(t *testing.T, m registry.Registry) {
 
 						if ms, ok := node.(registry.MetaSetter); ok {
 							ms.SetMetadata(meta)
-							m.Register(ms.(registry.Item))
+							ch <- ms.(registry.Item)
 						}
-
-						nodeUpdates = append(nodeUpdates, node.ID())
 					}()
 				}
 
@@ -243,6 +311,7 @@ func doTestAdd(t *testing.T, m registry.Registry) {
 						idx := rand.Int() % numServers
 						srv, err := m.Get(serverIds[idx], registry.WithType(pb.ItemType_SERVER))
 						if err != nil {
+							fmt.Println("Error here ? ", err)
 							return
 						}
 
@@ -252,10 +321,9 @@ func doTestAdd(t *testing.T, m registry.Registry) {
 
 						if ms, ok := srv.(registry.MetaSetter); ok {
 							ms.SetMetadata(meta)
-							m.Register(ms.(registry.Item))
+							ch <- ms.(registry.Item)
 						}
 
-						srvUpdates = append(srvUpdates, srv.ID())
 					}()
 				}
 
@@ -276,16 +344,25 @@ func doTestAdd(t *testing.T, m registry.Registry) {
 
 						if ms, ok := svc.(registry.MetaSetter); ok {
 							ms.SetMetadata(meta)
-							m.Register(ms.(registry.Item))
+							ch <- ms.(registry.Item)
 						}
 
-						svcUpdates = append(svcUpdates, svc.ID())
 					}()
 				}
 			}
 
-			<-time.After(3 * time.Second)
+			<-waitForQuiet
 		}
+
+		updatedItemIds = unique(updatedItemIds)
+		itemsSentToRegisterIds = unique(itemsSentToRegisterIds)
+		totalUpdates := len(itemsSentToRegisterIds)
+
+		sort.Strings(updatedItemIds)
+
+		So(len(updatedItemIds), ShouldEqual, totalUpdates)
+
+		reset()
 
 		wg.Wait()
 		<-time.After(3 * time.Second)
@@ -324,25 +401,14 @@ func doTestAdd(t *testing.T, m registry.Registry) {
 			}
 		}
 
-		<-time.After(3 * time.Second)
+		<-waitForQuiet
 
 		afterDeleteServices, err := m.List(registry.WithType(pb.ItemType_SERVICE))
 		So(err, ShouldBeNil)
 		So(len(afterDeleteServices), ShouldEqual, 0)
 
-		<-time.After(3 * time.Second)
-
-		createdItemIds = unique(createdItemIds)
-		updatedItemIds = unique(updatedItemIds)
 		deletedItemIds = unique(deletedItemIds)
-		nodeUpdates = unique(nodeUpdates)
-		srvUpdates = unique(srvUpdates)
-		svcUpdates = unique(svcUpdates)
-
 		total := numNodes + numServices + numServers
-		totalUpdates := len(nodeUpdates) + len(srvUpdates) + len(svcUpdates)
-		So(len(createdItemIds), ShouldEqual, total)
-		So(len(updatedItemIds), ShouldEqual, totalUpdates)
 		So(len(deletedItemIds), ShouldEqual, total)
 	})
 }

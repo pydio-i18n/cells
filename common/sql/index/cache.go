@@ -651,7 +651,7 @@ func (d *daocache) GetNodeFirstAvailableChildIndex(path mtree.MPath) (uint64, er
 
 }
 
-func (d *daocache) GetNodeChildrenCounts(path mtree.MPath) (int, int) {
+func (d *daocache) GetNodeChildrenCounts(path mtree.MPath, b bool) (int, int) {
 
 	d.mutex.RLock()
 	defer d.mutex.RUnlock()
@@ -700,7 +700,7 @@ func (d *daocache) GetNodeTree(ctx context.Context, path mtree.MPath, filter ...
 		// Looping
 		var keys []string
 		for k := range d.cache {
-			if childRegexp.Match([]byte(k)) {
+			if childRegexp.MatchString(k) {
 				keys = append(keys, k)
 			}
 		}

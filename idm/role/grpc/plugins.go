@@ -52,6 +52,12 @@ func init() {
 				}, {
 					TargetVersion: service.ValidVersion("1.2.0"),
 					Up:            UpgradeTo12,
+				}, {
+					TargetVersion: service.ValidVersion("4.1.99"),
+					Up:            UpgradeTo4199,
+				}, {
+					TargetVersion: service.ValidVersion("4.2.1"),
+					Up:            UpgradeTo421,
 				},
 			}),
 			service.WithStorage(role.NewDAO, service.WithStoragePrefix("idm_role")),

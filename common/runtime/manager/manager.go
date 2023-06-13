@@ -551,7 +551,6 @@ func (m *manager) WatchTransientStatus() {
 	for {
 		res, er := w.Next()
 		if er != nil {
-
 			break
 		}
 
@@ -630,7 +629,7 @@ func (m *manager) WatchServerUniques(srv server.Server, ss []service.Service, co
 		db(func() {
 			if srv.NeedsRestart() {
 				w.Stop()
-				m.logger.Info(" -- Restarting server now", zap.Any("type", srv.Type()), zap.String("name", srv.Name()))
+				m.logger.Info(" -- Restarting server now", zap.Int8("type", int8(srv.Type())), zap.String("name", srv.Name()))
 				if er := m.stopServer(srv); er != nil {
 					m.logger.Error("Error while stopping server"+er.Error(), zap.Error(er))
 				}

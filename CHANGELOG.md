@@ -1,19 +1,42 @@
-# Changes between v4.0.7 and v4.1.0
+# Changes between v4.2.1 and v4.2.2
 
-[See Full Changelog](https://github.com/pydio/cells/compare/v4.0.7...v4.1.0)
+[See Full Changelog](https://github.com/pydio/cells/compare/v4.2.1...v4.2.2)
 
-- [#c4c85f0](https://github.com/pydio/cells/commit/c4c85f0c243eab2b4d8e46ceba057daf9e7d25e6): Latest changes
-- [#8236379](https://github.com/pydio/cells/commit/8236379ad3a21d9fc7bfea5730cd9e6c790a33cd): Latest tools version
-- [#e4a2651](https://github.com/pydio/cells/commit/e4a2651b2493085e0b6fa5ec911c81a462cdda67): Issue with Rating search JS
-- [#eed4b42](https://github.com/pydio/cells/commit/eed4b429e0ddc59094bf72aa3355c852c0c69094): advanced policies checks for meta namespaces
-- [#58b30da](https://github.com/pydio/cells/commit/58b30da046278f2fa8e65f13746ce1964e189c06): TLS + password fix for etcd
-- [#39c42de](https://github.com/pydio/cells/commit/39c42deebf549546d9c4f57c113f60ceacdc03af): typo again
-- [#59994a6](https://github.com/pydio/cells/commit/59994a6e4706b9cf9beb7f870cce35ac74a98724): Change Purge signature to send less logs. Mongo purge batch deleteMany
-- [#5073d27](https://github.com/pydio/cells/commit/5073d27047051409fa38cb29a27f3c084579dbf9): dao test : do not drop whole database but only specific test collections at the end
-- [#3b77f36](https://github.com/pydio/cells/commit/3b77f362b2be7af27bae00ffce9cd7d5eb412e42): Similarly to activities, use aggregation instead of distinct in ListAllVersionedNodesUuids to prevent hitting doc size error.
-- [#38ce16c](https://github.com/pydio/cells/commit/38ce16c5c2d2d516ae4a42191cbf6bebf80862fc): Fix nil context
-- [#9ecdc1b](https://github.com/pydio/cells/commit/9ecdc1bcddbd21014e7bbb4010219a42a461c87f): Add AllowDiskUse in aggregation
-- [#952e94d](https://github.com/pydio/cells/commit/952e94d830cdf737dbb168ec9b8e7b18f45bb1ed): Add logs when running aggregation
-- [#3bdbcfb](https://github.com/pydio/cells/commit/3bdbcfb94cda52fff69e01a4a82a9eb084dc38ef): Update install language pack
-- [#cfef178](https://github.com/pydio/cells/commit/cfef178edea51548597e44c59a70b667038102de): Switch using .Distinct() to using Aggregate() to avoid mongo document size limit.
-- [#9246176](https://github.com/pydio/cells/commit/92461765a8339d09c2de58caec1bf00e02428219): Next development cycle
+- [#418742f](https://github.com/pydio/cells/commit/418742f369e75074db080b45ac911b7aa8b76a8f): Fix typo in in-line doc
+- [#ac42de1](https://github.com/pydio/cells/commit/ac42de12e685701fd7502a5718487a3fea68d35d): PubSub.Unsub: make sure to consume all messages before unsubscription.
+- [#a7b0c3f](https://github.com/pydio/cells/commit/a7b0c3f849159210bc96302d14e4540042580856): Release v4.2.2-rc1
+- [#2434c8b](https://github.com/pydio/cells/commit/2434c8b9b323b7f8b79e411c90882914aeaf77a4): Fixing diff for registry items
+- [#8ff76f1](https://github.com/pydio/cells/commit/8ff76f101fe3308708bea124651b07fbb9071582): Fix possible crash during log truncate
+- [#d9eb100](https://github.com/pydio/cells/commit/d9eb100dcdedd2e7cfe699a48b40d4d1b69a4b29): Fix inode count
+- [#a0ac8d1](https://github.com/pydio/cells/commit/a0ac8d1710d12ba63881d51fd1ef163503af953e): If snapshot has more than 20k items, switch to dynamic loading
+- [#2abafdc](https://github.com/pydio/cells/commit/2abafdc0d7df95daedf833994dde25343f8a9f90): Add a progress bar while loading snapshot for cells-fuse
+- [#b102b97](https://github.com/pydio/cells/commit/b102b97878ea357c9b463c089a01458d0bfca6bc): Fix oauth oob dialog background color
+- [#4e9d7a4](https://github.com/pydio/cells/commit/4e9d7a4c91d2b639c598afb2cd25b0a3d309ea3f): Using sync map in registry and adding sync map handling in config
+- [#488](https://github.com/pydio/cells/pull/488): Remove `github.com/ghodss/yaml` dependency
+- [#489](https://github.com/pydio/cells/pull/489): Avoid unnecessary byte/string conversion
+- [#40ec09c](https://github.com/pydio/cells/commit/40ec09c8794eba06436a8392f29ff03fb63046cb): Remove some warnings
+- [#ad68823](https://github.com/pydio/cells/commit/ad688236fbfc6267b85cd11840adabd3dd68edae): Merge remote-tracking branch 'origin/main'
+- [#2b480d3](https://github.com/pydio/cells/commit/2b480d3e0a01d988622007f96177a113a4fde872): Try modifying webdav locker to clean the lock on delete (tests for windows)
+- [#bf6cf66](https://github.com/pydio/cells/commit/bf6cf66bdab3b66ff514cc7f7a3e572b27891f44): fix db error in flat datasource migration
+- [#9b17228](https://github.com/pydio/cells/commit/9b172283b72aab6bf1390e274bb1b89c932c4f8f): Tracking possible race conditions Log current build info in logger on start
+- [#0763142](https://github.com/pydio/cells/commit/07631427430775b07987fc7ebfa9b3aec8fc641d): New messages + DE/FR translation
+- [#f45a511](https://github.com/pydio/cells/commit/f45a511ad28b8aeb1ec720b7f3a676c9e64ec656): New messages + DE/FR translation
+- [#708122d](https://github.com/pydio/cells/commit/708122d5464c8d361a31f6b0f966c1bf56236f91): Fixing transient failure
+- [#b6f5952](https://github.com/pydio/cells/commit/b6f5952d31adcb6224df0f1133d40a0414c3d811): Improve login screen failing messages and routing after login.
+- [#27c6786](https://github.com/pydio/cells/commit/27c67868e483706506b7869b6b87e32c98a9f691): Meta
+- [#b828513](https://github.com/pydio/cells/commit/b828513beca8e5ade193e8af60b8471d4d228aab): Remove zap.Any usage when possible.
+- [#861e1a1](https://github.com/pydio/cells/commit/861e1a16aae887e7ee04d05190da89281d5ba571): Fixing unit test
+- [#5a7565f](https://github.com/pydio/cells/commit/5a7565fe4683f8fcac0838059604cefae5b43636): Fixing unit test and adding lock to meta
+- [#9f53028](https://github.com/pydio/cells/commit/9f53028f7ceb0cd61b625bd06aff408adc4228d2): Replacing clone
+- [#21c63fa](https://github.com/pydio/cells/commit/21c63fad68bc2f7a191cd9b0b11cd0bd52f3896a): Making a clone of snap diff
+- [#87e4fa8](https://github.com/pydio/cells/commit/87e4fa84fe59d741f34b9efa472b8a929073059f): Testing
+- [#24f84f7](https://github.com/pydio/cells/commit/24f84f76c09e3ed461760e18c30902b54b4e7c89): Avoid unnecessary byte/string conversion
+- [#94dfdaf](https://github.com/pydio/cells/commit/94dfdafeda7acabfa5fd011f72d0cfbffc026886): Remove `github.com/ghodss/yaml` dependency
+- [#49822e7](https://github.com/pydio/cells/commit/49822e7bef49a7e7a5b2539e8885b3e3dc40c885): Fixing data race
+- [#d22588a](https://github.com/pydio/cells/commit/d22588a524aebd474b279b0bcff5bab47a53cfd3): Fixing data race
+- [#28cced9](https://github.com/pydio/cells/commit/28cced98ba10ea5ed5fc229f4c1a7fd78440db8a): Fix public link when search is enabled - missing copyrights in index package.
+- [#ee63fe9](https://github.com/pydio/cells/commit/ee63fe91a7709f35d54af4fc8d304aabe6447d0b): Merge remote-tracking branch 'origin/main'
+- [#fed671b](https://github.com/pydio/cells/commit/fed671b50bcc6a812643d6ff77ddaa9532df87d3): Fix issue when enabling search form in folder public link
+- [#09e0125](https://github.com/pydio/cells/commit/09e01256984af2508f7ced5abe896aab5846e509): Adding clone before the diff for memory config
+- [#4016d29](https://github.com/pydio/cells/commit/4016d296a0d25e3fce0087f20bf574bb5e85d80e): Improve cells-fuse tool
+- [#6b53bfb](https://github.com/pydio/cells/commit/6b53bfbb08a46fe93d07a87efaf5cd776a92ff43): Next development cycle

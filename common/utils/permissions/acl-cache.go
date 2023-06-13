@@ -34,27 +34,24 @@ import (
 
 var (
 	aclCache cache.Cache
+	aclOnce  sync.Once
 )
 
-func initAclCache() {
-	aclCache, _ = cache.OpenCache(context.TODO(), runtime.ShortCacheURL("evictionTime", "60s", "cleanWindow", "30s"))
-	_, _ = broker.Subscribe(context.TODO(), common.TopicIdmEvent, func(message broker.Message) error {
-		event := &idm.ChangeEvent{}
-		if _, e := message.Unmarshal(event); e != nil {
-			return e
-		}
-		switch event.Type {
-		case idm.ChangeEventType_CREATE, idm.ChangeEventType_UPDATE, idm.ChangeEventType_DELETE:
-			return aclCache.Reset()
-		}
-		return nil
-	})
-}
-
 func getAclCache() cache.Cache {
-	if aclCache == nil {
-		initAclCache()
-	}
+	aclOnce.Do(func() {
+		aclCache, _ = cache.OpenCache(context.TODO(), runtime.ShortCacheURL("evictionTime", "60s", "cleanWindow", "30s"))
+		_, _ = broker.Subscribe(context.TODO(), common.TopicIdmEvent, func(message broker.Message) error {
+			event := &idm.ChangeEvent{}
+			if _, e := message.Unmarshal(event); e != nil {
+				return e
+			}
+			switch event.Type {
+			case idm.ChangeEventType_CREATE, idm.ChangeEventType_UPDATE, idm.ChangeEventType_DELETE:
+				return aclCache.Reset()
+			}
+			return nil
+		})
+	})
 	return aclCache
 }
 
@@ -75,8 +72,10 @@ func (a *AccessList) cache(key string) error {
 	a.cacheKey = key
 	a.maskBPLock.RLock()
 	a.maskBULock.RLock()
+	a.maskRootsLock.RLock()
 	defer a.maskBPLock.RUnlock()
 	defer a.maskBULock.RUnlock()
+	defer a.maskRootsLock.RUnlock()
 	m := &CachedAccessList{
 		OrderedRoles:    a.orderedRoles,
 		WsACLs:          a.wsACLs,
@@ -109,6 +108,7 @@ func newFromCache(key string) (*AccessList, bool) {
 		// Re-init these
 		maskBPLock:    &sync.RWMutex{},
 		maskBULock:    &sync.RWMutex{},
+		maskRootsLock: &sync.RWMutex{},
 		wss:           std.CloneMap(m.Wss),
 		wssRootsMasks: std.CloneMap(m.WssRootsMasks),
 		masksByUUIDs:  std.CloneMap(m.MasksByUUIDs),

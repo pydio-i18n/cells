@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -137,7 +138,6 @@ type config struct {
 }
 
 func newWithRoot(v interface{}, root *config, k []string, opts Options) Values {
-	opts.RWMutex = &sync.RWMutex{}
 	return &config{
 		v:    v,
 		r:    root,
@@ -147,9 +147,7 @@ func newWithRoot(v interface{}, root *config, k []string, opts Options) Values {
 }
 
 func New(opts ...Option) Values {
-	options := Options{
-		RWMutex: &sync.RWMutex{},
-	}
+	options := Options{}
 
 	for _, o := range opts {
 		o(&options)
@@ -164,18 +162,6 @@ func New(opts ...Option) Values {
 	}
 
 	return c
-}
-
-func (c *config) rLock() func() {
-	if c.opts.RWMutex == nil || c.rLocked {
-		return func() {}
-	}
-	c.opts.RLock()
-	c.rLocked = true
-	return func() {
-		c.rLocked = false
-		c.opts.RUnlock()
-	}
 }
 
 func (c *config) get() interface{} {
@@ -265,9 +251,6 @@ func (c *config) get() interface{} {
 
 // Get retrieve interface
 func (c *config) Get() Value {
-	u := c.rLock()
-	defer u()
-
 	if c.v == nil && c.d == nil {
 		return nil
 	}
@@ -325,18 +308,6 @@ func (c *config) Set(data interface{}) error {
 		data = d.v
 	}
 
-	// convert data to map
-	/*switch reflect.ValueOf(data).Kind() {
-	case reflect.Struct:
-		var out map[string]interface{}
-
-		if err := mapstructure.Decode(data, &out); err != nil {
-			return err
-		}
-
-		data = out
-	}*/
-
 	if len(c.k) == 0 {
 		if c.opts.SetCallback != nil {
 			c.opts.SetCallback(c.k, data)
@@ -386,86 +357,54 @@ func (c *config) Set(data interface{}) error {
 		}
 	}
 
-	pv := reflect.ValueOf(p.Interface())
-	switch pv.Kind() {
-	case reflect.Slice:
-		kk, err := strconv.Atoi(k)
-		if err != nil {
-			return fmt.Errorf("wrong key for slice")
-		}
+	pi := p.Interface()
 
-		m := p.Slice()
-
-		var mm []interface{}
-		if cap(m) < kk+1 {
-			mm = make([]interface{}, kk+1)
-		} else {
-			mm = make([]interface{}, cap(m))
-		}
-
-		copy(mm, m)
-
-		c.opts.RWMutex.Lock()
+	// Test first if the parent is a sync map
+	switch mm := pi.(type) {
+	case *sync.Map:
 		if del {
-			mm = append(mm[:kk], mm[kk+1:]...)
+			mm.Delete(k)
 		} else {
-			mm[kk] = data
-		}
-		c.opts.RWMutex.Unlock()
-
-		p.Set(mm)
-	case reflect.Map:
-		m := p.Map()
-
-		unlock := c.rLock()
-		mm := make(map[string]interface{})
-		for k, v := range m {
-			mm[k] = v
-		}
-		unlock()
-
-		if del {
-			delete(mm, k)
-		} else {
-			mm[k] = data
-		}
-
-		p.Set(mm)
-	case reflect.Struct:
-		mm := make(map[string]interface{})
-		mv := reflect.ValueOf(mm)
-
-		unlock := c.rLock()
-		pt := reflect.TypeOf(p.Interface())
-		for i := 0; i < pt.NumField(); i++ {
-			name := pt.Field(i).Name
-			mv.SetMapIndex(reflect.ValueOf(name), pv.FieldByName(name))
-		}
-		unlock()
-
-		if del {
-			delete(mm, k)
-		} else {
-			mm[k] = data
+			mm.Store(k, data)
 		}
 
 		p.Set(mm)
 	default:
-		kk, err := strconv.Atoi(k)
-		if err == nil {
-			mm := make([]interface{}, kk+1)
 
-			c.opts.RWMutex.Lock()
+		pv := reflect.ValueOf(pi)
+		switch pv.Kind() {
+		case reflect.Slice:
+			kk, err := strconv.Atoi(k)
+			if err != nil {
+				return fmt.Errorf("wrong key for slice")
+			}
+
+			m := p.Slice()
+
+			var mm []interface{}
+			if cap(m) < kk+1 {
+				mm = make([]interface{}, kk+1)
+			} else {
+				mm = make([]interface{}, cap(m))
+			}
+
+			copy(mm, m)
+
 			if del {
 				mm = append(mm[:kk], mm[kk+1:]...)
 			} else {
 				mm[kk] = data
 			}
-			c.opts.RWMutex.Unlock()
 
 			p.Set(mm)
-		} else {
+		case reflect.Map:
+			m := p.Map()
+
 			mm := make(map[string]interface{})
+			for k, v := range m {
+				mm[k] = v
+			}
+
 			if del {
 				delete(mm, k)
 			} else {
@@ -473,12 +412,46 @@ func (c *config) Set(data interface{}) error {
 			}
 
 			p.Set(mm)
-		}
-	}
+		case reflect.Struct:
+			mm := make(map[string]interface{})
+			mv := reflect.ValueOf(mm)
 
-	if mtx := c.opts.RWMutex; mtx != nil {
-		mtx.Lock()
-		defer mtx.Unlock()
+			pt := reflect.TypeOf(p.Interface())
+			for i := 0; i < pt.NumField(); i++ {
+				name := pt.Field(i).Name
+				mv.SetMapIndex(reflect.ValueOf(name), pv.FieldByName(name))
+			}
+
+			if del {
+				delete(mm, k)
+			} else {
+				mm[k] = data
+			}
+
+			p.Set(mm)
+		default:
+			kk, err := strconv.Atoi(k)
+			if err == nil {
+				mm := make([]interface{}, kk+1)
+
+				if del {
+					mm = append(mm[:kk], mm[kk+1:]...)
+				} else {
+					mm[kk] = data
+				}
+
+				p.Set(mm)
+			} else {
+				mm := make(map[string]interface{})
+				if del {
+					delete(mm, k)
+				} else {
+					mm[k] = data
+				}
+
+				p.Set(mm)
+			}
+		}
 	}
 
 	if c.opts.SetCallback != nil {
@@ -528,113 +501,117 @@ func (c *config) Val(s ...string) Values {
 	// Looking for the specific key
 	var current interface{} = root.Interface()
 
-	unlocker := c.rLock()
-	defer unlocker()
-
 	for _, pkk := range pk {
-		cvv := reflect.ValueOf(current)
-
-		switch cvv.Kind() {
-		case reflect.Ptr:
-			if cvv.Elem().Kind() != reflect.Struct {
-				return newWithRoot(nil, root, keys, c.opts)
-			}
-			f := cvv.Elem().FieldByName(pkk)
-			if f.IsValid() {
-				current = f.Interface()
-			} else {
-				return newWithRoot(nil, root, keys, c.opts)
-			}
-		case reflect.Struct:
-			f := cvv.FieldByName(pkk)
-			if f.IsValid() {
-				current = f.Interface()
-			} else {
-				return newWithRoot(nil, root, keys, c.opts)
-			}
-		case reflect.Map:
-			f := cvv.MapIndex(reflect.ValueOf(pkk))
-			if f.IsValid() {
-				current = f.Interface()
-			} else {
-				return newWithRoot(nil, root, keys, c.opts)
-			}
-		case reflect.Slice:
-			i, err := strconv.Atoi(pkk)
-			if err != nil || i < 0 || i >= cvv.Len() {
-				return newWithRoot(nil, root, keys, c.opts)
-			}
-
-			current = cvv.Index(i).Interface()
-		default:
+		current = valAny(current, pkk)
+		if current == nil {
 			return newWithRoot(nil, root, keys, c.opts)
 		}
-
-		/*
-			switch cv := current.(type) {
-			case map[interface{}]interface{}:
-				cvv, ok := cv[pkk]
-				if !ok {
-					// The parent doesn't actually exist here, we return the nil value
-					return &config{nil, nil, root, keys, c.opts}
-				}
-
-				current = cvv
-			case map[string]string:
-				cvv, ok := cv[pkk]
-				if !ok {
-					// The parent doesn't actually exist here, we return the nil value
-					return &config{nil, nil, root, keys, c.opts}
-				}
-
-				current = cvv
-			case map[string]interface{}:
-				cvv, ok := cv[pkk]
-				if !ok {
-					// The parent doesn't actually exist here, we return the nil value
-					return &config{nil, nil, root, keys, c.opts}
-				}
-
-				current = cvv
-			case []interface{}:
-				i, err := strconv.Atoi(pkk)
-				if err != nil || i < 0 || i >= len(cv) {
-					return &config{nil, nil, root, keys, c.opts}
-				}
-
-				cvv := cv[i]
-
-				current = cvv
-
-			default:
-				cvv := reflect.ValueOf(cv)
-
-				switch cvv.Kind() {
-				case reflect.Ptr:
-					f := cvv.Elem().FieldByName(pkk)
-					if f.IsValid() {
-						current = f.Interface()
-					}
-				case reflect.Struct:
-					f := cvv.FieldByName(pkk)
-					if f.IsValid() {
-						current = f.Interface()
-					}
-				default:
-					return &config{nil, nil, root, keys, c.opts}
-				}
-			}*/
 	}
 
 	return newWithRoot(current, root, keys, c.opts)
 }
 
+func valAny(src any, k string) (dst any) {
+	v := reflect.ValueOf(src)
+	if !v.IsValid() {
+		return src
+	}
+
+	// Look up the corresponding copy function.
+	switch v.Kind() {
+	case reflect.Map:
+		dst = valMap(src, k)
+	case reflect.Slice, reflect.Array:
+		dst = valSlice(src, k)
+	case reflect.String:
+		dst = strings.Clone(src.(string))
+	case reflect.Ptr, reflect.UnsafePointer:
+		dst = valPtr(src, k)
+	case reflect.Interface:
+		dst = valAny(src, k)
+	case reflect.Struct:
+		dst = valStruct(src, k)
+	default:
+		fmt.Println("Shouldn't be there ?", v.Kind())
+	}
+
+	return
+}
+
+func valMap(x any, k string) any {
+	v := reflect.ValueOf(x)
+	if v.Kind() != reflect.Map {
+		panic(fmt.Errorf("reflect: internal error: must be a Map; got %v", v.Kind()))
+	}
+	f := v.MapIndex(reflect.ValueOf(k))
+	if f.IsValid() {
+		return f.Interface()
+	}
+
+	return nil
+}
+
+func valSlice(x any, k string) any {
+	v := reflect.ValueOf(x)
+	if v.Kind() != reflect.Slice {
+		panic(fmt.Errorf("reflect: internal error: must be a Slice; got %v", v.Kind()))
+	}
+	i := 0
+	kv := reflect.ValueOf(k)
+	if kv.CanInt() {
+		i = int(kv.Int())
+	} else {
+		switch kv.Kind() {
+		case reflect.String:
+			var err error
+			i, err = strconv.Atoi(kv.Interface().(string))
+			if err != nil {
+				return nil
+			}
+		default:
+			return nil
+		}
+	}
+	if i < 0 || i >= v.Len() {
+		return nil
+	}
+
+	return v.Index(i).Interface()
+}
+
+func valPtr(x any, k string) any {
+	v := reflect.ValueOf(x)
+	if v.Kind() != reflect.Ptr && v.Kind() != reflect.UnsafePointer {
+		panic(fmt.Errorf("reflect: internal error: must be a Pointer; got %v", v.Kind()))
+	}
+
+	// Checking if it implements a sync map
+	switch xx := x.(type) {
+	case *sync.Map:
+		if dst, ok := xx.Load(k); ok {
+			return dst
+		}
+	}
+	return valAny(v.Elem().Interface(), k)
+}
+
+func valStruct(x any, k string) any {
+	v := reflect.ValueOf(x)
+	if v.Kind() != reflect.Struct {
+		panic(fmt.Errorf("reflect: internal error: must be a Struct; got %v", v.Kind()))
+	}
+
+	f := v.FieldByName(k)
+	if f.IsValid() {
+		return f.Interface()
+	}
+
+	return nil
+}
+
 // Scan to interface
 func (c *config) Scan(val interface{}, options ...Option) error {
 	opts := c.opts
-
-	unlocker := c.rLock()
-	defer unlocker()
 
 	v := c.get()
 	if v == nil {
@@ -712,9 +689,6 @@ func (c *config) Scan(val interface{}, options ...Option) error {
 }
 
 func (c *config) Bool() bool {
-	unlocker := c.rLock()
-	defer unlocker()
-
 	v := c.get()
 	if v == nil {
 		return false
@@ -722,23 +696,11 @@ func (c *config) Bool() bool {
 	return cast.ToBool(v)
 }
 func (c *config) Bytes() []byte {
-	unlocker := c.rLock()
-	defer unlocker()
-
 	v := c.get()
 	if v == nil {
 		return []byte{}
 	}
 
-	/*switch v := c.v.(type) {
-	case string:
-		// Need to handle it differently
-		if v == "default" {
-			c.v = nil
-		}
-	case interface{}, []interface{}, map[string]interface{}:
-
-	*/
 	if m := c.opts.Marshaller; m != nil {
 		data, err := m.Marshal(v)
 		if err != nil {
@@ -747,9 +709,6 @@ func (c *config) Bytes() []byte {
 
 		return data
 	}
-
-	/*	return []byte{}
-		}*/
 
 	return []byte(cast.ToString(v))
 }
@@ -773,15 +732,9 @@ func (c *config) Reference() Ref {
 	return nil
 }
 func (c *config) Interface() interface{} {
-	unlocker := c.rLock()
-	defer unlocker()
-
 	return c.get()
 }
 func (c *config) Int() int {
-	unlocker := c.rLock()
-	defer unlocker()
-
 	v := c.get()
 	if v == nil {
 		return 0
@@ -789,9 +742,6 @@ func (c *config) Int() int {
 	return cast.ToInt(v)
 }
 func (c *config) Int64() int64 {
-	unlocker := c.rLock()
-	defer unlocker()
-
 	v := c.get()
 	if v == nil {
 		return 0
@@ -799,9 +749,6 @@ func (c *config) Int64() int64 {
 	return cast.ToInt64(v)
 }
 func (c *config) Duration() time.Duration {
-	unlocker := c.rLock()
-	defer unlocker()
-
 	v := c.get()
 	if v == nil {
 		return 0 * time.Second
@@ -809,9 +756,6 @@ func (c *config) Duration() time.Duration {
 	return cast.ToDuration(v)
 }
 func (c *config) String() string {
-	unlocker := c.rLock()
-	defer unlocker()
-
 	v := c.get()
 
 	switch v := c.v.(type) {
@@ -836,9 +780,6 @@ func (c *config) String() string {
 	return cast.ToString(v)
 }
 func (c *config) StringMap() map[string]string {
-	unlocker := c.rLock()
-	defer unlocker()
-
 	v := c.get()
 	if v == nil {
 		return map[string]string{}
@@ -846,9 +787,6 @@ func (c *config) StringMap() map[string]string {
 	return cast.ToStringMapString(v)
 }
 func (c *config) StringArray() []string {
-	unlocker := c.rLock()
-	defer unlocker()
-
 	v := c.get()
 	if v == nil {
 		return []string{}
@@ -856,9 +794,6 @@ func (c *config) StringArray() []string {
 	return cast.ToStringSlice(c.get())
 }
 func (c *config) Slice() []interface{} {
-	unlocker := c.rLock()
-	defer unlocker()
-
 	v := c.get()
 	if v == nil {
 		return []interface{}{}
@@ -866,9 +801,6 @@ func (c *config) Slice() []interface{} {
 	return cast.ToSlice(c.get())
 }
 func (c *config) Map() map[string]interface{} {
-	unlocker := c.rLock()
-	defer unlocker()
-
 	v := c.get()
 	if v == nil {
 		return map[string]interface{}{}

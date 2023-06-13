@@ -41,6 +41,7 @@ import (
 var BasePluginsBox = frontend.PluginBox{
 	Box: front_srv.FrontendAssets,
 	Exposes: []string{
+		"access.directory",
 		"access.gateway",
 		"access.homepage",
 		"access.settings",
@@ -58,7 +59,6 @@ var BasePluginsBox = frontend.PluginBox{
 		"core.mailer",
 		"core.pydio",
 		"core.uploader",
-		"editor.browser",
 		"editor.ckeditor",
 		"editor.codemirror",
 		"editor.diaporama",
