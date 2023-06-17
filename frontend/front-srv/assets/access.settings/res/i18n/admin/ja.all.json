@@ -1668,7 +1668,7 @@
     "other": "たとえばURLで使用される技術名称で、自動的に計算されますが、カスタマイズすることができます。"
   },
   "services.text-filter.hint": {
-    "other": "Filter..."
+    "other": "フィルター..."
   },
   "services.filter.nofilter": {
     "other": "すべてのサービス"
