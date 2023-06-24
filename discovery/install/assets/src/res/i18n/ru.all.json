@@ -87,7 +87,7 @@
     "other": "Auth DB"
   },
   "advanced.mongo.validate": {
-    "other": "Test connection"
+    "other": "Проверить подключение"
   },
   "license.stepLabel": {
     "other": "Корпоративная лицензия"
@@ -117,7 +117,7 @@
     "other": "🚀 Установка"
   },
   "apply.title": {
-    "other": "Please be patient while Pydio Cells is being installed..."
+    "other": "Пожалуйста, подождите пока Pydio Cells устанавливается..."
   },
   "apply.success": {
     "other": "Установка прошла успешно, сервисы запускаются, программа установки перезагрузит страницу при запуске служб."
@@ -228,13 +228,13 @@
     "other": "URL, append ?minio=true if Minio."
   },
   "form.dsS3Custom.legend": {
-    "other": "Leave empty for Amazon"
+    "other": "Оставьте пустым для Amazon"
   },
   "form.dsS3CustomRegion.label": {
-    "other": "S3 Custom region"
+    "other": "Пользовательский регион S3"
   },
   "form.dsS3CustomRegion.legend": {
-    "other": "Leave empty for default (us-east-1)"
+    "other": "Оставьте пустым по умолчанию (us-east-1)"
   },
   "form.dsS3ApiKey.label": {
     "other": "S3 Api ключ"
