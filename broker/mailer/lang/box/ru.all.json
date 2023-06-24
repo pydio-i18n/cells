@@ -204,7 +204,7 @@
     "other": "Пароль, используемый для подключения к SMTP серверу"
   },
   "Mail.Config.Smtp.Security.Label": {
-    "other": "Connection Security"
+    "other": "Безопасность Соединения"
   },
   "Mail.Config.Smtp.Security.Description": {
     "other": "Protocol used for securing connection. Clear is not supported, if required use a custom Sendmail instead."
