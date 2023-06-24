@@ -78,7 +78,7 @@
     "other": "Время задачи меньше, чем"
   },
   "actionOutputSingleQuery.FreeCondition": {
-    "other": "Free Condition"
+    "other": "Бесплатные условия"
   },
   "conditionCIDRCondition.CIDR": {
     "other": "CIDR"
@@ -117,13 +117,13 @@
     "other": "Строка равна"
   },
   "contextMetaCondition.StringMatchCondition": {
-    "other": "String matches"
+    "other": "Совпадение строк"
   },
   "contextMetaCondition.StringPairsEqualCondition": {
     "other": "StringPairs equals"
   },
   "contextMetaCondition.StringNotMatchCondition": {
-    "other": "String does not match"
+    "other": "Строка не совпадает"
   },
   "contextMetaCondition.WithinPeriodCondition": {
     "other": "Date period"
@@ -210,10 +210,10 @@
     "other": "Modification date (use comparison)"
   },
   "treeQuery.Extension": {
-    "other": "File Extension"
+    "other": "Расширение Файла"
   },
   "treeQuery.FileName": {
-    "other": "File name"
+    "other": "Имя файла"
   },
   "treeQuery.FileNameOrContent": {
     "other": "File name or Content"
@@ -222,19 +222,19 @@
     "other": "Bleve-like search string"
   },
   "treeQuery.GeoQuery": {
-    "other": "Geolocation Query"
+    "other": "Запрос геолокации"
   },
   "treeQuery.MaxDate": {
     "other": "Modified before"
   },
   "treeQuery.MaxSize": {
-    "other": "MaxSize"
+    "other": "Максимальный размер"
   },
   "treeQuery.MinDate": {
-    "other": "Modified since"
+    "other": "Изменено с"
   },
   "treeQuery.MinSize": {
-    "other": "Size greater than"
+    "other": "Размер больше чем"
   },
   "treeQuery.Not": {
     "other": "Not"
@@ -246,7 +246,7 @@
     "other": "Path Prefix"
   },
   "treeQuery.Paths": {
-    "other": "Absolute Paths"
+    "other": "Абсолютный путь"
   },
   "treeQuery.Type": {
     "other": "Тип"
@@ -270,16 +270,16 @@
     "other": "Has any value"
   },
   "userSingleQuery.AttributeName": {
-    "other": "Attribute Name"
+    "other": "Название атрибута"
   },
   "userSingleQuery.AttributeValue": {
-    "other": "Attribute Value"
+    "other": "Значение атрибута"
   },
   "userSingleQuery.ConnectedSince": {
     "other": "Connected Since"
   },
   "userSingleQuery.FullPath": {
-    "other": "Full Path"
+    "other": "Полный путь"
   },
   "userSingleQuery.GroupPath": {
     "other": "Путь группы"
