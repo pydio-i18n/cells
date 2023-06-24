@@ -63,25 +63,25 @@
     "other": "При запуске создается исходный источник данных для хранения персональных данных пользователей и данных. Вы можете создать другие источники данных."
   },
   "advanced.mongo.title": {
-    "other": "Configure a MongoDB Connection"
+    "other": "Настроить подключение MongoDB"
   },
   "advanced.mongo.legend": {
-    "other": "This is better for scalability, and required for clustering deployment. If you do not have a Mongo DB ready, this can be done later."
+    "other": "Это лучше для масштабирования и требуется для кластеризации. Если у вас нет базы данных Mongo, это можно сделать позже."
   },
   "advanced.mongo.host": {
-    "other": "Server host"
+    "other": "Хост сервера"
   },
   "advanced.mongo.port": {
-    "other": "Server port"
+    "other": "Порт сервера"
   },
   "advanced.mongo.db": {
-    "other": "Database Name"
+    "other": "Имя базы данных"
   },
   "advanced.mongo.username": {
-    "other": "Username"
+    "other": "Логин"
   },
   "advanced.mongo.password": {
-    "other": "Password"
+    "other": "Пароль"
   },
   "advanced.mongo.authSource": {
     "other": "Auth DB"
