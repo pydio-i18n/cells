@@ -390,7 +390,7 @@
     "other": "If this storage was previously used as a flat datasource, initialize it from an existing snapshot file (must be found inside the storage)"
   },
   "ds.editor.foldersShardingPattern": {
-    "other": "By default, all files are stored inside a unique folder. Use a pattern 'N:P:Q' to auto-create sub folders id[:N]/id[:P]/id[:Q]/..."
+    "other": "По умолчанию, все файлы хранятся в уникальной папке. Используйте шаблон 'N:P:Q' для автоматического создания подпапок id[:N]/id[:P]/id[:Q]/..."
   },
   "ds.encryption": {
     "other": "Шифрование"
@@ -510,10 +510,10 @@
     "other": "Версии"
   },
   "ds.syncStatus": {
-    "other": "Last Sync"
+    "other": "Последняя синхронизация"
   },
   "ds.emptyState": {
-    "other": "No datasources created yet"
+    "other": "Источники данных еще не созданы"
   },
   "ds.versioning.description": {
     "other": "Описание"
@@ -570,16 +570,16 @@
     "other": "Поиск полного текста"
   },
   "logs.tz.tooltip": {
-    "other": "Show local/server timezone"
+    "other": "Показать часовой пояс локального/сервера"
   },
   "logs.tz.local": {
-    "other": "Local Timezone"
+    "other": "Местный часовой пояс"
   },
   "logs.tz.server": {
-    "other": "Server Timezone"
+    "other": "Часовой пояс сервера"
   },
   "logs.toggleTheme": {
-    "other": "Light/Dark Theme"
+    "other": "Светлая/тёмная тема"
   },
   "logs.sys.note": {
     "other": "Обратите внимание:"
@@ -612,7 +612,7 @@
     "other": "Уровень"
   },
   "logs.level.exact": {
-    "other": "(only)"
+    "other": "(только)"
   },
   "logs.level.greaterthan": {
     "other": "(and up)"
@@ -735,7 +735,7 @@
     "other": "Значение"
   },
   "metadata.editor.selection.steps": {
-    "other": "Show as steps"
+    "other": "Показать как шаги"
   },
   "metadata.editor.tags.cleared": {
     "other": "Убраны теги для пространства имён %s"
@@ -783,7 +783,7 @@
     "other": "Тип"
   },
   "metadata.type.string": {
-    "other": "Short Text"
+    "other": "Краткий текст"
   },
   "metadata.type.textarea": {
     "other": "Paragraph"
