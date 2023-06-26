@@ -144,7 +144,7 @@
     "other": "Endereço a ser usado como padrão quando enviar emails. Você deve usar um email de suporte apropriado ao invés de um email de 'não-responda'."
   },
   "Mail.Config.FixOutlookDisplay": {
-    "other": "Correção para Clientes do Outlook (desabilitar CSS inline)"
+    "other": "Correção para Clientes do Outlook (desativar CSS inline)"
   },
   "Mail.Config.Queue.Label": {
     "other": "Tipo de Fila"
