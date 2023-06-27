@@ -84,7 +84,7 @@
     "other": "Пароль"
   },
   "advanced.mongo.authSource": {
-    "other": "Auth DB"
+    "other": "БД авторизация"
   },
   "advanced.mongo.validate": {
     "other": "Проверить подключение"
@@ -222,7 +222,7 @@
     "other": "Локальный файл-сервер (хранить все данные на этом сервере)"
   },
   "form.dsType.S3": {
-    "other": "Amazon S3 / S3-compatible (store inside S3 buckets)"
+    "other": "Совместимость с Amazon S3/S3-совместимого (хранение внутри бакетов S3)"
   },
   "form.dsS3Custom.label": {
     "other": "URL, append ?minio=true if Minio."
