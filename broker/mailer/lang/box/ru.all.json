@@ -51,7 +51,7 @@
     "other": "Добро пожаловать на {{.Configs.Title}}"
   },
   "Mail.Welcome.Intros": {
-    "other": "Для вас создана учётная запись {{.Configs.Title}}. \n Ваш логин: {{.TplData.Login}}{{if .TplData.Password}} , пароль: {{.TplData.Password}}. Вы можете изменить его при первом входе{{end}}."
+    "other": "Для вас создана учётная запись {{.Configs.Title}}. \nВаш логин: {{.TplData.Login}}{{if .TplData.Password}} , пароль: {{.TplData.Password}}. Вы можете изменить его при первом входе{{end}}."
   },
   "Mail.Welcome.LinkInstructions": {
     "other": "Нажмите, чтобы войти"
