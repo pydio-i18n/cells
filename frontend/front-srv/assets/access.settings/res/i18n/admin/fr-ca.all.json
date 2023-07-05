@@ -1803,16 +1803,16 @@
     "other": "Flows des Utilisateurs"
   },
   "scheduler.users.legend": {
-    "other": "These Flows are dynamically created and trigged by user actions."
+    "other": "Ces Flows sont générés dynamiquement par des actions des utilisateurs."
   },
   "scheduler.users.empty": {
-    "other": "No Flows launched by users"
+    "other": "Pas de Flows lancés par les utilisateurs"
   },
   "scheduler.cellsflows.cta.button": {
-    "other": "+ Custom Flow"
+    "other": "+ Flow personnalisé"
   },
   "scheduler.cellsflows.cta.text": {
-    "other": "Do you need to create your own Flow? Discover how Cells Flows makes it easy to automate your repetitive manual tasks in Cells."
+    "other": "Vous avez besoin de créer votre propre scénario ? Découvrez comment Cells Flows vous permet d'automatiser facilement les tâches répétitives dans Cells."
   },
   "scheduler.cellsflows.dialog.button": {
     "other": "En savoir plus"
@@ -1839,10 +1839,10 @@
     "other": "Supprimer"
   },
   "scheduler.job.delete.confirm": {
-    "other": "Are you sure you want to delete this Flow? This operation cannot be reverted!"
+    "other": "Êtes-vous sûr de vouloir effacer ce Flow? Cette opération est irréversible !"
   },
   "scheduler.tasks.delete.confirm": {
-    "other": "Are you sure you want to clear all tasks for this Flow?"
+    "other": "Êtes-vous sûr de vouloir effacer toutes les tâches pour ce Flow ?"
   },
   "scheduler.trigger.create.node": {
     "other": "Création"
@@ -1911,13 +1911,13 @@
     "other": "Supprimer"
   },
   "scheduler.task.action.enable": {
-    "other": "Enable Flow"
+    "other": "Activer le Flow"
   },
   "scheduler.task.action.run": {
     "other": "Démarrer maintenant"
   },
   "scheduler.task.action.disable": {
-    "other": "Disable Flow"
+    "other": "Désactiver le Flow"
   },
   "scheduler.task.id": {
     "other": "ID"
@@ -1995,7 +1995,7 @@
     "other": "Toutes les %1"
   },
   "scheduler.schedule.title": {
-    "other": "Flow Schedule"
+    "other": "Plannification"
   },
   "scheduler.schedule.type": {
     "other": "Type de planification"
@@ -2028,7 +2028,7 @@
     "other": "Période en minutes"
   },
   "scheduler.job-parameters.dialog": {
-    "other": "Flow Parameters"
+    "other": "Paramètres du Flow"
   },
   "scheduler.job-parameters.button": {
     "other": "Paramètres"
