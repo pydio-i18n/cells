@@ -219,7 +219,7 @@
     "other": "Verwenden Sie einen absoluten Pfad auf dem Server"
   },
   "form.dsType.Label": {
-    "other": "Storage Type"
+    "other": "Speicherart"
   },
   "form.dsType.FS": {
     "other": "Lokaler FS (alle Daten auf diesem Server speichern)"
