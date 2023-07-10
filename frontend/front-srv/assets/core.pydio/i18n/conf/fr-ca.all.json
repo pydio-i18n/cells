@@ -18,7 +18,7 @@
     "other": "API setting - Url de redirection de l'application OAuth"
   },
   "Absolute path to the public folder where temporary download links will be created. This is used for legacy purpose, newly created links do not use it anymore, but use the Base URI instead.": {
-    "other": "Absolute path to the public folder where temporary download links will be created. This is used for legacy purpose, newly created links do not use it anymore, but use the Base URI instead."
+    "other": "Chemin absolu vers le dossier public où des liens de téléchargement temporaire seront créés. Ceci est utilisé dans les anciennes versions, les liens nouvellement créés ne l'utilisent plus, mais utilisez plutôt l'URI racine."
   },
   "Admin Login": {
     "other": "Connexion administrateur"
