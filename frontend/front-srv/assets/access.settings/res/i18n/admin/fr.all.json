@@ -770,6 +770,12 @@
   "metadata.order": {
     "other": "Position"
   },
+  "metadata.group": {
+    "other": "Group"
+  },
+  "metadata.default-group": {
+    "other": "No Group"
+  },
   "metadata.toggle.index": {
     "other": "Indexer dans le moteur de recherche"
   },
@@ -1659,7 +1665,7 @@
     "other": "Si des personnes synchronisent ce workspace, leur application n'y aura plus accès! Etes-vous sûr de vouloir changer ça?"
   },
   "ws.editor.other.quota": {
-    "other": "Quota d'utilisation du disque (laisser 0 pour pas de limite). Ce quota est calculé sur tous les fichiers de ce workspace. Pour les workspaces type \"Mes Fichiers\", vous pouvez adapter cette valeur en fonction des utilisateurs, groupes ou rôles."
+    "other": "Disk Usage Quota (leave 0 for no limit). This quota is computed on all files of this workspace (or user-specific contents for workspaces like Personal Files)."
   },
   "ws.editor.other.quota.noquota": {
     "other": "Pas de quota"
