@@ -72,22 +72,22 @@
     "other": "服务器主机"
   },
   "advanced.mongo.port": {
-    "other": "Server port"
+    "other": "服务器端口"
   },
   "advanced.mongo.db": {
-    "other": "Database Name"
+    "other": "数据库名"
   },
   "advanced.mongo.username": {
     "other": "Username"
   },
   "advanced.mongo.password": {
-    "other": "Password"
+    "other": "密码"
   },
   "advanced.mongo.authSource": {
     "other": "Auth DB"
   },
   "advanced.mongo.validate": {
-    "other": "Test connection"
+    "other": "测试连接"
   },
   "license.stepLabel": {
     "other": "企业版许可证"
@@ -219,7 +219,7 @@
     "other": "使用服务器上的绝对路径"
   },
   "form.dsType.Label": {
-    "other": "Storage Type"
+    "other": "存储类型"
   },
   "form.dsType.FS": {
     "other": "本地文件系统 (所有数据存储的此服务器上)"
