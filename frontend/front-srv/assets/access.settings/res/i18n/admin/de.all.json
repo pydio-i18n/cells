@@ -2019,7 +2019,7 @@
     "other": "Täglich"
   },
   "scheduler.schedule.type.timely": {
-    "other": "Jeder %1..."
+    "other": "Jeder..."
   },
   "scheduler.schedule.detail.monthday": {
     "other": "Tag des Monats"
