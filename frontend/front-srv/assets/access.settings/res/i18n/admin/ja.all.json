@@ -276,25 +276,25 @@
     "other": "バケット名"
   },
   "ds.editor.storage.s3.endpoint.type": {
-    "other": "Endpoint Type"
+    "other": "エンドポイントタイプ"
   },
   "ds.editor.storage.s3.signatureVersion": {
-    "other": "Signature Version"
+    "other": "署名のバージョン"
   },
   "ds.editor.storage.s3.endpoint.amazon": {
     "other": "Amazon S3"
   },
   "ds.editor.storage.s3.endpoint.custom": {
-    "other": "Other S3-Compatible Storage"
+    "other": "S3互換ストレージ"
   },
   "ds.editor.storage.s3.endpoint.minio": {
-    "other": "Minio Server"
+    "other": "Minio サーバー"
   },
   "ds.editor.storage.s3.endpoint": {
     "other": "カスタムエンドポイントURL"
   },
   "ds.editor.storage.s3.endpoint.hint": {
-    "other": "include http(s)://"
+    "other": "http(s):// を含む"
   },
   "ds.editor.storage.s3.region": {
     "other": "S3 Api リージョン"
@@ -312,10 +312,10 @@
     "other": "バケットを再読み込み"
   },
   "ds.editor.storage.buckets.create": {
-    "other": "Create Bucket"
+    "other": "バケットを作成"
   },
   "ds.editor.storage.buckets.create.hint": {
-    "other": "Bucket name"
+    "other": "バケット名"
   },
   "ds.editor.storage.buckets.regexp": {
     "other": "正規表現を使用"
@@ -342,16 +342,16 @@
     "other": "オブジェクトタグ"
   },
   "ds.editor.storage.s3.legend.bucketPathPrefix": {
-    "other": "Use a path prefix inside the bucket (will create a virtual folder to store objects)"
+    "other": "Bucket 内のパスプレフィックスを使用します (オブジェクトを格納する仮想フォルダを作成します)"
   },
   "ds.editor.storage.s3.bucketPathPrefix": {
-    "other": "Path prefix"
+    "other": "パスプレフィックス"
   },
   "ds.editor.storage.s3.legend.storageClass": {
-    "other": "Custom Storage Class (leave empty to use STANDARD). Amazon S3 supports the following values: REDUCED_REDUNDANCY, STANDARD_IA, ONEZONE_IA, INTELLIGENT_TIERING, GLACIER, DEEP_ARCHIVE, OUTPOSTS, GLACIER_IR. Beware that using GLACIER or equivalent will make the datasource write-only, as objects have to be manually restored before being available for download."
+    "other": "カスタム ストレージ クラス (空白のままにして標準を使用) Amazon S3 は以下の値をサポートします: REDUCED_REDUNDANCY, STANDARD_IA, ONEZONE_IA, INTELIGENT_TIERING, GLACIER, DEEP_ARCHIVE, OUTPOSTS, GLACIER_IR. GLACIERまたは同等の機能を使用すると、データソースは書き込み専用になりますので、ダウンロード前にオブジェクトを手動で復元する必要があります。"
   },
   "ds.editor.storage.s3.storageClass": {
-    "other": "Storage Class"
+    "other": "ストレージクラス"
   },
   "ds.editor.title": {
     "other": "データ ソース %s"
@@ -390,7 +390,7 @@
     "other": "このストレージが以前にフラットデータソースとして使用されていた場合は、既存のスナップショットファイルから初期化します（ストレージ内にある必要があります）"
   },
   "ds.editor.foldersShardingPattern": {
-    "other": "By default, all files are stored inside a unique folder. Use a pattern 'N:P:Q' to auto-create sub folders id[:N]/id[:P]/id[:Q]/..."
+    "other": "デフォルトでは、すべてのファイルは一意のフォルダ内に格納されています。サブフォルダID[:N]/id[:P]/id[:Q]/... を自動作成するには、パターン 'N:P:Q' を使用します。"
   },
   "ds.encryption": {
     "other": "暗号化"
@@ -769,6 +769,15 @@
   },
   "metadata.order": {
     "other": "順序"
+  },
+  "metadata.group": {
+    "other": "Group"
+  },
+  "metadata.group-field": {
+    "other": "Group Name (creates an expandable section). Use '/' for sub-groups."
+  },
+  "metadata.default-group": {
+    "other": "No Group"
   },
   "metadata.toggle.index": {
     "other": "検索エンジンのインデックス"
@@ -1316,6 +1325,12 @@
   "virtual.card.cleanOnDelete": {
     "other": "ユーザーの削除時、データの名前を {deleted-NAME-UUID} に変更します。"
   },
+  "virtual.card.cleanOnDelete-legend-off": {
+    "other": "This option should not be used if the template path is not creating a folder for each user (using User.Name)."
+  },
+  "virtual.card.cleanOnDelete-legend-on": {
+    "other": "This option may be recommended as the template path seems to create a folder for each user (using User.Name)."
+  },
   "ws.1": {
     "other": "データソースの管理"
   },
@@ -1434,10 +1449,10 @@
     "other": "ここで、このワークスペースフォルダへのデフォルトのアクセス許可を指定します。 サブレベルで権限管理を有効にするには、特定のフォルダーで 'CHILDREN' を選択します。\nこれにより、現在のフォルダーがデフォルトで読み取り専用に設定され、その子フォルダーへのアクセスを選択的に開くことができます。"
   },
   "ws.44": {
-    "other": "これはマスクだけです。実際のフォルダを直接変更すると、それに応じてこのマスクを編集する必要があります。 また、これらの権限は、このワークスペースの「デフォルトの権利」パラメータセットによってグローバルに制限されてもよい（「全般」タブを参照）。"
+    "other": "Please be aware that this is only a mask: if you modify the real folders directly, you may have\n                                to edit this mask accordingly. Also, these permissions may be globally limited by the 'Default Rights'\n                                parameter set for this workspace (see the General tab)."
   },
   "ws.45": {
-    "other": "そのパラメータは「pydio_user」または 'pydio_group_ *'キーワードを使用しているので、このワークスペースの内容は現在認証されているユーザーによって異なります。 このため、閲覧することはできません\nフォルダに直接アクセス権を割り当て、それらに権限を割り当てるが、マスクとして使用される一般的なパスを自由に定義することができます。"
+    "other": "As its parameters are using 'PYDIO_USER' or 'PYDIO_GROUP_*' keywords, the contents of\n                                this workspace will vary depending on the currently authenticated user. For this reason, you cannot browse the\n                                folders directly and assign permissions to them, but you can freely define some generic paths that will be used as masks."
   },
   "ws.46": {
     "other": "機能を追加"
@@ -1653,7 +1668,7 @@
     "other": "ユーザーがこのワークスペースに接続している場合、同期タスクは機能しなくなります。 それを変更してもよろしいですか？"
   },
   "ws.editor.other.quota": {
-    "other": "ディスク使用量クォータ（制限なしの場合は0のままにします）。 このクォータは、このワークスペースのすべてのファイルで計算されます。 ユーザー固有のワークスペース（個人用ファイルなど）の場合、[ユーザー] セクションのユーザー/グループ/ロールごとにこの値を調整できます。"
+    "other": "Disk Usage Quota (leave 0 for no limit). This quota is computed on all files of this workspace (or user-specific contents for workspaces like Personal Files)."
   },
   "ws.editor.other.quota.noquota": {
     "other": "クォータが設定されていません"
@@ -1668,7 +1683,7 @@
     "other": "たとえばURLで使用される技術名称で、自動的に計算されますが、カスタマイズすることができます。"
   },
   "services.text-filter.hint": {
-    "other": "Filter..."
+    "other": "フィルター..."
   },
   "services.filter.nofilter": {
     "other": "すべてのサービス"
