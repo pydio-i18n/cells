@@ -770,6 +770,15 @@
   "metadata.order": {
     "other": "Orden"
   },
+  "metadata.group": {
+    "other": "Group"
+  },
+  "metadata.group-field": {
+    "other": "Group Name (creates an expandable section). Use '/' for sub-groups."
+  },
+  "metadata.default-group": {
+    "other": "No Group"
+  },
   "metadata.toggle.index": {
     "other": "Índice en el motor de búsqueda"
   },
@@ -1316,6 +1325,12 @@
   "virtual.card.cleanOnDelete": {
     "other": "Al eliminar un usuario, renombrar los datos a {deleted-NAME-UUID}."
   },
+  "virtual.card.cleanOnDelete-legend-off": {
+    "other": "This option should not be used if the template path is not creating a folder for each user (using User.Name)."
+  },
+  "virtual.card.cleanOnDelete-legend-on": {
+    "other": "This option may be recommended as the template path seems to create a folder for each user (using User.Name)."
+  },
   "ws.1": {
     "other": "Gestionar DataSources"
   },
@@ -1434,10 +1449,10 @@
     "other": "Especifique aquí los permisos de acceso por defecto para las carpetas del workspace.\n                                Para activar la gestión de permisos en subniveles, seleccione 'HIJOS' en la carpeta seleccionada.\n                                Esto hará la carpeta actual de sólo lectura por defecto y podrá seleccionar permisos de acceso\n                                selectivamente en las subcarpetas."
   },
   "ws.44": {
-    "other": "Asegúrese de que esta es la única máscara: si modifica las carpetas reales directamente, tendrá\n                                que editar esta máscara de acuerdo con ello. Además, estos permisos pueden estar limitados por 'Permisos por Defecto'\n                                seleccionados para este workspace (ver pestaña General)."
+    "other": "Please be aware that this is only a mask: if you modify the real folders directly, you may have\n                                to edit this mask accordingly. Also, these permissions may be globally limited by the 'Default Rights'\n                                parameter set for this workspace (see the General tab)."
   },
   "ws.45": {
-    "other": "Dado que se está usando 'PYDIO_USER' o 'PYDIO_GROUP_*', el contenido de\n                                este workspace variará dependiendo del usuario autenticado. Por esta razón, no puede navegar\n                                directamente por las carpetas y asignarles permisos, pero puede definir rutas genéricas que se usarán como máscaras."
+    "other": "As its parameters are using 'PYDIO_USER' or 'PYDIO_GROUP_*' keywords, the contents of\n                                this workspace will vary depending on the currently authenticated user. For this reason, you cannot browse the\n                                folders directly and assign permissions to them, but you can freely define some generic paths that will be used as masks."
   },
   "ws.46": {
     "other": "Añadir funcionalidad"
@@ -1653,7 +1668,7 @@
     "other": "¡Si los usuarios están conectados a este workspace, la sincronización no funcionará! ¿Está seguro de que desea cambiar esto?"
   },
   "ws.editor.other.quota": {
-    "other": "Cuota de uso del disco (deje 0 sin límite). Esta cuota es calculada en todos los archivos de este espacio de trabajo. Para áreas de trabajo específicas del usuario (como Archivos Personales), puede refinar este valor en cada usuario/grupo/rol en la sección Personas."
+    "other": "Disk Usage Quota (leave 0 for no limit). This quota is computed on all files of this workspace (or user-specific contents for workspaces like Personal Files)."
   },
   "ws.editor.other.quota.noquota": {
     "other": "Sin cuota establecida"
