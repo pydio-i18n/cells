@@ -22,5 +22,14 @@
   },
   "8": {
     "other": "Use o formulário abaixo para redefinir sua senha. Por favor, digite seu login e a nova senha duas vezes."
+  },
+  "9": {
+    "other": "Por favor, digite seu nome de usuário e senha"
+  },
+  "10": {
+    "other": "Por favor, digite a senha que você recebeu"
+  },
+  "11": {
+    "other": "Falha de login: não foi possível reconhecer seu nome de usuário ou senha"
   }
 }
