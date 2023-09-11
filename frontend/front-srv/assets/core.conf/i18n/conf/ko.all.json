@@ -206,10 +206,25 @@
   "Whether users can create their own repositories, based on predefined templates.": {
     "other": "미리 정의된 템플릿을 기반으로 사용자가 직접 저장소를 만들 수 있는지 여부."
   },
-  "Worskpace creation delegation": {
-    "other": "작업공간 생성 위임"
+  "Workspace creation delegation": {
+    "other": "Workspace creation delegation"
   },
   "role prefix": {
     "other": "역할 접두사"
+  },
+  "System Default": {
+    "other": "System Default"
+  },
+  "Material 3 (detect)": {
+    "other": "Material 3 (detect)"
+  },
+  "Material 3 (light)": {
+    "other": "Material 3 (light)"
+  },
+  "Material 3 (dark)": {
+    "other": "Material 3 (dark)"
+  },
+  "Material Legacy": {
+    "other": "Material Legacy"
   }
 }
