@@ -770,6 +770,15 @@
   "metadata.order": {
     "other": "Ordenar"
   },
+  "metadata.group": {
+    "other": "Grupo"
+  },
+  "metadata.group-field": {
+    "other": "Group Name (creates an expandable section). Use '/' for sub-groups."
+  },
+  "metadata.default-group": {
+    "other": "Sem Grupo"
+  },
   "metadata.toggle.index": {
     "other": "Indexar ao motor de busca"
   },
@@ -1316,6 +1325,12 @@
   "virtual.card.cleanOnDelete": {
     "other": "Após a exclusão do usuário, renomeie dados para {deleted-NAME-UUID}."
   },
+  "virtual.card.cleanOnDelete-legend-off": {
+    "other": "This option should not be used if the template path is not creating a folder for each user (using User.Name)."
+  },
+  "virtual.card.cleanOnDelete-legend-on": {
+    "other": "This option may be recommended as the template path seems to create a folder for each user (using User.Name)."
+  },
   "ws.1": {
     "other": "Gerenciar Fonte de Dados"
   },
@@ -1434,7 +1449,7 @@
     "other": "Especifique aqui as permissões de acesso padrão para esta pasta do espaço de trabalho.\n                                Para ativar o gerenciamento de permissões em um subnível selecione 'CHILDREN' em uma determinada pasta.\n                                Isso irá definir a pasta atual como somente leitura por padrão e você poderá abrir acessos\n                                de forma seletiva para qualquer uma das pastas filhas."
   },
   "ws.44": {
-    "other": "Por favor, esteja ciente de que isto é apenas uma máscara: se você modificar as pastas reais diretamente, Você pode ter\n                                para editar esta máscara de acordo. Além disso, essas permissões podem estar globalmente limitadas pelo conjunto 'Direitos Padrões'\n                                para esta área de trabalho (veja a guia Geral)."
+    "other": "Por favor, esteja ciente de que isto é apenas uma máscara: se você modificar as pastas reais diretamente, você pode ter\n                                que editar esta máscara de acordo. Além disso, essas permissões podem estar globalmente limitadas pelo conjunto de parâmetros 'Direitos Padrões'\n                                para este espaço de trabalho (veja a guia Geral)."
   },
   "ws.45": {
     "other": "Como seus parâmetros estão usando as palavras-chave 'PYDIO_USER' ou 'PYDIO_GROUP_*', o conteúdo\n                                deste espaço de trabalho vai variar dependendo do usuário autenticado atualmente. Por esta razão, você não pode navegar pelas\n                                pastas diretamente e atribuir permissões à elas, mas você pode definir livremente alguns caminhos genéricos que serão usados como máscaras."
@@ -1653,7 +1668,7 @@
     "other": "Se as pessoas estiverem conectadas a este espaço de trabalho, sua tarefa de sincronização não funcionará mais! Tem certeza que deseja alterar isso?"
   },
   "ws.editor.other.quota": {
-    "other": "Cota de Uso de Disco (deixe 0 para sem limite). Esta cota é calculada em todos os arquivos deste espaço de trabalho. Para espaços de trabalho específicos do usuário (como Arquivos Pessoais), você pode refinar esse valor em uma base por usuário/grupo/função na seção Pessoas."
+    "other": "Disk Usage Quota (leave 0 for no limit). This quota is computed on all files of this workspace (or user-specific contents for workspaces like Personal Files)."
   },
   "ws.editor.other.quota.noquota": {
     "other": "Sem conjunto de cotas"
