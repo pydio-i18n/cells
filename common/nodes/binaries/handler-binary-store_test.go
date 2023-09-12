@@ -113,7 +113,7 @@ func TestHandler_ReadNode(t *testing.T) {
 // 	handler, mock := getStoreTestMock()
 
 // 	Convey("Test Get Object", t, func() {
-// 		_, e := handler.GetObject(context.Background(), &tree.Node{Path: testBinaryStoreName + "/thumb"}, &GetRequestData{})
+// 		_, e := handler.GetObject(context.Background(), &tree.N{Path: testBinaryStoreName + "/thumb"}, &GetRequestData{})
 // 		So(e, ShouldNotBeNil)
 // 		So(mock.Nodes["in"], ShouldNotBeNil)
 // 		ctx := mock.Context

@@ -189,7 +189,7 @@ func (m *Handler) CreateNode(ctx context.Context, in *tree.CreateNodeRequest, op
 	return m.Next.CreateNode(ctx, in, opts...)
 }
 
-// PutObject eventually creates an index Node, captures body to extract Mime Type and compute custom Hash
+// PutObject eventually creates an index N, captures body to extract Mime Type and compute custom Hash
 func (m *Handler) PutObject(ctx context.Context, node *tree.Node, reader io.Reader, requestData *models.PutRequestData) (models.ObjectInfo, error) {
 	log.Logger(ctx).Debug("[HANDLER PUT] > Putting object", zap.String("UUID", node.Uuid), zap.String("Path", node.Path))
 
@@ -351,7 +351,7 @@ func (m *Handler) MultipartAbort(ctx context.Context, target *tree.Node, uploadI
 		})
 		if err == nil && existingResp.Node != nil && existingResp.Node.Etag == common.NodeFlagEtagTemporary {
 			log.Logger(ctx).Info("Received MultipartAbort - Clean temporary node:", existingResp.Node.Zap())
-			// Delete Temporary Node Now!
+			// Delete Temporary N Now!
 			treeWriter.DeleteNode(ctx, &tree.DeleteNodeRequest{Node: &tree.Node{
 				Path: string(norm.NFC.Bytes([]byte(treePath))),
 				Type: tree.NodeType_LEAF,

@@ -23,7 +23,6 @@ import {muiThemeable}from 'material-ui/styles'
 import Color from 'color'
 import {IconButton, Popover} from 'material-ui'
 const {AsyncComponent} = Pydio.requireLib('boot');
-const {IconButtonMenu} = Pydio.requireLib('components');
 const {Callbacks} = Pydio.requireLib('actions/core')
 
 class OverlayIcon extends Component{
@@ -56,12 +55,18 @@ class OverlayIcon extends Component{
                 break;
             case "mdi mdi-tag":
             case "mdi mdi-tag-outline":
+                if (!pydio.Registry.hasPluginOfType("meta", "user")) {
+                    break
+                }
                 tooltip = ''
                 popoverNS = 'ReactMeta'
                 popoverComponent = 'InfoPanel'
                 break;
             case "mdi mdi-message-outline":
             case "mdi mdi-message":
+                if (!pydio.Registry.hasPluginOfType("meta", "comments")) {
+                    break
+                }
                 count = node.getMetadata().get('has_comments');
                 tooltip = count + ' comment' + (count > 1 ? 's' : '');
                 popoverNS = 'MetaComments'
@@ -125,7 +130,7 @@ class OverlayIcon extends Component{
                         canAutoPosition={true}
                         onRequestClose={() => {this.setState({popoverOpen: false})}}
                         style={{backgroundColor:'transparent', width: 310}}
-                        zDepth={0}
+                        zDepth={2}
                     >
                         <AsyncComponent
                             namespace={popoverNS}

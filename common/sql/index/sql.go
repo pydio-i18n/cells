@@ -46,10 +46,8 @@ import (
 	"github.com/pydio/cells/v4/common/sql"
 	cache2 "github.com/pydio/cells/v4/common/utils/cache"
 	"github.com/pydio/cells/v4/common/utils/configx"
-	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/common/utils/mtree"
 	"github.com/pydio/cells/v4/common/utils/statics"
-	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 var (
@@ -216,6 +214,18 @@ func init() {
 	queries["updateEtag"] = func(dao sql.DAO, mpathes ...string) string {
 		return `UPDATE %%PREFIX%%_idx_tree set etag = ? WHERE uuid = ?`
 	}
+	queries["updateNameInPlace"] = func(dao sql.DAO, args ...string) (string, []interface{}) {
+		q := "update %%PREFIX%%_idx_tree set name= ?"
+		// As name changes, we have to recompute HashParent
+		if hash2 := dao.HashParent("name", "mpath1", "mpath2", "mpath3", "mpath4"); hash2 != "" {
+			q += ", hash2=" + hash2
+		}
+		q += " WHERE name = ?"
+		if len(args) > 0 { // Append an additional where condition, can be for example uuid or level
+			q += " AND " + args[0] + "=?"
+		}
+		return q, []interface{}{}
+	}
 
 	queries["selectNodeUuid"] = func(dao sql.DAO, mpathes ...string) string {
 		return `
@@ -263,23 +273,31 @@ func init() {
 		if len(other) > 1 && other[1] != "" {
 			sub += " and " + other[1]
 		}
+		orderBy := "ORDER BY mpath1, mpath2, mpath3, mpath4 ASC"
+		if len(other) > 2 && other[2] != "" {
+			orderBy = other[2]
+		}
 		return fmt.Sprintf(`
 			SELECT uuid, level, mpath1, mpath2, mpath3, mpath4,  name, leaf, mtime, etag, size, mode
 			FROM %%PREFIX%%_idx_tree
 			WHERE %s and level >= ?
-			ORDER BY mpath1, mpath2, mpath3, mpath4`, sub), args
+			%s`, sub, orderBy), args
 	}
 
-	queries["children"] = func(dao sql.DAO, mpathes ...string) (string, []interface{}) {
-		sub, args := getMPathLike([]byte(mpathes[0]))
-		if len(mpathes) > 1 && mpathes[1] != "" {
-			sub += " and " + mpathes[1]
+	queries["children"] = func(dao sql.DAO, other ...string) (string, []interface{}) {
+		sub, args := getMPathLike([]byte(other[0]))
+		if len(other) > 1 && other[1] != "" {
+			sub += " AND " + other[1]
+		}
+		orderBy := "ORDER BY name ASC"
+		if len(other) > 2 && other[2] != "" {
+			orderBy = other[2]
 		}
 		return fmt.Sprintf(`
 			SELECT uuid, level, mpath1, mpath2, mpath3, mpath4,  name, leaf, mtime, etag, size, mode
 			FROM %%PREFIX%%_idx_tree
 			WHERE %s AND level = ?
-			ORDER BY name`, sub), args
+			%s`, sub, orderBy), args
 	}
 
 	queries["child"] = func(dao sql.DAO, mpathes ...string) (string, []interface{}) {
@@ -332,6 +350,14 @@ func init() {
 			FROM %%PREFIX%%_idx_tree
 			WHERE %s AND level = ? AND name != '.pydio'
 			GROUP BY leaf`, sub), args
+	}
+
+	queries["treeCount"] = func(dao sql.DAO, mpathes ...string) (string, []interface{}) {
+		sub, args := getMPathLike([]byte(mpathes[0]))
+		return fmt.Sprintf(`
+			select count(*)
+			FROM %%PREFIX%%_idx_tree
+			WHERE %s AND level > ?`, sub), args
 	}
 
 	queries["childrenIndexes"] = func(dao sql.DAO, mpathes ...string) (string, []interface{}) {
@@ -427,11 +453,15 @@ func (dao *IndexSQL) AddNode(node *mtree.TreeNode) error {
 	if er != nil {
 		return er
 	}
+	isLeaf := 0
+	if node.IsLeaf() {
+		isLeaf = 1
+	}
 	if _, err := stmt.Exec(
-		node.Uuid,
+		node.GetUuid(),
 		node.Level,
 		node.Name(),
-		node.IsLeafInt(),
+		isLeaf,
 		mTime,
 		node.GetEtag(),
 		node.GetSize(),
@@ -486,7 +516,11 @@ func (dao *IndexSQL) AddNodeStream(max int) (chan *mtree.TreeNode, chan error) {
 
 			mpath1, mpath2, mpath3, mpath4 := prepareMPathParts(node)
 
-			valsInsertTree = append(valsInsertTree, node.Uuid, node.Level, node.Name(), node.IsLeafInt(), mTime, node.GetEtag(), node.GetSize(), node.GetMode(), mpath1, mpath2, mpath3, mpath4)
+			isLeaf := 0
+			if node.IsLeaf() {
+				isLeaf = 1
+			}
+			valsInsertTree = append(valsInsertTree, node.GetUuid(), node.Level, node.Name(), isLeaf, mTime, node.GetEtag(), node.GetSize(), node.GetMode(), mpath1, mpath2, mpath3, mpath4)
 
 			count = count + 1
 
@@ -530,19 +564,24 @@ func (dao *IndexSQL) SetNode(node *mtree.TreeNode) error {
 		return er
 	}
 
+	isLeaf := 0
+	if node.IsLeaf() {
+		isLeaf = 1
+	}
+
 	_, err := updateTree.Exec(
 		node.Level,
 		node.Name(),
-		node.IsLeafInt(),
-		node.MTime,
-		node.Etag,
-		node.Size,
-		node.Mode,
+		isLeaf,
+		node.GetMTime(),
+		node.GetEtag(),
+		node.GetSize(),
+		node.GetMode(),
 		mpath1,
 		mpath2,
 		mpath3,
 		mpath4,
-		node.Uuid,
+		node.GetUuid(),
 	)
 
 	return err
@@ -559,17 +598,44 @@ func (dao *IndexSQL) SetNodeMeta(node *mtree.TreeNode) error {
 		return er
 	}
 
+	isLeaf := 0
+	if node.IsLeaf() {
+		isLeaf = 1
+	}
+
 	_, err := updateMeta.Exec(
 		node.Name(),
-		node.IsLeafInt(),
-		node.MTime,
-		node.Etag,
-		node.Size,
-		node.Mode,
-		node.Uuid,
+		isLeaf,
+		node.GetMTime(),
+		node.GetEtag(),
+		node.GetSize(),
+		node.GetMode(),
+		node.GetUuid(),
 	)
 
 	return err
+}
+
+// UpdateNameInPlace in replacement of previous node
+func (dao *IndexSQL) UpdateNameInPlace(oldName, newName string, knownUuid string, knownLevel int) (int64, error) {
+
+	dao.Lock()
+	defer dao.Unlock()
+
+	updateName, _, er := dao.GetStmtWithArgs("updateNameInPlace")
+	if er != nil {
+		return 0, er
+	}
+
+	res, err := updateName.Exec(
+		newName,
+		oldName,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return res.RowsAffected()
+
 }
 
 // etagFromChildren recompute ETag from children ETags
@@ -600,10 +666,12 @@ func (dao *IndexSQL) etagFromChildren(node *mtree.TreeNode) (string, error) {
 		return "", e
 	}
 
+	fmt.Println("NODE", node)
+
 	first := true
 	for rows.Next() {
 		var etag string
-		rows.Scan(&etag)
+		_ = rows.Scan(&etag)
 		if !first {
 			hasher.Write([]byte(SEPARATOR))
 		}
@@ -644,24 +712,24 @@ func (dao *IndexSQL) ResyncDirtyEtags(rootNode *mtree.TreeNode) error {
 		}
 		nodesToUpdate = append(nodesToUpdate, node)
 	}
-	log.Logger(context.Background()).Info("Total Nodes Resynced", zap.Any("t", len(nodesToUpdate)))
+	log.Logger(context.Background()).Info("Total Nodes Resynced", zap.Int("t", len(nodesToUpdate)))
 	rows.Close()
 	dao.Unlock()
 
 	for _, node := range nodesToUpdate {
-		log.Logger(context.Background()).Info("Resyncing Etag For Node", zap.Any("n", node))
+		log.Logger(context.Background()).Info("Resyncing Etag For Node", node.Zap("node"))
 		newEtag, eE := dao.etagFromChildren(node)
 		if eE != nil {
 			return eE
 		}
-		log.Logger(context.Background()).Info("Computed Etag For Node", zap.Any("etag", newEtag))
+		log.Logger(context.Background()).Info("Computed Etag For Node", zap.String("etag", newEtag))
 		stmt, er := dao.GetStmt("updateEtag")
 		if er != nil {
 			return er
 		}
 		if _, err = stmt.Exec(
 			newEtag,
-			node.Uuid,
+			node.GetUuid(),
 		); err != nil {
 			return err
 		}
@@ -983,7 +1051,7 @@ func (dao *IndexSQL) GetNodeFirstAvailableChildIndex(reqPath mtree.MPath) (avail
 }
 
 // GetNodeChildrenCounts List
-func (dao *IndexSQL) GetNodeChildrenCounts(path mtree.MPath) (int, int) {
+func (dao *IndexSQL) GetNodeChildrenCounts(path mtree.MPath, recursive bool) (int, int) {
 
 	dao.Lock()
 	defer dao.Unlock()
@@ -995,18 +1063,30 @@ func (dao *IndexSQL) GetNodeChildrenCounts(path mtree.MPath) (int, int) {
 
 	var folderCount, fileCount int
 
-	// First we check if we already have an object with the same key
-	if stmt, args, e := dao.GetStmtWithArgs("childrenCount", mpath.String()); e == nil {
-		if rows, e := stmt.Query(append(args, len(path)+1)...); e == nil {
+	stmtName := "childrenCount"
+	refLevel := len(path) + 1
+	if recursive {
+		stmtName = "treeCount"
+		refLevel = len(path)
+	}
+
+	if stmt, args, e := dao.GetStmtWithArgs(stmtName, mpath.String()); e == nil {
+		if rows, e := stmt.Query(append(args, refLevel)...); e == nil {
 			defer rows.Close()
 			for rows.Next() {
-				var leaf bool
 				var count int
-				if sE := rows.Scan(&leaf, &count); sE == nil {
-					if leaf {
-						fileCount = count
-					} else {
+				if recursive {
+					if sE := rows.Scan(&count); sE == nil {
 						folderCount = count
+					}
+				} else {
+					var leaf bool
+					if sE := rows.Scan(&leaf, &count); sE == nil {
+						if leaf {
+							fileCount = count
+						} else {
+							folderCount = count
+						}
 					}
 				}
 			}
@@ -1023,10 +1103,13 @@ func (dao *IndexSQL) GetNodeChildren(ctx context.Context, path mtree.MPath, filt
 
 	// Use a buffered chan to give some air to mysql buffer
 	c := make(chan interface{}, 10000)
-	var mfWhere string
+	var mfWhere, mfOrder string
 	var mfArgs []interface{}
 	if len(filter) > 0 {
 		mfWhere, mfArgs = filter[0].Where()
+		if filter[0].HasSort() {
+			mfOrder = filter[0].OrderBy()
+		}
 	}
 
 	go func() {
@@ -1048,7 +1131,7 @@ func (dao *IndexSQL) GetNodeChildren(ctx context.Context, path mtree.MPath, filt
 		mpath := node.MPath
 
 		// First we check if we already have an object with the same key
-		if stmt, args, e := dao.GetStmtWithArgs("children", mpath.String(), mfWhere); e == nil {
+		if stmt, args, e := dao.GetStmtWithArgs("children", mpath.String(), mfWhere, mfOrder); e == nil {
 			args = append(args, mfArgs...)
 			rows, ca, err = stmt.LongQuery(append(args, len(path)+1)...)
 			defer ca()
@@ -1095,10 +1178,13 @@ func (dao *IndexSQL) GetNodeTree(ctx context.Context, path mtree.MPath, filter .
 	dao.Lock()
 
 	c := make(chan interface{})
-	var mfWhere string
+	var mfWhere, mfOrder string
 	var mfArgs []interface{}
 	if len(filter) > 0 {
 		mfWhere, mfArgs = filter[0].Where()
+		if filter[0].HasSort() {
+			mfOrder = filter[0].OrderBy()
+		}
 	}
 
 	go func() {
@@ -1121,7 +1207,7 @@ func (dao *IndexSQL) GetNodeTree(ctx context.Context, path mtree.MPath, filter .
 		mpath := node.MPath
 
 		// First we check if we already have an object with the same key
-		if stmt, args, e := dao.GetStmtWithArgs("tree", mpath.String(), mfWhere); e == nil {
+		if stmt, args, e := dao.GetStmtWithArgs("tree", mpath.String(), mfWhere, mfOrder); e == nil {
 			args = append(args, mfArgs...)
 			rows, ca, err = stmt.LongQuery(append(args, len(mpath)+1)...)
 			defer ca()
@@ -1203,19 +1289,24 @@ func (dao *IndexSQL) MoveNodeTree(nodeFrom *mtree.TreeNode, nodeTo *mtree.TreeNo
 		return er
 	}
 
+	isLeaf := 0
+	if nodeFrom.IsLeaf() {
+		isLeaf = 1
+	}
+
 	if _, errTx = tx.Stmt(updateTree.GetSQLStmt()).Exec(
 		nodeFrom.Level,
 		nodeFrom.Name(),
-		nodeFrom.IsLeafInt(),
-		nodeFrom.MTime,
-		nodeFrom.Etag,
-		nodeFrom.Size,
-		nodeFrom.Mode,
+		isLeaf,
+		nodeFrom.GetMTime(),
+		nodeFrom.GetEtag(),
+		nodeFrom.GetSize(),
+		nodeFrom.GetMode(),
 		mpath1To,
 		mpath2To,
 		mpath3To,
 		mpath4To,
-		nodeFrom.Uuid,
+		nodeFrom.GetUuid(),
 	); errTx != nil {
 		return errTx
 	}
@@ -1281,22 +1372,13 @@ func (dao *IndexSQL) scanDbRowToTreeNode(row sql.Scanner) (*mtree.TreeNode, erro
 		mpath = append(mpath, i)
 	}
 	node.SetMPath(mpath...)
-
-	metaName, _ := json.Marshal(name)
-	node.Node = &tree.Node{
-		Uuid:      uuid,
-		Type:      nodeType,
-		MTime:     mtime,
-		Etag:      etag,
-		Size:      size,
-		Mode:      mode,
-		MetaStore: map[string]string{"name": string(metaName)},
-	}
+	node.N = tree.LightNode(nodeType, uuid, "", etag, size, mtime, mode)
+	node.SetName(name)
 
 	return node, nil
 }
 
-func (dao *IndexSQL) Path(strpath string, create bool, reqNode ...*tree.Node) (mtree.MPath, []*mtree.TreeNode, error) {
+func (dao *IndexSQL) Path(strpath string, create bool, reqNode ...tree.N) (mtree.MPath, []*mtree.TreeNode, error) {
 
 	var path mtree.MPath
 	var err error
@@ -1321,10 +1403,7 @@ func (dao *IndexSQL) Path(strpath string, create bool, reqNode ...*tree.Node) (m
 		if dao.rootNodeId != "" {
 			rootNodeId = dao.rootNodeId
 		}
-		node = NewNode(&tree.Node{
-			Uuid: rootNodeId,
-			Type: tree.NodeType_COLLECTION,
-		}, []uint64{1}, []string{""})
+		node = NewNode(tree.LightNode(tree.NodeType_COLLECTION, rootNodeId, "", "", 0, 0, 0), []uint64{1}, []string{""})
 
 		if err = dao.AddNode(node); err != nil {
 			// Has it been created elsewhere ?
@@ -1351,8 +1430,8 @@ func (dao *IndexSQL) Path(strpath string, create bool, reqNode ...*tree.Node) (m
 			for {
 				current := inserting.Load().(map[string]bool)
 
-				if _, ok := current[p.Uuid]; !ok {
-					current[p.Uuid] = true
+				if _, ok := current[p.GetUuid()]; !ok {
+					current[p.GetUuid()] = true
 					inserting.Store(current)
 					break
 				}
@@ -1368,7 +1447,8 @@ func (dao *IndexSQL) Path(strpath string, create bool, reqNode ...*tree.Node) (m
 			path[level] = node.MPath[len(node.MPath)-1]
 			parents[level] = node
 
-			node.Path = strings.Trim(strings.Join(names[0:level], "/"), "/")
+			pat := strings.Trim(strings.Join(names[0:level], "/"), "/")
+			node.UpdatePath(pat)
 		} else {
 			if create {
 				if path[level], err = dao.GetNodeFirstAvailableChildIndex(path[0:level]); err != nil {
@@ -1378,27 +1458,22 @@ func (dao *IndexSQL) Path(strpath string, create bool, reqNode ...*tree.Node) (m
 				if level == len(names)-1 && len(reqNode) > 0 {
 					node = NewNode(reqNode[0], path[0:level+1], names[0:level+1])
 				} else {
-					node = NewNode(&tree.Node{
-						Type:  tree.NodeType_COLLECTION,
-						Mode:  0777,
-						MTime: time.Now().Unix(),
-					}, path[0:level+1], names[0:level+1])
+					mn := tree.LightNode(tree.NodeType_COLLECTION, "", "", "", 0, time.Now().Unix(), 0777)
+					node = NewNode(mn, path[0:level+1], names[0:level+1])
 				}
 
-				if node.Uuid == "" {
-					node.Uuid = uuid.New()
-				}
+				node.RenewUuidIfEmpty(false)
 
-				if node.Etag == "" {
+				if node.GetEtag() == "" {
 					// Should only happen for folders - generate first Etag from uuid+mtime
-					node.Etag = fmt.Sprintf("%x", md5.Sum([]byte(fmt.Sprintf("%s%d", node.Uuid, node.MTime))))
+					node.UpdateEtag(fmt.Sprintf("%x", md5.Sum([]byte(fmt.Sprintf("%s%d", node.GetUuid(), node.GetMTime())))))
 				}
 
 				err = dao.AddNode(node)
 
 				cond.L.Lock()
 				current := inserting.Load().(map[string]bool)
-				delete(current, p.Uuid)
+				delete(current, p.GetUuid())
 				inserting.Store(current)
 				cond.L.Unlock()
 
@@ -1420,7 +1495,7 @@ func (dao *IndexSQL) Path(strpath string, create bool, reqNode ...*tree.Node) (m
 		if create {
 			cond.L.Lock()
 			current := inserting.Load().(map[string]bool)
-			delete(current, p.Uuid)
+			delete(current, p.GetUuid())
 			inserting.Store(current)
 			cond.L.Unlock()
 

@@ -85,7 +85,7 @@ func (a *Handler) ListNodes(ctx context.Context, in *tree.ListNodesRequest, opts
 	return a.Next.ListNodes(ctx, in, opts...)
 }
 
-// ReadNode Node Info & Node Content : send by UUID,
+// ReadNode N Info & N Content : send by UUID,
 func (a *Handler) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, opts ...grpc.CallOption) (*tree.ReadNodeResponse, error) {
 	if a.isStorePath(in.Node.Path) {
 		source, er := a.ClientsPool.GetDataSourceInfo(a.StoreName)

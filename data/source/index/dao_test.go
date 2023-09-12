@@ -25,7 +25,6 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
-	"github.com/pydio/cells/v4/common/runtime"
 	"github.com/spf13/viper"
 	"log"
 	"regexp"
@@ -36,11 +35,12 @@ import (
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/dao/sqlite"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/runtime"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/sql"
+	_ "github.com/pydio/cells/v4/common/utils/cache/gocache"
 	"github.com/pydio/cells/v4/common/utils/configx"
 	"github.com/pydio/cells/v4/common/utils/mtree"
-	_ "github.com/pydio/cells/v4/common/utils/cache/gocache"
 )
 
 // FIXME: FAILING TEST
@@ -223,9 +223,9 @@ func TestMysql(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		// Setting MTime to 0 so we can compare
-		node.MTime = 0
+		node.UpdateMTime(0)
 
-		So(node.Node, ShouldResemble, mockNode.Node)
+		So(node.AsProto(), ShouldResemble, mockNode.AsProto())
 	})
 
 	// Setting a file
@@ -246,11 +246,10 @@ func TestMysql(t *testing.T) {
 		node, err := getDAO(ctx).GetNode(mockLongNodeChild2MPath)
 		So(err, ShouldBeNil)
 
-		// TODO - find a way
-		node.MTime = 0
-		node.Path = mockLongNodeChild2.Path
+		node.UpdateMTime(0)
+		node.UpdatePath(mockLongNodeChild2.GetPath())
 
-		So(node.Node, ShouldResemble, mockLongNodeChild2.Node)
+		So(node.AsProto(), ShouldResemble, mockLongNodeChild2.AsProto())
 	})
 
 	Convey("Test Getting a node by uuid - Success", t, func() {
@@ -258,10 +257,10 @@ func TestMysql(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		// Setting MTime to 0 so we can compare
-		node.MTime = 0
-		node.Path = "mockLongNode"
+		node.UpdateMTime(0)
+		node.UpdatePath("mockLongNode")
 
-		So(node.Node, ShouldResemble, mockLongNode.Node)
+		So(node.AsProto(), ShouldResemble, mockLongNode.AsProto())
 	})
 
 	// Getting a file
@@ -271,12 +270,11 @@ func TestMysql(t *testing.T) {
 
 		So(err, ShouldBeNil)
 
-		// TODO - find a way
-		node.MTime = 0
-		node.Path = mockLongNodeChild1.Path
+		node.UpdateMTime(0)
+		node.UpdatePath(mockLongNodeChild1.GetPath())
 
-		So(node.Node, ShouldNotResemble, mockLongNodeChild2.Node)
-		So(node.Node, ShouldResemble, mockLongNodeChild1.Node)
+		So(node.AsProto(), ShouldNotResemble, mockLongNodeChild2.AsProto())
+		So(node.AsProto(), ShouldResemble, mockLongNodeChild1.AsProto())
 	})
 
 	// Setting a file
@@ -286,12 +284,11 @@ func TestMysql(t *testing.T) {
 
 		So(err, ShouldBeNil)
 
-		// TODO - find a way
-		node.MTime = 0
-		node.Path = mockLongNodeChild2.Path
+		node.UpdateMTime(0)
+		node.UpdatePath(mockLongNodeChild2.GetPath())
 
-		So(node.Node, ShouldNotResemble, mockLongNodeChild1.Node)
-		So(node.Node, ShouldResemble, mockLongNodeChild2.Node)
+		So(node.AsProto(), ShouldNotResemble, mockLongNodeChild1.AsProto())
+		So(node.AsProto(), ShouldResemble, mockLongNodeChild2.AsProto())
 	})
 
 	// Setting a file
@@ -349,13 +346,13 @@ func TestMysql(t *testing.T) {
 	Convey("Setting a same mpath multiple times", t, func() {
 
 		node1 := mtree.NewTreeNode()
-		node1.Node = &tree.Node{Uuid: "test-same-mpath", Type: tree.NodeType_LEAF}
+		node1.N = &tree.Node{Uuid: "test-same-mpath", Type: tree.NodeType_LEAF}
 		node1.SetMPath(1, 21, 12, 7)
 		err := getDAO(ctx).AddNode(node1)
 		So(err, ShouldBeNil)
 
 		node2 := mtree.NewTreeNode()
-		node2.Node = &tree.Node{Uuid: "test-same-mpath2", Type: tree.NodeType_LEAF}
+		node2.N = &tree.Node{Uuid: "test-same-mpath2", Type: tree.NodeType_LEAF}
 		node2.SetMPath(1, 21, 12, 7)
 		err = getDAO(ctx).AddNode(node2)
 		So(err, ShouldNotBeNil)
@@ -364,19 +361,19 @@ func TestMysql(t *testing.T) {
 	Convey("Test wrong children due to same MPath start", t, func() {
 
 		node1 := mtree.NewTreeNode()
-		node1.Node = &tree.Node{Uuid: "parent1", Type: tree.NodeType_COLLECTION}
+		node1.N = &tree.Node{Uuid: "parent1", Type: tree.NodeType_COLLECTION}
 		node1.SetMPath(1, 1)
 
 		node2 := mtree.NewTreeNode()
-		node2.Node = &tree.Node{Uuid: "parent2", Type: tree.NodeType_COLLECTION}
+		node2.N = &tree.Node{Uuid: "parent2", Type: tree.NodeType_COLLECTION}
 		node2.SetMPath(1, 15)
 
 		node11 := mtree.NewTreeNode()
-		node11.Node = &tree.Node{Uuid: "child1.1", Type: tree.NodeType_COLLECTION}
+		node11.N = &tree.Node{Uuid: "child1.1", Type: tree.NodeType_COLLECTION}
 		node11.SetMPath(1, 1, 1)
 
 		node21 := mtree.NewTreeNode()
-		node21.Node = &tree.Node{Uuid: "child2.1", Type: tree.NodeType_COLLECTION}
+		node21.N = &tree.Node{Uuid: "child2.1", Type: tree.NodeType_COLLECTION}
 		node21.SetMPath(1, 15, 1)
 
 		e := getDAO(ctx).AddNode(node1)
@@ -435,39 +432,39 @@ func TestMysql(t *testing.T) {
 		const etag4 = "qqqq"
 
 		node := mtree.NewTreeNode()
-		node.Node = &tree.Node{Uuid: "etag-parent-folder", Type: tree.NodeType_COLLECTION}
+		node.N = &tree.Node{Uuid: "etag-parent-folder", Type: tree.NodeType_COLLECTION}
 		node.SetMPath(1, 16)
-		node.Etag = "-1"
+		node.UpdateEtag("-1")
 
 		node11 := mtree.NewTreeNode()
-		node11.Node = &tree.Node{Uuid: "etag-child-1", Type: tree.NodeType_LEAF}
+		node11.N = &tree.Node{Uuid: "etag-child-1", Type: tree.NodeType_LEAF}
 		node11.SetMPath(1, 16, 1)
-		node11.Etag = etag1
-		node11.SetMeta("name", "\"bbb\"")
+		node11.UpdateEtag(etag1)
+		node11.SetMeta("name", "bbb")
 
 		node12 := mtree.NewTreeNode()
-		node12.Node = &tree.Node{Uuid: "etag-child-2", Type: tree.NodeType_LEAF}
+		node12.N = &tree.Node{Uuid: "etag-child-2", Type: tree.NodeType_LEAF}
 		node12.SetMPath(1, 16, 2)
-		node12.Etag = etag2
-		node12.SetMeta("name", "\"aaa\"")
+		node12.UpdateEtag(etag2)
+		node12.SetMeta("name", "aaa")
 
 		node13 := mtree.NewTreeNode()
-		node13.Node = &tree.Node{Uuid: "etag-child-3", Type: tree.NodeType_COLLECTION}
+		node13.N = &tree.Node{Uuid: "etag-child-3", Type: tree.NodeType_COLLECTION}
 		node13.SetMPath(1, 16, 3)
-		node13.Etag = "-1"
-		node13.SetMeta("name", "\"ccc\"")
+		node13.UpdateEtag("-1")
+		node13.SetMeta("name", "ccc")
 
 		node14 := mtree.NewTreeNode()
-		node14.Node = &tree.Node{Uuid: "etag-child-child-1", Type: tree.NodeType_LEAF}
+		node14.N = &tree.Node{Uuid: "etag-child-child-1", Type: tree.NodeType_LEAF}
 		node14.SetMPath(1, 16, 3, 1)
-		node14.Etag = etag3
-		node14.SetMeta("name", "\"a-aaa\"")
+		node14.UpdateEtag(etag3)
+		node14.SetMeta("name", "a-aaa")
 
 		node15 := mtree.NewTreeNode()
-		node15.Node = &tree.Node{Uuid: "etag-child-child-2", Type: tree.NodeType_LEAF}
+		node15.N = &tree.Node{Uuid: "etag-child-child-2", Type: tree.NodeType_LEAF}
 		node15.SetMPath(1, 16, 3, 2)
-		node15.Etag = etag4
-		node15.SetMeta("name", "\"a-bbb\"")
+		node15.UpdateEtag(etag4)
+		node15.SetMeta("name", "a-bbb")
 
 		e := getDAO(ctx).AddNode(node)
 		So(e, ShouldBeNil)
@@ -489,14 +486,14 @@ func TestMysql(t *testing.T) {
 		hash := md5.New()
 		hash.Write([]byte(etag3 + "." + etag4))
 		newEtag := hex.EncodeToString(hash.Sum(nil))
-		So(intermediaryNode.Etag, ShouldEqual, newEtag)
+		So(intermediaryNode.GetEtag(), ShouldEqual, newEtag)
 
 		parentNode, e := getDAO(ctx).GetNode(node.MPath)
 		So(e, ShouldBeNil)
 		hash2 := md5.New()
-		hash2.Write([]byte(etag2 + "." + etag1 + "." + intermediaryNode.Etag))
+		hash2.Write([]byte(etag2 + "." + etag1 + "." + intermediaryNode.GetEtag()))
 		newEtag2 := hex.EncodeToString(hash2.Sum(nil))
-		So(parentNode.Etag, ShouldEqual, newEtag2)
+		So(parentNode.GetEtag(), ShouldEqual, newEtag2)
 
 	})
 

@@ -45,8 +45,8 @@ import (
 	"github.com/pydio/cells/v4/common/runtime"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	"github.com/pydio/cells/v4/common/service/context/metadata"
-	"github.com/pydio/cells/v4/common/utils/cache"
 	"github.com/pydio/cells/v4/common/utils/permissions"
+	"github.com/pydio/cells/v4/common/utils/queue"
 	"github.com/pydio/cells/v4/common/utils/std"
 )
 
@@ -59,6 +59,24 @@ var (
 	PubSub *pubsub.PubSub
 )
 
+// UnSubWithFlush wraps PubSub.Unsub with a select to make sure all messages are consumed before unsubscribing.
+func UnSubWithFlush(ch chan interface{}, topics ...string) {
+consume:
+	for {
+		select {
+		case _, ok := <-ch:
+			if !ok {
+				break consume
+			}
+			//fmt.Println("Unsub", topics, "there was still something to consume...")
+		case <-time.After(3 * time.Second):
+			//fmt.Println("Unsub", topics, "Break loop...")
+			break consume
+		}
+	}
+	PubSub.Unsub(ch, topics...)
+}
+
 type ContextJobParametersKey struct{}
 
 // Subscriber handles incoming events, applies selectors if any
@@ -68,9 +86,6 @@ type Subscriber struct {
 
 	sync.RWMutex
 	definitions map[string]*jobs.Job
-
-	batcher *cache.EventsBatcher
-	//queue   chan Runnable
 
 	dispatcherLock sync.Mutex
 	dispatchers    map[string]*Dispatcher
@@ -89,38 +104,40 @@ func NewSubscriber(parentContext context.Context) *Subscriber {
 	PubSub = pubsub.New(0)
 
 	s.rootCtx = context.WithValue(parentContext, common.PydioContextUserKey, common.PydioSystemUsername)
+	treeQu, er := queue.OpenQueue(s.rootCtx, runtime.PersistingQueueURL("serviceName", common.ServiceGrpcNamespace_+common.ServiceTasks, "name", common.TopicTreeChanges))
+	if er != nil {
+		log.Logger(s.rootCtx).Error("Cannot start treeQueue, using an in-memory instead", zap.Error(er))
+		treeQu, _ = queue.OpenQueue(s.rootCtx, runtime.QueueURL("debounce", "2s", "idle", "20s", "max", "2000"))
+	}
+	metaQu, er := queue.OpenQueue(s.rootCtx, runtime.PersistingQueueURL("serviceName", common.ServiceGrpcNamespace_+common.ServiceTasks, "name", common.TopicMetaChanges))
+	if er != nil {
+		log.Logger(s.rootCtx).Error("Cannot start metaQueue, using an in-memory instead", zap.Error(er))
+		metaQu, _ = queue.OpenQueue(s.rootCtx, runtime.QueueURL("debounce", "2s", "idle", "20s", "max", "2000"))
+	}
 
-	s.batcher = cache.NewEventsBatcher(s.rootCtx, 2*time.Second, 20*time.Second, 2000, true, func(ctx context.Context, events ...*tree.NodeChangeEvent) {
-		s.processNodeEvent(ctx, events[0])
-	})
-
-	// Use a "Queue" mechanism to make sure events are distributed across tasks instances
-	opt := broker.Queue("tasks")
-
-	// srv.Subscribe(srv.NewSubscriber(common.TopicJobConfigEvent, s.jobsChangeEvent, opts))
-	_ = broker.SubscribeCancellable(parentContext, common.TopicJobConfigEvent, func(message broker.Message) error {
-		js := &jobs.JobChangeEvent{}
-		if ctx, e := message.Unmarshal(js); e == nil {
-			return s.jobsChangeEvent(ctx, js)
-		}
-		return nil
-	}, opt)
+	queueOpt := broker.Queue("tasks")
+	counterOpt := broker.WithCounterName("tasks")
 
 	_ = broker.SubscribeCancellable(parentContext, common.TopicTreeChanges, func(message broker.Message) error {
-		target := &tree.NodeChangeEvent{}
-		if ctx, e := message.Unmarshal(target); e == nil {
-			return s.nodeEvent(ctx, target)
+		md, bb := message.RawData()
+		event := &tree.NodeChangeEvent{}
+		if e := proto.Unmarshal(bb, event); e == nil {
+			// Ignore events on Temporary nodes and internal nodes and optimistic
+			if event.Optimistic {
+				return nil
+			}
+			if event.Target != nil && (event.Target.Etag == common.NodeFlagEtagTemporary || event.Target.HasMetaKey(common.MetaNamespaceDatasourceInternal)) {
+				return nil
+			}
+			if event.Type == tree.NodeChangeEvent_DELETE && event.Source.HasMetaKey(common.MetaNamespaceDatasourceInternal) {
+				return nil
+			}
+			s.processNodeEvent(metadata.NewContext(s.rootCtx, md), event)
+			return nil
+		} else {
+			return e
 		}
-		return nil
-	}, opt)
-
-	_ = broker.SubscribeCancellable(parentContext, common.TopicMetaChanges, func(message broker.Message) error {
-		target := &tree.NodeChangeEvent{}
-		if ctx, e := message.Unmarshal(target); e == nil && (target.Type == tree.NodeChangeEvent_UPDATE_META || target.Type == tree.NodeChangeEvent_UPDATE_USER_META) {
-			return s.nodeEvent(ctx, target)
-		}
-		return nil
-	}, opt)
+	}, queueOpt, broker.WithLocalQueue(treeQu), counterOpt)
 
 	_ = broker.SubscribeCancellable(parentContext, common.TopicTimerEvent, func(message broker.Message) error {
 		target := &jobs.JobTriggerEvent{}
@@ -128,7 +145,24 @@ func NewSubscriber(parentContext context.Context) *Subscriber {
 			return s.timerEvent(ctx, target)
 		}
 		return nil
-	}, opt)
+	}, queueOpt, counterOpt)
+
+	_ = broker.SubscribeCancellable(parentContext, common.TopicJobConfigEvent, func(message broker.Message) error {
+		js := &jobs.JobChangeEvent{}
+		if ctx, e := message.Unmarshal(js); e == nil {
+			return s.jobsChangeEvent(ctx, js)
+		}
+		return nil
+	}, queueOpt, counterOpt)
+
+	_ = broker.SubscribeCancellable(parentContext, common.TopicMetaChanges, func(message broker.Message) error {
+		target := &tree.NodeChangeEvent{}
+		md, bb := message.RawData()
+		if e := proto.Unmarshal(bb, target); e == nil && (target.Type == tree.NodeChangeEvent_UPDATE_META || target.Type == tree.NodeChangeEvent_UPDATE_USER_META) {
+			s.processNodeEvent(metadata.NewContext(s.rootCtx, md), target)
+		}
+		return nil
+	}, queueOpt, broker.WithLocalQueue(metaQu), counterOpt)
 
 	_ = broker.SubscribeCancellable(parentContext, common.TopicIdmEvent, func(message broker.Message) error {
 		target := &idm.ChangeEvent{}
@@ -136,7 +170,7 @@ func NewSubscriber(parentContext context.Context) *Subscriber {
 			return s.idmEvent(ctx, target)
 		}
 		return nil
-	}, opt)
+	}, queueOpt, counterOpt)
 
 	//s.listenToQueue()
 	s.taskChannelSubscription()
@@ -178,7 +212,6 @@ func (s *Subscriber) Init(ctx context.Context) error {
 
 // Stop closes internal EventsBatcher
 func (s *Subscriber) Stop() {
-	s.batcher.Done <- true
 	s.dispatcherLock.Lock()
 	for _, d := range s.dispatchers {
 		d.Stop()
@@ -186,28 +219,15 @@ func (s *Subscriber) Stop() {
 	s.dispatcherLock.Unlock()
 }
 
-func (s *Subscriber) enqueue(t *Task) {
-	dispatcher := s.getDispatcherForJob(t.Job, true)
-	t.Queue(dispatcher.jobQueue)
+func (s *Subscriber) enqueue(ctx context.Context, job *jobs.Job, event proto.Message) {
+	dispatcher := s.getDispatcherForJob(job, true)
+	if dispatcher.fifo != nil {
+		_ = dispatcher.fifo.Push(ctx, event)
+	} else {
+		task := NewTaskFromEvent(s.rootCtx, ctx, job, event)
+		task.Queue(dispatcher.Queue())
+	}
 }
-
-// listenToQueue starts a go routine that listens to the Event Bus
-/*
-func (s *Subscriber) listenToQueue() {
-	go func() {
-		for runnable := range s.queue {
-			select {
-			case <-runnable.Task.context.Done():
-				continue
-			default:
-			}
-			dispatcher := s.getDispatcherForJob(runnable.Task.Job, true)
-			dispatcher.jobQueue <- runnable.AsRunnerFuncRun()
-		}
-	}()
-}
-
-*/
 
 // taskChannelSubscription uses PubSub library to receive update messages from tasks
 func (s *Subscriber) taskChannelSubscription() {
@@ -235,7 +255,7 @@ func (s *Subscriber) getDispatcherForJob(job *jobs.Job, lock bool) *Dispatcher {
 		"service": common.ServiceGrpcNamespace_ + common.ServiceTasks,
 		"jobID":   job.ID,
 	}
-	dispatcher := NewDispatcher(maxWorkers, tags)
+	dispatcher := NewDispatcher(s.rootCtx, maxWorkers, job, tags)
 	s.dispatchers[job.ID] = dispatcher
 	dispatcher.Run()
 	return dispatcher
@@ -348,9 +368,7 @@ func (s *Subscriber) timerEvent(ctx context.Context, event *jobs.JobTriggerEvent
 	} else {
 		log.Logger(ctx).Info("Run Job " + jobId + " on timer event " + event.Schedule.String())
 	}
-	task := NewTaskFromEvent(s.rootCtx, ctx, j, event)
-	s.enqueue(task)
-	//task.Queue(s.queue)
+	s.enqueue(ctx, j, event)
 
 	return nil
 }
@@ -368,11 +386,6 @@ func (s *Subscriber) nodeEvent(ctx context.Context, event *tree.NodeChangeEvent)
 	}
 	if event.Type == tree.NodeChangeEvent_DELETE && event.Source.HasMetaKey(common.MetaNamespaceDatasourceInternal) {
 		return nil
-	}
-
-	s.batcher.Events <- &cache.EventWithContext{
-		NodeChangeEvent: event,
-		Ctx:             ctx,
 	}
 
 	return nil
@@ -423,9 +436,7 @@ func (s *Subscriber) processNodeEvent(ctx context.Context, event *tree.NodeChang
 		}
 
 		log.Logger(tCtx).Debug("Run Job " + jobId + " on event " + eventMatch)
-		task := NewTaskFromEvent(s.rootCtx, tCtx, jobData, event)
-		s.enqueue(task)
-		//task.Queue(s.queue)
+		s.enqueue(tCtx, jobData, event)
 	}
 
 }
@@ -458,9 +469,7 @@ func (s *Subscriber) idmEvent(ctx context.Context, event *idm.ChangeEvent) error
 					continue
 				}
 				log.Logger(tCtx).Debug("Run Job " + jobId + " on event " + eName)
-				task := NewTaskFromEvent(s.rootCtx, tCtx, jobData, event)
-				s.enqueue(task)
-				//task.Queue(s.queue)
+				s.enqueue(tCtx, jobData, event)
 			}
 		}
 	}

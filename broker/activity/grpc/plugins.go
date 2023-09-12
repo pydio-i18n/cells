@@ -30,8 +30,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/broker/activity"
@@ -42,7 +42,7 @@ import (
 	"github.com/pydio/cells/v4/common/dao/mongodb"
 	"github.com/pydio/cells/v4/common/log"
 	"github.com/pydio/cells/v4/common/nodes/meta"
-	proto "github.com/pydio/cells/v4/common/proto/activity"
+	acproto "github.com/pydio/cells/v4/common/proto/activity"
 	"github.com/pydio/cells/v4/common/proto/idm"
 	"github.com/pydio/cells/v4/common/proto/jobs"
 	serviceproto "github.com/pydio/cells/v4/common/proto/service"
@@ -50,7 +50,8 @@ import (
 	"github.com/pydio/cells/v4/common/runtime"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
-	"github.com/pydio/cells/v4/common/utils/cache"
+	"github.com/pydio/cells/v4/common/service/context/metadata"
+	"github.com/pydio/cells/v4/common/utils/queue"
 )
 
 var (
@@ -58,6 +59,8 @@ var (
 )
 
 func init() {
+	jobs.RegisterDefault(digestJob(), Name)
+
 	runtime.Register("main", func(ctx context.Context) {
 		service.NewService(
 			service.Name(Name),
@@ -68,7 +71,7 @@ func init() {
 			service.Migrations([]*service.Migration{
 				{
 					TargetVersion: service.FirstRun(),
-					Up:            RegisterDigestJob,
+					Up:            registerDigestJob,
 				},
 			}),
 			service.WithStorage(activity.NewDAO,
@@ -84,19 +87,24 @@ func init() {
 				d := servicecontext.GetDAO(c).(activity.DAO)
 				// Register Subscribers
 				subscriber := NewEventsSubscriber(c, d)
-				// Start batcher - it is stopped by c.Done()
-				batcher := cache.NewEventsBatcher(c, 3*time.Second, 20*time.Second, 2000, true, func(ctx context.Context, msg ...*tree.NodeChangeEvent) {
+				// Start fifo - it is stopped by c.Done()
+				fifo, er := queue.OpenQueue(c, runtime.PersistingQueueURL("serviceName", common.ServiceGrpcNamespace_+common.ServiceActivity, "name", "changes"))
+				if er != nil {
+					return er
+				}
+				counterName := broker.WithCounterName("activity")
+
+				processOneWithTimeout := func(ct context.Context, event *tree.NodeChangeEvent) error {
 					var ca context.CancelFunc
-					ctx, ca = context.WithTimeout(runtime.ForkContext(ctx, c), 10*time.Second)
+					ctx, ca = context.WithTimeout(runtime.ForkContext(ct, c), 10*time.Second)
 					defer ca()
-					if e := subscriber.HandleNodeChange(ctx, msg[0]); e != nil {
-						log.Logger(c).Error("Error while handling an event", zap.Error(e), zap.Any("event", msg))
-					}
-				})
+					return subscriber.HandleNodeChange(ctx, event)
+				}
 
 				if e := broker.SubscribeCancellable(c, common.TopicTreeChanges, func(message broker.Message) error {
+					md, bb := message.RawData()
 					msg := &tree.NodeChangeEvent{}
-					if ctx, e := message.Unmarshal(msg); e == nil {
+					if e := proto.Unmarshal(bb, msg); e == nil {
 						if msg.Target != nil && (msg.Target.Etag == common.NodeFlagEtagTemporary || msg.Target.HasMetaKey(common.MetaNamespaceDatasourceInternal)) {
 							return nil
 						}
@@ -106,10 +114,10 @@ func init() {
 						if msg.Optimistic {
 							return nil
 						}
-						batcher.Events <- &cache.EventWithContext{NodeChangeEvent: msg, Ctx: ctx}
+						return processOneWithTimeout(metadata.NewContext(c, md), msg)
 					}
 					return nil
-				}); e != nil {
+				}, broker.WithLocalQueue(fifo), counterName); e != nil {
 					return e
 				}
 
@@ -119,10 +127,10 @@ func init() {
 						if msg.Optimistic || msg.Type != tree.NodeChangeEvent_UPDATE_USER_META {
 							return nil
 						}
-						batcher.Events <- &cache.EventWithContext{NodeChangeEvent: msg, Ctx: ctx}
+						return processOneWithTimeout(ctx, msg)
 					}
 					return nil
-				}); e != nil {
+				}, counterName); e != nil {
 					return e
 				}
 
@@ -132,11 +140,11 @@ func init() {
 						return subscriber.HandleIdmChange(ctx, msg)
 					}
 					return nil
-				}); e != nil {
+				}, counterName); e != nil {
 					return e
 				}
 
-				proto.RegisterActivityServiceEnhancedServer(srv, &Handler{RuntimeCtx: ctx, dao: d})
+				acproto.RegisterActivityServiceEnhancedServer(srv, &Handler{RuntimeCtx: ctx, dao: d})
 				tree.RegisterNodeProviderStreamerEnhancedServer(srv, &MetaProvider{RuntimeCtx: ctx, dao: d})
 
 				return nil
@@ -145,13 +153,11 @@ func init() {
 	})
 }
 
-func RegisterDigestJob(ctx context.Context) error {
-
-	log.Logger(ctx).Info("Registering default job for creating activities digests")
+func digestJob() *jobs.Job {
 	// Build queries for standard users
 	q1, _ := anypb.New(&idm.UserSingleQuery{NodeType: idm.NodeType_USER})
 	q2, _ := anypb.New(&idm.UserSingleQuery{AttributeName: idm.UserAttrHidden, AttributeAnyValue: true, Not: true})
-	job := &jobs.Job{
+	return &jobs.Job{
 		ID:             "users-activity-digest",
 		Label:          "Users activities digest",
 		Owner:          common.PydioSystemUsername,
@@ -174,8 +180,13 @@ func RegisterDigestJob(ctx context.Context) error {
 		},
 	}
 
+}
+
+func registerDigestJob(ctx context.Context) error {
+
+	log.Logger(ctx).Info("Registering default job for creating activities digests")
 	cliJob := jobs.NewJobServiceClient(grpc2.GetClientConnFromCtx(ctx, common.ServiceJobs))
-	if _, err := cliJob.PutJob(ctx, &jobs.PutJobRequest{Job: job}); err != nil {
+	if _, err := cliJob.PutJob(ctx, &jobs.PutJobRequest{Job: digestJob()}); err != nil {
 		return err
 	}
 

@@ -63,6 +63,7 @@ func init() {
 				handler := NewHandler(ctx, servicecontext.GetDAO(ctx).(acl.DAO))
 				idm.RegisterACLServiceEnhancedServer(server, handler)
 				tree.RegisterNodeProviderStreamerEnhancedServer(server, handler)
+				cn := broker.WithCounterName("idm_acl")
 
 				// Clean acls on Ws or Roles deletion
 				rCleaner := &WsRolesCleaner{Handler: handler}
@@ -72,18 +73,21 @@ func init() {
 						return rCleaner.Handle(ct, ev)
 					}
 					return nil
-				}); e != nil {
+				}, cn); e != nil {
 					return e
 				}
 
-				nCleaner := newNodesCleaner(ctx, handler)
+				nCleaner, er := newNodesCleaner(ctx, handler)
+				if er != nil {
+					return er
+				}
 				if e := broker.SubscribeCancellable(ctx, common.TopicTreeChanges, func(message broker.Message) error {
 					ev := &tree.NodeChangeEvent{}
 					if ct, e := message.Unmarshal(ev); e == nil {
 						return nCleaner.Handle(ct, ev)
 					}
 					return nil
-				}); e != nil {
+				}, cn); e != nil {
 					return e
 				}
 

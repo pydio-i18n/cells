@@ -23,13 +23,14 @@ package configtest
 import (
 	"context"
 	"fmt"
-	"github.com/pydio/cells/v4/common/config/memory"
 	pb "github.com/pydio/cells/v4/common/proto/registry"
 	"github.com/pydio/cells/v4/common/registry/util"
 	"github.com/pydio/cells/v4/common/utils/configx"
+	"github.com/pydio/cells/v4/common/utils/std"
 	"github.com/r3labs/diff/v3"
 	"log"
 	"os"
+	"sync"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -94,7 +95,7 @@ func TestNodeDiff(t *testing.T) {
 	a := configx.New()
 	a.Val("test").Set(node)
 
-	clone := memory.Clone(node)
+	clone := std.DeepClone(node)
 	if ms, ok := clone.(MetaSetter); ok {
 		ms.SetMetadata(map[string]string{"status": "ready"})
 	}
@@ -103,6 +104,21 @@ func TestNodeDiff(t *testing.T) {
 	b.Val("test").Set(clone)
 
 	fmt.Println(diff.Diff(a.Interface(), b.Interface()))
+}
+
+func TestSyncMapDiff(t *testing.T) {
+	a := configx.New()
+	a.Val("map").Set(&sync.Map{})
+	a.Val("map", "test").Set("test")
+
+	clone := std.DeepClone(a.Interface())
+	b := configx.New()
+	b.Set(clone)
+
+	a.Val("map", "test").Set("testing")
+	a.Val("map", "test1").Set("test1")
+
+	fmt.Println(diff.Diff(a.Interface(), b.Interface(), diff.CustomValueDiffers(config.CustomValueDiffers...)))
 }
 
 func TestGetSetMemory(t *testing.T) {

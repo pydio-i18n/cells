@@ -27,8 +27,10 @@ import Message from './Message'
 import EmptyStateView from '../views/EmptyStateView'
 const {PydioContextConsumer, moment} = Pydio.requireLib('boot');
 import {IconButton, TextField} from 'material-ui'
-import ChatUsers from './ChatUsers'
 import LKContainer from "./LKContainer";
+import {muiThemeable} from 'material-ui/styles'
+import Color from 'color'
+import SharedUsersStack from "../users/stack/SharedUsersStack";
 
 const LoadSize = 40;
 
@@ -84,7 +86,7 @@ class Chat extends React.Component{
     }
 
     componentWillReceiveProps(nextProps){
-        const {pydio, roomType, roomObjectId} = nextProps;
+        const {roomType, roomObjectId} = nextProps;
         if (roomType !== this.props.roomType || roomObjectId !== this.props.roomObjectId){
             if(this.client){
                 this.client.leaveRoom(this.props.roomType, this.props.roomObjectId, this._newMessageListener);
@@ -220,7 +222,8 @@ class Chat extends React.Component{
     }
 
     render(){
-        const {style, msgContainerStyle, chatUsersStyle, fieldContainerStyle, fieldHint, textFieldProps, emptyStateProps, pydio, pushMessagesToBottom, computePresenceFromACLs, readonly} = this.props;
+        const {style, msgContainerStyle, chatUsersStyle, fieldContainerStyle, fieldHint, textFieldProps, emptyStateProps,
+            pydio, pushMessagesToBottom, computePresenceFromACLs, readonly, muiTheme, popoverPanel} = this.props;
         const {messages, room, videoData, joinVideo} = this.state;
         let data = [];
         let previousMDate;
@@ -238,6 +241,7 @@ class Chat extends React.Component{
                     sameAuthor={sameAuthor}
                     onDeleteMessage={() => {this.deleteMessage(m)}}
                     moreLoader={showLoader?()=>{this.more()}:null}
+                    muiTheme={muiTheme}
                 />);
             showLoader = false;
             previousMDate = mDate;
@@ -257,6 +261,7 @@ class Chat extends React.Component{
         }
         const notConnected = !room;
         let hintStyle = {
+            color: Color(muiTheme.palette.mui3['on-surface-variant']).fade(.5).toString(),
             whiteSpace:'nowrap'
         }
         if(textFieldProps && textFieldProps.hintStyle){
@@ -265,17 +270,24 @@ class Chat extends React.Component{
         if(notConnected) {
             hintStyle = {...hintStyle, fontStyle : 'italic'}
         }
+        const fieldContainer = {
+            backgroundColor: muiTheme.palette.mui3[popoverPanel?'surface-variant':'surface']||'white',
+            position:'relative',
+            paddingLeft: 16,
+            paddingRight: 16,
+            ...fieldContainerStyle
+        }
         return (
             <div style={{padding: 0, ...style}}>
                 {computePresenceFromACLs !== undefined  &&
-                    <ChatUsers pydio={pydio} ACLs={computePresenceFromACLs} roomUsers={room?room.Users:[]} style={chatUsersStyle}/>
+                    <div style={chatUsersStyle}><SharedUsersStack acls={computePresenceFromACLs} max={12} onlines={room?room.Users:[]}/></div>
                 }
                 <div ref={this.commentPane} className="comments_feed" style={{maxHeight: 300, overflowY: 'auto',  ...pushStyle, ...msgContainerStyle}}>
                     {pusher}
                     {data}
                     {emptyState}
                 </div>
-                <div style={{backgroundColor: 'white', position:'relative', paddingLeft: 16, paddingRight: 16, borderTop: '1px solid #e0e0e0', ...fieldContainerStyle}}>
+                <div style={fieldContainer}>
                     <TextField
                         hintText={notConnected?pydio.MessageHash[466]:fieldHint}
                         value={this.state.value}
@@ -311,5 +323,5 @@ Chat.PropTypes = {
     roomObjectId: PropTypes.string,
 };
 
-Chat = PydioContextConsumer(Chat);
+Chat = PydioContextConsumer(muiThemeable()(Chat));
 export {Chat as default};

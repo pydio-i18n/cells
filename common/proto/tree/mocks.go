@@ -26,11 +26,11 @@ import (
 	"reflect"
 	"sort"
 
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/service/errors"
-	"google.golang.org/grpc"
 )
 
 type ErrorThrower func(string, string, ...interface{}) error

@@ -40,7 +40,6 @@ import (
 	commonsql "github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/common/utils/configx"
 	"github.com/pydio/cells/v4/common/utils/mtree"
-	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 var (
@@ -248,7 +247,7 @@ func (d *daocache) Unlock() {
 }
 
 // Path resolves a node mpath, eventually creating it (and its parents)
-func (d *daocache) Path(strpath string, create bool, reqNode ...*tree.Node) (mtree.MPath, []*mtree.TreeNode, error) {
+func (d *daocache) Path(strpath string, create bool, reqNode ...tree.N) (mtree.MPath, []*mtree.TreeNode, error) {
 	return d.path(strpath, create, false, reqNode...)
 }
 
@@ -266,7 +265,7 @@ func (d *daocache) PathCreateNoAdd(strpath string) (mtree.MPath, *mtree.TreeNode
 }
 
 // Path resolution for a node
-func (d *daocache) path(strpath string, create bool, noAdd bool, reqNode ...*tree.Node) (mtree.MPath, []*mtree.TreeNode, error) {
+func (d *daocache) path(strpath string, create bool, noAdd bool, reqNode ...tree.N) (mtree.MPath, []*mtree.TreeNode, error) {
 
 	if len(strpath) == 0 || strpath == "/" {
 		return []uint64{1}, nil, nil
@@ -297,7 +296,7 @@ func (d *daocache) path(strpath string, create bool, noAdd bool, reqNode ...*tre
 	if index, err := d.GetNodeFirstAvailableChildIndex(ppath); err != nil {
 		return nil, nil, err
 	} else {
-		source := &tree.Node{}
+		var source tree.N
 
 		if len(reqNode) > 0 {
 			source = reqNode[0]
@@ -307,13 +306,11 @@ func (d *daocache) path(strpath string, create bool, noAdd bool, reqNode ...*tre
 
 		node := NewNode(source, mpath, names)
 
-		if node.Uuid == "" {
-			node.Uuid = uuid.New()
-		}
+		node.RenewUuidIfEmpty(false)
 
-		if node.Etag == "" {
+		if node.GetEtag() == "" {
 			// Should only happen for folders - generate first Etag from uuid+mtime
-			node.Etag = fmt.Sprintf("%x", md5.Sum([]byte(fmt.Sprintf("%s%d", node.Uuid, node.MTime))))
+			node.UpdateEtag(fmt.Sprintf("%x", md5.Sum([]byte(fmt.Sprintf("%s%d", node.GetUuid(), node.GetMTime())))))
 		}
 
 		if !noAdd {
@@ -489,7 +486,7 @@ func (d *daocache) GetNodeByUUID(uuid string) (*mtree.TreeNode, error) {
 	d.mutex.RLock()
 	defer d.mutex.RUnlock()
 	for _, n := range d.cache {
-		if n.Uuid == uuid {
+		if n.GetUuid() == uuid {
 			return n, nil
 		}
 	}
@@ -640,18 +637,18 @@ func (d *daocache) GetNodeFirstAvailableChildIndex(path mtree.MPath) (uint64, er
 		}
 		if freeSlot > 0 {
 			// Found a free slot indeed, return it
-			//fmt.Println("Get Node Last Child: returning free slot! ", path.String(), freeSlot)
+			//fmt.Println("Get N Last Child: returning free slot! ", path.String(), freeSlot)
 			return freeSlot, nil
 		}
 	}
 
 	// Return currentLast + 1
-	//fmt.Println("Get Node Last Child: returning last+1", path.String(), currentLast+1)
+	//fmt.Println("Get N Last Child: returning last+1", path.String(), currentLast+1)
 	return uint64(currentLast + 1), nil
 
 }
 
-func (d *daocache) GetNodeChildrenCounts(path mtree.MPath) (int, int) {
+func (d *daocache) GetNodeChildrenCounts(path mtree.MPath, b bool) (int, int) {
 
 	d.mutex.RLock()
 	defer d.mutex.RUnlock()
@@ -700,7 +697,7 @@ func (d *daocache) GetNodeTree(ctx context.Context, path mtree.MPath, filter ...
 		// Looping
 		var keys []string
 		for k := range d.cache {
-			if childRegexp.Match([]byte(k)) {
+			if childRegexp.MatchString(k) {
 				keys = append(keys, k)
 			}
 		}
@@ -734,19 +731,4 @@ func (d *daocache) ResyncDirtyEtags(rootNode *mtree.TreeNode) error {
 	d.resync()
 
 	return err
-}
-func (d *daocache) CleanResourcesOnDeletion() (string, error) {
-	return d.DAO.CleanResourcesOnDeletion()
-}
-
-func (d *daocache) LostAndFounds(ctx context.Context) ([]LostAndFound, error) {
-	return d.DAO.LostAndFounds(ctx)
-}
-
-func (d *daocache) FixLostAndFound(lost LostAndFound) error {
-	return d.DAO.FixLostAndFound(lost)
-}
-
-func (d *daocache) Flatten() (string, error) {
-	return d.DAO.Flatten()
 }

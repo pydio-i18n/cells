@@ -39,6 +39,7 @@ const SearchConstants = {
     KeyModifDate        : 'ajxp_modiftime',
     KeyBytesize         : 'ajxp_bytesize',
     KeyMetaPrefix       : 'ajxp_meta_',
+    KeyMetaShared       : 'ajxp_meta_shared_resource_type',
     MimeGroups: [
         {id: "word", label:"word", mimes: "*word*"},
         {id: "excel", label:"spreadsheet", mimes: "*spreadsheet*|*excel*"},
@@ -105,6 +106,9 @@ export default function withSearch(Component, historyIdentifier, defaultScope){
          * @return Promise
          */
         getSearchOptions() {
+            if (!Pydio.getInstance().Registry.hasPluginOfType("meta", "user")) {
+                return Promise.resolve({indexedMeta:[], indexedContent:false})
+            }
             return ResourcesManager.loadClass('ReactMeta').then(rm => {
                 const {MetaClient, Renderer} = rm;
                 return MetaClient.getInstance().loadConfigs().then(configs => {
@@ -291,6 +295,7 @@ export default function withSearch(Component, historyIdentifier, defaultScope){
                 [SearchConstants.KeyModifDate]: 'modiftime',
                 [SearchConstants.KeyBytesize]: 'bytesize',
                 [SearchConstants.KeyMime]: 'mime',
+                [SearchConstants.KeyMetaShared]: 'share',
             }
             return Object.keys(values)
                 .filter(key => key !== 'basenameOrContent' && key !== 'searchLABEL' && key !== 'searchID')

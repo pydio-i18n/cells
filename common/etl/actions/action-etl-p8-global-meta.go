@@ -151,7 +151,7 @@ func (c *MigrateGlobalMetaAction) loadMeta(ctx context.Context, conf *config.Sdk
 	}
 	subClient := activity.NewActivityServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceActivity))
 	metaClient := idm.NewUserMetaServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUserMeta))
-	log.TasksLogger(ctx).Info("Global Meta", zap.Any("data length", len(data)))
+	log.TasksLogger(ctx).Info("Global Meta", zap.Int("data length", len(data)))
 	for wsId, users := range data {
 		slug := c.FindSlug(ctx, wsId)
 		if slug == "" {
@@ -170,7 +170,7 @@ func (c *MigrateGlobalMetaAction) loadMeta(ctx context.Context, conf *config.Sdk
 				}
 			}
 			for nodePath, nodeMetas := range nodes {
-				// Find Node
+				// Find N
 				reqNode := &tree.Node{Path: path.Join(slug, nodePath)}
 				r, e := c.GetRouter().ReadNode(userCtx, &tree.ReadNodeRequest{Node: reqNode})
 				if e != nil {

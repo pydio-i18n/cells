@@ -22,6 +22,8 @@ package broker
 
 import (
 	"context"
+
+	"github.com/pydio/cells/v4/common/utils/uuid"
 )
 
 // Options to the broker
@@ -79,12 +81,21 @@ type SubscribeOptions struct {
 	// Other options for implementations of the interface
 	// can be stored in a context
 	Context context.Context
+
+	// Optional MessageQueue than can debounce/persist
+	// received messages and re-process them later on
+	MessageQueue MessageQueue
+
+	// Optional name for metrics
+	CounterName string
 }
 
 type SubscribeOption func(*SubscribeOptions)
 
-func NewSubscribeOptions(opts ...SubscribeOption) SubscribeOptions {
-	opt := SubscribeOptions{}
+func parseSubscribeOptions(opts ...SubscribeOption) SubscribeOptions {
+	opt := SubscribeOptions{
+		CounterName: uuid.New()[0:6],
+	}
 
 	for _, o := range opts {
 		o(&opt)
@@ -105,6 +116,20 @@ func HandleError(h func(error)) SubscribeOption {
 func Queue(name string) SubscribeOption {
 	return func(o *SubscribeOptions) {
 		o.Queue = name
+	}
+}
+
+// WithLocalQueue passes a FIFO queue to absorb input
+func WithLocalQueue(q MessageQueue) SubscribeOption {
+	return func(o *SubscribeOptions) {
+		o.MessageQueue = q
+	}
+}
+
+// WithCounterName adds a custom id for metrics counter name
+func WithCounterName(n string) SubscribeOption {
+	return func(options *SubscribeOptions) {
+		options.CounterName = n
 	}
 }
 

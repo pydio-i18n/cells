@@ -23,11 +23,11 @@ package grpc
 
 import (
 	"context"
-
 	"google.golang.org/grpc"
 
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
+	service2 "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/runtime"
 	"github.com/pydio/cells/v4/common/service"
@@ -44,11 +44,7 @@ func init() {
 			service.Description("Aggregator of all datasources into one master tree"),
 			service.WithGRPC(func(ctx context.Context, server grpc.ServiceRegistrar) error {
 
-				treeServer := &TreeServer{
-					name:        ServiceName,
-					MainCtx:     ctx,
-					DataSources: map[string]DataSource{},
-				}
+				treeServer := NewTreeServer(ctx, ServiceName)
 				eventSubscriber, e := NewEventSubscriber(treeServer)
 				if e != nil {
 					return e
@@ -61,6 +57,7 @@ func init() {
 				tree.RegisterSearcherEnhancedServer(server, treeServer)
 				tree.RegisterNodeChangesStreamerEnhancedServer(server, treeServer)
 				tree.RegisterNodeProviderStreamerEnhancedServer(server, treeServer)
+				service2.RegisterLoginModifierEnhancedServer(server, treeServer)
 
 				go watchRegistry(ctx, treeServer)
 

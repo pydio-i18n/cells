@@ -22,7 +22,6 @@ package user
 
 import (
 	"context"
-	databasesql "database/sql"
 	"embed"
 	"fmt"
 	"strconv"
@@ -30,6 +29,7 @@ import (
 	"time"
 	"unicode"
 
+	databasesql "database/sql"
 	migrate "github.com/rubenv/sql-migrate"
 	"go.uber.org/zap"
 	"golang.org/x/text/transform"
@@ -47,6 +47,7 @@ import (
 	"github.com/pydio/cells/v4/common/sql/index"
 	"github.com/pydio/cells/v4/common/sql/resources"
 	"github.com/pydio/cells/v4/common/utils/configx"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/common/utils/mtree"
 	"github.com/pydio/cells/v4/common/utils/statics"
 )
@@ -60,15 +61,16 @@ var (
 	migrationsFS embed.FS
 
 	queries = map[string]string{
-		"AddAttribute":     `replace into idm_user_attributes (uuid, name, value) values (?, ?, ?)`,
-		"GetAttributes":    `select name, value from idm_user_attributes where uuid = ?`,
-		"DeleteAttribute":  `delete from idm_user_attributes where uuid = ? and name = ?`,
-		"DeleteAttributes": `delete from idm_user_attributes where uuid = ?`,
-		"AddRole":          `replace into idm_user_roles (uuid, role, weight) values (?, ?, ?)`,
-		"GetRoles":         `select role from idm_user_roles where uuid = ? order by weight ASC`,
-		"DeleteUserRoles":  `delete from idm_user_roles where uuid = ?`,
-		"DeleteRoleById":   `delete from idm_user_roles where role = ?`,
-		"TouchUser":        `update idm_user_idx_tree set mtime = ? where uuid = ?`,
+		"AddAttribute":            `replace into idm_user_attributes (uuid, name, value) values (?, ?, ?)`,
+		"GetAttributes":           `select name, value from idm_user_attributes where uuid = ?`,
+		"DeleteAttribute":         `delete from idm_user_attributes where uuid = ? and name = ?`,
+		"DeleteAttributes":        `delete from idm_user_attributes where uuid = ?`,
+		"AddRole":                 `replace into idm_user_roles (uuid, role, weight) values (?, ?, ?)`,
+		"GetRoles":                `select role from idm_user_roles where uuid = ? order by weight ASC`,
+		"DeleteUserRoles":         `delete from idm_user_roles where uuid = ?`,
+		"DeleteRoleById":          `delete from idm_user_roles where role = ?`,
+		"TouchUser":               `update idm_user_idx_tree set mtime = ? where uuid = ?`,
+		"UpdateLoginInAttributes": `update idm_user_attributes set value=? where name='pydio:labelLike' and value=?`,
 		//"DeleteAttsClean":      `delete from idm_user_attributes where uuid not in (select uuid from idm_user_idx_tree)`,
 		//"DeleteUserRolesClean": `delete from idm_user_roles where uuid not in (select uuid from idm_user_idx_tree)`,
 	}
@@ -174,11 +176,11 @@ func safeGroupPath(gPath string) string {
 }
 
 // Add to the underlying SQL DB.
-func (s *sqlimpl) Add(in interface{}) (interface{}, []*tree.Node, error) {
+func (s *sqlimpl) Add(in interface{}) (interface{}, []tree.N, error) {
 
 	// s.Lock()
 	// defer s.Unlock()
-	var createdNodes []*tree.Node
+	var createdNodes []tree.N
 
 	var user *idm.User
 	var ok bool
@@ -202,9 +204,9 @@ func (s *sqlimpl) Add(in interface{}) (interface{}, []*tree.Node, error) {
 		if node, err := s.IndexSQL.GetNodeByUUID(objectUuid); err == nil && node != nil {
 
 			s.rebuildGroupPath(node)
-			if node.Path != objectPath {
+			if node.GetPath() != objectPath {
 				// This is a move
-				reqFromPath := "/" + strings.Trim(node.Path, "/")
+				reqFromPath := "/" + strings.Trim(node.GetPath(), "/")
 				reqToPath := objectPath
 				movedOriginalPath = reqFromPath
 
@@ -222,7 +224,7 @@ func (s *sqlimpl) Add(in interface{}) (interface{}, []*tree.Node, error) {
 					if err = s.IndexSQL.DelNode(nodeFrom); err != nil {
 						return nil, createdNodes, err
 					}
-					if pathTo, _, err = s.IndexSQL.Path(reqToPath, true, nodeFrom.Node); err != nil {
+					if pathTo, _, err = s.IndexSQL.Path(reqToPath, true, nodeFrom.N); err != nil {
 						return nil, createdNodes, err
 					}
 				} else {
@@ -293,7 +295,7 @@ func (s *sqlimpl) Add(in interface{}) (interface{}, []*tree.Node, error) {
 		if err != nil {
 			return nil, createdNodes, err
 		}
-		user.Uuid = foundOrCreatedNode.Uuid
+		user.Uuid = foundOrCreatedNode.GetUuid()
 	}
 
 	// Remove existing attributes and roles, replace with new ones using a transaction
@@ -319,7 +321,7 @@ func (s *sqlimpl) Add(in interface{}) (interface{}, []*tree.Node, error) {
 	db := s.DB()
 
 	// Start a transaction
-	err := sql.RetryTx(context.Background(), db, &sql.RetryTxOpts{MaxRetries: 3}, func(ctx context.Context, tx *databasesql.Tx) error {
+	err := sql.RetryTxOnDeadlock(context.Background(), db, &sql.RetryTxOpts{MaxRetries: 3}, func(ctx context.Context, tx *databasesql.Tx) error {
 
 		// Insure we can retrieve all necessary prepared statements
 		delAttributes, er := s.GetStmt("DeleteAttributes")
@@ -398,7 +400,7 @@ func (s *sqlimpl) Add(in interface{}) (interface{}, []*tree.Node, error) {
 		}
 
 		for _, n := range created {
-			createdNodes = append(createdNodes, n.Node)
+			createdNodes = append(createdNodes, n.N)
 		}
 		return nil
 	})
@@ -557,18 +559,18 @@ func (s *sqlimpl) Search(query sql.Enquirer, users *[]interface{}, withParents .
 		}
 		node.SetMPath(mpath...)
 		// node.SetBytes(rat)
-		node.Uuid = uuid
-		node.Etag = etag
-		node.MTime = int64(mtime)
+		node.UpdateUuid(uuid)
+		node.UpdateEtag(etag)
+		node.UpdateMTime(int64(mtime))
 		s.rebuildGroupPath(node)
-		node.SetMeta("name", name)
+		node.SetName(name)
 
 		var userOrGroup *idm.User
 		if leaf == 0 {
-			node.Node.Type = tree.NodeType_COLLECTION
+			node.SetType(tree.NodeType_COLLECTION)
 			userOrGroup = nodeToGroup(node)
 		} else {
-			node.Node.Type = tree.NodeType_LEAF
+			node.SetType(tree.NodeType_LEAF)
 			userOrGroup = nodeToUser(node)
 
 			st, err := s.GetStmt("GetRoles")
@@ -669,19 +671,19 @@ func (s *sqlimpl) Del(query sql.Enquirer, users chan *idm.User) (int64, error) {
 		}
 		node.SetMPath(mpath...)
 		// node.SetBytes(rat)
-		node.Uuid = uuid
+		node.UpdateUuid(uuid)
 		node.Level = int(level)
-		node.Etag = etag
-		node.MTime = int64(mtime)
+		node.UpdateEtag(etag)
+		node.UpdateMTime(int64(mtime))
 		s.rebuildGroupPath(node)
-		node.SetMeta("name", name)
+		node.SetName(name)
 
 		var userOrGroup *idm.User
 		if leaf == 0 {
-			node.Node.Type = tree.NodeType_COLLECTION
+			node.SetType(tree.NodeType_COLLECTION)
 			userOrGroup = nodeToGroup(node)
 		} else {
-			node.Node.Type = tree.NodeType_LEAF
+			node.SetType(tree.NodeType_LEAF)
 			userOrGroup = nodeToUser(node)
 		}
 		data = append(data, &delStruct{node: node, object: userOrGroup})
@@ -694,7 +696,7 @@ func (s *sqlimpl) Del(query sql.Enquirer, users chan *idm.User) (int64, error) {
 			return rows, err
 		}
 
-		if err := s.deleteNodeData(toDel.node.Uuid); err != nil {
+		if err := s.deleteNodeData(toDel.node.GetUuid()); err != nil {
 			return rows, err
 		}
 
@@ -731,6 +733,20 @@ func (s *sqlimpl) CleanRole(roleId string) error {
 
 }
 
+func (s *sqlimpl) LoginModifiedAttr(oldName, newName string) (int64, error) {
+
+	st, er := s.GetStmt("UpdateLoginInAttributes")
+	if er != nil {
+		return 0, er
+	}
+	if res, err := st.Exec(strings.ToLower(newName), strings.ToLower(oldName)); err == nil {
+		return res.RowsAffected()
+	} else {
+		return 0, err
+	}
+
+}
+
 func (s *sqlimpl) deleteNodeData(uuid string) error {
 
 	stAtt, er := s.GetStmt("DeleteAttributes")
@@ -752,17 +768,18 @@ func (s *sqlimpl) deleteNodeData(uuid string) error {
 }
 
 func (s *sqlimpl) rebuildGroupPath(node *mtree.TreeNode) {
-	if len(node.Path) == 0 {
+	if len(node.GetPath()) == 0 {
 		var path []string
 		roles := []string{}
 		for pNode := range s.IndexSQL.GetNodes(node.MPath.Parents()...) {
 			path = append(path, pNode.Name())
-			roles = append(roles, pNode.Uuid)
+			roles = append(roles, pNode.GetUuid())
 		}
 		path = append(path, node.Name())
 		p := strings.Join(path, "/")
-		node.Path = fmt.Sprintf("/%s", strings.TrimLeft(p, "/"))
-		node.SetMeta("GroupRoles", roles)
+		node.UpdatePath(fmt.Sprintf("/%s", strings.TrimLeft(p, "/")))
+		jj, _ := json.Marshal(roles)
+		node.SetRawMetadata(map[string]string{"GroupRoles": string(jj)})
 	}
 
 }

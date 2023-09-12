@@ -40,7 +40,9 @@ import (
 	_ "github.com/pydio/cells/v4/data/tree/rest"
 	_ "github.com/pydio/cells/v4/data/versions/grpc"
 
-	// _ "github.com/pydio/cells/v4/data/source/test"
+	// ETL Stores
+	_ "github.com/pydio/cells/v4/common/etl/stores/cells/local"
+	_ "github.com/pydio/cells/v4/common/etl/stores/pydio8"
 
 	// Registry
 	_ "github.com/pydio/cells/v4/common/registry/config"
@@ -59,6 +61,9 @@ import (
 	_ "github.com/pydio/cells/v4/common/utils/cache/bigcache"
 	_ "github.com/pydio/cells/v4/common/utils/cache/gocache"
 	_ "github.com/pydio/cells/v4/common/utils/cache/redis"
+	_ "github.com/pydio/cells/v4/common/utils/queue/goque"
+	_ "github.com/pydio/cells/v4/common/utils/queue/jetstream"
+	_ "github.com/pydio/cells/v4/common/utils/queue/memory"
 
 	// Gateways
 	_ "github.com/pydio/cells/v4/gateway/data"

@@ -24,12 +24,21 @@ import PropTypes from 'prop-types';
 
 import Pydio from 'pydio'
 import {Dialog, FlatButton, Toggle} from 'material-ui'
+import {muiThemeable} from 'material-ui/styles'
 import {IdmUserMetaNamespace, ServiceResourcePolicy, UserMetaServiceApi} from 'cells-sdk'
 import Metadata from '../model/Metadata'
 import PydioApi from 'pydio/http/api'
-const {ModernTextField, ModernStyles} = Pydio.requireLib('hoc');
+const {ModernTextField, ModernAutoComplete, ThemedModernStyles} = Pydio.requireLib('hoc');
 import FuncUtils from 'pydio/util/func'
 import ResourcesManager from 'pydio/http/resources-manager'
+
+function getGroupValue(namespace) {
+    try {
+        return JSON.parse(namespace.JsonDefinition).groupName || ""
+    } catch(e) {
+        return ""
+    }
+}
 
 function loadEditorClass(className = '', defaultComponent) {
     if (!className) {
@@ -84,8 +93,9 @@ class MetaPoliciesBuilder extends React.Component {
     }
 
     render() {
-        const {readonly, policies, pydio} = this.props;
+        const {readonly, policies, pydio, muiTheme} = this.props;
         const m  = (id) => pydio.MessageHash['ajxp_admin.metadata.' + id] || id;
+        const ModernStyles = ThemedModernStyles(muiTheme)
 
         let adminRead, adminWrite;
         if(policies){
@@ -114,6 +124,8 @@ class MetaPoliciesBuilder extends React.Component {
 
 
 }
+
+MetaPoliciesBuilder = muiThemeable()(MetaPoliciesBuilder)
 
 class MetaNamespace extends React.Component{
 
@@ -175,6 +187,13 @@ class MetaNamespace extends React.Component{
         this.setState({namespace});
     }
 
+    setGroupValue(v) {
+        const {namespace} = this.state;
+        const def = JSON.parse(namespace.JsonDefinition);
+        namespace.JsonDefinition = JSON.stringify({...def, groupName: v})
+        this.setState({namespace});
+    }
+
     getAdditionalData(defaultValue = {}){
         const {namespace} = this.state;
         try {
@@ -219,8 +238,10 @@ class MetaNamespace extends React.Component{
     }
 
     render(){
-        const {create, namespaces, pydio, readonly} = this.props;
+        const {create, namespaces, pydio, readonly, muiTheme} = this.props;
         const {namespace, m, PoliciesBuilder, metaModule} = this.state;
+        const ModernStyles = ThemedModernStyles(muiTheme)
+
         if(!metaModule){
             return null;
         }
@@ -254,6 +275,8 @@ class MetaNamespace extends React.Component{
                 invalid = true;
             }
         }
+
+        const knownGroups = [... new Set(namespaces.map(n => getGroupValue(n)).filter(g => g))];
 
         let adminRead, adminWrite;
         if(namespace.Policies){
@@ -343,12 +366,26 @@ class MetaNamespace extends React.Component{
                     readOnly={readonly}
                     variant={"v2"}
                 />
+                <ModernAutoComplete
+                    floatingLabelFixed={true}
+                    fullWidth={true}
+                    floatingLabelText={m('group-field')}
+                    filter={(searchText, key) => (!searchText.indexOf || key.toLowerCase().indexOf(searchText.toLowerCase()) === 0)}
+                    openOnFocus={true}
+                    dataSource={knownGroups}
+                    searchText={getGroupValue(namespace) || ''}
+                    onNewRequest={(s,i) => {this.setGroupValue(s)}}
+                    onUpdateInput={(v) => {this.setGroupValue(v)}}
+                    menuProps={{maxHeight:300,overflowY: 'auto'}}
+                />
             </Dialog>
 
         );
     }
 
 }
+
+MetaNamespace = muiThemeable()(MetaNamespace)
 
 MetaNamespace.PropTypes = {
     namespace: PropTypes.instanceOf(IdmUserMetaNamespace).isRequired,
@@ -359,3 +396,4 @@ MetaNamespace.PropTypes = {
 };
 
 export default MetaNamespace
+export {loadEditorClass, getGroupValue}

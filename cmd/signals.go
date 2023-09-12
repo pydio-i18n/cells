@@ -62,7 +62,7 @@ func handleSignals(args []string) {
 				fallthrough
 			case syscall.SIGINT:
 				// Stopping the main context will trigger the stop of all services
-				log.Info("Cancelling main context")
+				log.Debug("Cancelling main context")
 				cancel()
 			case syscall.SIGUSR1, syscall.SIGUSR2:
 
@@ -71,6 +71,8 @@ func handleSignals(args []string) {
 					startTags := "main-process"
 					if len(args) > 0 {
 						startTags = strings.Join(args, "-")
+						startTags = strings.ReplaceAll(startTags, "^", "")
+						startTags = strings.ReplaceAll(startTags, "$", "")
 					}
 
 					targetDir := filepath.Join(runtime.ApplicationWorkingDir(runtime.ApplicationDirLogs), "profiles", startTags)

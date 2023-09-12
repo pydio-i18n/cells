@@ -39,19 +39,20 @@ func RegisterTemplateFilter(filterFunc FilterFunc) {
 }
 
 type ApplicationConfigs struct {
-	Title        string
-	Url          string
-	LinkUrl      string
-	From         string
-	FromName     string
-	FromCtl      string
-	Logo         string
-	Copyright    string
-	TroubleText  string
-	Greeting     string
-	Signature    string
-	Theme        hermes.Theme
-	ButtonsColor string
+	Title              string
+	Url                string
+	LinkUrl            string
+	From               string
+	FromName           string
+	FromCtl            string
+	Logo               string
+	Copyright          string
+	TroubleText        string
+	Greeting           string
+	Signature          string
+	Theme              hermes.Theme
+	ButtonsColor       string
+	DisableCSSInlining bool
 }
 
 func GetApplicationConfig(languages ...string) ApplicationConfigs {
@@ -65,8 +66,14 @@ func GetApplicationConfig(languages ...string) ApplicationConfigs {
 
 	// "default" value is interpreted by the configs internal - read map directly instead of looking for "@value"
 	fromCtl := "user"
-	fromMap := config.Get("services", "pydio.grpc.mailer", "fromCtl").Map()
-	if tt, ok := fromMap["@value"]; ok {
+	legacyFromMap := config.Get("services", "pydio.grpc.mailer", "fromCtl").Map()
+	if tt, ok := legacyFromMap["@value"]; ok {
+		if s, o := tt.(string); o {
+			fromCtl = s
+		}
+	}
+	fromMap := config.Get("services", "pydio.grpc.mailer").Map()
+	if tt, ok := fromMap["fromCtl"]; ok {
 		if s, o := tt.(string); o {
 			fromCtl = s
 		}
@@ -77,19 +84,20 @@ func GetApplicationConfig(languages ...string) ApplicationConfigs {
 	}
 
 	a := ApplicationConfigs{
-		Title:        "Pydio",
-		Url:          url,
-		LinkUrl:      linkUrl,
-		From:         from,
-		FromName:     fromName,
-		FromCtl:      fromCtl,
-		Logo:         fmt.Sprintf("%s/plug/gui.ajax/res/themes/common/images/PydioLogo250.png", strings.TrimRight(url, "/")),
-		Copyright:    T("Mail.Main.Copyright"),
-		TroubleText:  T("Mail.Main.Troubleshoot"),
-		Greeting:     T("Mail.Main.Greeting"),
-		Signature:    T("Mail.Main.Signature"),
-		Theme:        new(pydioTheme),
-		ButtonsColor: "#22BC66",
+		Title:              "Pydio",
+		Url:                url,
+		LinkUrl:            linkUrl,
+		From:               from,
+		FromName:           fromName,
+		FromCtl:            fromCtl,
+		Logo:               fmt.Sprintf("%s/plug/gui.ajax/res/themes/common/images/PydioLogo250.png", strings.TrimRight(url, "/")),
+		Copyright:          T("Mail.Main.Copyright"),
+		TroubleText:        T("Mail.Main.Troubleshoot"),
+		Greeting:           T("Mail.Main.Greeting"),
+		Signature:          T("Mail.Main.Signature"),
+		Theme:              new(pydioTheme),
+		ButtonsColor:       "#22BC66",
+		DisableCSSInlining: config.Get("services", "pydio.grpc.mailer", "disableCssInlining").Default(true).Bool(),
 	}
 
 	if len(templateFilters) > 0 {
@@ -107,6 +115,7 @@ type pydioTheme struct {
 
 func (p pydioTheme) HTMLTemplate() string {
 	s := p.Flat.HTMLTemplate()
+	s = strings.Replace(s, "height:45px;", "height:auto;", -1)
 	s = strings.Replace(s, "mso-hide: all;", "", -1)
 	return s
 }

@@ -22,6 +22,7 @@ package http
 
 import (
 	"context"
+	"golang.org/x/exp/maps"
 	"net"
 	"net/http"
 	"net/url"
@@ -70,14 +71,15 @@ func New(ctx context.Context) server.Server {
 	*/
 
 	srv := &http.Server{}
-	srv.Handler = mux.NewMiddleware(ctx, lMux)
+	srvID := "http-" + uuid.New()
+	srv.Handler = mux.NewMiddleware(ctx, srvID, lMux)
 	srv.Handler = ContextMiddlewareHandler(middleware.ClientConnIncomingContext(ctx))(srv.Handler)
 	srv.Handler = ContextMiddlewareHandler(middleware.RegistryIncomingContext(ctx))(srv.Handler)
 
 	ctx, cancel := context.WithCancel(ctx)
 
 	return server.NewServer(ctx, &Server{
-		id:   "http-" + uuid.New(),
+		id:   srvID,
 		name: "http",
 		meta: make(map[string]string),
 
@@ -156,4 +158,13 @@ func (s *Server) As(i interface{}) bool {
 		return true
 	}
 	return false
+}
+
+func (s *Server) Clone() interface{} {
+	clone := &Server{}
+	clone.id = s.id
+	clone.name = s.name
+	clone.meta = maps.Clone(s.meta)
+
+	return clone
 }

@@ -44,8 +44,30 @@ func (m *IdmSelector) SelectorID() string {
 	return "IdmSelector"
 }
 
+func (m *IdmSelector) SelectorLabel() string {
+	if m.Label != "" {
+		return m.Label
+	}
+	return m.SelectorID()
+}
+
 func (m *IdmSelector) FilterID() string {
 	return "IdmFilter"
+}
+
+func (m *IdmSelector) ApplyClearInput(msg *ActionMessage) *ActionMessage {
+	switch m.Type {
+	case IdmSelectorType_User:
+		return msg.WithUser(nil)
+	case IdmSelectorType_Role:
+		return msg.WithRole(nil)
+	case IdmSelectorType_Acl:
+		return msg.WithAcl(nil)
+	case IdmSelectorType_Workspace:
+		return msg.WithWorkspace(nil)
+	default:
+		return msg
+	}
 }
 
 // Select IDM Objects by a given query

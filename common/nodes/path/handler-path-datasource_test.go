@@ -218,7 +218,7 @@ func TestBranchTranslator_ListNodes(t *testing.T) {
 			}
 			So(resp.Node.Path, ShouldEqual, "test-workspace/inner/path/file")
 			So(resp.Node.Uuid, ShouldEqual, "other-uuid")
-			break // Test One Node Only
+			break // Test One N Only
 		}
 
 	})
@@ -321,19 +321,19 @@ func TestBranchTranslator_Multipart(t *testing.T) {
 
 			b, _ := newTestHandlerBranchTranslator(NewTestPool(false))
 			c := context.Background()
-			_, e1 := b.MultipartCreate(c, &tree.Node{}, &MultipartRequestData{})
+			_, e1 := b.MultipartCreate(c, &tree.N{}, &MultipartRequestData{})
 			So(errors.Parse(e1.Error()).Code, ShouldEqual, 400)
 
-			_, e1 = b.MultipartComplete(c, &tree.Node{}, "uploadId", []minio.CompletePart{})
+			_, e1 = b.MultipartComplete(c, &tree.N{}, "uploadId", []minio.CompletePart{})
 			So(errors.Parse(e1.Error()).Code, ShouldEqual, 400)
 
-			e1 = b.MultipartAbort(c, &tree.Node{}, "uploadId", &MultipartRequestData{})
+			e1 = b.MultipartAbort(c, &tree.N{}, "uploadId", &MultipartRequestData{})
 			So(errors.Parse(e1.Error()).Code, ShouldEqual, 400)
 
 			_, e1 = b.MultipartList(c, "", &MultipartRequestData{})
 			So(errors.Parse(e1.Error()).Code, ShouldEqual, 400)
 
-			_, e1 = b.MultipartListObjectParts(c, &tree.Node{}, "uploadId", 0, 0)
+			_, e1 = b.MultipartListObjectParts(c, &tree.N{}, "uploadId", 0, 0)
 			So(errors.Parse(e1.Error()).Code, ShouldEqual, 400)
 
 		})

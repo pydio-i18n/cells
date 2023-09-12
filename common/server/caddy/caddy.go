@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"golang.org/x/exp/maps"
 	"net"
 	"net/url"
 	"os"
@@ -159,7 +160,8 @@ func New(ctx context.Context, dir string) (server.Server, error) {
 	})
 
 	srvMUX := server.NewListableMux()
-	mux.RegisterServerMux(ctx, srvMUX)
+	srvID := "caddy-" + uuid.New()
+	mux.RegisterServerMux(ctx, srvID, srvMUX)
 
 	caddyStorePath := filepath.Join(runtime.ApplicationWorkingDir(), "caddy")
 	_ = os.MkdirAll(caddyStorePath, 0755)
@@ -169,7 +171,7 @@ func New(ctx context.Context, dir string) (server.Server, error) {
 	}
 
 	srv := &Server{
-		id:   "caddy-" + uuid.New(),
+		id:   srvID,
 		name: "caddy",
 		meta: make(map[string]string),
 
@@ -314,6 +316,15 @@ func (s *Server) Metadata() map[string]string {
 
 func (s *Server) SetMetadata(meta map[string]string) {
 	s.meta = meta
+}
+
+func (s *Server) Clone() interface{} {
+	clone := &Server{}
+	clone.id = s.id
+	clone.name = s.name
+	clone.meta = maps.Clone(s.meta)
+
+	return clone
 }
 
 func (s *Server) As(i interface{}) bool {

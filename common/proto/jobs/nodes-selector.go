@@ -73,6 +73,17 @@ func (n *NodesSelector) FilterID() string {
 	return "NodesFilter"
 }
 
+func (n *NodesSelector) SelectorLabel() string {
+	if n.Label != "" {
+		return n.Label
+	}
+	return n.SelectorID()
+}
+
+func (n *NodesSelector) ApplyClearInput(msg *ActionMessage) *ActionMessage {
+	return msg.WithNode(nil)
+}
+
 func (n *NodesSelector) Select(ctx context.Context, input *ActionMessage, objects chan interface{}, done chan bool) error {
 	defer func() {
 		done <- true
@@ -96,12 +107,18 @@ func (n *NodesSelector) Select(ctx context.Context, input *ActionMessage, object
 		return nil
 	}
 
-	// Now handle query
-	q := &tree.Query{}
-	if !selector.All && (selector.Query == nil || selector.Query.SubQueries == nil || len(selector.Query.SubQueries) == 0) {
+	if selector.Query == nil || selector.Query.SubQueries == nil || len(selector.Query.SubQueries) == 0 {
+		if selector.All {
+			log.Logger(ctx).Warn("warning, NodesSelector.All is deprecated and will return empty results as no query is passed")
+			log.TasksLogger(ctx).Warn("warning, NodesSelector.All is deprecated and will return empty results as no query is passed")
+		} else {
+			log.TasksLogger(ctx).Debug("Exiting selector as no query is passed")
+		}
 		return nil
 	}
 
+	// Now handle query
+	q := &tree.Query{}
 	if e := anypb.UnmarshalTo(selector.Query.SubQueries[0], q, proto.UnmarshalOptions{}); e != nil {
 		log.Logger(ctx).Error("Could not parse input query", zap.Error(e))
 		return e
@@ -132,6 +149,17 @@ func (n *NodesSelector) Select(ctx context.Context, input *ActionMessage, object
 	}
 	filter := func(n *tree.Node) bool {
 		return true
+	}
+	if q.FreeString != "" && strings.HasPrefix(strings.TrimSpace(q.FreeString), "(local)") {
+		filterString := strings.TrimPrefix(strings.TrimSpace(q.FreeString), "(local)")
+		q.FreeString = ""
+		if freeStringEvaluator != nil {
+			filter = func(n *tree.Node) bool {
+				return freeStringEvaluator(ctx, filterString, n)
+			}
+		} else {
+			log.Logger(ctx).Error("Warning, no FreeStringEvaluator was registered for nodes selector, local free string will be ignored")
+		}
 	}
 	var total int
 	if q.FreeString != "" || q.Content != "" || q.FileNameOrContent != "" {
@@ -184,7 +212,7 @@ func (n *NodesSelector) Select(ctx context.Context, input *ActionMessage, object
 			return e
 		}
 	}
-	log.Logger(ctx).Info("Selector finished request with query", zap.Any("q", q), zap.Int("count", total))
+	log.Logger(ctx).Info("Selector finished request with query", zap.Any("q", *q), zap.Int("count", total))
 
 	return nil
 }

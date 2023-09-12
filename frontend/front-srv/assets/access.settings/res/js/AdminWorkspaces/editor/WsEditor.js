@@ -23,7 +23,8 @@ import {FlatButton, Paper, Checkbox, MenuItem, Dialog} from 'material-ui'
 import {muiThemeable} from 'material-ui/styles'
 import Workspace from '../model/Ws'
 import WsAutoComplete from './WsAutoComplete'
-const {ModernTextField, ModernSelectField, ModernStyles} = Pydio.requireLib('hoc');
+import {loadEditorClass} from "./MetaNamespace";
+const {ModernTextField, ModernSelectField, ThemedModernStyles} = Pydio.requireLib('hoc');
 const {InputIntegerBytes} = Pydio.requireLib('form');
 const {PaperEditorLayout, AdminStyles} = AdminComponents;
 
@@ -41,6 +42,11 @@ class WsEditor extends Component {
             newFolderKey: Math.random(),
             showDialog: false
         };
+        const {policiesBuilder} = this.props;
+        if(policiesBuilder) {
+            loadEditorClass(policiesBuilder, null).then(c => this.setState({PoliciesBuilder: c})).catch(e=>{});
+        }
+
     }
 
     enableSync(value){
@@ -99,10 +105,13 @@ class WsEditor extends Component {
 
     render(){
 
-        const {closeEditor, pydio, advanced} = this.props;
-        const {workspace, container, newFolderKey, saving, showDialog, dialogTargetValue} = this.state;
+        const {closeEditor, pydio, advanced, muiTheme} = this.props;
+        const {workspace, container, newFolderKey, saving, showDialog, dialogTargetValue, PoliciesBuilder, policiesEdit} = this.state;
+
+        const ModernStyles = ThemedModernStyles(muiTheme)
         const m = id => pydio.MessageHash['ajxp_admin.' + id] || id;
         const mS = id => pydio.MessageHash['settings.' + id] || id;
+        const policiesMS = id => pydio.MessageHash['advanced_settings.' + id] || id;
         const readonly = !workspace.PoliciesContextEditable;
 
         let buttons = [];
@@ -296,6 +305,29 @@ class WsEditor extends Component {
                         </Fragment>
                     }
                 </Paper>
+                {PoliciesBuilder &&
+                    <Paper zDepth={0} style={styles.section}>
+                        <div style={styles.title}>{policiesMS('editor.visibility.workspace')}</div>
+                        <div style={{...styles.legend}}>
+                            {policiesMS('editor.visibility.warning')}
+                            {!policiesEdit && <span style={{fontWeight:500, cursor:'pointer'}} onClick={()=>this.setState({policiesEdit:true})}> - {policiesMS('editor.visibility.edit')}</span>}
+                        </div>
+                        <PoliciesBuilder
+                            pydio={pydio}
+                            policies={workspace.Policies}
+                            onChangePolicies={(pols => workspace.Policies = pols )}
+                            readonly={!policiesEdit}
+                            showHeader={false}
+                            forceCustom={true}
+                            advancedLegend={<span/>}
+                            advancedContainerStyle={policiesEdit?{paddingBottom: 300}:{}}
+                            allowedActions={{
+                                'READ':policiesMS('policies.builder.action.read'),
+                                'WRITE':policiesMS('policies.builder.action.write')
+                        }}
+                        />
+                    </Paper>
+                }
             </PaperEditorLayout>
         );
 

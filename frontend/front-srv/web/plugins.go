@@ -94,7 +94,6 @@ func init() {
 					w.Write([]byte(RobotsString))
 				})
 				mux.Handle("/", indexHandler)
-				mux.Handle("/gui", indexHandler)
 				mux.Handle(ResetPasswordPath, indexHandler)
 
 				// /public endpoint : special handler for index, redirect to /plug/ for the rest
@@ -107,7 +106,7 @@ func init() {
 					frontend.HotReload()
 					httpFs = http.FS(frontend.GetPluginsFS())
 					return nil
-				})
+				}, broker.WithCounterName("frontend"))
 
 				return nil
 			}),
@@ -117,7 +116,6 @@ func init() {
 					m.DeregisterPattern("/plug/")
 					m.DeregisterPattern("/robots.txt")
 					m.DeregisterPattern("/")
-					m.DeregisterPattern("/gui")
 					m.DeregisterPattern("/user/reset-password/")
 					m.DeregisterPattern(config.GetPublicBaseUri() + "/")
 					m.DeregisterPattern(config.GetPublicBaseUri() + "/plug/")

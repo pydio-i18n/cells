@@ -68,7 +68,7 @@ func getCheckersCache() cache.Cache {
 			_ = polCache.Delete("acl")
 			_ = polCache.Delete("oidc")
 			return nil
-		})
+		}, broker.WithCounterName("policies-cache"))
 	})
 	return polCache
 }
@@ -127,7 +127,7 @@ func PolicyContextFromMetadata(policyContext map[string]string, ctx context.Cont
 	}
 }
 
-// PolicyContextFromNode extracts metadata from the Node and enriches the passed policyContext.
+// PolicyContextFromNode extracts metadata from the N and enriches the passed policyContext.
 func PolicyContextFromNode(policyContext map[string]string, node *tree.Node) {
 	policyContext[PolicyNodeMetaName] = node.GetStringMeta(common.MetaNamespaceNodeName)
 	policyContext[PolicyNodeMetaPath] = node.Path
@@ -149,13 +149,19 @@ var checkersCache cache.Cache
 func loadPoliciesByResourcesType(ctx context.Context, resType string) ([]*idm.Policy, error) {
 
 	cli := idm.NewPolicyEngineServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServicePolicy))
-	r, e := cli.ListPolicyGroups(ctx, &idm.ListPolicyGroupsRequest{})
+	st, e := cli.StreamPolicyGroups(ctx, &idm.ListPolicyGroupsRequest{Filter: "resource_group:" + resType})
 	if e != nil {
 		return nil, e
 	}
 	var policies []*idm.Policy
-	for _, g := range r.PolicyGroups {
+
+	for {
+		g, er := st.Recv()
+		if er != nil {
+			break
+		}
 		for _, p := range g.Policies {
+			// THIS CHECK SHOULD BE UNNECESSARY NOW
 			isType := false
 			for _, res := range p.Resources {
 				if res == resType {

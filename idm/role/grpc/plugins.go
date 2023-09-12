@@ -30,6 +30,7 @@ import (
 	"github.com/pydio/cells/v4/common"
 	"github.com/pydio/cells/v4/common/broker"
 	"github.com/pydio/cells/v4/common/proto/idm"
+	service2 "github.com/pydio/cells/v4/common/proto/service"
 	"github.com/pydio/cells/v4/common/runtime"
 	"github.com/pydio/cells/v4/common/service"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
@@ -52,6 +53,12 @@ func init() {
 				}, {
 					TargetVersion: service.ValidVersion("1.2.0"),
 					Up:            UpgradeTo12,
+				}, {
+					TargetVersion: service.ValidVersion("4.1.99"),
+					Up:            UpgradeTo4199,
+				}, {
+					TargetVersion: service.ValidVersion("4.2.1"),
+					Up:            UpgradeTo421,
 				},
 			}),
 			service.WithStorage(role.NewDAO, service.WithStoragePrefix("idm_role")),
@@ -67,6 +74,7 @@ func init() {
 				}
 				handler := NewHandler(ctx, rDao)
 				idm.RegisterRoleServiceEnhancedServer(server, handler)
+				service2.RegisterLoginModifierEnhancedServer(server, handler.(service2.NamedLoginModifierServer))
 
 				// Clean role on user deletion
 				cleaner := NewCleaner(ctx, handler)
@@ -76,7 +84,7 @@ func init() {
 						return cleaner.Handle(ct, ic)
 					}
 					return nil
-				}); e != nil {
+				}, broker.WithCounterName("role")); e != nil {
 					return e
 				}
 

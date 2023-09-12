@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"sync"
 	"time"
 
 	"go.uber.org/zap"
@@ -46,13 +47,13 @@ import (
 
 var (
 	usersCache cache.Cache
+	usersOnce  sync.Once
 )
 
 func getUsersCache() cache.Cache {
-	if usersCache == nil {
-		c, _ := cache.OpenCache(context.TODO(), runtime.ShortCacheURL("evictionTime", "5s", "cleanWindow", "30s"))
-		usersCache = c
-	}
+	usersOnce.Do(func() {
+		usersCache, _ = cache.OpenCache(context.TODO(), runtime.ShortCacheURL("evictionTime", "5s", "cleanWindow", "30s"))
+	})
 	return usersCache
 }
 
@@ -534,6 +535,28 @@ func SearchUniqueUser(ctx context.Context, login string, uuid string, queries ..
 	return
 }
 
+// GroupExists finds a group by its full path
+func GroupExists(ctx context.Context, group string) (*idm.User, bool) {
+	userCli := idm.NewUserServiceClient(grpc.GetClientConnFromCtx(ctx, common.ServiceUser))
+	var searchRequests []*anypb.Any
+	searchRequest, _ := anypb.New(&idm.UserSingleQuery{FullPath: group})
+	searchRequests = append(searchRequests, searchRequest)
+	ct, can := context.WithTimeout(ctx, 10*time.Second)
+	defer can()
+	streamer, err := userCli.SearchUser(ct, &idm.SearchUserRequest{
+		Query: &service.Query{SubQueries: searchRequests, Operation: service.OperationType_AND},
+	})
+	if err != nil {
+		return nil, false
+	}
+	if resp, e := streamer.Recv(); e != nil {
+		return nil, false
+	} else {
+		return resp.GetUser(), true
+	}
+
+}
+
 // SearchUniqueWorkspace is a wrapper of SearchWorkspace to load a unique workspace
 func SearchUniqueWorkspace(ctx context.Context, wsUuid string, wsSlug string, queries ...*idm.WorkspaceSingleQuery) (*idm.Workspace, error) {
 
@@ -616,7 +639,7 @@ func FrontValuesScopesFromWorkspaces(wss []*idm.Workspace) (scopes []string) {
 }
 
 // FrontValuesScopesFromWorkspaceRelativePaths computes scopes to check when retrieving front plugin configuration,
-// based on a list of Node.AppearsIn workspaces descriptions
+// based on a list of N.AppearsIn workspaces descriptions
 func FrontValuesScopesFromWorkspaceRelativePaths(wss []*tree.WorkspaceRelativePath) (scopes []string) {
 	// Default scope
 	scopes = append(scopes, FrontWsScopeAll)

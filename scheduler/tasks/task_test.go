@@ -69,11 +69,11 @@ func TestTaskSetters(t *testing.T) {
 		So(task, ShouldNotBeNil)
 
 		task.Add(2)
-		So(task.rc, ShouldEqual, 2)
+		So(task.rci.Load(), ShouldEqual, 2)
 		task.Done(1)
-		So(task.rc, ShouldEqual, 1)
+		So(task.rci.Load(), ShouldEqual, 1)
 		task.Done(1)
-		So(task.rc, ShouldEqual, 0)
+		So(task.rci.Load(), ShouldEqual, 0)
 
 		now := time.Now()
 		stamp := int32(now.Unix())
@@ -184,7 +184,9 @@ func TestTask_Save(t *testing.T) {
 		ch := PubSub.Sub(PubSubTopicTaskStatuses)
 		task.Save()
 		read := <-ch
-		So(read, ShouldEqual, task.task)
+		rt, o := read.(*jobs.Task)
+		So(o, ShouldBeTrue)
+		So(rt.ID, ShouldEqual, task.task.ID)
 		PubSub.Unsub(ch, PubSubTopicTaskStatuses)
 
 	})
@@ -208,15 +210,17 @@ func TestTask_EnqueueRunnables(t *testing.T) {
 		read := <-output
 		So(read, ShouldNotBeNil)
 		//So(read.Action.ID, ShouldEqual, "actions.test.fake")
-		close(output)
 
 		go func() {
 			read(nil)
+			close(output)
 		}()
 
 		saved := <-saveChannel
 		So(saved, ShouldNotBeNil)
-		So(saved, ShouldEqual, task.task)
+		rt, o := saved.(*jobs.Task)
+		So(o, ShouldBeTrue)
+		So(rt.ID, ShouldEqual, task.task.ID)
 
 		PubSub.Unsub(saveChannel, PubSubTopicTaskStatuses)
 
@@ -237,9 +241,11 @@ func TestTask_EnqueueRunnables(t *testing.T) {
 		read := <-output
 		So(read, ShouldNotBeNil)
 		//So(read.Action.ID, ShouldEqual, "unknown action")
-		close(output)
 
-		go read(nil)
+		go func() {
+			read(nil)
+			close(output)
+		}()
 
 	})
 

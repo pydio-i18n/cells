@@ -21,21 +21,24 @@
 package index
 
 import (
+	"github.com/pydio/cells/v4/common/proto/tree"
 	"strings"
 
-	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/utils/mtree"
 )
 
 // NewNode utils
-func NewNode(treeNode *tree.Node, path mtree.MPath, filenames []string) *mtree.TreeNode {
+func NewNode(treeNode tree.N, path mtree.MPath, filenames []string) *mtree.TreeNode {
 	node := mtree.NewTreeNode()
-	node.Node = treeNode
+	if treeNode == nil {
+		treeNode = tree.LightNode(tree.NodeType_UNKNOWN, "", "", "", 0, 0, 0)
+	}
+	node.N = treeNode
 
 	node.SetMPath(path...)
 	node.SetName(filenames[len(filenames)-1])
 
-	node.Path = strings.Join(filenames, "/")
+	node.UpdatePath(strings.Join(filenames, "/"))
 
 	return node
 }

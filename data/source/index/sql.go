@@ -22,6 +22,8 @@ package index
 
 import (
 	"context"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/pydio/cells/v4/common/log"
@@ -70,13 +72,30 @@ func (s *sqlimpl) Init(ctx context.Context, options configx.Values) error {
 	if _, err := s.IndexSQL.GetNode(mtree.NewMPath(1)); err != nil {
 		log.Logger(context.Background()).Info("Creating root node in index ")
 		treeNode := mtree.NewTreeNode()
-		treeNode.Type = tree.NodeType_COLLECTION
-		treeNode.Uuid = "ROOT"
+		treeNode.SetType(tree.NodeType_COLLECTION)
+		treeNode.UpdateUuid("ROOT")
 		treeNode.SetMPath(1)
 		treeNode.Level = 1
-		treeNode.MTime = time.Now().Unix()
+		treeNode.UpdateMTime(time.Now().Unix())
 		s.IndexSQL.AddNode(treeNode)
 	}
 
 	return nil
+}
+
+// NewNode utils
+func NewNode(treeNode tree.N, path mtree.MPath, filenames []string) *mtree.TreeNode {
+
+	node := mtree.NewTreeNode()
+	if treeNode == nil {
+		treeNode = tree.LightNode(tree.NodeType_UNKNOWN, "", "", "", 0, 0, 0)
+	}
+	node.N = treeNode
+
+	node.SetMPath(path...)
+	node.SetName(filenames[len(filenames)-1])
+
+	node.UpdatePath(strings.Join(filenames, string(os.PathSeparator)))
+
+	return node
 }

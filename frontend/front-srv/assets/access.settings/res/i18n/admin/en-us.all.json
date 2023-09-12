@@ -770,6 +770,15 @@
   "metadata.order": {
     "other": "Order"
   },
+  "metadata.group": {
+    "other": "Group"
+  },
+  "metadata.group-field": {
+    "other": "Group Name (creates an expandable section). Use '/' for sub-groups."
+  },
+  "metadata.default-group": {
+    "other": "No Group"
+  },
   "metadata.toggle.index": {
     "other": "Index in search engine"
   },
@@ -1316,6 +1325,12 @@
   "virtual.card.cleanOnDelete": {
     "other": "Upon user deletion, rename data to {deleted-NAME-UUID}."
   },
+  "virtual.card.cleanOnDelete-legend-off": {
+    "other": "This option should not be used if the template path is not creating a folder for each user (using User.Name)."
+  },
+  "virtual.card.cleanOnDelete-legend-on": {
+    "other": "This option may be recommended as the template path seems to create a folder for each user (using User.Name)."
+  },
   "ws.1": {
     "other": "Manage DataSources"
   },
@@ -1434,10 +1449,10 @@
     "other": "Specify here the default access permissions to this workspace folders.\n                                To enable the permissions management at a sub-level, select the 'CHILDREN' on a given folder.\n                                This will set the current folder as readonly by default, and you will be able to open accesses\n                                selectively to any of its children folders."
   },
   "ws.44": {
-    "other": "Please be aware that this is only a mask: if you modify the real folders directly, you may have\n                                to edit this mask accordingly. Also, these permissions may be globally limited by the 'Default Rights'\n                                paremeter set for this workspace (see the General tab)."
+    "other": "Please be aware that this is only a mask: if you modify the real folders directly, you may have\n                                to edit this mask accordingly. Also, these permissions may be globally limited by the 'Default Rights'\n                                parameter set for this workspace (see the General tab)."
   },
   "ws.45": {
-    "other": "As its parameters are using 'PYDIO_USER' or 'PYDIO_GROUP_*' keywords, the contents of\n                                this workspace will vary depending on the currently authenticated user. For this reason, you cannot browse the\n                                folders directly and assign permissions to them, but you can freely define some generic pathes that will be used as masks."
+    "other": "As its parameters are using 'PYDIO_USER' or 'PYDIO_GROUP_*' keywords, the contents of\n                                this workspace will vary depending on the currently authenticated user. For this reason, you cannot browse the\n                                folders directly and assign permissions to them, but you can freely define some generic paths that will be used as masks."
   },
   "ws.46": {
     "other": "Add a feature"
@@ -1653,7 +1668,7 @@
     "other" : "If people are connected to this workspace, their sync task will not be working any more! Are you sure you want to change that?"
   },
   "ws.editor.other.quota":{
-    "other" : "Disk Usage Quota (leave 0 for no limit). This quota is computed on all files of this workspace. For user-specific workspaces (like Personal Files), you can refine this value on a per user/group/role base in the People section."
+    "other" : "Disk Usage Quota (leave 0 for no limit). This quota is computed on all files of this workspace (or user-specific contents for workspaces like Personal Files)."
   },
   "ws.editor.other.quota.noquota":{
     "other" : "No Quota set"

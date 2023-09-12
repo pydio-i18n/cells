@@ -25,6 +25,8 @@ import (
 	"embed"
 	"errors"
 	"fmt"
+	"github.com/doug-martin/goqu/v9/exp"
+	"sync"
 	"time"
 
 	goqu "github.com/doug-martin/goqu/v9"
@@ -62,6 +64,7 @@ var (
 
 type sqlimpl struct {
 	sql.DAO
+	delLock *sync.RWMutex
 }
 
 // Init handler for the SQL DAO
@@ -90,12 +93,13 @@ func (dao *sqlimpl) Init(ctx context.Context, options configx.Values) error {
 			}
 		}
 	}
-
 	return nil
 }
 
 // Add inserts an ACL to the underlying SQL DB
 func (dao *sqlimpl) Add(in interface{}) error {
+	dao.delLock.RLock()
+	defer dao.delLock.RUnlock()
 	return dao.addWithDupCheck(in, true)
 }
 
@@ -149,7 +153,7 @@ func (dao *sqlimpl) addWithDupCheck(in interface{}, check bool) error {
 
 	res, err := stmt.Exec(val.Action.Name, val.Action.Value, roleID, workspaceID, nodeID)
 	if err != nil {
-		if mErr, ok := err.(*mysql.MySQLError); ok && mErr.Number == 1062 && check {
+		if mErr, o := err.(*mysql.MySQLError); o && mErr.Number == 1062 && check {
 			// fmt.Println("GOT DUPLICATE ERROR", mErr.Error(), mErr.Message)
 			// There is a duplicate : if it is expired, we can safely ignore it and replace it
 			deleteStmt, dE := dao.GetStmt("CleanDuplicateIfExpired")
@@ -179,7 +183,9 @@ func (dao *sqlimpl) addWithDupCheck(in interface{}, check bool) error {
 }
 
 // Search in the underlying SQL DB.
-func (dao *sqlimpl) Search(query sql.Enquirer, acls *[]interface{}) error {
+func (dao *sqlimpl) Search(query sql.Enquirer, acls *[]interface{}, period *ExpirationPeriod) error {
+	dao.delLock.RLock()
+	defer dao.delLock.RUnlock()
 
 	db := goqu.New(dao.Driver(), dao.DB())
 
@@ -192,15 +198,23 @@ func (dao *sqlimpl) Search(query sql.Enquirer, acls *[]interface{}) error {
 		n.Col("id").Eq(a.Col("node_id")),
 		w.Col("id").Eq(a.Col("workspace_id")),
 		r.Col("id").Eq(a.Col("role_id")),
-		goqu.Or(
-			a.Col("expires_at").IsNull(),
-			a.Col("expires_at").Gt(time.Now()),
-		),
+	}
+	if period != nil {
+		expressions = append(expressions, dao.expirationToGoqu(period, a).Expressions()...)
+	} else {
+		// By default, exclude all expired ACLs
+		expressions = append(expressions,
+			goqu.Or(
+				a.Col("expires_at").IsNull(),
+				a.Col("expires_at").Gt(dao.valueForTime(time.Now())),
+			),
+		)
 	}
 
-	whereExpression := sql.NewQueryBuilder(query, new(queryConverter)).Expression(dao.Driver())
-	if whereExpression != nil {
-		expressions = append(expressions, whereExpression)
+	if query != nil {
+		if qE := sql.NewQueryBuilder(query, new(queryConverter)).Expression(dao.Driver()); qE != nil {
+			expressions = append(expressions, qE)
+		}
 	}
 
 	offset, limit := int64(0), int64(-1)
@@ -263,13 +277,22 @@ func (dao *sqlimpl) Search(query sql.Enquirer, acls *[]interface{}) error {
 }
 
 // SetExpiry sets an expiry timestamp on the acl
-func (dao *sqlimpl) SetExpiry(query sql.Enquirer, t time.Time) (int64, error) {
+func (dao *sqlimpl) SetExpiry(query sql.Enquirer, t time.Time, period *ExpirationPeriod) (int64, error) {
 
 	db := goqu.New(dao.Driver(), dao.DB())
 
-	whereExpression := sql.NewQueryBuilder(query, new(queryConverter)).Expression(dao.Driver())
+	whereExpression := goqu.And()
+	if query != nil {
+		if qExp := sql.NewQueryBuilder(query, new(queryConverter)).Expression(dao.Driver()); qExp != nil {
+			whereExpression = whereExpression.Append(qExp)
+		}
+	}
+	if period != nil { // append pExp
+		pExp := dao.expirationToGoqu(period, nil)
+		whereExpression = whereExpression.Append(pExp.Expressions()...)
+	}
 
-	dataset := db.From("idm_acls").Where(whereExpression).Update().Set(goqu.Record{"expires_at": t})
+	dataset := db.From("idm_acls").Where(whereExpression).Update().Set(goqu.Record{"expires_at": dao.valueForTime(t)})
 
 	res, err := dataset.Executor().Exec()
 	if err != nil {
@@ -285,9 +308,20 @@ func (dao *sqlimpl) SetExpiry(query sql.Enquirer, t time.Time) (int64, error) {
 }
 
 // Del from the sql DB.
-func (dao *sqlimpl) Del(query sql.Enquirer) (int64, error) {
+func (dao *sqlimpl) Del(query sql.Enquirer, period *ExpirationPeriod) (int64, error) {
+	dao.delLock.Lock()
+	defer dao.delLock.Unlock()
 
-	whereExpression := sql.NewQueryBuilder(query, new(queryConverter)).Expression(dao.Driver())
+	whereExpression := goqu.And()
+	if query != nil {
+		if qExp := sql.NewQueryBuilder(query, new(queryConverter)).Expression(dao.Driver()); qExp != nil {
+			whereExpression = whereExpression.Append(qExp)
+		}
+	}
+	if period != nil {
+		andExpression := dao.expirationToGoqu(period, nil)
+		whereExpression = whereExpression.Append(andExpression.Expressions()...)
+	}
 	queryString, args, err := sql.DeleteStringFromExpression("idm_acls", dao.Driver(), whereExpression)
 	if err != nil {
 		return 0, err
@@ -441,6 +475,42 @@ func (dao *sqlimpl) addRole(uuid string) (string, error) {
 	er = row.Scan(&id)
 
 	return id, er
+}
+
+func (dao *sqlimpl) expirationToGoqu(p *ExpirationPeriod, table exp.IdentifierExpression) exp.ExpressionList {
+	if table != nil {
+		a := goqu.And(
+			table.Col("expires_at").IsNotNull(),
+		)
+		if !p.End.IsZero() {
+			a = a.Append(table.Col("expires_at").Lte(dao.valueForTime(p.End)))
+		}
+		if !p.Start.IsZero() {
+			a = a.Append(table.Col("expires_at").Gte(dao.valueForTime(p.Start)))
+		}
+		return a
+	} else {
+		a := goqu.And(
+			goqu.C("expires_at").IsNotNull(),
+		)
+		if !p.End.IsZero() {
+			a = a.Append(goqu.C("expires_at").Lte(dao.valueForTime(p.End)))
+		}
+		if !p.Start.IsZero() {
+			a = a.Append(goqu.C("expires_at").Gte(dao.valueForTime(p.Start)))
+		}
+		return a
+	}
+}
+
+func (dao *sqlimpl) valueForTime(t time.Time) interface{} {
+	if t.IsZero() {
+		return nil
+	}
+	if dao.Driver() == "sqlite3" {
+		return t.Unix()
+	}
+	return t
 }
 
 type queryConverter idm.ACLSingleQuery

@@ -42,7 +42,7 @@ type DAO interface {
 	// Add creates or updates a user in the underlying repository.
 	// It returns the resulting user, a true flag in case of an update
 	// of an existing user and/or an error if something went wrong.
-	Add(interface{}) (interface{}, []*tree.Node, error)
+	Add(interface{}) (interface{}, []tree.N, error)
 
 	Del(sql.Enquirer, chan *idm.User) (numRows int64, e error)
 	Search(sql.Enquirer, *[]interface{}, ...bool) error
@@ -50,6 +50,7 @@ type DAO interface {
 	Bind(userName string, password string) (*idm.User, error)
 	CleanRole(roleId string) error
 	TouchUser(userUuid string) error
+	LoginModifiedAttr(oldName, newName string) (int64, error)
 }
 
 // NewDAO wraps passed DAO with specific Pydio implementation of User DAO and returns it.

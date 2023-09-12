@@ -26,6 +26,7 @@ import (
 	"github.com/pydio/cells/v4/common/config"
 	"path"
 	"sync"
+	"time"
 
 	restful "github.com/emicklei/go-restful/v3"
 	"go.uber.org/zap"
@@ -303,25 +304,51 @@ func (h *GraphHandler) Recommend(req *restful.Request, rsp *restful.Response) {
 	}
 
 	wg.Wait()
-	resp := &rest.RecommendResponse{}
+	t := time.Now()
+
 	for _, n := range bn {
 		if _, already := ak[n.Uuid]; already {
 			continue
 		}
 		an = append(an, n)
 	}
-	for _, n := range an {
-		if r, er := router.ReadNode(ctx, &tree.ReadNodeRequest{Node: n}); er == nil {
-			node := r.GetNode()
-			if len(node.AppearsIn) == 0 || node.AppearsIn[0].Path == "" { // empty Path = workspace root
-				continue
-			}
-			node.Path = path.Join(node.AppearsIn[0].WsSlug, node.AppearsIn[0].Path)
-			node.MustSetMeta("reco-annotation", n.GetStringMeta("reco-annotation"))
-			node.MustSetMeta("repository_id", node.AppearsIn[0].WsUuid)
-			resp.Nodes = append(resp.Nodes, node.WithoutReservedMetas())
+	resp := &rest.RecommendResponse{}
+	throttle := make(chan struct{}, 10)
+	nwg := &sync.WaitGroup{}
+	nwg.Add(len(an))
+	nn := make(chan *tree.Node)
+	nnDone := make(chan bool, 1)
+	go func() {
+		for n := range nn {
+			resp.Nodes = append(resp.Nodes, n)
 		}
+		close(nnDone)
+	}()
+	for _, n := range an {
+		throttle <- struct{}{}
+		go func(in *tree.Node) {
+			defer func() {
+				nwg.Done()
+				<-throttle
+			}()
+			if r, er := router.ReadNode(ctx, &tree.ReadNodeRequest{Node: in}); er == nil {
+				node := r.GetNode()
+				if len(node.AppearsIn) == 0 || node.AppearsIn[0].Path == "" { // empty Path = workspace root
+					return
+				}
+				node.Path = path.Join(node.AppearsIn[0].WsSlug, node.AppearsIn[0].Path)
+				node.MustSetMeta("reco-annotation", in.GetStringMeta("reco-annotation"))
+				node.MustSetMeta("repository_id", node.AppearsIn[0].WsUuid)
+				//resp.Nodes = append(resp.Nodes, node.WithoutReservedMetas())
+				nn <- node.WithoutReservedMetas()
+			}
+		}(n)
 	}
+	nwg.Wait()
+	close(nn)
+	<-nnDone
+
+	log.Logger(ctx).Debug("--- Load Nodes Time", zap.Duration("nodes", time.Since(t)))
 
 	// Not enough data, load accessible workspaces as nodes
 	if len(resp.Nodes) < int(request.Limit) {

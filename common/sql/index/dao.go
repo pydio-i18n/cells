@@ -24,7 +24,6 @@ package index
 import (
 	"context"
 	"fmt"
-
 	"github.com/pydio/cells/v4/common/dao"
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/sql"
@@ -33,26 +32,27 @@ import (
 
 // DAO interface
 type DAO interface {
-	Path(strpath string, create bool, reqNode ...*tree.Node) (mtree.MPath, []*mtree.TreeNode, error)
+	Path(strpath string, create bool, reqNode ...tree.N) (mtree.MPath, []*mtree.TreeNode, error)
 
-	// Add a node in the tree
+	// AddNode adds a node in the tree
 	AddNode(*mtree.TreeNode) error
 	// SetNode updates a node, including its tree position
 	SetNode(*mtree.TreeNode) error
-	// Update a node metadata, without touching its tree position
+	// SetNodeMeta Update a node metadata, without touching its tree position
 	SetNodeMeta(*mtree.TreeNode) error
-	// Remove a node from the tree
+	// DelNode removes a node from the tree
 	DelNode(*mtree.TreeNode) error
 
-	// Simple Add / Set / Delete
+	// AddNodeStream Simple Add / Set / Delete
 	AddNodeStream(int) (chan *mtree.TreeNode, chan error)
 	Flush(bool) error
 
-	// Batch Add / Set / Delete
+	// GetNodes Batch Add / Set / Delete
 	GetNodes(...mtree.MPath) chan *mtree.TreeNode
 	SetNodes(string, int64) sql.BatchSender
 
 	// Getters
+
 	GetNodeChildren(context.Context, mtree.MPath, ...*tree.MetaFilter) chan interface{}
 	GetNodeTree(context.Context, mtree.MPath, ...*tree.MetaFilter) chan interface{}
 	GetNode(mtree.MPath) (*mtree.TreeNode, error)
@@ -60,7 +60,7 @@ type DAO interface {
 	GetNodeChild(mtree.MPath, string) (*mtree.TreeNode, error)
 	GetNodeLastChild(mtree.MPath) (*mtree.TreeNode, error)
 	GetNodeFirstAvailableChildIndex(mtree.MPath) (uint64, error)
-	GetNodeChildrenCounts(mtree.MPath) (int, int)
+	GetNodeChildrenCounts(mtree.MPath, bool) (int, int)
 	MoveNodeTree(nodeFrom *mtree.TreeNode, nodeTo *mtree.TreeNode) error
 
 	ResyncDirtyEtags(rootNode *mtree.TreeNode) error
@@ -69,6 +69,7 @@ type DAO interface {
 	FixLostAndFound(lost LostAndFound) error
 	FixRandHash2(excludes ...LostAndFound) (int64, error)
 	Flatten() (string, error)
+	UpdateNameInPlace(oldName, newName string, knownUuid string, knownLevel int) (int64, error)
 
 	GetSQLDAO() sql.DAO
 }

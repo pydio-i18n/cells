@@ -26,6 +26,7 @@ import (
 	"io"
 	"strconv"
 	"strings"
+	"sync"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -59,6 +60,7 @@ func WithQuota() nodes.Option {
 type QuotaFilter struct {
 	abstract.Handler
 	readCache cache.Cache
+	once      sync.Once
 }
 
 func (a *QuotaFilter) Adapt(h nodes.Handler, options nodes.RouterOptions) nodes.Handler {
@@ -82,10 +84,9 @@ func (a *QuotaFilter) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, op
 		q  int64
 		u  int64
 	}
-	if a.readCache == nil {
-		c, _ := cache.OpenCache(context.TODO(), runtime.ShortCacheURL("evictionTime", "1m", "cleanWindow", "5m"))
-		a.readCache = c
-	}
+	a.once.Do(func() {
+		a.readCache, _ = cache.OpenCache(context.TODO(), runtime.ShortCacheURL("evictionTime", "30s", "cleanWindow", "3m"))
+	})
 	var cacheKey string
 	if claims, ok := ctx.Value(claim.ContextKey).(claim.Claims); ok {
 		cacheKey = branch.Workspace.UUID + "-" + claims.Name
@@ -107,10 +108,10 @@ func (a *QuotaFilter) ReadNode(ctx context.Context, in *tree.ReadNodeRequest, op
 		n.MustSetMeta("ws_quota_usage", u)
 		resp.Node = n
 		if cacheKey != "" {
-			a.readCache.Set(cacheKey, &qCache{q: q, u: u})
+			_ = a.readCache.Set(cacheKey, &qCache{q: q, u: u})
 		}
 	} else if cacheKey != "" {
-		a.readCache.Set(cacheKey, &qCache{no: true})
+		_ = a.readCache.Set(cacheKey, &qCache{no: true})
 	}
 	return resp, err
 }
@@ -317,7 +318,6 @@ func (a *QuotaFilter) QuotaForWorkspace(ctx context.Context, workspace *idm.Work
 	roleValues := make(map[string]string)
 	detectedRoots := make(map[string]bool)
 
-	defer stream.CloseSend()
 	for {
 		resp, e := stream.Recv()
 		if e != nil {

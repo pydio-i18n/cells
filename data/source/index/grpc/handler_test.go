@@ -23,13 +23,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/pydio/cells/v4/common/runtime"
-	"github.com/spf13/viper"
 	"io"
 	"sync"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/spf13/viper"
 	"google.golang.org/grpc/metadata"
 
 	// SQLite Driver
@@ -37,6 +36,7 @@ import (
 	"github.com/pydio/cells/v4/common/dao/sqlite"
 	"github.com/pydio/cells/v4/common/proto/object"
 	"github.com/pydio/cells/v4/common/proto/tree"
+	"github.com/pydio/cells/v4/common/runtime"
 	servicecontext "github.com/pydio/cells/v4/common/service/context"
 	_ "github.com/pydio/cells/v4/common/utils/cache/gocache"
 	"github.com/pydio/cells/v4/common/utils/configx"
@@ -258,7 +258,7 @@ func TestIndex(t *testing.T) {
 		_, err := send(s, "UpdateNode", &tree.UpdateNodeRequest{From: node1_4_2, To: &tree.Node{Uuid: "test_1_4_2", Path: "/test_1_6/test_1_4_2"}})
 		So(err, ShouldNotBeNil)
 		// FIXME Why was this expected ?
-		// resp, err := send(s, "UpdateNode", &tree.UpdateNodeRequest{From: node1_4_2, To: &tree.Node{Uuid: "test_1_4_2", Path: "/test_1_6/test_1_4_2"}})
+		// resp, err := send(s, "UpdateNode", &tree.UpdateNodeRequest{From: node1_4_2, To: &tree.N{Uuid: "test_1_4_2", Path: "/test_1_6/test_1_4_2"}})
 		// So(err, ShouldBeNil)
 		// So(resp.(*tree.UpdateNodeResponse).Success, ShouldBeFalse)
 	})
@@ -466,15 +466,15 @@ func TestIndex(t *testing.T) {
 	/*
 		Convey("Test insert two nodes with same Uuid", t, func() {
 
-			f1 := &tree.Node{Path: "/root/f1", Uuid: "uuid"}
-			f2 := &tree.Node{Path: "/root/f2", Uuid: "uuid"}
-			e1 := s.CreateNode(ctx, &tree.CreateNodeRequest{Node: f1}, &tree.CreateNodeResponse{})
-			e2 := s.CreateNode(ctx, &tree.CreateNodeRequest{Node: f2}, &tree.CreateNodeResponse{})
+			f1 := &tree.N{Path: "/root/f1", Uuid: "uuid"}
+			f2 := &tree.N{Path: "/root/f2", Uuid: "uuid"}
+			e1 := s.CreateNode(ctx, &tree.CreateNodeRequest{N: f1}, &tree.CreateNodeResponse{})
+			e2 := s.CreateNode(ctx, &tree.CreateNodeRequest{N: f2}, &tree.CreateNodeResponse{})
 			So(e1, ShouldBeNil)
 			So(e2, ShouldNotBeNil)
 
-			f3 := &tree.Node{Path: "/root/f2", Uuid: "uuid-renewed"}
-			e3 := s.CreateNode(ctx, &tree.CreateNodeRequest{Node: f3}, &tree.CreateNodeResponse{})
+			f3 := &tree.N{Path: "/root/f2", Uuid: "uuid-renewed"}
+			e3 := s.CreateNode(ctx, &tree.CreateNodeRequest{N: f3}, &tree.CreateNodeResponse{})
 			So(e3, ShouldBeNil)
 		})
 	*/
@@ -679,14 +679,14 @@ func BenchmarkIndexCancel(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		resp, _ := send(s, "ListNodes", &tree.ListNodesRequest{Node: f1})
 		fmt.Println(resp)
-		/*var nodes = []*tree.Node{}
+		/*var nodes = []*tree.N{}
 		for {
 			response, err := resp.(*List).Recv()
 
 			if err != nil {
 				break
 			}
-			nodes = append(nodes, response.Node)
+			nodes = append(nodes, response.N)
 		}
 		fmt.Println(nodes)*/
 	}
@@ -704,12 +704,12 @@ func TestMassiveOperations(t *testing.T) {
 		loadedContent, e := os.ReadFile(filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "pydio", "cells", "data", "source", "index", "utils", "snapshot.json"))
 		So(e, ShouldBeNil)
 		So(string(loadedContent), ShouldHaveLength, 396068)
-		nodesList := []*tree.Node{}
+		nodesList := []*tree.N{}
 		e = json.Unmarshal(loadedContent, &nodesList)
 		So(e, ShouldBeNil)
 		So(nodesList, ShouldHaveLength, 945)
 		for _, n := range nodesList {
-			_, err := send(s, "CreateNode", &tree.CreateNodeRequest{Node: n})
+			_, err := send(s, "CreateNode", &tree.CreateNodeRequest{N: n})
 			So(err, ShouldBeNil)
 		}
 

@@ -26,10 +26,9 @@ import (
 	"strings"
 	"time"
 
-	"google.golang.org/protobuf/proto"
-
 	goqu "github.com/doug-martin/goqu/v9"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/pydio/cells/v4/common"
@@ -39,6 +38,7 @@ import (
 	"github.com/pydio/cells/v4/common/proto/tree"
 	"github.com/pydio/cells/v4/common/sql"
 	"github.com/pydio/cells/v4/common/sql/index"
+	json "github.com/pydio/cells/v4/common/utils/jsonx"
 	"github.com/pydio/cells/v4/common/utils/mtree"
 )
 
@@ -317,14 +317,19 @@ func groupToNode(g *idm.User) *tree.Node {
 
 func nodeToUser(t *mtree.TreeNode) *idm.User {
 	u := &idm.User{
-		Uuid:          t.Uuid,
+		Uuid:          t.GetUuid(),
 		Login:         t.Name(),
-		Password:      t.Etag,
-		GroupPath:     t.Path,
-		LastConnected: int32(t.MTime),
+		Password:      t.GetEtag(),
+		GroupPath:     t.GetPath(),
+		LastConnected: int32(t.GetMTime()),
 	}
+	//var gRoles []string
+	//t.GetMeta("GroupRoles", &gRoles)
+	mm := t.ListRawMetadata()
 	var gRoles []string
-	t.GetMeta("GroupRoles", &gRoles)
+	if gr, ok := mm["GroupRoles"]; ok {
+		_ = json.Unmarshal([]byte(gr), &gRoles)
+	}
 	// Do not apply inheritance to anonymous user
 	if t.Name() == common.PydioS3AnonUsername {
 		u.Roles = []*idm.Role{}
@@ -338,9 +343,9 @@ func nodeToUser(t *mtree.TreeNode) *idm.User {
 
 func nodeToGroup(t *mtree.TreeNode) *idm.User {
 	return &idm.User{
-		Uuid:       t.Uuid,
+		Uuid:       t.GetUuid(),
 		IsGroup:    true,
 		GroupLabel: t.Name(),
-		GroupPath:  t.Path,
+		GroupPath:  t.GetPath(),
 	}
 }

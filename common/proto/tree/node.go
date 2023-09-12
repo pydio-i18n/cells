@@ -43,6 +43,7 @@ const (
 	StatFlagFolderSize
 	StatFlagFolderCounts
 	StatFlagMetaMinimal
+	StatFlagRecursiveCount
 
 	StatFlagHeaderName = "x-pydio-read-stat-flags"
 )
@@ -65,6 +66,15 @@ func (f Flags) Metas() bool {
 func (f Flags) FolderCounts() bool {
 	for _, fl := range f {
 		if fl == StatFlagFolderCounts {
+			return true
+		}
+	}
+	return false
+}
+
+func (f Flags) RecursiveCount() bool {
+	for _, fl := range f {
+		if fl == StatFlagRecursiveCount {
 			return true
 		}
 	}
@@ -113,6 +123,84 @@ func (f Flags) AsMeta() map[string]string {
 // Clone node to avoid modifying it directly
 func (node *Node) Clone() *Node {
 	return proto.Clone(node).(*Node)
+}
+
+// UpdatePath changes internal Path value
+func (node *Node) UpdatePath(p string) {
+	node.Path = p
+}
+
+// UpdateUuid changes internal Uuid value
+func (node *Node) UpdateUuid(u string) {
+	node.Uuid = u
+}
+
+// UpdateEtag changes internal Etag value
+func (node *Node) UpdateEtag(et string) {
+	node.Etag = et
+}
+
+// UpdateSize changes internal Size value
+func (node *Node) UpdateSize(s int64) {
+	node.Size = s
+}
+
+// UpdateMTime changes internal MTime value
+func (node *Node) UpdateMTime(s int64) {
+	node.MTime = s
+}
+
+// UpdateMode updates mode fields
+func (node *Node) UpdateMode(s int32) {
+	node.Mode = s
+}
+
+func (node *Node) SetType(t NodeType) {
+	node.Type = t
+}
+
+func (node *Node) SetChildrenSize(s uint64) {
+	node.MustSetMeta(common.MetaRecursiveChildrenSize, int64(s))
+}
+func (node *Node) SetChildrenFiles(s uint64) {
+	node.MustSetMeta(common.MetaRecursiveChildrenFiles, int64(s))
+}
+func (node *Node) SetChildrenFolders(s uint64) {
+	node.MustSetMeta(common.MetaRecursiveChildrenFolders, int64(s))
+}
+func (node *Node) GetChildrenSize() (s uint64, o bool) {
+	if !node.HasMetaKey(common.MetaRecursiveChildrenSize) {
+		return
+	}
+	if e := node.GetMeta(common.MetaRecursiveChildrenSize, &s); e == nil {
+		o = true
+	}
+	return
+}
+func (node *Node) GetChildrenFiles() (s uint64, o bool) {
+	if !node.HasMetaKey(common.MetaRecursiveChildrenFiles) {
+		return
+	}
+	if e := node.GetMeta(common.MetaRecursiveChildrenFiles, &s); e == nil {
+		o = true
+	}
+	return
+
+}
+func (node *Node) GetChildrenFolders() (s uint64, o bool) {
+	if !node.HasMetaKey(common.MetaRecursiveChildrenFolders) {
+		return
+	}
+	if e := node.GetMeta(common.MetaRecursiveChildrenFolders, &s); e == nil {
+		o = true
+	}
+	return
+
+}
+
+// AsProto just implements the sync/model/N interface
+func (node *Node) AsProto() *Node {
+	return node
 }
 
 // IsLeaf checks if node is of type NodeType_LEAF or NodeType_COLLECTION
@@ -181,6 +269,20 @@ func (node *Node) MustSetMeta(namespace string, jsonMeta interface{}) {
 	node.MetaStore[namespace] = string(bytes)
 }
 
+// SetRawMetadata append key/value directly to metastore (no json encoding)
+func (node *Node) SetRawMetadata(mm map[string]string) {
+	if node.MetaStore == nil {
+		node.MetaStore = make(map[string]string, len(mm))
+	}
+	for k, v := range mm {
+		node.MetaStore[k] = v
+	}
+}
+
+func (node *Node) ListRawMetadata() map[string]string {
+	return node.MetaStore
+}
+
 // GetStringMeta easily returns the string value of the MetaData for this key
 // or an empty string if the MetaData for this key is not defined
 func (node *Node) GetStringMeta(namespace string) string {
@@ -247,7 +349,6 @@ func (node *Node) LegacyMeta(meta map[string]interface{}) {
 	}
 }
 
-/* LOGGING SUPPORT */
 // MarshalLogObject implements custom marshalling for logs
 func (node *Node) MarshalLogObject(encoder zapcore.ObjectEncoder) error {
 	if node == nil {
