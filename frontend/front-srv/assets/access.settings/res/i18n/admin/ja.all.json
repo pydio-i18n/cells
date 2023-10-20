@@ -771,13 +771,13 @@
     "other": "順序"
   },
   "metadata.group": {
-    "other": "Group"
+    "other": "グループ"
   },
   "metadata.group-field": {
-    "other": "Group Name (creates an expandable section). Use '/' for sub-groups."
+    "other": "グループ名 (拡張可能なセクションを作成します) サブグループには '/' を使用します。"
   },
   "metadata.default-group": {
-    "other": "No Group"
+    "other": "グループなし"
   },
   "metadata.toggle.index": {
     "other": "検索エンジンのインデックス"
@@ -1326,10 +1326,10 @@
     "other": "ユーザーの削除時、データの名前を {deleted-NAME-UUID} に変更します。"
   },
   "virtual.card.cleanOnDelete-legend-off": {
-    "other": "This option should not be used if the template path is not creating a folder for each user (using User.Name)."
+    "other": "テンプレートパスが(User.Name を使用して) 各ユーザのフォルダを作成していない場合は、このオプションを使用しないでください。"
   },
   "virtual.card.cleanOnDelete-legend-on": {
-    "other": "This option may be recommended as the template path seems to create a folder for each user (using User.Name)."
+    "other": "テンプレートパスはユーザーごとにフォルダーを作成するように見えるため (User.Name を使用)、このオプションをお勧めします。"
   },
   "ws.1": {
     "other": "データソースの管理"
@@ -1668,7 +1668,7 @@
     "other": "ユーザーがこのワークスペースに接続している場合、同期タスクは機能しなくなります。 それを変更してもよろしいですか？"
   },
   "ws.editor.other.quota": {
-    "other": "Disk Usage Quota (leave 0 for no limit). This quota is computed on all files of this workspace (or user-specific contents for workspaces like Personal Files)."
+    "other": "ディスク使用量クォータ (制限しない場合は 0 のままにします)。このクォータは、このワークスペースのすべてのファイル (または個人ファイルなどのワークスペースのユーザー固有のコンテンツ) に対して計算されます。"
   },
   "ws.editor.other.quota.noquota": {
     "other": "クォータが設定されていません"
