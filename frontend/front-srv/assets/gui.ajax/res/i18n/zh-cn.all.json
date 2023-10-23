@@ -101,6 +101,27 @@
   "tour.workspaces.title": {
     "other": "工作区和资料库"
   },
+  "tour.theme.title": {
+    "other": "明亮/暗黑主题支持"
+  },
+  "tour.theme.legend": {
+    "other": "选择明亮或暗黑主题以适应您的偏好。"
+  },
+  "tour.left-resize.title": {
+    "other": "工作区和Cells"
+  },
+  "tour.left-resize.legend": {
+    "other": "左侧列可以调整大小或关闭以适应您的屏幕。"
+  },
+  "tour.right-resize.legend": {
+    "other": "左侧列也可以调整大小或关闭以适应您的屏幕。"
+  },
+  "tour.directory.title": {
+    "other": "用户目录"
+  },
+  "tour.directory.legend": {
+    "other": "Manage users (internal and external) and teams in a central location."
+  },
   "background.jobs.title": {
     "other": "后台任务"
   },
@@ -141,13 +162,13 @@
     "other": "缩略图"
   },
   "list.display-mode.thumbs-large": {
-    "other": "Larger"
+    "other": "大"
   },
   "list.display-mode.thumbs-medium": {
-    "other": "Medium"
+    "other": "中"
   },
   "list.display-mode.thumbs-small": {
-    "other": "Smaller"
+    "other": "小"
   },
   "list.display-mode.masonry": {
     "other": "图库"
@@ -171,40 +192,40 @@
     "other": "Incomplete"
   },
   "file.temporary-etag.tooltip": {
-    "other": "This file is being uploaded (or the upload has failed)."
+    "other": "此文件正在上传(或上传失败)。"
   },
   "mimegroup.byextension": {
     "other": "By File Extension..."
   },
   "mimegroup.word": {
-    "other": "Word documents"
+    "other": "Word 文件"
   },
   "mimegroup.spreadsheet": {
-    "other": "Spreadsheets"
+    "other": "电子表格"
   },
   "mimegroup.presentation": {
-    "other": "Presentations"
+    "other": "演示文稿"
   },
   "mimegroup.pdf": {
-    "other": "PDFs"
+    "other": "PDF"
   },
   "mimegroup.image": {
-    "other": "Images"
+    "other": "图片"
   },
   "mimegroup.video": {
-    "other": "Videos"
+    "other": "视频"
   },
   "mimegroup.audio": {
-    "other": "Audios"
+    "other": "音频"
   },
   "fastsearch.quick-jump.title": {
-    "other": "Quick Jump"
+    "other": "快速访问"
   },
   "fastsearch.quick-jump.legend": {
     "other": "Hit [Enter] to jump, add a trailing [/] to search inside children, [Esc] to Close"
   },
   "fastsearch.quick-move.title": {
-    "other": "Quick Move"
+    "other": "快速移动"
   },
   "fastsearch.quick-move.target-error": {
     "other": "Cannot move to this target!"
@@ -213,12 +234,45 @@
     "other": "Hit [Enter] to move %s selected items to target, [Esc] to Close"
   },
   "fastsearch.quick-copy.title": {
-    "other": "Quick Copy"
+    "other": "快速拷贝"
   },
   "fastsearch.quick-copy.target-error": {
-    "other": "Cannot copy to this target!"
+    "other": "无法复制到此目标！"
   },
   "fastsearch.quick-copy.legend": {
     "other": "Hit [Enter] to copy %s selected items to target, [Esc] to Close"
+  },
+  "wslist-options.title": {
+    "other": "Display Options"
+  },
+  "wslist-options.show-masked": {
+    "other": "Show masked items"
+  },
+  "wslist.action.mask": {
+    "other": "Mask"
+  },
+  "wslist.action.unmask": {
+    "other": "Unmask"
+  },
+  "wslist-options.merge-workspaces": {
+    "other": "Merge workspaces and cells"
+  },
+  "wslist-options.own-cells-first": {
+    "other": "由我先创建的Cell"
+  },
+  "leftrail.buttons.home": {
+    "other": "主页"
+  },
+  "leftrail.buttons.directory": {
+    "other": "目录"
+  },
+  "leftrail.buttons.all-files": {
+    "other": "所有文件"
+  },
+  "leftrail.buttons.theme.light": {
+    "other": "明亮模式"
+  },
+  "leftrail.buttons.theme.dark": {
+    "other": "暗黑模式"
   }
 }
