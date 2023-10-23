@@ -188,6 +188,12 @@
   "workspace.statics.home.description": {
     "other": "Страница приветствия, отображаемая после входа"
   },
+  "workspace.statics.directory.title": {
+    "other": "Папка"
+  },
+  "workspace.statics.directory.description": {
+    "other": "Показывать полную страницу адресной книги (используется Mui3 тема)"
+  },
   "workspace.statics.settings.title": {
     "other": "Консоль администратора"
   },
