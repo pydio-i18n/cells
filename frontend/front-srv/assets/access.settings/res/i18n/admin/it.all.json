@@ -770,6 +770,15 @@
   "metadata.order": {
     "other": "Ordine"
   },
+  "metadata.group": {
+    "other": "Group"
+  },
+  "metadata.group-field": {
+    "other": "Group Name (creates an expandable section). Use '/' for sub-groups."
+  },
+  "metadata.default-group": {
+    "other": "No Group"
+  },
   "metadata.toggle.index": {
     "other": "Indice nel motore di ricerca"
   },
@@ -1316,6 +1325,12 @@
   "virtual.card.cleanOnDelete": {
     "other": "Dopo l'eliminazione dell'utente, rinominare i dati in {deleted-NAME-UUID}."
   },
+  "virtual.card.cleanOnDelete-legend-off": {
+    "other": "This option should not be used if the template path is not creating a folder for each user (using User.Name)."
+  },
+  "virtual.card.cleanOnDelete-legend-on": {
+    "other": "This option may be recommended as the template path seems to create a folder for each user (using User.Name)."
+  },
   "ws.1": {
     "other": "Gestisci i DataSource"
   },
@@ -1434,10 +1449,10 @@
     "other": "Specifica qui i permessi di accesso predefiniti per questa cartella di lavoro.\n                                Per abilitare la gestione dei permessi su un sottolivello, seleziona il 'CHILDREN' in una determinata cartella.\n                                Questo imposterà la cartella corrente come sola lettura per impostazione predefinita, e sarai in grado di aprire gli accessi\n                                in modo selettivo a qualsiasi cartella sul livello inferiore."
   },
   "ws.44": {
-    "other": "Siate consapevoli che questa è solo una maschera: se modifichi direttamente le cartelle reali, potresti dover\n                                modificare questa maschera in modo coerente. Inoltre, questi permessi possono essere limitati a livello globale dai 'Diritti Predefiniti'\n                                impostati per questo progetto (vedi la scheda generale)."
+    "other": "Please be aware that this is only a mask: if you modify the real folders directly, you may have\n                                to edit this mask accordingly. Also, these permissions may be globally limited by the 'Default Rights'\n                                parameter set for this workspace (see the General tab)."
   },
   "ws.45": {
-    "other": "Siccome i suoi parametri usano le parole chiave 'PYDIO_USER' o 'PYDIO_GROUP_ *', i contenuti di\n                                questo workspace variano a seconda dell'utente autenticato attualmente. Per questo motivo, non è possibile sfogliare le cartelle\n                                direttamente e assegnare loro le autorizzazioni, ma è possibile definire liberamente alcuni percorsi generici che verranno utilizzati come maschere."
+    "other": "As its parameters are using 'PYDIO_USER' or 'PYDIO_GROUP_*' keywords, the contents of\n                                this workspace will vary depending on the currently authenticated user. For this reason, you cannot browse the\n                                folders directly and assign permissions to them, but you can freely define some generic paths that will be used as masks."
   },
   "ws.46": {
     "other": "Aggiungi una funzionalità"
@@ -1653,7 +1668,7 @@
     "other": "Se le persone sono connesse a questo spazio di lavoro, la loro attività di sincronizzazione non funzionerà più! Sei sicuro di voler cambiare questa configurazione?"
   },
   "ws.editor.other.quota": {
-    "other": "Quota di utilizzo del disco (lasciare 0 per nessun limite). Questa quota viene calcolata su tutti i file di questo workspace. Per i workspace specifici dell'utente (come i file personali), è possibile affinare questo valore su una base per utente/gruppo/ruolo nella sezione Persone."
+    "other": "Disk Usage Quota (leave 0 for no limit). This quota is computed on all files of this workspace (or user-specific contents for workspaces like Personal Files)."
   },
   "ws.editor.other.quota.noquota": {
     "other": "Nessuna quota impostata"
