@@ -206,10 +206,25 @@
   "Whether users can create their own repositories, based on predefined templates.": {
     "other": "用户是否可以根据预定义的模板创建自己的资源库。"
   },
-  "Worskpace creation delegation": {
-    "other": "Worskace 创建授权"
+  "Workspace creation delegation": {
+    "other": "创建工作区授权"
   },
   "role prefix": {
     "other": "角色前缀"
+  },
+  "System Default": {
+    "other": "系统默认"
+  },
+  "Material 3 (detect)": {
+    "other": "Material 3 (detect)"
+  },
+  "Material 3 (light)": {
+    "other": "Material 3 (light)"
+  },
+  "Material 3 (dark)": {
+    "other": "Material 3 (dark)"
+  },
+  "Material Legacy": {
+    "other": "Material Legacy"
   }
 }
