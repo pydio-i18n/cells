@@ -206,10 +206,25 @@
   "Whether users can create their own repositories, based on predefined templates.": {
     "other": "Autoriser les utilisateurs à créer des workspaces, à partir des modèles de workspaces prédéfinis."
   },
-  "Worskpace creation delegation": {
+  "Workspace creation delegation": {
     "other": "Délégation de la création de workspace"
   },
   "role prefix": {
     "other": "Role commençant par"
+  },
+  "System Default": {
+    "other": "Par défaut"
+  },
+  "Material 3 (detect)": {
+    "other": "Material 3 (détecter)"
+  },
+  "Material 3 (light)": {
+    "other": "Material 3 (clair)"
+  },
+  "Material 3 (dark)": {
+    "other": "Material 3 (sombre)"
+  },
+  "Material Legacy": {
+    "other": "Material 1 (legacy)"
   }
 }
