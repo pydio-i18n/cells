@@ -206,10 +206,25 @@
   "Whether users can create their own repositories, based on predefined templates.": {
     "other": "ユーザーがあらかじめ定義されたテンプレートに基づいて独自のリポジトリを作成できるかどうか。"
   },
-  "Worskpace creation delegation": {
-    "other": "ワークプレースの作成委任"
+  "Workspace creation delegation": {
+    "other": "ワークスペース作成の委任"
   },
   "role prefix": {
     "other": "ロールプレフィクス"
+  },
+  "System Default": {
+    "other": "システムのデフォルト"
+  },
+  "Material 3 (detect)": {
+    "other": "Material 3 (detect)"
+  },
+  "Material 3 (light)": {
+    "other": "Material 3 (light)"
+  },
+  "Material 3 (dark)": {
+    "other": "Material 3 (dark)"
+  },
+  "Material Legacy": {
+    "other": "Material Legacy"
   }
 }
