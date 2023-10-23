@@ -3,13 +3,13 @@
     "other": "Start adding new files or folders to the current workspace."
   },
   "tour.create-menu.title": {
-    "other": "Add files"
+    "other": "Добавить файлы"
   },
   "tour.display-bar": {
     "other": "This toolbar allows you to change the display: switch to thumbnails or detail mode depending on your usage, and sort files by name, date, etc..."
   },
   "tour.display-bar.title": {
-    "other": "Display Options"
+    "other": "Параметры отображения"
   },
   "tour.globsearch.1": {
     "other": "Use this search form to find files or folders in any workspace and cells. Only the first 5 results are shown, enter a workspace to get more results, and more search options."
@@ -18,7 +18,7 @@
     "other": "When no search is entered, the history of your recently accessed files and folder is displayed instead."
   },
   "tour.globsearch.title": {
-    "other": "Global Search"
+    "other": "Глобальный поиск"
   },
   "tour.infopanel.1": {
     "other": "Here, you will find many information about current selection: file information, sharing status, user-defined metadata, etc."
@@ -33,19 +33,19 @@
     "other": "Папка"
   },
   "tour.infopanel.search": {
-    "other": "Search"
+    "other": "Поиск"
   },
   "tour.infopanel.title": {
-    "other": "Info Panel"
+    "other": "Инфо-панель"
   },
   "tour.locale.back": {
-    "other": "Back"
+    "other": "Назад"
   },
   "tour.locale.close": {
-    "other": "Close"
+    "other": "Закрыть"
   },
   "tour.locale.last": {
-    "other": "Finish"
+    "other": "Готово"
   },
   "tour.locale.next": {
     "other": "Следующий"
@@ -54,10 +54,10 @@
     "other": "Пропустить"
   },
   "tour.openworkspace": {
-    "other": "At the first connection, your history is probably empty. Enter a workspace or a cell to start adding files."
+    "other": "При первом соединении ваша история, вероятно, пуста. Введите рабочую область или ячейку, чтобы начать добавлять файлы."
   },
   "tour.openworkspace.title": {
-    "other": "Open a workspace"
+    "other": "Открыть рабочее пространство"
   },
   "tour.uwidget.addressbook": {
     "other": "Directory of all the users accessing to the platform. Create your own users, and constitute teams that can be used to share resources"
@@ -100,6 +100,27 @@
   },
   "tour.workspaces.title": {
     "other": "Workspaces & Cells"
+  },
+  "tour.theme.title": {
+    "other": "Light/Dark Theme Support"
+  },
+  "tour.theme.legend": {
+    "other": "Choose a light or dark theme to best suit your vision."
+  },
+  "tour.left-resize.title": {
+    "other": "Workspaces and Cells"
+  },
+  "tour.left-resize.legend": {
+    "other": "Left column can be resized or closed to fit your screen."
+  },
+  "tour.right-resize.legend": {
+    "other": "Right column can be also be resized or closed to fit your screen."
+  },
+  "tour.directory.title": {
+    "other": "Users Directory"
+  },
+  "tour.directory.legend": {
+    "other": "Manage users (internal and external) and teams in a central location."
   },
   "background.jobs.title": {
     "other": "Background Jobs"
@@ -220,5 +241,38 @@
   },
   "fastsearch.quick-copy.legend": {
     "other": "Hit [Enter] to copy %s selected items to target, [Esc] to Close"
+  },
+  "wslist-options.title": {
+    "other": "Display Options"
+  },
+  "wslist-options.show-masked": {
+    "other": "Show masked items"
+  },
+  "wslist.action.mask": {
+    "other": "Mask"
+  },
+  "wslist.action.unmask": {
+    "other": "Unmask"
+  },
+  "wslist-options.merge-workspaces": {
+    "other": "Merge workspaces and cells"
+  },
+  "wslist-options.own-cells-first": {
+    "other": "Cells created by me first"
+  },
+  "leftrail.buttons.home": {
+    "other": "Home"
+  },
+  "leftrail.buttons.directory": {
+    "other": "Directory"
+  },
+  "leftrail.buttons.all-files": {
+    "other": "All Files"
+  },
+  "leftrail.buttons.theme.light": {
+    "other": "Light Mode"
+  },
+  "leftrail.buttons.theme.dark": {
+    "other": "Dark Mode"
   }
 }
