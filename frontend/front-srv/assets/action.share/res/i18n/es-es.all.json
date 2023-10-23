@@ -663,7 +663,10 @@
     "other": "Monitorizar"
   },
   "34": {
-    "other": "Usuario nuevo o existente"
+    "other": "Seleccionar o Crear Usuarios"
+  },
+  "34b": {
+    "other": "Seleccionar Usuarios"
   },
   "35": {
     "other": "Nombre"
@@ -923,6 +926,24 @@
   "cell.add.new": {
     "other": "Crear una celda nueva"
   },
+  "cell.participant.single": {
+    "other": "Un participante"
+  },
+  "cell.participant.multiple": {
+    "other": "%d participantes"
+  },
+  "cell.participant.other.single": {
+    "other": "Un otro participante"
+  },
+  "cell.participant.other.multiple": {
+    "other": "%d otros participantes"
+  },
+  "cell.folder-root.single": {
+    "other": "Una carpeta"
+  },
+  "cell.folder-root.multiple": {
+    "other": "%d carpetas"
+  },
   "link.visibility.title": {
     "other": "[Advanced] Visibilidad"
   },
@@ -964,5 +985,8 @@
   },
   "link.secure.maxdownloads": {
     "other": "Sólo %d descargas"
+  },
+  "minisite.toggle.theme": {
+    "other": "Toggle Dark/Light Theme"
   }
 }
