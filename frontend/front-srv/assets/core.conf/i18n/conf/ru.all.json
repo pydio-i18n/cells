@@ -3,7 +3,7 @@
     "other": "Почтовый адрес для оповещений"
   },
   "All roles": {
-    "other": "All roles"
+    "other": "Все роли"
   },
   "Allow Group Listing": {
     "other": "Allow Group Listing"
@@ -21,7 +21,7 @@
     "other": "Allow to search users from other groups through auto completer (can be handy if previous option is set to false) and share workspaces with them"
   },
   "Always Override": {
-    "other": "Always Override"
+    "other": "Всегда переопределять"
   },
   "Always override other roles, included group roles.": {
     "other": "Always override other roles, included group roles."
@@ -206,10 +206,25 @@
   "Whether users can create their own repositories, based on predefined templates.": {
     "other": "Whether users can create their own repositories, based on predefined templates."
   },
-  "Worskpace creation delegation": {
-    "other": "Worskpace creation delegation"
+  "Workspace creation delegation": {
+    "other": "Workspace creation delegation"
   },
   "role prefix": {
     "other": "Role prefix"
+  },
+  "System Default": {
+    "other": "System Default"
+  },
+  "Material 3 (detect)": {
+    "other": "Material 3 (detect)"
+  },
+  "Material 3 (light)": {
+    "other": "Material 3 (light)"
+  },
+  "Material 3 (dark)": {
+    "other": "Material 3 (dark)"
+  },
+  "Material Legacy": {
+    "other": "Material Legacy"
   }
 }
