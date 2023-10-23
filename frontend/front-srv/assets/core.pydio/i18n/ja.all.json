@@ -1022,32 +1022,8 @@
   "402": {
     "other": "http://www.hjsplit.org/"
   },
-  "403": {
-    "other": "WebDAV"
-  },
-  "404": {
-    "other": "WebDAV はデスクトップ上に直接 APPLICATION_TITLE ワークスペースを「ネットワークドライブ」としてマウントできるプロトコルです。 この機能を有効にするには、以下のボックスにチェックを入れ、必要に応じてパスワードを入力してください。"
-  },
-  "405": {
-    "other": "WebDAV クライアントは、アドレス、ログイン、パスワードを要求します。以下の URL と、標準名とパスワードを使用してください。"
-  },
-  "406": {
-    "other": "WebDAV による共有を有効にする"
-  },
-  "407": {
-    "other": "WebDAV 共有を初めて有効にする場合、または新しいパスワードを再入力する場合は、パスワードを入力してください:"
-  },
-  "408": {
-    "other": "WebDav 共有が有効になりました"
-  },
-  "409": {
-    "other": "WebDav 共有が無効になりました"
-  },
   "41": {
     "other": "名前が変更されました"
-  },
-  "410": {
-    "other": "WebDav パスワードを更新しました"
   },
   "411": {
     "other": "オープン"
@@ -1324,6 +1300,9 @@
   },
   "494": {
     "other": "昨日"
+  },
+  "494t": {
+    "other": "明日"
   },
   "495": {
     "other": "先週"
@@ -1679,6 +1658,9 @@
   "599": {
     "other": "ユーザーを追加"
   },
+  "599-a": {
+    "other": "結果"
+  },
   "6": {
     "other": "名称変更"
   },
@@ -1719,7 +1701,7 @@
     "other": "GZファイル"
   },
   "610": {
-    "other": "すべてのworskpaces"
+    "other": "すべてのワークスペース"
   },
   "611": {
     "other": "検索を開始する"
@@ -2025,7 +2007,7 @@
     "other": "N"
   },
   "languageLabel": {
-    "other": "英語"
+    "other": "日本語"
   },
   "leftpane_accesskey": {
     "other": "L"
@@ -2321,6 +2303,9 @@
   "addressbook.pick.group": {
     "other": "グループを選択"
   },
+  "addressbook.pick.multiple": {
+    "other": "複数を選択"
+  },
   "confirm.dialog.title": {
     "other": "確認"
   },
@@ -2360,6 +2345,27 @@
   "searchengine.scope.title": {
     "other": "検索..."
   },
+  "searchengine.share.title": {
+    "other": "共有中"
+  },
+  "searchengine.share.hint": {
+    "other": "ステータスなし"
+  },
+  "searchengine.share.option.link": {
+    "other": "公開リンク"
+  },
+  "searchengine.share.option.cell": {
+    "other": "Cellで共有"
+  },
+  "searchengine.share.option.any": {
+    "other": "公開リンク または Cell"
+  },
+  "searchengine.format.title": {
+    "other": "フォーマット"
+  },
+  "searchengine.format.file-only": {
+    "other": "ファイルのみ"
+  },
   "searchengine.advanced-filter.tooltip": {
     "other": "高度なフィルタ"
   },
@@ -2373,19 +2379,19 @@
     "other": "保存"
   },
   "searchengine.query.action.save-new": {
-    "other": "Save Query"
+    "other": "クエリを保存"
   },
   "searchengine.query.action.clear": {
     "other": "クリア"
   },
   "searchengine.query.action.clear-all": {
-    "other": "Clear All"
+    "other": "すべてクリア"
   },
   "searchengine.query.action.delete": {
     "other": "削除"
   },
   "searchengine.query.action.delete-confirm": {
-    "other": "Delete this saved query?"
+    "other": "この保存したクエリを削除しますか？"
   },
   "searchengine.query.save-label": {
     "other": "ラベルを入力してください"
@@ -2394,22 +2400,25 @@
     "other": "名前/コンテンツ"
   },
   "searchengine.complete.group.saved": {
-    "other": "Saved Searches"
+    "other": "保存済みの検索"
   },
   "searchengine.complete.group.history": {
-    "other": "Last Searches"
+    "other": "直近の検索"
   },
   "searchengine.complete.group.suggestion": {
-    "other": "Advanced Suggestion"
+    "other": "高度な提案"
   },
   "searchengine.complete.suggestion.intro": {
-    "other": "Do you mean"
+    "other": "もしかして ？"
   },
   "searchengine.complete.suggestion.remain": {
-    "other": "containing '%s'"
+    "other": "'%s ' を含む"
   },
   "searchengine.complete.activefilters": {
-    "other": "Filters:"
+    "other": "フィルター:"
+  },
+  "searchengine.complete.activefilters-edit": {
+    "other": "クリックして変更"
   },
   "chat.load-older": {
     "other": "古い項目"
