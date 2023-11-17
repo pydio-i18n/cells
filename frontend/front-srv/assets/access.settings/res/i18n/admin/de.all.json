@@ -2025,7 +2025,7 @@
     "other": "Jeder..."
   },
   "scheduler.schedule.type.once": {
-    "other": "Run Once"
+    "other": "Einmal ausführen"
   },
   "scheduler.schedule.detail.monthday": {
     "other": "Tag des Monats"
@@ -2037,7 +2037,7 @@
     "other": "Uhrzeit"
   },
   "scheduler.schedule.detail.daydate": {
-    "other": "Unique Date"
+    "other": "Eindeutiges Datum"
   },
   "scheduler.schedule.detail.minutes": {
     "other": "Zeitraum in Minuten"
