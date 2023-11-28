@@ -2250,10 +2250,10 @@
     "other": "Verwenden Sie kein \"/\" Zeichen in Dateinamen!"
   },
   "filename.forbidden.empty": {
-    "other": "You must provide a name!"
+    "other": "Sie müssen einen Namen angeben!"
   },
   "filename.trailing-leading.spaces": {
-    "other": "Warning, it seems that the name begins or ends with a blank character (perhaps a typo?)"
+    "other": "Warnung, es scheint, dass der Name mit einem Leerzeichen beginnt oder endet (möglicherweise ein Tippfehler?)"
   },
   "rename.newvalue.error.similar": {
     "other": "Bitte verwenden Sie einen anderen Wert für die Umbenennung!"
