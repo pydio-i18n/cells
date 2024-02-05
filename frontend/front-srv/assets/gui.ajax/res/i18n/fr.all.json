@@ -276,18 +276,18 @@
     "other": "Mode Sombre"
   },
   "task.status.Starting": {
-    "other": "Started {startTime}"
+    "other": "Démarré {startTime}"
   },
   "task.status.Pending": {
-    "other": "Will start soon..."
+    "other": "En attente de démarrage..."
   },
   "task.status.Complete": {
-    "other": "Task completed in {duration}"
+    "other": "Tâche terminée en {duration}"
   },
   "task.status.Finished": {
-    "other": "Task completed in {duration}"
+    "other": "Tâche terminée en {duration}"
   },
   "task.status.Error": {
-    "other": "An error happened!"
+    "other": "Une erreur est survenue !"
   }
 }
