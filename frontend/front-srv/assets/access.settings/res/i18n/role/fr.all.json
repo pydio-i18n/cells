@@ -195,9 +195,9 @@
     "other": "Le rôle est toujours appliqué en dernier, après les autres rôles, à l'exception du rôle utilisateur qui prévaut."
   },
   "user.info.main": {
-    "other": "Hover fields to show explanation"
+    "other": "Survoler les champs pour afficher l'explication"
   },
   "button.info.menu.security": {
-    "other": "Security Actions"
+    "other": "Options de sécurité"
   }
 }
