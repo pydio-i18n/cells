@@ -630,46 +630,46 @@
     "other": "Pas de résultats"
   },
   "logs.details.copy": {
-    "other": "Copy log to clipboard"
+    "other": "Copier la ligne dans le presse-papier"
   },
   "logs.details.show-focus": {
-    "other": "Show +/- 5 minutes"
+    "other": "Afficher +/- 5 minutes"
   },
   "logs.details.close": {
-    "other": "Close log detail"
+    "other": "Fermer le détail"
   },
   "logs.details.user": {
-    "other": "User"
+    "other": "Utilisateur"
   },
   "logs.details.user-attributes": {
-    "other": "User Attributes"
+    "other": "Attributs de l'utilisateur"
   },
   "logs.details.date": {
-    "other": "Event Date"
+    "other": "Date de l’événement"
   },
   "logs.details.msg": {
-    "other": "Event Message"
+    "other": "Message"
   },
   "logs.details.service": {
-    "other": "Emitting Service"
+    "other": "Service émetteur"
   },
   "logs.details.connection": {
-    "other": "Connection IP"
+    "other": "IP de la connexion"
   },
   "logs.details.agent": {
-    "other": "User-Agent"
+    "other": "Agent"
   },
   "logs.details.protocol": {
-    "other": "Protocol"
+    "other": "Protocole"
   },
   "logs.details.node": {
-    "other": "File/Folder"
+    "other": "Fichier / Dossier"
   },
   "logs.details.transfer-size": {
-    "other": "Transfer Size"
+    "other": "Taille du transfert"
   },
   "logs.details.workspace": {
-    "other": "In Workspace"
+    "other": "Workspace"
   },
   "menu.0": {
     "other": "Tableau de bord"
@@ -1896,10 +1896,10 @@
     "other": "Êtes-vous sûr de vouloir effacer toutes les tâches pour ce Flow ?"
   },
   "scheduler.trigger.picker.title": {
-    "other": "Trigger job on..."
+    "other": "Déclencher lors de..."
   },
   "scheduler.trigger.type.nodes": {
-    "other": "Files and folders (nodes) events : detect files modifications to move them or update their metadata automatically."
+    "other": "Événements de fichiers et dossiers (nœuds) : détecter les ajouts, suppressions et modifications de fichiers et de leurs métadonnées."
   },
   "scheduler.trigger.type.workspaces": {
     "other": "Workspace events : triggered on workspace creation / deletion. Use the Scope flag to filter Workspaces from Cells"
