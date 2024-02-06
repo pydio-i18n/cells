@@ -1284,7 +1284,7 @@
     "other": "Metadata"
   },
   "49": {
-    "other": "Cancel"
+    "other": "Avbryt"
   },
   "490": {
     "other": "Date range"
@@ -1581,7 +1581,7 @@
     "other": "Team Members"
   },
   "576": {
-    "other": "%s members"
+    "other": "%s medlemmar"
   },
   "577": {
     "other": "No members"
@@ -1965,7 +1965,7 @@
     "other": "F, jS Y"
   },
   "date_relative_days_ago": {
-    "other": "%s days ago"
+    "other": "%s dagar sedan"
   },
   "date_relative_days_ahead": {
     "other": "in %s days"
@@ -2439,16 +2439,16 @@
     "other": "Older entries"
   },
   "chat.msg.edit": {
-    "other": "Edit Message"
+    "other": "Redigera meddelande"
   },
   "chat.msg.save": {
-    "other": "Save Changes"
+    "other": "Spara ändringar"
   },
   "chat.msg.revert": {
     "other": "Revert Changes"
   },
   "chat.msg.delete": {
-    "other": "Delete Message"
+    "other": "Radera meddelande"
   },
   "chat.msg.delete.confirm.title": {
     "other": "Delete Message?"
