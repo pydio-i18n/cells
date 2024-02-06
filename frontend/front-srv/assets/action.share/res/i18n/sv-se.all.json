@@ -927,10 +927,10 @@
     "other": "Create a new Cell"
   },
   "cell.participant.single": {
-    "other": "One participant"
+    "other": "En deltagare"
   },
   "cell.participant.multiple": {
-    "other": "%d participants"
+    "other": "%d deltagare"
   },
   "cell.participant.other.single": {
     "other": "One other participant"
@@ -939,10 +939,10 @@
     "other": "%d other participants"
   },
   "cell.folder-root.single": {
-    "other": "One folder"
+    "other": "En mapp"
   },
   "cell.folder-root.multiple": {
-    "other": "%d folders"
+    "other": "%d mappar"
   },
   "link.visibility.title": {
     "other": "[Advanced] Visibility"
