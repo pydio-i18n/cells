@@ -669,7 +669,7 @@
     "other": "Transfer Size"
   },
   "logs.details.workspace": {
-    "other": "In Workspace"
+    "other": "Na área de trabalho"
   },
   "menu.0": {
     "other": "Painel"
@@ -777,7 +777,7 @@
     "other": "Valor"
   },
   "metadata.editor.selection.steps": {
-    "other": "Show as steps"
+    "other": "Mostrar passo-por-passo"
   },
   "metadata.editor.tags.cleared": {
     "other": "Limpar tags para namespaces %s"
@@ -816,10 +816,10 @@
     "other": "Group"
   },
   "metadata.group-field": {
-    "other": "Group Name (creates an expandable section). Use '/' for sub-groups."
+    "other": "Nome do grupo (cria uma secção expansível). Use '/' para subgrupos."
   },
   "metadata.default-group": {
-    "other": "No Group"
+    "other": "Sem grupo"
   },
   "metadata.toggle.index": {
     "other": "Indexar ao motor de busca"
@@ -834,34 +834,34 @@
     "other": "Tipo"
   },
   "metadata.type.string": {
-    "other": "Short Text"
+    "other": "Texto resumido"
   },
   "metadata.type.textarea": {
-    "other": "Paragraph"
+    "other": "Parágrafo"
   },
   "metadata.type.integer": {
-    "other": "Number"
+    "other": "Número"
   },
   "metadata.type.boolean": {
-    "other": "True/False value"
+    "other": "Valor verdadeiro/falso"
   },
   "metadata.type.date": {
-    "other": "Date or Time"
+    "other": "Data ou hora"
   },
   "metadata.type.stars_rate": {
     "other": "Classificação por estrelas"
   },
   "metadata.type.css_label": {
-    "other": "Color Labels"
+    "other": "Etiquetas de cor"
   },
   "metadata.type.tags": {
-    "other": "Extensible Tags"
+    "other": "Tags extensíveis"
   },
   "metadata.type.choice": {
-    "other": "Select from values"
+    "other": "Seleccione dos valores"
   },
   "metadata.type.json": {
-    "other": "JSON (internal format)"
+    "other": "JSON (formato interno)"
   },
   "metadata.type.date.format": {
     "other": "Formato"
@@ -870,10 +870,10 @@
     "other": "Data"
   },
   "metadata.type.date.format.date-time": {
-    "other": "Date & Time"
+    "other": "Data & hora"
   },
   "metadata.type.date.format.time": {
-    "other": "Time"
+    "other": "Hora"
   },
   "metadata.type.date.display": {
     "other": "Exibir"
@@ -882,31 +882,31 @@
     "other": "Normal"
   },
   "metadata.type.date.display.relative": {
-    "other": "Relative (xx days ago...)"
+    "other": "Relativo (xx dias atrás...)"
   },
   "metadata.type.reaction": {
-    "other": "Reaction"
+    "other": "Reacção"
   },
   "metadata.type.integer.format": {
     "other": "Formato"
   },
   "metadata.type.integer.format.general": {
-    "other": "General"
+    "other": "Geral"
   },
   "metadata.type.integer.format.bytesize": {
-    "other": "Byte Size"
+    "other": "Tamanho em bytes"
   },
   "metadata.type.integer.format.percentage": {
-    "other": "Percentage"
+    "other": "Percentagem"
   },
   "metadata.type.integer.format.progress": {
-    "other": "Progress"
+    "other": "Progressão"
   },
   "metadata.toggle.list-visibility": {
-    "other": "Show value in files list"
+    "other": "Mostrar valor na lista de ficheiros"
   },
   "metadata.field.mandatory": {
-    "other": "Mandatory"
+    "other": "Obrigatório"
   },
   "perfs.booster.description": {
     "other": "Verifica se Pydio Booster é iniciado e permite a comunicação de WebSocket"
@@ -921,61 +921,61 @@
     "other": "Booster do Pydio"
   },
   "perfs.cache.description": {
-    "other": "Checks that a Pydio is configured to use a cache layer"
+    "other": "Verifica se o Pydio está configurado para usar uma camada de cache"
   },
   "perfs.cache.error": {
-    "other": "It does not seem that you have activated the cache service."
+    "other": "Parece que não activou o serviço de cache."
   },
   "perfs.cache.help": {
-    "other": "Pydio can connect to an external cache server like Redis or Memcache, or use in-memory cache to greatly improve file browsing performances."
+    "other": "O Pydio pode contactar um servidor de cache externo, como Redis ou Memcache, ou usar a cache de memória para melhorar muito o desempenho de navegação entre ficheiros."
   },
   "perfs.cache.title": {
-    "other": "Pydio Cache"
+    "other": "Cache do Pydio"
   },
   "perfs.cli.description": {
-    "other": "Defer time-consuming tasks to command line."
+    "other": "Delegar tarefas demoradas para a linha de comando."
   },
   "perfs.cli.error": {
-    "other": "Warning, command line is not enabled!"
+    "other": "Atenção, a linha de comando não está activa!"
   },
   "perfs.cli.help": {
-    "other": "Enable the command line in core parameters. This will greatly improve end-user performances, as time-consuming tasks are delegated to other processes."
+    "other": "Activa a linha de comando nos parâmetros centrais. Isso melhorará muito o desempenho para o utilizador final, já que as tarefas demoradas serão delegadas a outros processos."
   },
   "perfs.cli.title": {
-    "other": "Command-line PHP"
+    "other": "Linha de comando PHP"
   },
   "perfs.debug.description": {
-    "other": "Checks if debug modes are disabled on the server"
+    "other": "Verifica se os modos de depuração estão desactivados no servidor"
   },
   "perfs.debug.error": {
-    "other": "Warning, one of PYDIO_SERVER_DEBUG, PYDIO_CLIENT_DEBUG or PYDIO_SKIP_CACHE is set to True!"
+    "other": "Atenção, um dos parâmetros PYDIO_SERVER_DEBUG, PYDIO_CLIENT_DEBUG ou PYDIO_SKIP_CACHE está definido como verdadeiro!"
   },
   "perfs.debug.help": {
-    "other": "Make sure to disable debug modes on the server. This is done manually by editing the conf/booststrap_context.php (or /etc/pydio/bootstrap_context.php) file."
+    "other": "Certifique-se que desactivou os modos de depuração no servidor. Isso é feito manualmente editando o arquivo conf/booststrap_context.php (ou /etc/pydio/bootstrap_context.php)."
   },
   "perfs.debug.title": {
-    "other": "Debug Modes"
+    "other": "Modo de depuração"
   },
   "perfs.desc": {
-    "other": "Checking system configurations for possible improvements."
+    "other": "Verificando as configurações do sistema para possíveis melhorias."
   },
   "perfs.load.description": {
-    "other": "Detect high server load (Linux servers only)"
+    "other": "Detectar carga elevada no servidor (apenas em servidores Linux)"
   },
   "perfs.load.error": {
-    "other": "Maybe adding some CPU or RAM to your server could be neccessary."
+    "other": "Talvez possa ser necessário adicionar CPU ou RAM ao seu servidor."
   },
   "perfs.load.help": {
-    "other": "A high server load may indicate that your server is missing CPU or RAM given your usage of Pydio."
+    "other": "Uma carga elevada do servidor pode indicar que este não tem suficiente CPU ou RAM devido ao uso do Pydio."
   },
   "perfs.load.title": {
-    "other": "Server Load"
+    "other": "Carga do servidor"
   },
   "perfs.mailer.description": {
-    "other": "Checks that mailer is using the Queue feature"
+    "other": "Verifica se o mailer está a usar a função de Fila"
   },
   "perfs.mailer.error": {
-    "other": "Mailer is not configured to defer emails sending."
+    "other": "O Mailer não está configurado para adiar o envio de e-mails."
   },
   "perfs.mailer.help": {
     "other": "Using the mail queue avoids sending every emails directly during every actions and requests, but store them in a separate database and process the queue separately."
