@@ -639,7 +639,7 @@
     "other": "Close log detail"
   },
   "logs.details.user": {
-    "other": "User"
+    "other": "Användare"
   },
   "logs.details.user-attributes": {
     "other": "User Attributes"
@@ -813,7 +813,7 @@
     "other": "Order"
   },
   "metadata.group": {
-    "other": "Group"
+    "other": "Grupp"
   },
   "metadata.group-field": {
     "other": "Group Name (creates an expandable section). Use '/' for sub-groups."
@@ -2001,19 +2001,19 @@
     "other": "A user has logged out."
   },
   "scheduler.trigger.role.create": {
-    "other": "Create Role"
+    "other": "Skapa roll"
   },
   "scheduler.trigger.role.create.description": {
     "other": "A new role was created, by admin or by users."
   },
   "scheduler.trigger.role.udpate": {
-    "other": "Update Role"
+    "other": "Uppdatera roll"
   },
   "scheduler.trigger.role.update.description": {
     "other": "A role has been updated."
   },
   "scheduler.trigger.role.delete": {
-    "other": "Delete Role"
+    "other": "Radera roll"
   },
   "scheduler.trigger.role.delete.description": {
     "other": "A role has been deleted."
