@@ -72,7 +72,7 @@
     "other": "Download link"
   },
   "12": {
-    "other": "Password"
+    "other": "Lösenord"
   },
   "120": {
     "other": "Simple download page"
@@ -165,7 +165,7 @@
     "other": "Use <kbd>&#8984;</kbd>+<kbd>C</kbd> to copy the link"
   },
   "145": {
-    "other": "Description"
+    "other": "Beskrivning"
   },
   "146": {
     "other": "Will be displayed to the shared users"
@@ -456,7 +456,7 @@
     "other": "No more downloads"
   },
   "23": {
-    "other": "Password"
+    "other": "Lösenord"
   },
   "230": {
     "other": "Please save before sending an invitation"
@@ -723,7 +723,7 @@
     "other": "create user"
   },
   "5": {
-    "other": "password"
+    "other": "lösenord"
   },
   "50": {
     "other": "Shared"
@@ -852,7 +852,7 @@
     "other": "Toggle watch status to receive or not notifications when workspace is consulted"
   },
   "84": {
-    "other": "password"
+    "other": "lösenord"
   },
   "85": {
     "other": "A protection password is set on this link"
