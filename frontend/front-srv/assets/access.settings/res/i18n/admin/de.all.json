@@ -630,46 +630,46 @@
     "other": "Keine Treffer"
   },
   "logs.details.copy": {
-    "other": "Copy log to clipboard"
+    "other": "Protokoll in die Zwischenablage kopieren"
   },
   "logs.details.show-focus": {
-    "other": "Show +/- 5 minutes"
+    "other": "Zeige +/- 5 Minuten"
   },
   "logs.details.close": {
-    "other": "Close log detail"
+    "other": "Log-Details schließen"
   },
   "logs.details.user": {
-    "other": "User"
+    "other": "Benutzer"
   },
   "logs.details.user-attributes": {
-    "other": "User Attributes"
+    "other": "Benutzerattribute"
   },
   "logs.details.date": {
-    "other": "Event Date"
+    "other": "Event-Datum"
   },
   "logs.details.msg": {
-    "other": "Event Message"
+    "other": "Ereignisnachricht"
   },
   "logs.details.service": {
-    "other": "Emitting Service"
+    "other": "Veröffentlichender Dienst"
   },
   "logs.details.connection": {
-    "other": "Connection IP"
+    "other": "Verbindungs-IP"
   },
   "logs.details.agent": {
     "other": "User-Agent"
   },
   "logs.details.protocol": {
-    "other": "Protocol"
+    "other": "Protokol"
   },
   "logs.details.node": {
-    "other": "File/Folder"
+    "other": "Datei/Ordner"
   },
   "logs.details.transfer-size": {
-    "other": "Transfer Size"
+    "other": "Übertragungsgröße"
   },
   "logs.details.workspace": {
-    "other": "In Workspace"
+    "other": "Im Workspace"
   },
   "menu.0": {
     "other": "Kontrollzentrum"
@@ -1896,7 +1896,7 @@
     "other": "Möchten Sie wirklich alle Aufgaben für diesen Flow löschen?"
   },
   "scheduler.trigger.picker.title": {
-    "other": "Trigger job on..."
+    "other": "Job auslösen am..."
   },
   "scheduler.trigger.type.nodes": {
     "other": "Files and folders (nodes) events : detect files modifications to move them or update their metadata automatically."
