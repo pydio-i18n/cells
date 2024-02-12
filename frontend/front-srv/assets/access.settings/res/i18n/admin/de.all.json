@@ -963,7 +963,7 @@
     "other": "Erkennt wenn der Server ausgelastet ist (nur Linux)"
   },
   "perfs.load.error": {
-    "other": "Der Server hat möglicherweise zu wenig Leistung. Eine Erweiterung des Systems könnte Abhilfe schaffen."
+    "other": "Maybe adding some CPU or RAM to your server could be necessary."
   },
   "perfs.load.help": {
     "other": "Wenn der Server stark ausgelastet ist deutet dies auf zu wenig Leistung (CPU oder RAM) hin."
@@ -978,7 +978,7 @@
     "other": "Es wird keine E-Mail-Warteschlange verwendet, um Nachrichten im Hintergrund zu versenden."
   },
   "perfs.mailer.help": {
-    "other": "Mit der E-Mail-Warteschlange werden Nachrichten in eine Warteschlange gespeichert (Datenbank) und im Hintergrund versendet."
+    "other": "Using a mail queue prevents the direct sending of emails for each action and request. Instead, it stores them in a separate database and processes the queue independently."
   },
   "perfs.mailer.title": {
     "other": "E-Mail-Warteschlange"
