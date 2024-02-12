@@ -63,7 +63,7 @@
     "other": "Default Workspace"
   },
   "24": {
-    "other": "User Roles"
+    "other": "Användarroller"
   },
   "25": {
     "other": "Ändra lösenord"
@@ -87,7 +87,7 @@
     "other": "Account Info"
   },
   "30": {
-    "other": "Confirm"
+    "other": "Bekräfta"
   },
   "31": {
     "other": "Role ID"
@@ -123,13 +123,13 @@
     "other": "invalid roots"
   },
   "39": {
-    "other": "Disable"
+    "other": "Inaktivera"
   },
   "4": {
     "other": "ACL"
   },
   "40": {
-    "other": "Enable"
+    "other": "Aktivera"
   },
   "41": {
     "other": "Remove"
