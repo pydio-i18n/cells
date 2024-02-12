@@ -9,7 +9,7 @@
     "other": "Metadaten für Inhaltsreferenz"
   },
   "Search.Config.ContentRef.Description": {
-    "other": "Ein Metadaten, das auf eine bestimmte Datei verweist: Extraktoren können eine textuelle Darstellung von Dateien erstellen und diese im Klartext oder gzip-kodiert speichern. Die Suchmaschine wird dann versuchen, diesen Inhalt bei der Indexierung zu laden. Verwenden Sie das Präfix pydio:, um sicherzustellen, dass es nicht nach außen dringt."
+    "other": "Name of the metadata pointing to the internal file that contains textual representation of the original document. Such internal contents may be plain-text or gzip-encoded, depending on the text extraction tool used (e.g. Tika). The search engine typically indexes this content to enable full-text search. Make sure to prefix the metadata name with 'pydio:' to prevent data leakage."
   },
   "Search.Config.PlainTextExtensions.Label": {
     "other": "Dateierweiterungen für Klartext"
