@@ -1239,13 +1239,13 @@
     "other": "User Personal Role"
   },
   "user.3": {
-    "other": "Groups"
+    "other": "Grupper"
   },
   "user.4": {
     "other": "Roller"
   },
   "user.5": {
-    "other": "Groups & Users"
+    "other": "Grupper & Användare"
   },
   "user.6": {
     "other": "+ Role"
@@ -1275,7 +1275,7 @@
     "other": "Admins only"
   },
   "user.filter.all": {
-    "other": "All users"
+    "other": "Alla användare"
   },
   "user.filter.anon": {
     "other": "Show anonymous"
@@ -1359,7 +1359,7 @@
     "other": "Display code"
   },
   "virtual.code.edit": {
-    "other": "Edit code"
+    "other": "Redigera kod"
   },
   "virtual.card.title": {
     "other": "Dynamically computed path"
@@ -1677,7 +1677,7 @@
     "other": "Workspace Layout"
   },
   "ws.editor.other.layout.default": {
-    "other": "Default"
+    "other": "Standard"
   },
   "ws.editor.other.layout.easy": {
     "other": "Easy Transfer Layout (enterprise only)"
@@ -2151,7 +2151,7 @@
     "other": "Disable Multiple"
   },
   "scheduler.tasks.bulk.clear": {
-    "other": "Clear All"
+    "other": "Rensa alla"
   },
   "scheduler.tasks.activity.title": {
     "other": "Task Activity"
@@ -2160,7 +2160,7 @@
     "other": "Loading activity..."
   },
   "scheduler.tasks.activity.empty": {
-    "other": "No logs found"
+    "other": "Inga loggar hittades"
   },
   "scheduler.schedule.monthly": {
     "other": "Every %1 of each month at %2"
