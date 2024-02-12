@@ -114,7 +114,7 @@
     "other": "Details"
   },
   "132": {
-    "other": "No file or folder"
+    "other": "Ingen fil eller mapp"
   },
   "133": {
     "other": "Namn"
@@ -156,7 +156,7 @@
     "other": "Mina bokmärken"
   },
   "146": {
-    "other": "Delete Bookmark"
+    "other": "Radera bokmärke"
   },
   "147": {
     "other": "Bokmärken"
@@ -228,10 +228,10 @@
     "other": "Logga in"
   },
   "164": {
-    "other": "Log out"
+    "other": "Logga ut"
   },
   "165": {
-    "other": "Settings"
+    "other": "Inställningar"
   },
   "166": {
     "other": "Om"
@@ -399,7 +399,7 @@
     "other": "Start Upload"
   },
   "216": {
-    "other": "Clear"
+    "other": "Rensa"
   },
   "217": {
     "other": "Clear Completed"
@@ -495,7 +495,7 @@
     "other": "Author"
   },
   "245": {
-    "other": "Date"
+    "other": "Datum"
   },
   "246": {
     "other": "Meddelande"
@@ -549,7 +549,7 @@
     "other": "bytes"
   },
   "261": {
-    "other": "Remember Me"
+    "other": "Kom ihåg mig"
   },
   "262": {
     "other": "One or more files appear to exist \\nalready in the destination folder.\\nWhat do you want to do?"
