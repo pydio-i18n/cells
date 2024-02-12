@@ -3,7 +3,7 @@
     "other": "Dashboard"
   },
   "dashboard.tab.activity": {
-    "other": "Activity"
+    "other": "Aktivitet"
   },
   "loading": {
     "other": "Loading..."
@@ -33,7 +33,7 @@
     "other": "Create a new workspace at the root of datasource %s"
   },
   "ds.board.wsfromds.field": {
-    "other": "Label"
+    "other": "Etikett"
   },
   "ds.board.wsfromds.defaultPrefix": {
     "other": "DataSource %s"
@@ -294,7 +294,7 @@
     "other": "Custom Endpoint URL"
   },
   "ds.editor.storage.s3.endpoint.hint": {
-    "other": "include http(s)://"
+    "other": "inkludera http(s)://"
   },
   "ds.editor.storage.s3.region": {
     "other": "S3 Api Region"
@@ -399,19 +399,19 @@
     "other": "No master key created"
   },
   "ds.encryption.key.create": {
-    "other": "Create Key"
+    "other": "Skapa nyckel"
   },
   "ds.encryption.key.created": {
     "other": "Created on"
   },
   "ds.encryption.key.delete": {
-    "other": "Delete Key"
+    "other": "Radera nyckel"
   },
   "ds.encryption.key.delete.warning": {
     "other": "If the key is currently used for encrypted data, this is a very destructive operation! Are you sure you want to do that?"
   },
   "ds.encryption.key.export": {
-    "other": "Export Key"
+    "other": "Exportera nyckel"
   },
   "ds.encryption.key.export.confirm": {
     "other": "Bekräfta lösenord"
@@ -429,7 +429,7 @@
     "other": "Identifier"
   },
   "ds.encryption.key.import": {
-    "other": "Import Key"
+    "other": "Importera nyckel"
   },
   "ds.encryption.key.import.content": {
     "other": "Paste key here from your backup file"
@@ -534,7 +534,7 @@
     "other": "Export and download"
   },
   "logs.11": {
-    "other": "Export as..."
+    "other": "Exportera som..."
   },
   "logs.2": {
     "other": "Pick a day"
@@ -552,10 +552,10 @@
     "other": "Tidsperiod"
   },
   "logs.filter.period.from": {
-    "other": "From"
+    "other": "Från"
   },
   "logs.filter.period.to": {
-    "other": "To"
+    "other": "Till"
   },
   "logs.filter.period.time": {
     "other": "At..."
@@ -627,13 +627,13 @@
     "other": "No entries"
   },
   "logs.noresults": {
-    "other": "No results"
+    "other": "Inga resultat"
   },
   "logs.details.copy": {
-    "other": "Copy log to clipboard"
+    "other": "Kopiera logg till urklipp"
   },
   "logs.details.show-focus": {
-    "other": "Show +/- 5 minutes"
+    "other": "Visa +/- 5 minuter"
   },
   "logs.details.close": {
     "other": "Close log detail"
@@ -660,7 +660,7 @@
     "other": "User-Agent"
   },
   "logs.details.protocol": {
-    "other": "Protocol"
+    "other": "Protokoll"
   },
   "logs.details.node": {
     "other": "File/Folder"
@@ -819,7 +819,7 @@
     "other": "Group Name (creates an expandable section). Use '/' for sub-groups."
   },
   "metadata.default-group": {
-    "other": "No Group"
+    "other": "Ingen grupp"
   },
   "metadata.toggle.index": {
     "other": "Index in search engine"
@@ -1044,7 +1044,7 @@
     "other": "Edit plugin parameters"
   },
   "plugins.documentation": {
-    "other": "Documentation"
+    "other": "Dokumentation"
   },
   "policies.policy.create": {
     "other": "Skapa"
@@ -1065,7 +1065,7 @@
     "other": "Edit policy rules"
   },
   "policies.policy.editLabels": {
-    "other": "Edit Labels"
+    "other": "Redigera etiketter"
   },
   "policies.policy.saveLabels": {
     "other": "Spara ändringar"
@@ -1083,7 +1083,7 @@
     "other": "Policy Type"
   },
   "policies.rule.create": {
-    "other": "Add new rule"
+    "other": "Lägg till ny regel"
   },
   "policies.rule.delete": {
     "other": "Radera regel"
