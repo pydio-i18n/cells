@@ -219,10 +219,10 @@
     "other": "Benutzerdefinierte Teams"
   },
   "dashboard.typeFilter.IsUserRole": {
-    "other": "[Technical] Attached to each users"
+    "other": "[Technical] An jeden Benutzer angeschlossen"
   },
   "dashboard.typeFilter.IsGroupRole": {
-    "other": "[Technical] Attached to each groups"
+    "other": "[Technical] An jede Gruppe angeschlossen"
   },
   "last_update": {
     "other": "Zuletzt aktualisiert"
