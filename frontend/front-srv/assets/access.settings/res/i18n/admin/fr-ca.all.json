@@ -630,19 +630,19 @@
     "other": "Pas de résultats"
   },
   "logs.details.copy": {
-    "other": "Copy log to clipboard"
+    "other": "Copier la ligne dans le presse-papier"
   },
   "logs.details.show-focus": {
-    "other": "Show +/- 5 minutes"
+    "other": "Afficher +/- 5 minutes"
   },
   "logs.details.close": {
-    "other": "Close log detail"
+    "other": "Fermer le détail"
   },
   "logs.details.user": {
-    "other": "User"
+    "other": "Utilisateur"
   },
   "logs.details.user-attributes": {
-    "other": "User Attributes"
+    "other": "Attributs de l'utilisateur"
   },
   "logs.details.date": {
     "other": "Event Date"
