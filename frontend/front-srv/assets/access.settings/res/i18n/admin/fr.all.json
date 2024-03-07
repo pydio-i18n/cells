@@ -1272,7 +1272,7 @@
     "other": "Liens publics (cachés)"
   },
   "user.type.hidden": {
-    "other": "Utilisateur publique"
+    "other": "Utilisateur public"
   },
   "user.type.hidden.legend": {
     "other": "Les utilisateurs publics sont créés pour les liens publics (un par lien) et sont masqués par défaut. Il peut être utile de les lister pour détecter les liens publics verrouillés."
@@ -1638,7 +1638,7 @@
     "other": "Dossiers Internes"
   },
   "ws.complete.label": {
-    "other": "Sélectionnez un Datasource ou un modèle prédéfini"
+    "other": "Sélectionnez une Datasource ou un modèle prédéfini"
   },
   "ws.complete.additional": {
     "other": "Ajouter un dossier racine"
