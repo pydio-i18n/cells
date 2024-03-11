@@ -126,13 +126,13 @@
     "other": "Zugriff auf die Hauptseiten"
   },
   "application-params.title": {
-    "other": "Parameters and actions"
+    "other": "Parameter und Aktionen"
   },
   "application-params.legend": {
-    "other": "Modify UX parameters and show/hide certain actions for a specific role, globally or by workspace."
+    "other": "Ändern Sie UX-Parameter und zeigen/verbergen Sie bestimmte Aktionen für eine spezifische Rolle, global oder nach Workspace."
   },
   "application-params.legend.user-disclaimer": {
-    "other": "As a general rule, this should be managed at role level, not user level!"
+    "other": "Als allgemeine Regel sollte dies auf Rollenebene und nicht auf Benutzerebene verwaltet werden!"
   },
   "49": {
     "other": "Freigaben"
@@ -153,7 +153,7 @@
     "other": "Von %1 aus dem Workspace %2 geteilt"
   },
   "54": {
-    "other": "User informations and security actions. Hover fields in the form below to display explanations."
+    "other": "Benutzerinformationen und Sicherheitsaktionen. Fahren Sie mit der Maus über die Felder im untenstehenden Formular, um Erklärungen anzuzeigen."
   },
   "55": {
     "other": "Verändern Sie Profil und Rollen, um diesem Benutzer automatisch Berechtigungen zu erteilen."
@@ -225,15 +225,15 @@
     "other": "Gesamter Workspace"
   },
   "section.user-info": {
-    "other": "User Info"
+    "other": "Benutzer-Info"
   },
   "section.permissions": {
-    "other": "Permissions"
+    "other": "Berechtigungen"
   },
   "section.security": {
-    "other": "Security"
+    "other": "Sicherheit"
   },
   "section.advanced": {
-    "other": "Advanced"
+    "other": "Erweitert"
   }
 }
