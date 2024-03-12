@@ -1089,7 +1089,7 @@
     "other": "Supprimer la règle"
   },
   "policies.acl.empty-string": {
-    "other": "No policies defined, create one use to it as a dynamic workspace permission."
+    "other": "Aucune stratégie définie, créez-en une pour assigner dynamiquement des droits d'accès aux Workspaces."
   },
   "policies.rule.delete.confirm": {
     "other": "Êtes-vous sûr de vouloir supprimer cette règle de sécurité ? Cela pourrait casser le modèle de sécurité de l'application !"
@@ -2061,49 +2061,49 @@
     "other": "Mise à jour d'un Workspace"
   },
   "scheduler.trigger.workspace.update.description": {
-    "other": "A Workspace or a Cell has been updated."
+    "other": "Un Workspace ou une Cell a été mis(e) à jour."
   },
   "scheduler.trigger.workspace.delete": {
-    "other": "Delete Workspace"
+    "other": "Suppression de Workspace"
   },
   "scheduler.trigger.workspace.delete.description": {
-    "other": "A Workspace or a Cell has been deleted."
+    "other": "Un Workspace ou une Cell a été supprimé(e)."
   },
   "scheduler.trigger.acl.create": {
-    "other": "Create/Update ACL"
+    "other": "Création/Mise à jour d'ACL"
   },
   "scheduler.trigger.acl.create.description": {
-    "other": "An Access Control was opened."
+    "other": "Un contrôle d'accès a été ouvert ou modifié."
   },
   "scheduler.trigger.acl.delete": {
-    "other": "Delete ACL"
+    "other": "Suppression d'ACL"
   },
   "scheduler.trigger.acl.delete.description": {
-    "other": "An Access Control was removed."
+    "other": "Un contrôle d'accès a été fermé."
   },
   "scheduler.trigger.chat-message.put": {
-    "other": "New Chat Message"
+    "other": "Nouveau message de Chat"
   },
   "scheduler.trigger.chat-message.put.description": {
-    "other": "A Message was posted in a ChatRoom."
+    "other": "Un message a été posté dans une discussion."
   },
   "scheduler.trigger.chat-message.delete": {
-    "other": "Chat Message Deleted"
+    "other": "Suppression de message"
   },
   "scheduler.trigger.chat-message.delete.description": {
-    "other": "A Message was deleted from a ChatRoom."
+    "other": "Un message a été supprimé d'une discussion."
   },
   "scheduler.trigger.chat-room.put": {
-    "other": "New Chat Room"
+    "other": "Création d'une Discussion"
   },
   "scheduler.trigger.chat-room.put.description": {
-    "other": "A new ChatRoom was created."
+    "other": "Une nouvelle discussion a été créée."
   },
   "scheduler.trigger.chat-room.delete": {
-    "other": "Delete Chat Room"
+    "other": "Suppression de Discussion"
   },
   "scheduler.trigger.chat-room.delete.description": {
-    "other": "A Chatroom has been deleted."
+    "other": "Un fil de discussion a été supprimé."
   },
   "scheduler.trigger.events": {
     "other": "Evénements"
