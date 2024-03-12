@@ -1269,22 +1269,22 @@
     "other": "Фильтровать список пользователей..."
   },
   "user.filter.locks": {
-    "other": "Locked Users"
+    "other": "Заблокированные пользователи"
   },
   "user.filter.hidden": {
-    "other": "Public Links (hidden)"
+    "other": "Общедоступные ссылки (скрытые)"
   },
   "user.filter.status": {
-    "other": "Status"
+    "other": "Статус"
   },
   "user.type.hidden": {
-    "other": "Public User"
+    "other": "Общедоступный пользователь"
   },
   "user.type.hidden.legend": {
-    "other": "Public users are created for public links (one per link) and are hidden by default. It can be useful to list them to detect locked public links."
+    "other": "Публичные пользователи создаются для публичных ссылок (по одному на ссылку) и по умолчанию скрыты. Это может быть полезно перечислять их для обнаружения заблокированных ссылок."
   },
   "user.rootgroup.legend": {
-    "other": "Permissions applied to the entire user hierarchy"
+    "other": "Разрешения применены ко всей иерархии пользователей"
   },
   "user.filter.internal": {
     "other": "Внутренние пользователи"
@@ -1383,16 +1383,16 @@
     "other": "Изменить код"
   },
   "virtual.card.title": {
-    "other": "Dynamically computed path"
+    "other": "Динамически вычисленный путь"
   },
   "virtual.card.cleanOnDelete": {
-    "other": "Upon user deletion, rename data to {deleted-NAME-UUID}."
+    "other": "При удалении пользователя переименуйте данные в {deleted-NAME-UUID}."
   },
   "virtual.card.cleanOnDelete-legend-off": {
-    "other": "This option should not be used if the template path is not creating a folder for each user (using User.Name)."
+    "other": "Эта опция не должна использоваться, если путь к шаблону не создает папку для каждого пользователя (используя User.Name)."
   },
   "virtual.card.cleanOnDelete-legend-on": {
-    "other": "This option may be recommended as the template path seems to create a folder for each user (using User.Name)."
+    "other": "Этот вариант может быть рекомендован, так как путь к шаблону, кажется, создает папку для каждого пользователя (с использованием User.Name)."
   },
   "ws.1": {
     "other": "Управление источниками данных"
@@ -1464,7 +1464,7 @@
     "other": "+ рабочее пространство"
   },
   "ws.filter.workspaces": {
-    "other": "Filter workspaces..."
+    "other": "Фильтр рабочих пространств..."
   },
   "ws.30": {
     "other": "Общие настройки"
@@ -1512,10 +1512,10 @@
     "other": "Укажите права доступа по умолчанию к этим папкам рабочей области.\n                                Чтобы включить управление разрешениями на подуровне, выберите 'Нижестоящие' в указанной папке.\n                                По умолчанию текущая папка будет доступна только для чтения, и вы сможете избирательно открывать доступ\n                                к дочерним папкам."
   },
   "ws.44": {
-    "other": "Please be aware that this is only a mask: if you modify the real folders directly, you may have\n                                to edit this mask accordingly. Also, these permissions may be globally limited by the 'Default Rights'\n                                parameter set for this workspace (see the General tab)."
+    "other": "Пожалуйста, имейте в виду, что это всего лишь маска: если вы изменяете реальные папки напрямую, вам, возможно, придется соответственно изменять эту маску. Кроме того, эти права могут быть общими и ограничены параметром 'Default Rights', установленным для этого рабочего пространства (см. вкладку Общее)."
   },
   "ws.45": {
-    "other": "As its parameters are using 'PYDIO_USER' or 'PYDIO_GROUP_*' keywords, the contents of\n                                this workspace will vary depending on the currently authenticated user. For this reason, you cannot browse the\n                                folders directly and assign permissions to them, but you can freely define some generic paths that will be used as masks."
+    "other": "\nПоскольку его параметры используют ключевые слова 'PYDIO_USER' или 'PYDIO_GROUP_*', содержимое этого рабочего пространства будет изменяться в зависимости от текущего аутентифицированного пользователя. По этой причине нельзя просматривать папки напрямую и назначать им разрешения, но вы можете свободно определить некоторые общие пути, которые будут использоваться в качестве масок."
   },
   "ws.46": {
     "other": "Добавить функцию"
@@ -1554,10 +1554,10 @@
     "other": "Автоматическая очистка"
   },
   "ws.56": {
-    "other": "This workspace has a \"purge\" setup, to automatically remove documents that were left untouched since %s days. Make sure to add a task in the\n                    scheduler to regularly process this workspace and look for expired document. You can use the buttons below to create this task automatically,\n                    ok run the purge directly."
+    "other": "В данном рабочем пространстве настроена \"очистка\", которая автоматически удаляет документы, оставленные без изменений в течение %s дней. Убедитесь, что добавили задачу в планировщик для регулярной обработки этого рабочего пространства и поиска устаревших документов. Вы можете использовать кнопки ниже для автоматического создания этой задачи или выполнения очистки напрямую."
   },
   "ws.57": {
-    "other": "Please note: as this worksace has user-specific contents, purge will be running for each user."
+    "other": "Пожалуйста, обратите внимание: так как это рабочее пространство имеет специфичное для пользователя содержимое, индексация будет запущена для каждого пользователя."
   },
   "ws.58": {
     "other": "Очистить сейчас"
@@ -1572,7 +1572,7 @@
     "other": "Активность рабочего пространства"
   },
   "ws.61": {
-    "other": "Activity of the workspace is displayed to the users in the right-hand panel. You can clear all activity\n                            for this workspace, which can be handy e.g. if you are going \"live\" in production after a staging period where you have\n                            made some tests in this workspace."
+    "other": "Активность в рабочем пространстве отображается пользователям в правой панели. Вы можете очистить всю активность для этого рабочего пространства, что может быть удобным, например, если вы переходите в \"реальный\" режим в производстве после периода тестирования на стадии разработки в этом рабочем пространстве."
   },
   "ws.62": {
     "other": "Очистить журнал активности"
@@ -1638,16 +1638,16 @@
     "other": "Синхронизация"
   },
   "ws.complete.datasources": {
-    "other": "DataSources"
+    "other": "Источники данных"
   },
   "ws.complete.folders": {
-    "other": "Internal Folders"
+    "other": "Внутренние папки"
   },
   "ws.complete.label": {
-    "other": "Select a DataSource or a Template Path"
+    "other": "Выберите источник данных или путь к шаблону"
   },
   "ws.complete.additional": {
-    "other": "Additional Root"
+    "other": "Дополнительный корень"
   },
   "ws.complete.resolves": {
     "other": "Решает для"
@@ -1668,7 +1668,7 @@
     "other": "Установить права по умолчанию для этого проекта (применяются ко всем внутренним пользователям приложения). Вы можете переопределить эти разрешения для каждого пользователя / для каждой роли / для каждой группы в разделе Люди."
   },
   "ws.editor.default_rights.hint": {
-    "other": "Default Rights"
+    "other": "Права по умолчанию"
   },
   "ws.editor.default_rights.none": {
     "other": "Нет"
@@ -1713,10 +1713,10 @@
     "other": "Простой формат перевода (только для Enterprise)"
   },
   "ws.editor.other.skiprecycle": {
-    "other": "Skip Recycle Bin"
+    "other": "Очистить корзину"
   },
   "ws.editor.other.skiprecycle.legend": {
-    "other": "Disable recycle bin on this workspace: all files will be permanently deleted. This does not apply to Cells created inside this workspace, files will always be moved to workspace recycle to avoid human errors."
+    "other": "Отключить корзину для этого рабочего пространства: все файлы будут окончательно удалены. Это не применяется к ячейкам, созданным внутри этого рабочего пространства; файлы всегда будут перемещаться в корзину рабочего пространства, чтобы избежать человеческих ошибок."
   },
   "ws.editor.other.sync": {
     "other": "Разрешить синхронизацию рабочего стола"
@@ -1941,163 +1941,163 @@
     "other": "События пользователей: срабатывают при добавлении/удалении пользователя, а также при входе и выходе пользователя. Могут использоваться для запуска потоков валидации или назначения доступов."
   },
   "scheduler.trigger.type.roles": {
-    "other": "Role events : can be used to automate accesses based on role names. Use IsTeam, IsGroup, IsUser flags to filter roles."
+    "other": "События ролей: могут использоваться для автоматизации доступов на основе имен ролей. Используйте флаги IsTeam, IsGroup, IsUser для фильтрации ролей."
   },
   "scheduler.trigger.type.chat": {
-    "other": "Chat Events: react to new chat message or chat room modification"
+    "other": "События чата: реагируют на новые сообщения в чате или модификации комнаты чата"
   },
   "scheduler.trigger.type.chat-messages": {
-    "other": "Chat Messages Events"
+    "other": "События сообщений чата"
   },
   "scheduler.trigger.type.chat-rooms": {
-    "other": "Chat Rooms Events"
+    "other": "События комнат чата"
   },
   "scheduler.trigger.create.node": {
     "other": "Создать узел"
   },
   "scheduler.trigger.create.node.description": {
-    "other": "A new file was uploaded or a new folder was created."
+    "other": "Загружен новый файл или создана новая папка."
   },
   "scheduler.trigger.read.node": {
     "other": "Чтение узла"
   },
   "scheduler.trigger.read.node.description": {
-    "other": "A file was downloaded or a folder content was listed."
+    "other": "Файл был загружен или было выполнено перечисление содержимого папки."
   },
   "scheduler.trigger.update.path": {
     "other": "Обновить путь"
   },
   "scheduler.trigger.update.path.description": {
-    "other": "A file or folder was moved or renamed."
+    "other": "Файл или папка были перемещены или переименованы."
   },
   "scheduler.trigger.update.content": {
     "other": "Обновить контент"
   },
   "scheduler.trigger.update.content.description": {
-    "other": "A file content was updated by edition or upload overwriting."
+    "other": "Содержимое файла было обновлено путем редактирования или загрузки с замещением."
   },
   "scheduler.trigger.update.metadata": {
     "other": "Обновить метаданные"
   },
   "scheduler.trigger.update.metadata.description": {
-    "other": "Internal metadata were modified on file or folder."
+    "other": "Внутренние метаданные были изменены для файла или папки."
   },
   "scheduler.trigger.update.user-metadata": {
     "other": "Обновить метаданные пользователя"
   },
   "scheduler.trigger.update.user-metadata.description": {
-    "other": "User-defined metadata were modified (event contains updated metadata)."
+    "other": "Пользовательские метаданные были изменены (событие содержит обновленные метаданные)."
   },
   "scheduler.trigger.delete.node": {
     "other": "Удалить узел"
   },
   "scheduler.trigger.delete.node.description": {
-    "other": "A file or a folder was definitively deleted."
+    "other": "Файл или папка были окончательно удалены."
   },
   "scheduler.trigger.create.user": {
     "other": "Создать пользователя"
   },
   "scheduler.trigger.create.user.description": {
-    "other": "A user or a group was created."
+    "other": "Пользователь или группа были созданы."
   },
   "scheduler.trigger.read.user": {
     "other": "Просмотр пользователя"
   },
   "scheduler.trigger.read.user.description": {
-    "other": "A user or a group was accessed or listed."
+    "other": "Пользователь или группа были доступны или перечислены."
   },
   "scheduler.trigger.update.user": {
     "other": "Обновить пользователя"
   },
   "scheduler.trigger.update.user.description": {
-    "other": "A user or a group data was updated. Typically happens if user changes a preference or admin assigns a role."
+    "other": "Данные пользователя или группы были обновлены. Обычно происходит, если пользователь изменяет предпочтения или администратор назначает роль."
   },
   "scheduler.trigger.delete.user": {
     "other": "Удалить пользователя"
   },
   "scheduler.trigger.delete.user.description": {
-    "other": "A user or a group was deleted."
+    "other": "Пользователь или группа были удалены."
   },
   "scheduler.trigger.bind.user": {
     "other": "Привязать пользователя"
   },
   "scheduler.trigger.bind.user.description": {
-    "other": "A user has logged in."
+    "other": "Пользователь вошел в систему."
   },
   "scheduler.trigger.logout.user": {
     "other": "Выход пользователя"
   },
   "scheduler.trigger.logout.user.description": {
-    "other": "A user has logged out."
+    "other": "Пользователь вышел из системы."
   },
   "scheduler.trigger.role.create": {
-    "other": "Create Role"
+    "other": "Создать роль"
   },
   "scheduler.trigger.role.create.description": {
-    "other": "A new role was created, by admin or by users."
+    "other": "Создана новая роль, администратором или пользователями."
   },
   "scheduler.trigger.role.update": {
-    "other": "Update Role"
+    "other": "Обновить роль"
   },
   "scheduler.trigger.role.update.description": {
-    "other": "A role has been updated."
+    "other": "\"Роль была обновлена."
   },
   "scheduler.trigger.role.delete": {
-    "other": "Delete Role"
+    "other": "Удалить роль"
   },
   "scheduler.trigger.role.delete.description": {
-    "other": "A role has been deleted."
+    "other": "Роль была удалена."
   },
   "scheduler.trigger.workspace.create": {
-    "other": "Create Workspace"
+    "other": "Создать рабочее пространство"
   },
   "scheduler.trigger.workspace.create.description": {
-    "other": "A new Workspace or Cell was created."
+    "other": "Создано новое рабочее пространство или ячейка."
   },
   "scheduler.trigger.workspace.update": {
-    "other": "Update Workspace"
+    "other": "Обновить рабочее пространство"
   },
   "scheduler.trigger.workspace.update.description": {
-    "other": "A Workspace or a Cell has been updated."
+    "other": "Рабочее пространство или ячейка были обновлены."
   },
   "scheduler.trigger.workspace.delete": {
-    "other": "Delete Workspace"
+    "other": "Удалить рабочее пространство"
   },
   "scheduler.trigger.workspace.delete.description": {
-    "other": "A Workspace or a Cell has been deleted."
+    "other": "Рабочее пространство или ячейка были удалены."
   },
   "scheduler.trigger.acl.create": {
-    "other": "Create/Update ACL"
+    "other": "Создать/Обновить списки управления доступом (ACL)"
   },
   "scheduler.trigger.acl.create.description": {
-    "other": "An Access Control was opened."
+    "other": "Открыт контроль доступа."
   },
   "scheduler.trigger.acl.delete": {
-    "other": "Delete ACL"
+    "other": "Удалить ACL"
   },
   "scheduler.trigger.acl.delete.description": {
-    "other": "An Access Control was removed."
+    "other": "Контроль доступа был удален."
   },
   "scheduler.trigger.chat-message.put": {
-    "other": "New Chat Message"
+    "other": "Новое сообщение в чате"
   },
   "scheduler.trigger.chat-message.put.description": {
-    "other": "A Message was posted in a ChatRoom."
+    "other": "Сообщение было отправлено в комнате чата."
   },
   "scheduler.trigger.chat-message.delete": {
-    "other": "Chat Message Deleted"
+    "other": "Сообщение в чате удалено"
   },
   "scheduler.trigger.chat-message.delete.description": {
-    "other": "A Message was deleted from a ChatRoom."
+    "other": "Сообщение было удалено из комнаты чата."
   },
   "scheduler.trigger.chat-room.put": {
-    "other": "New Chat Room"
+    "other": "Новая комната чата"
   },
   "scheduler.trigger.chat-room.put.description": {
-    "other": "A new ChatRoom was created."
+    "other": "Создана новая комната чата."
   },
   "scheduler.trigger.chat-room.delete": {
-    "other": "Delete Chat Room"
+    "other": "Удалить комнату чата"
   },
   "scheduler.trigger.chat-room.delete.description": {
     "other": "A Chatroom has been deleted."
