@@ -204,7 +204,7 @@
     "other": "Dock in the right-hand column"
   },
   "pinned-bookmarks.other": {
-    "other": "All files"
+    "other": "Все файлы"
   },
   "file.temporary-etag.flag": {
     "other": "Incomplete"
@@ -279,19 +279,19 @@
     "other": "Cells created by me first"
   },
   "leftrail.buttons.home": {
-    "other": "Home"
+    "other": "Главная"
   },
   "leftrail.buttons.directory": {
-    "other": "Directory"
+    "other": "Каталог"
   },
   "leftrail.buttons.all-files": {
-    "other": "All Files"
+    "other": "Все файлы"
   },
   "leftrail.buttons.theme.light": {
-    "other": "Light Mode"
+    "other": "Светлый режим"
   },
   "leftrail.buttons.theme.dark": {
-    "other": "Dark Mode"
+    "other": "Темный режим"
   },
   "task.status.Starting": {
     "other": "Started {startTime}"
