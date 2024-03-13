@@ -99,7 +99,7 @@
     "other": "Совпадения"
   },
   "conditionStringMatchCondition.matches": {
-    "other": "совпадения"
+    "other": "совпадает"
   },
   "conditionPathGlobCondition.glob": {
     "other": "шаблон"
