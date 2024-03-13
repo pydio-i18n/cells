@@ -693,31 +693,31 @@
     "other": "Копировать выделенное как текст, разделенный табуляцией."
   },
   "304": {
-    "other": "Back"
+    "other": "Назад"
   },
   "305": {
-    "other": "Go back to main page"
+    "other": "Вернуться на главную страницу"
   },
   "306": {
-    "other": "Too many items"
+    "other": "Слишком много элементов"
   },
   "307": {
-    "other": "Fill optional fields"
+    "other": "Заполнить необязательные поля"
   },
   "308": {
-    "other": "Generate Link"
+    "other": "Создать ссылку"
   },
   "309": {
-    "other": "Generate"
+    "other": "Создать"
   },
   "31": {
-    "other": "You must select a file"
+    "other": "Необходимо выбрать файл"
   },
   "310": {
-    "other": "Options"
+    "other": "Варианты"
   },
   "311": {
-    "other": "Upload automatically when a file is added"
+    "other": "Загружать автоматически при добавлении файла"
   },
   "312": {
     "other": "Uploader Options"
