@@ -1,15 +1,15 @@
 {
   "PolicyGroup.Create": {
-    "other": "Create Policy"
+    "other": "Создать политику"
   },
   "PolicyGroup.Filter": {
-    "other": "Filter Templates..."
+    "other": "Шаблоны фильтров..."
   },
   "PolicyGroup.Create.Manual": {
-    "other": "Manual Creation"
+    "other": "Ручное создание"
   },
   "PolicyGroup.Create.Templates": {
-    "other": "Templates"
+    "other": "Шаблоны"
   },
   "PolicyGroup.ACLSample1.Title": {
     "other": "[Example] Комплексная политика ACL"
