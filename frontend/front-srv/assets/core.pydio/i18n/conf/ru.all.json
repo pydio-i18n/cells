@@ -276,22 +276,22 @@
     "other": "Если включено, выше должен быть установлен лимит по умолчанию, когда файлы более не будут сжаты."
   },
   "If not inferred directly from the current pydio URL plus the public base URI, replace the public access URL here.": {
-    "other": "If not inferred directly from the current pydio URL plus the public base URI, replace the public access URL here."
+    "other": "Если не введен напрямую с текущего URL-адреса pydio плюс общедоступный URI, замените URL доступа здесь."
   },
   "If set to a given URL, the login action will not trigger the display of login screen but redirect to this URL.": {
-    "other": "If set to a given URL, the login action will not trigger the display of login screen but redirect to this URL."
+    "other": "Если задать данный URL, действие логина не вызовет экран входа, а перенаправит на этот URL."
   },
   "If you encounter problems with online zip creation or multiple files downloading, you can disable the feature.": {
-    "other": "If you encounter problems with online zip creation or multiple files downloading, you can disable the feature."
+    "other": "Если вы столкнетесь с проблемами с онлайн-созданием zip или загрузкой нескольких файлов, вы можете отключить эту функцию."
   },
   "If you have tons of workspaces (which is not recommanded), admin users login can take a long time while updating admin access to all repositories. Use this option to disable this step, admin will always have access to the Settings.": {
-    "other": "If you have tons of workspaces (which is not recommanded), admin users login can take a long time while updating admin access to all repositories. Use this option to disable this step, admin will always have access to the Settings."
+    "other": "Если у вас есть куча проектов (которые не были изменены), то вход администраторов может занять много времени при обновлении прав администратора во всех репозиториях. Используйте эту опцию, чтобы отключить этот шаг, администратор всегда будет иметь доступ к настройкам."
   },
   "If your server does not set correctly its charset, it can be good to specify it here manually.": {
-    "other": "If your server does not set correctly its charset, it can be good to specify it here manually."
+    "other": "Если ваш сервер неправильно установил кодировку, то его можно указывать вручную."
   },
   "Leave empty if you do not want to use a recycle bin.": {
-    "other": "Leave empty if you do not want to use a recycle bin."
+    "other": "Оставьте пустым, если не хотите использовать корзину."
   },
   "Login Redirect": {
     "other": "Перенаправление Входа"
@@ -300,19 +300,19 @@
     "other": "Основные параметры"
   },
   "Main container for core Pydio settings (application title, sharing, webdav server config, etc...)": {
-    "other": "Main container for core Pydio settings (application title, sharing, webdav server config, etc...)"
+    "other": "Основной контейнер для основных настроек Pydio (название приложения, общий доступ, конфигурация сервера webdav и т.д...)"
   },
   "Maximum characters length of new files or folders": {
-    "other": "Maximum characters length of new files or folders"
+    "other": "Максимальная длина символов новых файлов или папок"
   },
   "Metadata and indexation": {
     "other": "Метаданные и индексация"
   },
   "Miscellaneous": {
-    "other": "Miscellaneous"
+    "other": "Прочее"
   },
   "Modification date": {
-    "other": "Modification date"
+    "other": "Дата изменения"
   },
   "Name": {
     "other": "Наименование"
@@ -402,19 +402,19 @@
     "other": "Show files beginning with a ."
   },
   "Show hidden files": {
-    "other": "Show hidden files"
+    "other": "Показать скрытые файлы"
   },
   "Skip auto-update admin rights": {
-    "other": "Skip auto-update admin rights"
+    "other": "Пропустить автообновление прав администратора"
   },
   "Small Icon": {
-    "other": "Small Icon"
+    "other": "Маленькая иконка"
   },
   "Template Options": {
     "other": "Параметры шаблона"
   },
   "Temporary Folder": {
-    "other": "Temporary Folder"
+    "other": "Временная папка"
   },
   "This authentication mechanism is less secure, but will avoid the users having to re-enter a password in some case.": {
     "other": "This authentication mechanism is less secure, but will avoid the users having to re-enter a password in some case."
@@ -453,7 +453,7 @@
     "other": "Пользователь"
   },
   "User Credentials": {
-    "other": "User Credentials"
+    "other": "Учетные данные пользователя"
   },
   "User name": {
     "other": "Имя пользователя"
@@ -483,7 +483,7 @@
     "other": "Whether to show the recycle bin folder. Unlike in the following options, the folder will be hidden but still writeable."
   },
   "Write Only (upload)": {
-    "other": "Write Only (upload)"
+    "other": "Только запись (загрузка)"
   },
   "Your application title": {
     "other": "This title will appear as the window title, in the splash screen."
