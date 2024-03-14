@@ -1779,7 +1779,7 @@
     "other": "Статус загрузки сервисов"
   },
   "services.empty.noservice": {
-    "other": "Нет сигнала"
+    "other": "Нет сервиса"
   },
   "services.column.name": {
     "other": "Имя сервиса"
@@ -1824,7 +1824,7 @@
     "other": "Планировщик"
   },
   "services.tag.scheduler.description": {
-    "other": "Services for managing background jobs. The task server can be dispatched across various peers."
+    "other": "Сервисы для управления фоновыми заданиями. Сервер задач может быть отправлен по различным узлам."
   },
   "services.tag.broker.title": {
     "other": "Брокер"
@@ -1833,31 +1833,31 @@
     "other": "Сервис диспетчеризации и обработки событий (как правило, по отношению к пользователям) по всему приложению."
   },
   "services.tag.frontend.title": {
-    "other": "Frontend"
+    "other": "Интерфейс"
   },
   "services.tag.frontend.description": {
-    "other": "Web services for user interfaces in the browser"
+    "other": "Веб-сервисы для пользовательских интерфейсов в браузере"
   },
   "services.tag.discovery.title": {
-    "other": "Discovery"
+    "other": "Поиск"
   },
   "services.tag.discovery.description": {
-    "other": "Basic configurations and services registries called by all other services."
+    "other": "Основные конфигурации и службы реестров, вызываемых всеми другими сервисами."
   },
   "services.service.ip": {
-    "other": "Running on %s"
+    "other": "Выполняется на %s"
   },
   "services.service.datasource.sync": {
-    "other": "Sync"
+    "other": "Синхронизация"
   },
   "services.service.datasource.objects": {
-    "other": "Objects"
+    "other": "Объекты"
   },
   "services.service.datasource.objects.legend": {
-    "other": "S3 layer to serve data as object storage"
+    "other": "S3 слой для обработки данных в качестве хранилища объектов"
   },
   "services.service.datasource.legend": {
-    "other": "Datasource is synchronizing data from objects layer to index DB."
+    "other": "Источник данных синхронизирует данные с уровня объектов до индекса БД."
   },
   "services.service.datasource.index": {
     "other": "Индексация"
@@ -1866,34 +1866,34 @@
     "other": "Планировщик"
   },
   "scheduler.legend": {
-    "other": "Flows running in background on a periodical basis or triggered by events"
+    "other": "Потоки, работающие в фоновом режиме на периодической основе или вызываемые событиями"
   },
   "scheduler.system.title": {
-    "other": "System Flows"
+    "other": "Системные Потоки"
   },
   "scheduler.system.legend": {
-    "other": "These Flows are registered by default inside the application. They are generally in charge of extracting information from node in background, or doing some cleaning operations."
+    "other": "Эти Потоки по умолчанию зарегистрированы внутри приложения. Они обычно отвечают за извлечение информации из узла в фоновом режиме или выполнение некоторых операций очистки."
   },
   "scheduler.inactives.title": {
-    "other": "Inactive Flows"
+    "other": "Неактивные потоки"
   },
   "scheduler.inactives.legend": {
-    "other": "These Flows are inactive, click on a Flow to enable it."
+    "other": "Эти потоки неактивны, нажмите на поток, чтобы включить его."
   },
   "scheduler.system.empty": {
-    "other": "No Flows scheduled."
+    "other": "Потоки не запланированы."
   },
   "scheduler.users.title": {
-    "other": "Users Flows"
+    "other": "Потоки пользователей"
   },
   "scheduler.users.legend": {
-    "other": "These Flows are dynamically created and trigged by user actions."
+    "other": "Эти потоки динамически создаются и вызываются действиями пользователей."
   },
   "scheduler.users.empty": {
-    "other": "No Flows launched by users"
+    "other": "Нет динамиков, запущенных пользователями"
   },
   "scheduler.cellsflows.cta.button": {
-    "other": "+ Custom Flow"
+    "other": "+ Пользовательский поток"
   },
   "scheduler.cellsflows.cta.text": {
     "other": "Хотите создать свой собственный Flow? Узнайте, как Cells Flows упрощает автоматизацию повторяющихся ручных задач в Cells."
@@ -2103,7 +2103,7 @@
     "other": "Удалить комнату чата"
   },
   "scheduler.trigger.chat-room.delete.description": {
-    "other": "A Chatroom has been deleted."
+    "other": "Чат-комната была удалена."
   },
   "scheduler.trigger.events": {
     "other": "События"
@@ -2133,13 +2133,13 @@
     "other": "Удалить"
   },
   "scheduler.task.action.enable": {
-    "other": "Enable Flow"
+    "other": "Включить поток"
   },
   "scheduler.task.action.run": {
     "other": "Запустить"
   },
   "scheduler.task.action.disable": {
-    "other": "Disable Flow"
+    "other": "Отключить поток"
   },
   "scheduler.task.id": {
     "other": "ID"
@@ -2217,7 +2217,7 @@
     "other": "Каждый %1"
   },
   "scheduler.schedule.title": {
-    "other": "Flow Schedule"
+    "other": "Расписание потока"
   },
   "scheduler.schedule.type": {
     "other": "Тип расписания"
@@ -2238,7 +2238,7 @@
     "other": "Каждые..."
   },
   "scheduler.schedule.type.once": {
-    "other": "Run Once"
+    "other": "Запустить один раз"
   },
   "scheduler.schedule.detail.monthday": {
     "other": "День месяца"
@@ -2250,13 +2250,13 @@
     "other": "Время"
   },
   "scheduler.schedule.detail.daydate": {
-    "other": "Unique Date"
+    "other": "Уникальная дата"
   },
   "scheduler.schedule.detail.minutes": {
     "other": "Период в минутах"
   },
   "scheduler.job-parameters.dialog": {
-    "other": "Flow Parameters"
+    "other": "Параметры потока"
   },
   "scheduler.job-parameters.button": {
     "other": "Установите метку и короткое описание"
@@ -2277,10 +2277,10 @@
     "other": "Загрузка библиотеки почты..."
   },
   "sites.title": {
-    "other": "Sites"
+    "other": "Сайты"
   },
   "sites.externals": {
-    "other": "External URLs"
+    "other": "Внешние URL-адреса"
   },
   "sites.details": {
     "other": "<div>\nSites define how Cells is binding to network interfaces and how it is exposed to the outside world.\nUse ‘<i>./cells configure sites</i>’ to manage your sites from the command line.\n<br/><br/>\nEach site has the following parameters:\n\n<ol>\n<li>1. <u>Bind(s)</u>: one or more [ip/hostname:port] to hook the internal webserver to.</li>\n<li>2. <u>TLS Settings</u>: TLS configuration for HTTPS support.</li>\n<li>3. <u>External URL</u>: the URL you communicate to your end-users. It can differ from your bind address, typically if the app is behind a reverse-proxy or inside a container with ports mapping.</li>\n<li>4. <u>Maintenance Mode</u> [On|Off]: display a maintenance page on this endpoint, although Cells is running.</li>\n</ol></div>"
