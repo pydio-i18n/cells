@@ -1965,10 +1965,10 @@
     "other": "F, jS Y"
   },
   "date_relative_days_ago": {
-    "other": "%s days ago"
+    "other": "%s дней назад"
   },
   "date_relative_days_ahead": {
-    "other": "in %s days"
+    "other": "через %s дней"
   },
   "date_relative_time": {
     "other": "ВРЕМЯ"
@@ -1977,46 +1977,46 @@
     "other": "H:i"
   },
   "date_relative_today": {
-    "other": "today at TIME"
+    "other": "сегодня в #TIME#"
   },
   "date_relative_tomorrow": {
-    "other": "tomorrow at TIME"
+    "other": "завтра в #TIME#"
   },
   "date_relative_yesterday": {
-    "other": "yesterday at TIME"
+    "other": "вчера в #TIME#"
   },
   "delete_access_key": {
-    "other": "D"
+    "other": "Д"
   },
   "detail_access_key": {
-    "other": "L"
+    "other": "Л"
   },
   "download_access_key": {
     "other": "w"
   },
   "edit_access_key": {
-    "other": "E"
+    "other": "Е"
   },
   "empty_recycle_access_key": {
     "other": "y"
   },
   "file_access_key": {
-    "other": "F"
+    "other": "Ф"
   },
   "folder_access_key": {
-    "other": "N"
+    "other": "Н"
   },
   "languageLabel": {
     "other": "Английский"
   },
   "leftpane_accesskey": {
-    "other": "L"
+    "other": "Л"
   },
   "list_access_key": {
-    "other": "i"
+    "other": "и"
   },
   "move_access_key": {
-    "other": "M"
+    "other": "М"
   },
   "open_with_access": {
     "other": "е"
