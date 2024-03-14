@@ -207,76 +207,76 @@
     "other": "Все файлы"
   },
   "file.temporary-etag.flag": {
-    "other": "Incomplete"
+    "other": "Не завершено"
   },
   "file.temporary-etag.tooltip": {
-    "other": "This file is being uploaded (or the upload has failed)."
+    "other": "Этот файл загружается (или загрузка не удалась)."
   },
   "mimegroup.byextension": {
-    "other": "By File Extension..."
+    "other": "По расширению файла..."
   },
   "mimegroup.word": {
-    "other": "Word documents"
+    "other": "Документы Word"
   },
   "mimegroup.spreadsheet": {
-    "other": "Spreadsheets"
+    "other": "Электронные таблицы"
   },
   "mimegroup.presentation": {
-    "other": "Presentations"
+    "other": "Презентации"
   },
   "mimegroup.pdf": {
-    "other": "PDFs"
+    "other": "PDF-файлы"
   },
   "mimegroup.image": {
-    "other": "Images"
+    "other": "Изображения"
   },
   "mimegroup.video": {
-    "other": "Videos"
+    "other": "Видео"
   },
   "mimegroup.audio": {
-    "other": "Audios"
+    "other": "Аудио"
   },
   "fastsearch.quick-jump.title": {
-    "other": "Quick Jump"
+    "other": "Быстрый переход"
   },
   "fastsearch.quick-jump.legend": {
-    "other": "Hit [Enter] to jump, add a trailing [/] to search inside children, [Esc] to Close"
+    "other": "Нажмите [Enter] чтобы прыгнуть, добавьте конечник [/] для поиска внутри детей, [Esc] для закрытия"
   },
   "fastsearch.quick-move.title": {
-    "other": "Quick Move"
+    "other": "Быстрое перемещение"
   },
   "fastsearch.quick-move.target-error": {
-    "other": "Cannot move to this target!"
+    "other": "Нельзя переместить в эту цель!"
   },
   "fastsearch.quick-move.legend": {
-    "other": "Hit [Enter] to move %s selected items to target, [Esc] to Close"
+    "other": "Нажмите [Enter] для перемещения %s выбранных элементов для цели, [Esc] для закрытия"
   },
   "fastsearch.quick-copy.title": {
-    "other": "Quick Copy"
+    "other": "Быстрое копирование"
   },
   "fastsearch.quick-copy.target-error": {
-    "other": "Cannot copy to this target!"
+    "other": "Нельзя скопировать в эту цель!"
   },
   "fastsearch.quick-copy.legend": {
     "other": "Hit [Enter] to copy %s selected items to target, [Esc] to Close"
   },
   "wslist-options.title": {
-    "other": "Display Options"
+    "other": "Отображать параметры"
   },
   "wslist-options.show-masked": {
-    "other": "Show masked items"
+    "other": "Показать замаскированные элементы"
   },
   "wslist.action.mask": {
-    "other": "Mask"
+    "other": "Маскировать"
   },
   "wslist.action.unmask": {
-    "other": "Unmask"
+    "other": "Снять маску"
   },
   "wslist-options.merge-workspaces": {
-    "other": "Merge workspaces and cells"
+    "other": "Объединить рабочие области и ячейки"
   },
   "wslist-options.own-cells-first": {
-    "other": "Cells created by me first"
+    "other": "Ячейки, созданные мной впервые"
   },
   "leftrail.buttons.home": {
     "other": "Главная"
@@ -294,21 +294,21 @@
     "other": "Темный режим"
   },
   "task.status.Starting": {
-    "other": "Started {startTime}"
+    "other": "Запущено {startTime}"
   },
   "task.status.Pending": {
-    "other": "Will start soon..."
+    "other": "Скоро начнется..."
   },
   "task.status.Complete": {
-    "other": "Task completed in {duration}"
+    "other": "Задача выполнена в {duration}"
   },
   "task.status.Finished": {
-    "other": "Task completed in {duration}"
+    "other": "Задача выполнена в {duration}"
   },
   "task.status.Error": {
-    "other": "An error happened!"
+    "other": "Произошла ошибка!"
   },
   "bigppanel.filter.default-hint": {
-    "other": "Quick Find..."
+    "other": "Быстрый поиск..."
   }
 }
