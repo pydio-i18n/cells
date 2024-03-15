@@ -51,7 +51,7 @@
     "other": "Stockage à plat"
   },
   "ds.format-picker.flat.legend": {
-    "other": "The files are stored as binaries along regular snapshots of the tree structure to ensure an efficient disaster recovery. This is the recommended option for best performances and scalability."
+    "other": "Les fichiers sont stockés comme des objets binaires, et l'arborescence des répertoires est envoyée régulièrement dans le stockage en cas de besoin de récupération. Option recommandée pour les performances et la scalabilité."
   },
   "ds.format-picker.structured.title": {
     "other": "Importer des données existantes"
