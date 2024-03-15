@@ -51,13 +51,13 @@
     "other": "Фиксированное хранилище"
   },
   "ds.format-picker.flat.legend": {
-    "other": "Лучше всего для производительности, файлы хранятся в виде двоичных данных внутри хранилища. Структура файлов и папок хранится только во внутреннем индексе."
+    "other": "The files are stored as binaries along regular snapshots of the tree structure to ensure an efficient disaster recovery. This is the recommended option for best performances and scalability."
   },
   "ds.format-picker.structured.title": {
     "other": "Импорт существующих данных"
   },
   "ds.format-picker.structured.legend": {
-    "other": "Файлы и папки хранятся как таковые, в реальном времени отражают структуру хранилища во внутренних индексах."
+    "other": "The tree structure is reflected in the storage and maintained in real-time synchronization. This legacy option is NOT recommended and should only be used for importing existing data. It is event-based and must not be used in high load or clustered installation."
   },
   "ds.format-picker.internal.title": {
     "other": "Содержимое ячейки"
