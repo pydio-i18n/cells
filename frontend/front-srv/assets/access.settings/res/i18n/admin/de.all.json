@@ -51,13 +51,13 @@
     "other": "Flacher Speicher"
   },
   "ds.format-picker.flat.legend": {
-    "other": "The files are stored as binaries along regular snapshots of the tree structure to ensure an efficient disaster recovery. This is the recommended option for best performances and scalability."
+    "other": "Die Dateien werden zusammen mit regelmäßigen Schnappschüssen der Baumstruktur als Binärdateien gespeichert, um eine effiziente Katastrophenwiederherstellung zu gewährleisten. Dies ist die empfohlene Option für die beste Leistung und Skalierbarkeit."
   },
   "ds.format-picker.structured.title": {
     "other": "Vorhandene Daten importieren"
   },
   "ds.format-picker.structured.legend": {
-    "other": "The tree structure is reflected in the storage and maintained in real-time synchronization. This legacy option is NOT recommended and should only be used for importing existing data. It is event-based and must not be used in high load or clustered installation."
+    "other": "Die Baumstruktur spiegelt sich im Speicher wider und wird in Echtzeitsynchronisation gehalten. Diese veraltete Option wird NICHT empfohlen und sollte nur zum Importieren vorhandener Daten verwendet werden. Sie basiert auf Ereignissen und darf nicht bei hoher Auslastung oder in Cluster-Installationen verwendet werden."
   },
   "ds.format-picker.internal.title": {
     "other": "Cells intern"
