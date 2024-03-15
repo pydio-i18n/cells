@@ -51,13 +51,13 @@
     "other": "Flacher Speicher"
   },
   "ds.format-picker.flat.legend": {
-    "other": "Die Dateien werden im Speicher als Binärdateien gespeichert, um die Leistung zu verbessern. Die Struktur von Dateien und Ordnern wird nur im internen Index gespeichert."
+    "other": "The files are stored as binaries along regular snapshots of the tree structure to ensure an efficient disaster recovery. This is the recommended option for best performances and scalability."
   },
   "ds.format-picker.structured.title": {
     "other": "Vorhandene Daten importieren"
   },
   "ds.format-picker.structured.legend": {
-    "other": "Dateien und Ordner werden im Ist-Zustand gespeichert, die Echtzeit-Synchronisation spiegelt die Speicherstruktur in internen Indizes wider."
+    "other": "The tree structure is reflected in the storage and maintained in real-time synchronization. This legacy option is NOT recommended and should only be used for importing existing data. It is event-based and must not be used in high load or clustered installation."
   },
   "ds.format-picker.internal.title": {
     "other": "Cells intern"
