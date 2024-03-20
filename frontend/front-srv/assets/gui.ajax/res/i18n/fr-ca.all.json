@@ -153,28 +153,28 @@
     "other": "Impossible de copier dans le presse-papiers."
   },
   "layouts.preferences": {
-    "other": "Manage Layouts"
+    "other": "Gérer les mises en page"
   },
   "layouts.preferences.legend": {
-    "other": "Save and Recall Layouts as Presets"
+    "other": "Enregistrer et rappeler les mises en page comme préréglages"
   },
   "layouts.action.rename": {
-    "other": "Rename Layout"
+    "other": "Renommer la mise en page"
   },
   "layouts.action.remove": {
-    "other": "Remove Layout"
+    "other": "Supprimer la mise en page"
   },
   "layouts.action.create": {
-    "other": "Save current..."
+    "other": "Enregistrer la mise en page..."
   },
   "layouts.action.create.default": {
-    "other": "My Layout"
+    "other": "Ma mise en page"
   },
   "layouts.prompt.save": {
-    "other": "Save Layout As..."
+    "other": "Enregistrer la mise en page sous..."
   },
   "layouts.prompt.save.field": {
-    "other": "Choose a name to save/recall the current layout"
+    "other": "Choisissez un nom pour enregistrer/rappeler la mise en page actuelle"
   },
   "list.display-mode.list": {
     "other": "Liste"
@@ -336,6 +336,6 @@
     "other": "Recherche rapide..."
   },
   "sorter.metas.more": {
-    "other": "More..."
+    "other": "Plus..."
   }
 }
