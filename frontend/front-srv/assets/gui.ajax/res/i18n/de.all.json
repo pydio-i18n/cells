@@ -153,28 +153,28 @@
     "other": "Konnte nicht in die Zwischenablage kopieren."
   },
   "layouts.preferences": {
-    "other": "Manage Layouts"
+    "other": "Layouts verwalten"
   },
   "layouts.preferences.legend": {
-    "other": "Save and Recall Layouts as Presets"
+    "other": "Layouts speichern und als Vorlagen zurückrufen"
   },
   "layouts.action.rename": {
-    "other": "Rename Layout"
+    "other": "Layout umbenennen"
   },
   "layouts.action.remove": {
-    "other": "Remove Layout"
+    "other": "Layout entfernen"
   },
   "layouts.action.create": {
-    "other": "Save current..."
+    "other": "Aktuelles speichern..."
   },
   "layouts.action.create.default": {
-    "other": "My Layout"
+    "other": "Meine Layouts"
   },
   "layouts.prompt.save": {
-    "other": "Save Layout As..."
+    "other": "Layout speichern als..."
   },
   "layouts.prompt.save.field": {
-    "other": "Choose a name to save/recall the current layout"
+    "other": "Wählen Sie einen Namen zum Speichern/Zurückrufen des aktuellen Layouts"
   },
   "list.display-mode.list": {
     "other": "Liste"
@@ -336,6 +336,6 @@
     "other": "Schnellsuche..."
   },
   "sorter.metas.more": {
-    "other": "More..."
+    "other": "Mehr..."
   }
 }
