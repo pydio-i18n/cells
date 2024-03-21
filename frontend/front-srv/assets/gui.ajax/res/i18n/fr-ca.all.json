@@ -164,8 +164,20 @@
   "layouts.action.remove": {
     "other": "Supprimer la mise en page"
   },
+  "layouts.action.remove.confirm": {
+    "other": "Do you want to remove this layout?"
+  },
+  "layouts.action.reset": {
+    "other": "Reset Layout"
+  },
+  "layouts.action.reset.confirm": {
+    "other": "Do you want to reset the current layout?"
+  },
   "layouts.action.create": {
-    "other": "Enregistrer la mise en page..."
+    "other": "Save Layout..."
+  },
+  "layouts.action.fork": {
+    "other": "New From Current..."
   },
   "layouts.action.create.default": {
     "other": "Ma mise en page"
@@ -205,6 +217,12 @@
   },
   "list.pin.bookmarks": {
     "other": "Épingler les favoris en haut"
+  },
+  "list.writeonly.emptystate.title": {
+    "other": "Drop Files Here"
+  },
+  "list.writeonly.emptystate.legend": {
+    "other": "This folder is write-only: you cannot see its contents and are only authorized to upload files or folders. Your own content will not be visible after upload!"
   },
   "infopanel.empty.select.file": {
     "other": "Sélectionnez un fichier pour afficher ses informations"
