@@ -164,8 +164,20 @@
   "layouts.action.remove": {
     "other": "移除布局"
   },
+  "layouts.action.remove.confirm": {
+    "other": "Do you want to remove this layout?"
+  },
+  "layouts.action.reset": {
+    "other": "Reset Layout"
+  },
+  "layouts.action.reset.confirm": {
+    "other": "Do you want to reset the current layout?"
+  },
   "layouts.action.create": {
-    "other": "保存当前..."
+    "other": "Save Layout..."
+  },
+  "layouts.action.fork": {
+    "other": "New From Current..."
   },
   "layouts.action.create.default": {
     "other": "我的布局"
@@ -205,6 +217,12 @@
   },
   "list.pin.bookmarks": {
     "other": "置顶书签项"
+  },
+  "list.writeonly.emptystate.title": {
+    "other": "Drop Files Here"
+  },
+  "list.writeonly.emptystate.legend": {
+    "other": "This folder is write-only: you cannot see its contents and are only authorized to upload files or folders. Your own content will not be visible after upload!"
   },
   "infopanel.empty.select.file": {
     "other": "选择要显示信息的文件"
