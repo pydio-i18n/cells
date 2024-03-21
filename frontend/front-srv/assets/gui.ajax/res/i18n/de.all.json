@@ -164,8 +164,20 @@
   "layouts.action.remove": {
     "other": "Layout entfernen"
   },
+  "layouts.action.remove.confirm": {
+    "other": "Do you want to remove this layout?"
+  },
+  "layouts.action.reset": {
+    "other": "Reset Layout"
+  },
+  "layouts.action.reset.confirm": {
+    "other": "Do you want to reset the current layout?"
+  },
   "layouts.action.create": {
-    "other": "Aktuelles speichern..."
+    "other": "Save Layout..."
+  },
+  "layouts.action.fork": {
+    "other": "New From Current..."
   },
   "layouts.action.create.default": {
     "other": "Meine Layouts"
@@ -205,6 +217,12 @@
   },
   "list.pin.bookmarks": {
     "other": "Lesezeichen oben anheften"
+  },
+  "list.writeonly.emptystate.title": {
+    "other": "Drop Files Here"
+  },
+  "list.writeonly.emptystate.legend": {
+    "other": "This folder is write-only: you cannot see its contents and are only authorized to upload files or folders. Your own content will not be visible after upload!"
   },
   "infopanel.empty.select.file": {
     "other": "Wählen Sie eine Datei aus, um Informationen anzuzeigen"
