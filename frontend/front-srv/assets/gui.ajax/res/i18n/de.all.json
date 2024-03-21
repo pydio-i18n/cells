@@ -165,19 +165,19 @@
     "other": "Layout entfernen"
   },
   "layouts.action.remove.confirm": {
-    "other": "Do you want to remove this layout?"
+    "other": "Wollen Sie dieses Layout wirklich löschen?"
   },
   "layouts.action.reset": {
-    "other": "Reset Layout"
+    "other": "Layout zurücksetzen"
   },
   "layouts.action.reset.confirm": {
-    "other": "Do you want to reset the current layout?"
+    "other": "Möchten Sie das aktuelle Layout zurücksetzen?"
   },
   "layouts.action.create": {
-    "other": "Save Layout..."
+    "other": "Layout speichern..."
   },
   "layouts.action.fork": {
-    "other": "New From Current..."
+    "other": "Neu von Aktuell..."
   },
   "layouts.action.create.default": {
     "other": "Meine Layouts"
@@ -219,10 +219,10 @@
     "other": "Lesezeichen oben anheften"
   },
   "list.writeonly.emptystate.title": {
-    "other": "Drop Files Here"
+    "other": "Dateien hier ablegen"
   },
   "list.writeonly.emptystate.legend": {
-    "other": "This folder is write-only: you cannot see its contents and are only authorized to upload files or folders. Your own content will not be visible after upload!"
+    "other": "Dieser Ordner ist schreibgeschützt: Sie können seinen Inhalt nicht sehen und sind nur berechtigt, Dateien oder Ordner hochzuladen. Ihr eigener Inhalt wird nach dem Hochladen nicht sichtbar sein!"
   },
   "infopanel.empty.select.file": {
     "other": "Wählen Sie eine Datei aus, um Informationen anzuzeigen"
