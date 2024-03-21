@@ -165,19 +165,19 @@
     "other": "Supprimer la mise en page"
   },
   "layouts.action.remove.confirm": {
-    "other": "Do you want to remove this layout?"
+    "other": "Voulez-vous supprimer cette mise en page ?"
   },
   "layouts.action.reset": {
-    "other": "Reset Layout"
+    "other": "Réinitialiser"
   },
   "layouts.action.reset.confirm": {
-    "other": "Do you want to reset the current layout?"
+    "other": "Voulez-vous réinitialiser la mise en page actuelle ?"
   },
   "layouts.action.create": {
-    "other": "Save Layout..."
+    "other": "Sauver la mise en page..."
   },
   "layouts.action.fork": {
-    "other": "New From Current..."
+    "other": "Nouvelle mise en page..."
   },
   "layouts.action.create.default": {
     "other": "Ma mise en page"
@@ -219,10 +219,10 @@
     "other": "Épingler les favoris en haut"
   },
   "list.writeonly.emptystate.title": {
-    "other": "Drop Files Here"
+    "other": "Déposez des fichiers ici"
   },
   "list.writeonly.emptystate.legend": {
-    "other": "This folder is write-only: you cannot see its contents and are only authorized to upload files or folders. Your own content will not be visible after upload!"
+    "other": "Ce dossier n'est accessible qu'en écriture : vous ne pouvez pas voir son contenu et vous êtes uniquement autorisé à y déposer des fichiers ou des dossiers. Vos propres contenus ne seront pas visible après le téléchargement !"
   },
   "infopanel.empty.select.file": {
     "other": "Sélectionnez un fichier pour afficher ses informations"
