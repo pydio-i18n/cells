@@ -102,7 +102,7 @@
     "other": "Secondary Instance Driver"
   },
   "Secure Login Form": {
-    "other": "Secure Login Form"
+    "other": "安全登录"
   },
   "Separator": {
     "other": "Separator"
@@ -156,6 +156,6 @@
     "other": "目录搜索时，是寻找以该字符串”起始“的标签。开启此选项将会在关键字前面增加通配符，以寻找”包含“该字符串的标签。"
   },
   "Auto-wildcard search": {
-    "other": "Auto-wildcard search"
+    "other": "自动通配符搜索"
   }
 }
