@@ -60,7 +60,7 @@
     "other": "树形结构反映在存储中并实时同步维护。 不建议使用此旧选项，并且仅应将其用于导入现有数据。 它是基于事件的，不得在高负载或集群安装中使用。"
   },
   "ds.format-picker.internal.title": {
-    "other": "单元格"
+    "other": "内部资料库"
   },
   "ds.format-picker.internal.legend": {
     "other": "用于存储内部二进制文件(例如文件版本、缩略图)。 功能有限，数据未在搜索引擎中建立索引。"
@@ -141,7 +141,7 @@
     "other": "浏览本地或网络附加文件系统的数据。"
   },
   "ds.editor.storage.legend.fs.peer": {
-    "other": "限制数据源到对等地址将仅启动一个特定节点。 使用“Any”值将在单元格运行的所有节点上启动服务, 当共享文件系统挂载在同一位置的所有节点上时，它可以是便捷的， 或者如果您的节点可能在重启时更改其IP。 为了避免冲突，最好是要么对所有数据源使用ANY，要么选择所有数据源的特定节点。"
+    "other": "限制数据源到某一个节点时，将会仅启动一个特定节点的服务。 使用\"Any\"值，将在运行 Cells 的所有节点上启动服务，如果所有节点上的相同位置挂载了共享文件系统，或者如果你的节点在重新启动时可能改变其 IP，这会很方便。为避免冲突，最好对所有数据源使用 ANY，或为所有数据源都选择特定节点。"
   },
   "ds.editor.storage.legend.fs.path": {
     "other": "请确保最后一个文件夹名是小写的，其父文件夹是可写的。 如果您现有的文件夹是大写，您可以使用别名链接来处理此限制。"
@@ -222,7 +222,7 @@
     "other": "请确保选择一个二级文件夹。对象存储将从父文件夹开始。"
   },
   "ds.editor.selector.error.dnsname": {
-    "other": "文件夹暴露为S3 bucket，必须符合DNS名称(小写，没有空格或特殊字符)。"
+    "other": "文件夹作为 S3 存储桶公开，必须符合 DNS 名称 (小写，无空格或特殊字符) 的要求。"
   },
   "ds.editor.selector.folder": {
     "other": "本地目录"
@@ -390,7 +390,7 @@
     "other": "如果此存储先前被用作平坦的数据源，请从现有的快照文件初始化(必须在存储中)"
   },
   "ds.editor.foldersShardingPattern": {
-    "other": "By default, all files are stored inside a unique folder. Use a pattern 'N:P:Q' to auto-create sub folders id[:N]/id[:P]/id[:Q]/..."
+    "other": "默认情况下，所有文件都存储在一个唯一的文件夹中。使用 \"N:P:Q \"模式自动创建子文件夹 id[:N]/id[:P]/id[:Q]/..."
   },
   "ds.encryption": {
     "other": "已加密"
