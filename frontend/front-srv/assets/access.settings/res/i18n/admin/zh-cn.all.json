@@ -816,7 +816,7 @@
     "other": "Group"
   },
   "metadata.group-field": {
-    "other": "Group Name (creates an expandable section). Use '/' for sub-groups."
+    "other": "分组名称 (创建一个可展开的部分)。使用 '/' 来创建子分组。"
   },
   "metadata.default-group": {
     "other": "No Group"
@@ -1794,55 +1794,55 @@
     "other": "标签"
   },
   "services.column.peers": {
-    "other": "Peers"
+    "other": "节点"
   },
   "services.tag.gateway.title": {
     "other": "网关"
   },
   "services.tag.gateway.description": {
-    "other": "World-facing services for accessing the platform"
+    "other": "平台对外的服务"
   },
   "services.tag.datasource.title": {
     "other": "数据源"
   },
   "services.tag.datasource.description": {
-    "other": "Storage endpoints used to access concrete file storages. Main services are in charge of starting sub services (per datasource)."
+    "other": "用于访问具体文件存储的存储端点。主服务负责启动子服务(按数据源划分)。"
   },
   "services.tag.data.title": {
     "other": "数据"
   },
   "services.tag.data.description": {
-    "other": "服务处理数据和元数据。"
+    "other": "处理数据和元数据的服务。"
   },
   "services.tag.idm.title": {
     "other": "身份管理"
   },
   "services.tag.idm.description": {
-    "other": "All services related to authentication and authorizations, roles, security policies, etc."
+    "other": "所有与身份验证、授权、角色、安全策略等相关的服务。"
   },
   "services.tag.scheduler.title": {
     "other": "定时任务"
   },
   "services.tag.scheduler.description": {
-    "other": "Services for managing background jobs. The task server can be dispatched across various peers."
+    "other": "用于管理后台作业的服务。任务服务器可以分派到不同的节点上。"
   },
   "services.tag.broker.title": {
-    "other": "Broker"
+    "other": "消息代理"
   },
   "services.tag.broker.description": {
-    "other": "服务发送和处理整个应用程序的事件 (一般是给用户)。"
+    "other": "发送和处理整个应用程序的事件 (一般是给用户) 的服务。"
   },
   "services.tag.frontend.title": {
     "other": "前端"
   },
   "services.tag.frontend.description": {
-    "other": "Web services for user interfaces in the browser"
+    "other": "用于浏览器中用户界面的 Web 服务"
   },
   "services.tag.discovery.title": {
     "other": "发现"
   },
   "services.tag.discovery.description": {
-    "other": "Basic configurations and services registries called by all other services."
+    "other": "所有其他服务都会调用的基本配置和已注册的服务。"
   },
   "services.service.ip": {
     "other": "运行于 %s"
@@ -1866,37 +1866,37 @@
     "other": "定时任务"
   },
   "scheduler.legend": {
-    "other": "Flows running in background on a periodical basis or triggered by events"
+    "other": "在后台定期运行或由事件触发的任务"
   },
   "scheduler.system.title": {
-    "other": "System Flows"
+    "other": "系统任务"
   },
   "scheduler.system.legend": {
-    "other": "These Flows are registered by default inside the application. They are generally in charge of extracting information from node in background, or doing some cleaning operations."
+    "other": "这些任务默认在应用程序内部注册。它们通常负责在后台从节点提取信息,或者执行一些清理操作。"
   },
   "scheduler.inactives.title": {
-    "other": "Inactive Flows"
+    "other": "非活动任务"
   },
   "scheduler.inactives.legend": {
-    "other": "These Flows are inactive, click on a Flow to enable it."
+    "other": "这些任务已禁用，点击以启用它。"
   },
   "scheduler.system.empty": {
-    "other": "No Flows scheduled."
+    "other": "无任务。"
   },
   "scheduler.users.title": {
-    "other": "用户Flows"
+    "other": "用户任务"
   },
   "scheduler.users.legend": {
-    "other": "These Flows are dynamically created and trigged by user actions."
+    "other": "这些任务根据用户的动作动态的创建和触发。"
   },
   "scheduler.users.empty": {
     "other": "没有用户启动的Flow作业"
   },
   "scheduler.cellsflows.cta.button": {
-    "other": "+ Custom Flow"
+    "other": "+ 自定义任务"
   },
   "scheduler.cellsflows.cta.text": {
-    "other": "Do you need to create your own Flow? Discover how Cells Flows makes it easy to automate your repetitive manual tasks in Cells."
+    "other": "您需要创建自己的任务吗？了解 Cells Flows 如何让您轻松实现 Cells 中重复性手工任务的自动化。"
   },
   "scheduler.cellsflows.dialog.button": {
     "other": "了解更多"
@@ -1941,7 +1941,7 @@
     "other": "ACL events : access control lists link workspaces, nodes and roles together to provide accesses to data."
   },
   "scheduler.trigger.type.users": {
-    "other": "User events : triggered when adding/removing user and when users log in and log out. Can be used for triggering validation flows or assigning accesses."
+    "other": "用户事件：添加/删除用户以及用户登录和注销时触发。可用于触发验证流程或分配访问权限。"
   },
   "scheduler.trigger.type.roles": {
     "other": "Role events : can be used to automate accesses based on role names. Use IsTeam, IsGroup, IsUser flags to filter roles."
