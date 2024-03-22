@@ -1776,7 +1776,7 @@
     "other": "尚无资料库"
   },
   "633": {
-    "other": "资料库是与其他人协作文当的共享空间"
+    "other": "资料库是与其他人协作文档的共享空间"
   },
   "634": {
     "other": "您"
@@ -2355,25 +2355,25 @@
     "other": "搜索中......"
   },
   "searchengine.share.title": {
-    "other": "Shared"
+    "other": "共享状态"
   },
   "searchengine.share.hint": {
-    "other": "No status"
+    "other": "无状态"
   },
   "searchengine.share.option.link": {
-    "other": "Public Link"
+    "other": "对外共享"
   },
   "searchengine.share.option.cell": {
-    "other": "Shared in Cell"
+    "other": "内部共享"
   },
   "searchengine.share.option.any": {
-    "other": "Public Link or Cell"
+    "other": "内部或外部共享"
   },
   "searchengine.format.title": {
-    "other": "Format"
+    "other": "格式"
   },
   "searchengine.format.file-only": {
-    "other": "Files Only"
+    "other": "仅文件"
   },
   "searchengine.advanced-filter.tooltip": {
     "other": "高级过滤器"
