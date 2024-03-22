@@ -6,7 +6,7 @@
     "other": "添加文件"
   },
   "tour.display-bar": {
-    "other": "此工具栏允许您更改显示方式：根据您的用法，切换到缩略图或详细模式，并按名称、日期等分类文件..."
+    "other": "此工具栏允许您更改显示方式：根据您的用法，切换到缩略图或详细模式，并按名称、日期等方式分类文件..."
   },
   "tour.display-bar.title": {
     "other": "显示选项"
@@ -72,7 +72,7 @@
     "other": "访问其他选项：管理您的个人资料和安全功能，浏览您共享的所有资源，退出平台。"
   },
   "tour.uwidget.title": {
-    "other": "User Cartouche"
+    "other": "用户标识"
   },
   "tour.welcomemodal.skip": {
     "other": "跳过"
@@ -81,7 +81,7 @@
     "other": "开始游览"
   },
   "tour.welcomemodal.subtitle": {
-    "other": "拖放您的最佳照片用于个人资料！这次快速游览将引导您进入网页界面。"
+    "other": "将您的最佳照片拖放到上面，它将会在个人资料中显示！快速游览将会在网页上引导您如何使用。"
   },
   "tour.welcomemodal.title": {
     "other": "欢迎使用 APPLICATION_TITLE"
