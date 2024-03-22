@@ -234,7 +234,7 @@
     "other": "For exotic auth drivers, an user ID that must be considered as admin by default."
   },
   "For multiple authentication, apply this role to users authenticated via this driver": {
-    "other": "For multiple authentication, apply this role to users authenticated via this driver"
+    "other": "对于多重身份验证，将此角色应用于通过此驱动进行身份验证的用户"
   },
   "Force Basic Auth": {
     "other": "强制基本认证"
