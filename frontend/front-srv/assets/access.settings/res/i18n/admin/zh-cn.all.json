@@ -465,7 +465,7 @@
     "other": "已禁用"
   },
   "ds.status.index": {
-    "other": "向下索引"
+    "other": "索引停止"
   },
   "ds.status.ko": {
     "other": "服务已停止"
