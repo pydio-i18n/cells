@@ -1275,7 +1275,7 @@
     "other": "Locked Users"
   },
   "user.filter.hidden": {
-    "other": "Public Links (hidden)"
+    "other": "对外共享(隐藏)"
   },
   "user.filter.status": {
     "other": "Status"
