@@ -183,46 +183,46 @@
     "other": "Please select at least one role type in the list"
   },
   "roleType": {
-    "other": "Role Type"
+    "other": "角色类型"
   },
   "roleType.description": {
-    "other": "Standard roles are assigned by administrators, whereas teams are managed by users in their address book. Technical roles are attached automatically to each users and groups and in that case their type cannot be modified."
+    "other": "标准角色由管理员分配，而团队由地址簿中的用户管理。 技术角色会自动附加到每个用户和组，在这种情况下，无法修改其类型。"
   },
   "roleType.admin": {
-    "other": "Standard"
+    "other": "标准"
   },
   "roleType.admin.description": {
-    "other": "Standard Role"
+    "other": "标准角色"
   },
   "roleType.IsTeam": {
-    "other": "Team"
+    "other": "团队"
   },
   "roleType.IsTeam.description": {
-    "other": "Team (visible as a Team in address book)"
+    "other": "团队(在地址簿中显示为团队)"
   },
   "roleType.IsUserRole": {
-    "other": "[Tech] User"
+    "other": "[技术] 用户"
   },
   "roleType.IsUserRole.description": {
-    "other": "[Technical] Created automatically for the corresponding User"
+    "other": "[技术] 自动为相应的用户创建"
   },
   "roleType.IsGroupRole": {
-    "other": "[Tech] Group"
+    "other": "[技术] 组"
   },
   "roleType.IsGroupRole.description": {
-    "other": "[Technical] Created automatically for the corresponding Group"
+    "other": "[技术] 自动为相应组创建"
   },
   "dashboard.typeFilter.admin": {
-    "other": "Standard Roles"
+    "other": "标准角色"
   },
   "dashboard.typeFilter.IsTeam": {
-    "other": "User-defined Teams"
+    "other": "用户定义的团队"
   },
   "dashboard.typeFilter.IsUserRole": {
-    "other": "[Technical] Attached to each users"
+    "other": "[技术] 附各用户"
   },
   "dashboard.typeFilter.IsGroupRole": {
-    "other": "[Technical] Attached to each groups"
+    "other": "[技术] 附各组"
   },
   "last_update": {
     "other": "上次更新"
@@ -237,15 +237,15 @@
     "other": "角色始终适用于此配置文件。"
   },
   "role.override.label": {
-    "other": "Always Override"
+    "other": "总是覆盖"
   },
   "role.override.description": {
     "other": "角色总是在其他角色之后最后应用，除了仍然占主导地位的用户角色。"
   },
   "user.info.main": {
-    "other": "Hover fields to show explanation"
+    "other": "将鼠标悬停在字段上可显示说明"
   },
   "button.info.menu.security": {
-    "other": "Security Actions"
+    "other": "安全行动"
   }
 }
