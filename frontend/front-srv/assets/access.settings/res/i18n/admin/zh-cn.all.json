@@ -1164,10 +1164,10 @@
     "other": "您将要禁用子级别的权限管理：全部\n                         其子级会自动继承此文件夹的权限，而你当前的设置\n                         因为这些子级将会丢失。 您确定确认吗？"
   },
   "scheduler.1": {
-    "other": "Scheduler is used to trigger tasks automatically on a regular basis. It requires the launch of a master command regularly: if you are using Pydio Booster, it should trigger this for you. Otherwise, use a CRON to launch master command every minute."
+    "other": "调度程序用于定期自动触发任务。 它需要定期启动主命令：如果您正在使用 Pydio 助推器，它应该会为您触发此命令。 否则，使用 CRON 每分钟启动一次主命令。"
   },
   "scheduler.2": {
-    "other": "Command-line is not enabled in the %1, the scheduler will not be able to run the jobs."
+    "other": "命令行在 %1中未启用，调度程序将无法运行任务。"
   },
   "scheduler.3": {
     "other": "全局配置"
@@ -1272,16 +1272,16 @@
     "other": "过滤用户列表..."
   },
   "user.filter.locks": {
-    "other": "Locked Users"
+    "other": "锁定的用户"
   },
   "user.filter.hidden": {
     "other": "对外共享(隐藏)"
   },
   "user.filter.status": {
-    "other": "Status"
+    "other": "状态"
   },
   "user.type.hidden": {
-    "other": "Public User"
+    "other": "公开用户"
   },
   "user.type.hidden.legend": {
     "other": "Public users are created for public links (one per link) and are hidden by default. It can be useful to list them to detect locked public links."
