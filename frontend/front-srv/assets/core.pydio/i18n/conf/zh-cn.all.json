@@ -57,7 +57,7 @@
     "other": "升序"
   },
   "Auth Driver Commons": {
-    "other": "Auth Driver Commons"
+    "other": "Auth驱动程序公用"
   },
   "Auth URL": {
     "other": "身份验证URL"
@@ -87,10 +87,10 @@
     "other": "客户端密钥"
   },
   "Comma separated list of metastore and meta plugins, that will be automatically applied to all repositories created with this driver": {
-    "other": "Comma separated list of metastore and meta plugins, that will be automatically applied to all workspaces created with this driver"
+    "other": "以逗号分隔的元存储和元插件列表，将自动应用于使用此驱动程序创建的所有工作区"
   },
   "Comma-separated list of extensions to hide. Extensions, files and folders that are hidden are also access forbidden.": {
-    "other": "Comma-separated list of extensions to hide. Extensions, files and folders that are hidden are also access forbidden."
+    "other": "要隐藏的以逗号分隔的扩展名列表。 隐藏的扩展程序、文件和文件夹也被禁止访问。"
   },
   "Comma-separated list of specific files to hide": {
     "other": "以逗号分隔的要隐藏的特定文件列表"
@@ -108,13 +108,13 @@
     "other": "命令行PHP"
   },
   "Common URI to access the shares. Please READ THE DOC to safely use this feature.": {
-    "other": "Common URI to access the shares. Please READ THE DOC to safely use this feature."
+    "other": "用于访问共享的通用 URI。 请阅读文档以安全使用此功能。"
   },
   "Compression Features": {
     "other": "压缩功能"
   },
   "Core Connexion": {
-    "other": "Core Connexion"
+    "other": "核心连接"
   },
   "DSN": {
     "other": "DSN"
@@ -153,13 +153,13 @@
     "other": "用户没有设置自己的语言时的默认语言。"
   },
   "Default realm for authentication. Please READ THE DOC to safely use this feature.": {
-    "other": "Default realm for authentication. Please READ THE DOC to safely use this feature."
+    "other": "用于身份验证的默认领域。 请阅读文档以安全使用此功能。"
   },
   "Default sorting direction": {
     "other": "默认排序方向"
   },
   "Delegates download operations to an alternative agent, either webserver or pydio agent. Warning, this requires external modules to be installed. When using XSendFile/XaccelRedirect, you have to manually add the folders where files will be downloaded in the module configuration": {
-    "other": "Delegates download operations to an alternative agent, either webserver or pydio agent. Warning, this requires external modules to be installed. When using XSendFile/XaccelRedirect, you have to manually add the folders where files will be downloaded in the module configuration"
+    "other": "委托将操作下载到另一个代理，即网络服务器或pydio代理。警告，这需要安装外部模块。使用XSendFile/XaccelRedirect时，必须手动添加将在模块配置中下载文件的文件夹"
   },
   "Descending": {
     "other": "降序"
@@ -168,7 +168,7 @@
     "other": "说明"
   },
   "Digest Realm": {
-    "other": "Digest Realm"
+    "other": "摘要领域"
   },
   "Disable WebDAV": {
     "other": "禁用WebDAV"
@@ -177,7 +177,7 @@
     "other": "禁用 Zip 浏览"
   },
   "Disable Zip files inline browsing. This can be necessary if you always store huge zip archives: it can have some impact on performance.": {
-    "other": "Disable Zip files inline browsing. This can be necessary if you always store huge zip archives: it can have some impact on performance."
+    "other": "禁用 Zip 文件内联浏览。 如果您总是存储巨大的 zip 存档，这可能是必要的：它可能会对性能产生一些影响。"
   },
   "Display the list of files and folder when accessing through the browser": {
     "other": "Display the list of files and folder when accessing through the browser"
