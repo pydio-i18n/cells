@@ -276,10 +276,10 @@
     "other": "存储空间名"
   },
   "ds.editor.storage.s3.endpoint.type": {
-    "other": "Endpoint Type"
+    "other": "接口类型"
   },
   "ds.editor.storage.s3.signatureVersion": {
-    "other": "Signature Version"
+    "other": "签名版本"
   },
   "ds.editor.storage.s3.endpoint.amazon": {
     "other": "Amazon S3"
@@ -345,10 +345,10 @@
     "other": "在 bucket 中使用路径前缀 (将创建一个虚拟文件夹来存储对象)"
   },
   "ds.editor.storage.s3.bucketPathPrefix": {
-    "other": "Path prefix"
+    "other": "路径前缀"
   },
   "ds.editor.storage.s3.legend.storageClass": {
-    "other": "Custom Storage Class (leave empty to use STANDARD). Amazon S3 supports the following values: REDUCED_REDUNDANCY, STANDARD_IA, ONEZONE_IA, INTELLIGENT_TIERING, GLACIER, DEEP_ARCHIVE, OUTPOSTS, GLACIER_IR. Beware that using GLACIER or equivalent will make the datasource write-only, as objects have to be manually restored before being available for download."
+    "other": "自定义存储类别(留空以使用标准)。亚马逊S3 支持以下值：REDUCED_REDUNDANCY、STANDARD_IA、ONEZONE_IA、INTELLIGENT_TIERING、GLACIER、DEEP_ARCHIVE、OUTPOSTS、GLACIER_IR。 请注意，使用 GLACIER 或等效工具将使数据源成为只写数据源，因为对象必须在可供下载之前手动恢复。"
   },
   "ds.editor.storage.s3.storageClass": {
     "other": "存储类型"
@@ -612,10 +612,10 @@
     "other": "级别"
   },
   "logs.level.exact": {
-    "other": "(only)"
+    "other": "(仅有的)"
   },
   "logs.level.greaterthan": {
-    "other": "(and up)"
+    "other": "(及以上)"
   },
   "logs.service": {
     "other": "服务"
@@ -630,46 +630,46 @@
     "other": "没有结果"
   },
   "logs.details.copy": {
-    "other": "Copy log to clipboard"
+    "other": "复制日志到剪贴板"
   },
   "logs.details.show-focus": {
-    "other": "Show +/- 5 minutes"
+    "other": "显示 +/- 5 分钟"
   },
   "logs.details.close": {
-    "other": "Close log detail"
+    "other": "关闭日志详细信息"
   },
   "logs.details.user": {
-    "other": "User"
+    "other": "用户"
   },
   "logs.details.user-attributes": {
-    "other": "User Attributes"
+    "other": "用户属性"
   },
   "logs.details.date": {
-    "other": "Event Date"
+    "other": "事件日期"
   },
   "logs.details.msg": {
-    "other": "Event Message"
+    "other": "事件消息"
   },
   "logs.details.service": {
-    "other": "Emitting Service"
+    "other": "发出服务"
   },
   "logs.details.connection": {
-    "other": "Connection IP"
+    "other": "连接 IP"
   },
   "logs.details.agent": {
-    "other": "User-Agent"
+    "other": "用户-代理"
   },
   "logs.details.protocol": {
-    "other": "Protocol"
+    "other": "协议"
   },
   "logs.details.node": {
-    "other": "File/Folder"
+    "other": "文件/文件夹"
   },
   "logs.details.transfer-size": {
-    "other": "Transfer Size"
+    "other": "传输大小"
   },
   "logs.details.workspace": {
-    "other": "In Workspace"
+    "other": "在工作区"
   },
   "menu.0": {
     "other": "仪表盘"
@@ -702,7 +702,7 @@
     "other": "Pydio Booster"
   },
   "menu.17": {
-    "other": "Instant messaging and external accelerator tool"
+    "other": "即时通讯和外部加速器工具"
   },
   "menu.18": {
     "other": "所有插件"
@@ -723,7 +723,7 @@
     "other": "欢迎页面"
   },
   "menu.23": {
-    "other": "Landing page for user after login. Configure displayed elements and links."
+    "other": "登录后用户登录页面。配置显示的元素和链接。"
   },
   "menu.3": {
     "other": "外观"
@@ -750,7 +750,7 @@
     "other": "元数据"
   },
   "menu.metadata.description": {
-    "other": "User-editable fields attached to data"
+    "other": "用户可编辑字段附加到数据"
   },
   "metadata.definition": {
     "other": "定义"
@@ -813,13 +813,13 @@
     "other": "顺序"
   },
   "metadata.group": {
-    "other": "Group"
+    "other": "组"
   },
   "metadata.group-field": {
     "other": "分组名称 (创建一个可展开的部分)。使用 '/' 来创建子分组。"
   },
   "metadata.default-group": {
-    "other": "No Group"
+    "other": "无组"
   },
   "metadata.toggle.index": {
     "other": "是否可被搜索引擎索引"
@@ -933,7 +933,7 @@
     "other": "Pydio 缓存"
   },
   "perfs.cli.description": {
-    "other": "Defer time-consuming tasks to command line."
+    "other": "将耗时的任务推迟到命令行。"
   },
   "perfs.cli.error": {
     "other": "警告，命令行未启用！"
@@ -963,10 +963,10 @@
     "other": "检测是否服务器负载过高 (仅对Linux服务器)"
   },
   "perfs.load.error": {
-    "other": "Maybe adding some CPU or RAM to your server could be necessary."
+    "other": "也许有必要向您的服务器添加一些 CPU 或 RAM。"
   },
   "perfs.load.help": {
-    "other": "A high server load may indicate that your server is missing CPU or RAM given your usage of Pydio."
+    "other": "服务器负载高可能表明您的服务器缺少 CPU 或 RAM，因为您使用的是 Pydio。"
   },
   "perfs.load.title": {
     "other": "服务器负载"
@@ -978,7 +978,7 @@
     "other": "邮件发送器未配置为延迟发送电子邮件。"
   },
   "perfs.mailer.help": {
-    "other": "Using a mail queue prevents the direct sending of emails for each action and request. Instead, it stores them in a separate database and processes the queue independently."
+    "other": "使用邮件队列可以防止针对每个操作和请求直接发送电子邮件。 相反，它将它们存储在单独的数据库中并独立处理队列。"
   },
   "perfs.mailer.title": {
     "other": "邮件队列"
@@ -1089,25 +1089,25 @@
     "other": "删除规则"
   },
   "policies.acl.empty-string": {
-    "other": "No policies defined, create one use to it as a dynamic workspace permission."
+    "other": "未定义政策，创建一个将其用作动态工作区权限的用途。"
   },
   "policies.rule.delete.confirm": {
     "other": "您确定要删除此安全规则吗？这可能会破坏应用程序的安全模型！"
   },
   "policies.type.acl.legend": {
-    "other": "These policies are used to dynamically provide read/write access to workspaces or nodes based on the request context and/or the node metadata. They are defined here and used in the Access Control Panel of the users and roles."
+    "other": "这些政策用于根据请求上下文和/或节点元数据动态提供对工作区或节点的读/写访问。 它们在此处定义并在用户和角色的访问控制面板中使用。"
   },
   "policies.type.acl.title": {
     "other": "基于上下文的 ACL"
   },
   "policies.type.oidc.legend": {
-    "other": "OpenId Connect Service is used for authentication of the user, before any access to the APIs. As such, you can totally disable the login operation for a set of users based on the requests context, e.g. disable loging from a given set of IP or at a given time."
+    "other": "OpenId连接服务用于在访问 API 之前对用户进行身份验证。 因此，您可以根据请求上下文完全禁用一组用户的登录操作，例如禁用从给定 IP 组或在给定时间登录。"
   },
   "policies.type.oidc.title": {
-    "other": "OpenId Connect Resources"
+    "other": "OpenId 连接资源"
   },
   "policies.type.rest.legend": {
-    "other": "These policies are protecting the REST APIs on a per-uri / per-method basis. They grant basic access to some specific APIs for public discovery, and a restriction access to many APIs to make sure they are accessed only by frontend application. You should generally not touch these unless you know exactly what you do."
+    "other": "这些政策基于每个 uri/每个方法来保护 REST API。 它们授予对某些特定 API 的基本访问权限以供公共发现，并限制对许多 API 的访问，以确保它们只能由前端应用程序访问。 除非您确切知道自己在做什么，否则通常不应触摸这些。"
   },
   "policies.type.rest.title": {
     "other": "REST 资源"
@@ -1128,7 +1128,7 @@
     "other": "显示完整权限"
   },
   "react.14": {
-    "other": "Show resulting tree"
+    "other": "显示结果树"
   },
   "react.2": {
     "other": "批量操作"
@@ -1149,7 +1149,7 @@
     "other": "写"
   },
   "react.5c": {
-    "other": "access"
+    "other": "访问"
   },
   "react.6": {
     "other": "子类"
@@ -1158,10 +1158,10 @@
     "other": "创建规则"
   },
   "react.8": {
-    "other": "You are about to manage permissions at the lower level. This folder will be read\n                        only by default, and you will manage permissions selectively on its children. Choose\n                        whether to copy the current permissions to its children, or to clear their permissions, which would make\n                        them inaccessible by default."
+    "other": "您将要管理较低级别的权限。 该文件夹将被读取\n                         仅默认情况下，您将有选择地管理其子级的权限。 \n选择\n                         是否将当前权限复制给其子级，或者清除其权限，这将使\n                         默认情况下它们不可访问。"
   },
   "react.9": {
-    "other": "You are about to disable the permissions management at the sub-level: all\n                        children will automatically inherit this folder permissions, and you current settings\n                        for these children will be lost. Are you sure to confirm ?"
+    "other": "您将要禁用子级别的权限管理：全部\n                         其子级会自动继承此文件夹的权限，而你当前的设置\n                         因为这些子级将会丢失。 您确定确认吗？"
   },
   "scheduler.1": {
     "other": "Scheduler is used to trigger tasks automatically on a regular basis. It requires the launch of a master command regularly: if you are using Pydio Booster, it should trigger this for you. Otherwise, use a CRON to launch master command every minute."
