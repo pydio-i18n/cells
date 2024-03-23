@@ -1284,10 +1284,10 @@
     "other": "公开用户"
   },
   "user.type.hidden.legend": {
-    "other": "Public users are created for public links (one per link) and are hidden by default. It can be useful to list them to detect locked public links."
+    "other": "公共用户是为公共链接创建的(每个链接一个)，默认情况下是隐藏的。 列出它们以检测锁定的公共链接可能是有用的。"
   },
   "user.rootgroup.legend": {
-    "other": "Permissions applied to the entire user hierarchy"
+    "other": "应用于整个用户层次结构的权限"
   },
   "user.filter.internal": {
     "other": "内部用户"
@@ -1392,10 +1392,10 @@
     "other": "用户删除后将数据重命名为 {deleted-NAME-UUID}。"
   },
   "virtual.card.cleanOnDelete-legend-off": {
-    "other": "This option should not be used if the template path is not creating a folder for each user (using User.Name)."
+    "other": "如果模板路径不是为每个用户创建文件夹，则不应使用此选项(使用 User.Name)。"
   },
   "virtual.card.cleanOnDelete-legend-on": {
-    "other": "This option may be recommended as the template path seems to create a folder for each user (using User.Name)."
+    "other": "此选项可能被推荐，因为模板路径似乎为每个用户(使用 User.Name) 创建一个文件夹。"
   },
   "ws.1": {
     "other": "管理数据源"
@@ -1512,13 +1512,13 @@
     "other": "文件夹级别权限"
   },
   "ws.43": {
-    "other": "Specify here the default access permissions to this workspace folders.\n                                To enable the permissions management at a sub-level, select the 'CHILDREN' on a given folder.\n                                This will set the current folder as readonly by default, and you will be able to open accesses\n                                selectively to any of its children folders."
+    "other": "在此指定此工作区文件夹的默认访问权限。\n                                 要启用子级别的权限管理，请选择给定文件夹的“子级”。\n                                 默认情况下，这会将当前文件夹设置为只读，您将能够打开访问\n                                 有选择地访问其任何子文件夹。"
   },
   "ws.44": {
-    "other": "Please be aware that this is only a mask: if you modify the real folders directly, you may have\n                                to edit this mask accordingly. Also, these permissions may be globally limited by the 'Default Rights'\n                                parameter set for this workspace (see the General tab)."
+    "other": "请注意，这只是一个掩码：如果您直接修改真实文件夹，您可能会\n                                 相应地编辑此掩码。 此外，这些权限可能会受到“默认权利”的全局限制\n                                 该工作区的参数集(请参阅“常规”选项卡)。"
   },
   "ws.45": {
-    "other": "As its parameters are using 'PYDIO_USER' or 'PYDIO_GROUP_*' keywords, the contents of\n                                this workspace will vary depending on the currently authenticated user. For this reason, you cannot browse the\n                                folders directly and assign permissions to them, but you can freely define some generic paths that will be used as masks."
+    "other": "由于其参数使用“PYDIO_USER”或“PYDIO_GROUP_*”关键字，因此内容\n                                 此工作区将根据当前经过身份验证的用户而有所不同。 因此，您无法浏览\n                                 直接文件夹并为其分配权限，但您可以自由定义一些将用作掩码的通用路径。"
   },
   "ws.46": {
     "other": "添加功能"
@@ -1542,10 +1542,10 @@
     "other": "索引"
   },
   "ws.51": {
-    "other": "This workspace has an indexer (%s). Normally, indexation is done \"on-the-fly\" when files are added/removed\n                    through the application interfaces. However if you are doing some modifications directly at the storage level, you may have\n                    to manually re-trigger an indexation from time to time. Use buttons below to either index now, or program a task in the scheduler\n                    to run indexation on a regular basis."
+    "other": "该工作区有一个索引器(%s)。 通常，当添加/删除文件时，索引是“即时”完成的\n                     通过应用程序接口。 但是，如果您直接在存储级别进行一些修改，您可能会\n                     不时手动重新触发索引。 使用下面的按钮立即建立索引，或在调度程序中编写任务\n                     定期运行指数化。"
   },
   "ws.52": {
-    "other": "Please note: as this worksace has user-specific contents, indexation will be launched for each user."
+    "other": "请注意：由于此工作区具有特定于用户的内容，因此将为每个用户启动索引。"
   },
   "ws.53": {
     "other": "立即启动索引"
@@ -1557,10 +1557,10 @@
     "other": "自动清除"
   },
   "ws.56": {
-    "other": "This workspace has a \"purge\" setup, to automatically remove documents that were left untouched since %s days. Make sure to add a task in the\n                    scheduler to regularly process this workspace and look for expired document. You can use the buttons below to create this task automatically,\n                    ok run the purge directly."
+    "other": "此工作区具有“清除”设置，可自动删除自 %s 天以来未触及的文档。 确保添加任务在\n                     调度程序定期处理此工作区并查找过期文档。\n您可以使用下面的按钮自动创建此任务，\n                     ok直接运行清除。"
   },
   "ws.57": {
-    "other": "Please note: as this worksace has user-specific contents, purge will be running for each user."
+    "other": "请注意：由于此工作区具有特定于用户的内容，因此将为每个用户运行清除。"
   },
   "ws.58": {
     "other": "立即清除"
@@ -1575,7 +1575,7 @@
     "other": "工作区活动"
   },
   "ws.61": {
-    "other": "Activity of the workspace is displayed to the users in the right-hand panel. You can clear all activity\n                            for this workspace, which can be handy e.g. if you are going \"live\" in production after a staging period where you have\n                            made some tests in this workspace."
+    "other": "工作区的活动在右侧面板中向用户显示。 您可以清除所有活动\n                             对于这个工作区，这可以很方便，例如,如果您在经过一段时间后要“上线”生产\n                             在此工作区中进行了一些测试。"
   },
   "ws.62": {
     "other": "清除活动日志"
@@ -1617,10 +1617,10 @@
     "other": "在继续之前选择值"
   },
   "ws.74": {
-    "other": "Use the form on the right to create a new DataSource. "
+    "other": "使用右边的表单创建一个新的数据源。 "
   },
   "ws.75": {
-    "other": "A DataSource defines where your data is stored."
+    "other": "数据源定义了您存储数据的位置。"
   },
   "ws.76": {
     "other": "Pydio将把您所有的数据源合并成一个主树，您可以在这个树上使用工作区赋予权限。"
@@ -1641,16 +1641,16 @@
     "other": "同步"
   },
   "ws.complete.datasources": {
-    "other": "DataSources"
+    "other": "数据源"
   },
   "ws.complete.folders": {
-    "other": "Internal Folders"
+    "other": "内部文件夹"
   },
   "ws.complete.label": {
-    "other": "Select a DataSource or a Template Path"
+    "other": "选择一个数据源或模板路径"
   },
   "ws.complete.additional": {
-    "other": "Additional Root"
+    "other": "附加根"
   },
   "ws.complete.resolves": {
     "other": "先解决"
@@ -1671,7 +1671,7 @@
     "other": "设置此工作区的默认权限（适用于应用程序的所有内部用户）。 您可以在“人员”中按每个用户/每个角色/每个组的基础上覆盖这些权限。"
   },
   "ws.editor.default_rights.hint": {
-    "other": "Default Rights"
+    "other": "默认权限"
   },
   "ws.editor.default_rights.none": {
     "other": "无"
@@ -1698,7 +1698,7 @@
     "other": "警告，危险操作！ 这是不可恢复的。"
   },
   "ws.editor.label.legend": {
-    "other": "Human-friendly label for this workspace"
+    "other": "此工作区的人性化标签"
   },
   "ws.editor.options.legend": {
     "other": "显示给用户的标签和描述。选择一个通俗易懂的名称，以帮助用户更好地管理数据。"
@@ -1725,7 +1725,7 @@
     "other": "允许桌面同步"
   },
   "ws.editor.other.sync.legend": {
-    "other": "Desktop synchronisation allows users to synchronize their files offline on their computer. Warning, this feature is currently supported for personal files only, as shared workspaces may create conflicts if many users synchronize docs in the same folder. For personal files, you can also enable/disable this feature on a per-role basis using Security Policies."
+    "other": "桌面同步允许用户在计算机上离线同步文件。 警告，此功能目前仅支持个人文件，因为如果许多用户在同一文件夹中同步文档，共享工作区可能会产生冲突。 对于个人文件，您还可以使用安全政策针对每个角色启用/禁用此功能。"
   },
   "ws.editor.other.sync-personal": {
     "other": "(仅限个人工作区)"
@@ -1737,10 +1737,10 @@
     "other": "我明白"
   },
   "ws.editor.sync.warning.enable": {
-    "other": "Enabling sync on shared workspaces may have unexpected results if many users are syncing and editing files together. Please note that THIS FEATURE IS CURRENTLY NOT SUPPORTED by our professional services. Please use this feature at your own risk!"
+    "other": "如果许多用户一起同步和编辑文件，则在共享工作区上启用同步可能会产生意外结果。 请注意，我们的专业服务目前不支持此功能。 请自行承担使用此功能的风险！"
   },
   "ws.editor.sync.warning.disable": {
-    "other": "If people are connected to this workspace, their sync task will not be working any more! Are you sure you want to change that?"
+    "other": "如果人们连接到此工作区，他们的同步任务将不再有效！ 您确定要更改此设置吗？"
   },
   "ws.editor.other.quota": {
     "other": "磁盘使用配额(0则无限制)。 此配额由此工作区的所有文件计算(或个人文件等工作区的用户特定内容)。"
@@ -1758,7 +1758,7 @@
     "other": "使用了技术化名称，例如URL，自动计算但您可以自定义。"
   },
   "services.text-filter.hint": {
-    "other": "Filter..."
+    "other": "过滤器..."
   },
   "services.filter.nofilter": {
     "other": "所有服务"
@@ -1923,103 +1923,103 @@
     "other": "删除"
   },
   "scheduler.job.delete.confirm": {
-    "other": "Are you sure you want to delete this Flow? This operation cannot be reverted!"
+    "other": "您确定要删除此流程吗？ 此操作无法恢复！"
   },
   "scheduler.tasks.delete.confirm": {
-    "other": "Are you sure you want to clear all tasks for this Flow?"
+    "other": "您确定要清除此流程的所有任务吗？"
   },
   "scheduler.trigger.picker.title": {
-    "other": "Trigger job on..."
+    "other": "触发任务..."
   },
   "scheduler.trigger.type.nodes": {
-    "other": "Files and folders (nodes) events : detect files modifications to move them or update their metadata automatically."
+    "other": "文件和文件夹(节点) 事件：检测文件修改以自动移动它们或更新其元数据。"
   },
   "scheduler.trigger.type.workspaces": {
-    "other": "Workspace events : triggered on workspace creation / deletion. Use the Scope flag to filter Workspaces from Cells"
+    "other": "工作区事件：在工作区创建/删除时触发。 使用范围标志从单元中过滤工作区"
   },
   "scheduler.trigger.type.acls": {
-    "other": "ACL events : access control lists link workspaces, nodes and roles together to provide accesses to data."
+    "other": "ACL事件：访问控制列表将工作区、节点和角色链接在一起以提供对数据的访问。"
   },
   "scheduler.trigger.type.users": {
     "other": "用户事件：添加/删除用户以及用户登录和注销时触发。可用于触发验证流程或分配访问权限。"
   },
   "scheduler.trigger.type.roles": {
-    "other": "Role events : can be used to automate accesses based on role names. Use IsTeam, IsGroup, IsUser flags to filter roles."
+    "other": "角色事件：可用于根据角色名称自动进行访问。 使用 IsTeam、IsGroup、IsUser 标志来过滤角色。"
   },
   "scheduler.trigger.type.chat": {
-    "other": "Chat Events: react to new chat message or chat room modification"
+    "other": "聊天事件：对新的聊天消息或聊天室修改做出反应"
   },
   "scheduler.trigger.type.chat-messages": {
-    "other": "Chat Messages Events"
+    "other": "聊天消息事件"
   },
   "scheduler.trigger.type.chat-rooms": {
-    "other": "Chat Rooms Events"
+    "other": "聊天室事件"
   },
   "scheduler.trigger.create.node": {
     "other": "创建节点"
   },
   "scheduler.trigger.create.node.description": {
-    "other": "A new file was uploaded or a new folder was created."
+    "other": "新文件已上传或新文件夹已创建。"
   },
   "scheduler.trigger.read.node": {
     "other": "读取节点"
   },
   "scheduler.trigger.read.node.description": {
-    "other": "A file was downloaded or a folder content was listed."
+    "other": "已下载文件或列出文件夹内容。"
   },
   "scheduler.trigger.update.path": {
     "other": "更新路径"
   },
   "scheduler.trigger.update.path.description": {
-    "other": "A file or folder was moved or renamed."
+    "other": "文件或文件夹已被移动或重命名。"
   },
   "scheduler.trigger.update.content": {
     "other": "更新内容"
   },
   "scheduler.trigger.update.content.description": {
-    "other": "A file content was updated by edition or upload overwriting."
+    "other": "文件内容已通过版本更新或上传覆盖。"
   },
   "scheduler.trigger.update.metadata": {
     "other": "更新元数据"
   },
   "scheduler.trigger.update.metadata.description": {
-    "other": "Internal metadata were modified on file or folder."
+    "other": "在文件或文件夹中修改了内部元数据。"
   },
   "scheduler.trigger.update.user-metadata": {
     "other": "更新用户元数据"
   },
   "scheduler.trigger.update.user-metadata.description": {
-    "other": "User-defined metadata were modified (event contains updated metadata)."
+    "other": "用户定义的元数据已被修改(事件包含更新的元数据)。"
   },
   "scheduler.trigger.delete.node": {
     "other": "删除节点"
   },
   "scheduler.trigger.delete.node.description": {
-    "other": "A file or a folder was definitively deleted."
+    "other": "文件或文件夹被明确删除。"
   },
   "scheduler.trigger.create.user": {
     "other": "创建用户"
   },
   "scheduler.trigger.create.user.description": {
-    "other": "A user or a group was created."
+    "other": "用户或组已创建。"
   },
   "scheduler.trigger.read.user": {
     "other": "读取用户"
   },
   "scheduler.trigger.read.user.description": {
-    "other": "A user or a group was accessed or listed."
+    "other": "用户或组已被访问或列出。"
   },
   "scheduler.trigger.update.user": {
     "other": "更新用户"
   },
   "scheduler.trigger.update.user.description": {
-    "other": "A user or a group data was updated. Typically happens if user changes a preference or admin assigns a role."
+    "other": "用户或组数据已更新。 如果用户更改首选项或管理员分配角色，通常会发生这种情况。"
   },
   "scheduler.trigger.delete.user": {
     "other": "删除用户"
   },
   "scheduler.trigger.delete.user.description": {
-    "other": "A user or a group was deleted."
+    "other": "用户或组已被删除。"
   },
   "scheduler.trigger.bind.user": {
     "other": "用户绑定"
