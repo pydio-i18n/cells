@@ -6,7 +6,7 @@
     "other": "代表模板的 16X16 图标"
   },
   "A user-defined description of the content of this workspace": {
-    "other": "A user-defined description of the content of this workspace"
+    "other": "用户定义的该工作区内容的描述"
   },
   "API endpoint - Used to launch the window allowing the user to authenticate and accept the terms of the app": {
     "other": "API端点-用于启动窗口，允许用户验证和接受应用程序的条款"
@@ -27,13 +27,13 @@
     "other": "管理员邮箱"
   },
   "Administrator email, not used for the moment": {
-    "other": "Administrator email, not used for the moment"
+    "other": "管理员邮箱，暂时不用"
   },
   "Alias": {
     "other": "别名"
   },
   "Alias for replacing the generated unique id of the repository": {
-    "other": "Alias for replacing the generated unique id of the workspace"
+    "other": "用于替换生成的工作区独特id的别名"
   },
   "Allow group administrators to create a repository from this template.": {
     "other": "允许组管理员从此模板创建存储库。"
