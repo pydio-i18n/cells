@@ -1,12 +1,12 @@
 {
   "PolicyGroup.Create": {
-    "other": "Create Policy"
+    "other": "创建政策"
   },
   "PolicyGroup.Filter": {
-    "other": "Filter Templates..."
+    "other": "过滤器模板..."
   },
   "PolicyGroup.Create.Manual": {
-    "other": "Manual Creation"
+    "other": "手动创建"
   },
   "PolicyGroup.Create.Templates": {
     "other": "模板"
