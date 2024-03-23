@@ -57,7 +57,7 @@
     "other": "用户 ID"
   },
   "22": {
-    "other": "Profile"
+    "other": "资料"
   },
   "23": {
     "other": "默认工作区"
@@ -177,10 +177,10 @@
     "other": "显示角色"
   },
   "dashboard.filterByType": {
-    "other": "Filter by Type..."
+    "other": "按类型筛选..."
   },
   "dashboard.filterSelectOne": {
-    "other": "Please select at least one role type in the list"
+    "other": "请在列表中至少选择一种角色类型"
   },
   "roleType": {
     "other": "角色类型"
