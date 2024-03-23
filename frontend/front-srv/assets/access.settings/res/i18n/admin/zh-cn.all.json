@@ -2025,85 +2025,85 @@
     "other": "用户绑定"
   },
   "scheduler.trigger.bind.user.description": {
-    "other": "A user has logged in."
+    "other": "用户已登录。"
   },
   "scheduler.trigger.logout.user": {
     "other": "用户注销"
   },
   "scheduler.trigger.logout.user.description": {
-    "other": "A user has logged out."
+    "other": "用户已登出。"
   },
   "scheduler.trigger.role.create": {
-    "other": "Create Role"
+    "other": "创建角色"
   },
   "scheduler.trigger.role.create.description": {
-    "other": "A new role was created, by admin or by users."
+    "other": "由管理员或用户创建了一个新角色。"
   },
   "scheduler.trigger.role.update": {
-    "other": "Update Role"
+    "other": "更新角色"
   },
   "scheduler.trigger.role.update.description": {
-    "other": "A role has been updated."
+    "other": "角色已更新。"
   },
   "scheduler.trigger.role.delete": {
-    "other": "Delete Role"
+    "other": "删除角色"
   },
   "scheduler.trigger.role.delete.description": {
-    "other": "A role has been deleted."
+    "other": "角色已被删除。"
   },
   "scheduler.trigger.workspace.create": {
-    "other": "Create Workspace"
+    "other": "创建工作区"
   },
   "scheduler.trigger.workspace.create.description": {
-    "other": "A new Workspace or Cell was created."
+    "other": "创建了一个新的工作区或单元格。"
   },
   "scheduler.trigger.workspace.update": {
-    "other": "Update Workspace"
+    "other": "更新工作区"
   },
   "scheduler.trigger.workspace.update.description": {
-    "other": "A Workspace or a Cell has been updated."
+    "other": "工作区或单元格已更新。"
   },
   "scheduler.trigger.workspace.delete": {
-    "other": "Delete Workspace"
+    "other": "删除工作区"
   },
   "scheduler.trigger.workspace.delete.description": {
-    "other": "A Workspace or a Cell has been deleted."
+    "other": "工作区或单元格已删除。"
   },
   "scheduler.trigger.acl.create": {
-    "other": "Create/Update ACL"
+    "other": "创建/更新 ACL"
   },
   "scheduler.trigger.acl.create.description": {
-    "other": "An Access Control was opened."
+    "other": "打开了访问控制。"
   },
   "scheduler.trigger.acl.delete": {
-    "other": "Delete ACL"
+    "other": "删除 ACL"
   },
   "scheduler.trigger.acl.delete.description": {
-    "other": "An Access Control was removed."
+    "other": "访问控制已删除。"
   },
   "scheduler.trigger.chat-message.put": {
-    "other": "New Chat Message"
+    "other": "新聊天消息"
   },
   "scheduler.trigger.chat-message.put.description": {
-    "other": "A Message was posted in a ChatRoom."
+    "other": "在聊天室中发布了一条消息。"
   },
   "scheduler.trigger.chat-message.delete": {
-    "other": "Chat Message Deleted"
+    "other": "聊天消息已删除"
   },
   "scheduler.trigger.chat-message.delete.description": {
-    "other": "A Message was deleted from a ChatRoom."
+    "other": "一条消息已从聊天室中删除。"
   },
   "scheduler.trigger.chat-room.put": {
-    "other": "New Chat Room"
+    "other": "新聊天室"
   },
   "scheduler.trigger.chat-room.put.description": {
-    "other": "A new ChatRoom was created."
+    "other": "创建了新的聊天室。"
   },
   "scheduler.trigger.chat-room.delete": {
-    "other": "Delete Chat Room"
+    "other": "删除聊天室"
   },
   "scheduler.trigger.chat-room.delete.description": {
-    "other": "A Chatroom has been deleted."
+    "other": "聊天室已被删除。"
   },
   "scheduler.trigger.events": {
     "other": "事件"
@@ -2112,7 +2112,7 @@
     "other": "手动触发"
   },
   "scheduler.trigger.periodic": {
-    "other": "Periodic Schedule"
+    "other": "定期时间表"
   },
   "scheduler.job.disabled": {
     "other": "禁用"
@@ -2238,7 +2238,7 @@
     "other": "全部..."
   },
   "scheduler.schedule.type.once": {
-    "other": "Run Once"
+    "other": "运行一次"
   },
   "scheduler.schedule.detail.monthday": {
     "other": "几号(月份)"
@@ -2250,7 +2250,7 @@
     "other": "时间"
   },
   "scheduler.schedule.detail.daydate": {
-    "other": "Unique Date"
+    "other": "唯一日期"
   },
   "scheduler.schedule.detail.minutes": {
     "other": "持续时间（分钟）"
