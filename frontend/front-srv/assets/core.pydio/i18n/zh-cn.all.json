@@ -2025,16 +2025,16 @@
     "other": "P"
   },
   "plugtype.desc.access": {
-    "other": "Plugins defining how a workspace will both access its backend (a file storage or whatever else) and major layouts and actions."
+    "other": "定义工作区如何访问其后端(文件存储或其他任何文件) 以及主要布局和动作的插件。"
   },
   "plugtype.desc.action": {
-    "other": "Feature oriented plugins for various aspects"
+    "other": "面向各个方面的功能插件"
   },
   "plugtype.desc.auth": {
-    "other": "How users data are stored in the backend"
+    "other": "用户数据如何存储在后端"
   },
   "plugtype.desc.authfront": {
-    "other": "Methods for gathering identification credentials (web form, api key, etc)"
+    "other": "收集身份凭证的方法(网络表格、api 密钥等)"
   },
   "plugtype.desc.boot": {
     "other": "Unique plugin for loading the framework"
