@@ -138,10 +138,10 @@
     "other": "邮寄者"
   },
   "Mail.Config.From.Label": {
-    "other": "默认邮件地址"
+    "other": "默认发件人电子邮件地址"
   },
   "Mail.Config.From.Description": {
-    "other": "发送电子邮件时使用默认地址。您应该使用适当的支持电子邮件而不是非回复电子邮件。"
+    "other": "发送电子邮件时默认使用的地址。您应该使用适当的支持电子邮件，而不是不回复电子邮件。"
   },
   "Mail.Config.FixOutlookDisplay": {
     "other": "Outlook客户端修复(禁用CSS内联)"
@@ -168,10 +168,10 @@
     "other": "已禁用 (不启用电子邮件)"
   },
   "Mail.Config.NoOp.Label": {
-    "other": "否(启用电子邮件，但不发送任何东西)"
+    "other": "No-Op(启用电子邮件但不发送任何内容)"
   },
   "Mail.Config.NoOp.Dump": {
-    "other": "写入邮件到文件来进行调试"
+    "other": "将电子邮件写入文件以进行调试"
   },
   "Mail.Config.NoOp.DumpTarget": {
     "other": "用来写入邮件的目标文件夹"
@@ -189,7 +189,7 @@
     "other": "服务器端口"
   },
   "Mail.Config.Smtp.Port.Description": {
-    "other": "SMTP服务器端口，例如 587（不安全）或 465（TLS）"
+    "other": "SMTP服务器端口，例如 587(不安全)或 465(TLS)"
   },
   "Mail.Config.Smtp.User.Label": {
     "other": "连接的用户"
@@ -228,7 +228,7 @@
     "other": "Api 密钥"
   },
   "Mail.Config.SendGrid.ApiKey.Description": {
-    "other": "连接 SendGrid 的 Api 密钥"
+    "other": "SendGrid 提供的 Api Key 用于连接服务"
   },
   "Mail.Config.Sendmail.Label": {
     "other": "邮件程序"
@@ -255,15 +255,15 @@
     "other": "要使用的发件人地址和名称"
   },
   "Mail.Config.FromCtl.Description": {
-    "other": "定义要使用哪个发件人地址/名称。如果没有配置用户电子邮件地址，所有情况下都会使用默认的 FROM 地址和名称。"
+    "other": "定义要使用哪个发件人地址/名称。如果未配置用户电子邮件地址，则在所有情况下都将使用默认的发件人地址和名称。"
   },
   "Mail.Config.FromCtlUser.Label": {
-    "other": "发送来自用户的邮件"
+    "other": "从用户发送邮件"
   },
   "Mail.Config.FromCtlSender.Label": {
-    "other": "发送邮件给用户"
+    "other": "代表用户发送邮件"
   },
   "Mail.Config.FromCtlDefault.Label": {
-    "other": "总是从默认的 FROM 地址/名称发送"
+    "other": "始终从默认发件人地址/名称发送"
   }
 }
