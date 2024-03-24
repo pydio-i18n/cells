@@ -9,7 +9,7 @@
     "other": "加载中..."
   },
   "ds.board.ds.legend": {
-    "other": "数据源是数据的实际存储存储位置，由Pydio聚合到全局树中。它们可以根据需要分布到许多存储节点上。"
+    "other": "数据源是由 Pydio 聚合到全局树中的具体存储位置。 它们可以根据需要分布在许多存储节点上。"
   },
   "ds.board.ds.title": {
     "other": "数据源"
@@ -24,7 +24,7 @@
     "other": "您可以定义每个数据源上如何为文件生成版本，以及程序在一段时间内保留多少版本。"
   },
   "ds.board.versioning.title": {
-    "other": "版本策略"
+    "other": "版本政策"
   },
   "ds.board.wsfromds.title": {
     "other": "创建工作区"
@@ -42,7 +42,7 @@
     "other": "创建数据源"
   },
   "ds.format-picker.legend": {
-    "other": "数据源是挂载点，允许您将实际存储附加到应用程序。首先选择存储中数据的组织方式。"
+    "other": "数据源是装载点，允许您将实际存储附加到应用程序。首先选择数据在存储器中的组织方式。"
   },
   "ds.format-picker.submit": {
     "other": "开始"
@@ -60,7 +60,7 @@
     "other": "树形结构反映在存储中并实时同步维护。 不建议使用此旧选项，并且仅应将其用于导入现有数据。 它是基于事件的，不得在高负载或集群安装中使用。"
   },
   "ds.format-picker.internal.title": {
-    "other": "内部资料库"
+    "other": "单元内部"
   },
   "ds.format-picker.internal.legend": {
     "other": "用于存储内部二进制文件(例如文件版本、缩略图)。 功能有限，数据未在搜索引擎中建立索引。"
@@ -99,13 +99,13 @@
     "other": "用新密钥设置加密..."
   },
   "ds.editor.enc.validate": {
-    "other": "我明白了"
+    "other": "我明白"
   },
   "ds.editor.enc.warning": {
     "other": "警告！"
   },
   "ds.editor.legend.delete.1": {
-    "other": "删除数据源是一个破坏性的操作：虽然它不会删除存储中的实际数据。，但它将摧毁现有的索引并取消链接到此索引节点的所有ACL。"
+    "other": "删除数据源是一个破坏性的操作：虽然它不会删除底层存储中的数据，但它会破坏现有索引并取消链接到索引节点的所有 ACL。"
   },
   "ds.editor.legend.delete.2": {
     "other": "请确保在删除之前先删除指向此数据源的所有工作区。"
@@ -114,13 +114,13 @@
     "other": "删除数据源"
   },
   "ds.editor.legend.local": {
-    "other": "文件系统数据源通过对象存储服务器提供服务，将会以S3的存储桶作为父目录。 为此，选定的文件夹必须符合下列要求："
+    "other": "文件系统数据源通过对象存储服务器提供文件服务，该服务器从父文件夹启动并将目标作为 s3 存储桶提供服务。 因此，所选文件夹必须满足以下要求："
   },
   "ds.editor.legend.local.li.1": {
     "other": "至少有两级深度。"
   },
   "ds.editor.legend.local.li.2": {
-    "other": "父文件夹必须可写"
+    "other": "父文件夹必须可由应用程序服务用户写入"
   },
   "ds.editor.legend.local.li.3": {
     "other": "目标文件夹必须符合DNS名称(小写，无空格或特殊字符)。"
@@ -132,13 +132,13 @@
     "other": "重新同步"
   },
   "ds.editor.legend.s3.1": {
-    "other": "远程存储数据源将通过远程、兼容 S3 存储的文件服务来代理所有请求而提供文件服务。"
+    "other": "远程存储数据源将通过代理所有请求来为来自远程s3兼容存储的文件提供服务。"
   },
   "ds.editor.legend.s3.2": {
-    "other": "使用标准的 API Key/ Api Secret进行身份验证，使用官方Amazon S3则将URL留空， 或填写您自己的S3兼容存储的URL。"
+    "other": "使用标准 API 密钥/Api秘密进行身份验证，将亚马逊S3 的终端节点 URL 留空，或将您的存储 URL 用于其他内部部署解决方案。"
   },
   "ds.editor.storage.legend.fs": {
-    "other": "浏览本地或网络附加文件系统的数据。"
+    "other": "从本地或网络连接的文件系统浏览数据。"
   },
   "ds.editor.storage.legend.fs.peer": {
     "other": "限制数据源到某一个节点时，将会仅启动一个特定节点的服务。 使用\"Any\"值，将在运行 Cells 的所有节点上启动服务，如果所有节点上的相同位置挂载了共享文件系统，或者如果你的节点在重新启动时可能改变其 IP，这会很方便。为避免冲突，最好对所有数据源使用 ANY，或为所有数据源都选择特定节点。"
@@ -147,31 +147,31 @@
     "other": "请确保最后一个文件夹名是小写的，其父文件夹是可写的。 如果您现有的文件夹是大写，您可以使用别名链接来处理此限制。"
   },
   "ds.editor.storage.legend.s3": {
-    "other": "浏览Amazon S3存储库或兼容的 S3 存储库的数据。"
+    "other": "浏览亚马逊S3存储桶或兼容的 S3 存储库的数据。"
   },
   "ds.editor.storage.legend.azure": {
     "other": "浏览Azure Blob 存储桶中的数据。"
   },
   "ds.editor.storage.legend.gcs": {
-    "other": "浏览来自谷歌云存储桶（GCS）的数据。"
+    "other": "浏览来自谷歌云存储桶的数据。"
   },
   "ds.editor.storage.legend.versioning": {
-    "other": "设置版本控制策略来保存文件内容修改历史。请注意它将使用额外的存储空间。"
+    "other": "设置版本控制政策来保存文件内容修改历史。请注意它将使用额外的存储空间。"
   },
   "ds.editor.storage.legend.encryption": {
-    "other": "静态加密可以用来确保文件永远不会以清晰的格式存储在存储器中。如果您不信任存储提供程序，这可能会很有用。"
+    "other": "静态加密可用于确保文件永远不会以明文格式存储在存储中。 如果您不信任存储提供商，这可能很有用。"
   },
   "ds.editor.storage.readOnly": {
     "other": "只读模式"
   },
   "ds.editor.storage.legend.readOnly": {
-    "other": "如果您不允许程序写入任何隐藏文件并使用ETags作为校验（这对于存储桶中有大量的存在数据来说非常必要），请设置为只读模式。请注意，任何在该数据源中创建的工作区都被设置为只读，文件将无法移动。"
+    "other": "如果您要求 Cell 永远不写入任何隐藏文件并使用本机 eTags 作为校验和(这对于具有大量现有数据的存储桶来说可能是必要的)，请使用只读模式。 但是，请注意，在此数据源上创建的任何工作区都应设置为只读，因为移动功能无法正常运行。"
   },
   "ds.editor.storage.flatStorage": {
-    "other": "保持存储上的数据结构"
+    "other": "将数据结构保存在存储中"
   },
   "ds.editor.storage.legend.flatStorage": {
-    "other": "平面(无结构)存储性能最好。 只有当您明确要在实际存储中生成文件和文件夹(或者说对应到原有的文件夹结构)时，才使用结构化存储。 创建数据源后无法更改此项。"
+    "other": "扁平(非结构化) 存储最适合性能。 仅当您希望确保查看实际存储中复制的文件和文件夹(或映射到包含预先存在的数据的文件夹) 时，才使用结构化存储。 创建数据源后不能更改。"
   },
   "ds.editor.storage.skipResync": {
     "other": "重启时跳过完全重新同步"
@@ -189,7 +189,7 @@
     "other": "为了正确的检测文件变更，文件校验码(md5) 由Cells来计算(或者可能的话由储存的副本来计算) 并作为元数据附加到对象上。 处于最佳性能的考虑，使用原生ETags标志来保留存储原始值，但是这将会禁用此数据源上的桌面同步功能。 您还可以通过本地存储元数据，避免在计算校验和时修改对象。"
   },
   "ds.editor.new": {
-    "other": "新建数据源"
+    "other": "新数据源"
   },
   "ds.editor.name.inuse": {
     "other": "此名称已被使用，请务必选择另一个名称！"
@@ -213,7 +213,7 @@
     "other": "选择一个文件夹"
   },
   "ds.editor.selector.completer.hint": {
-    "other": "从列表中选择，或输入路径并按回车键入确认"
+    "other": "从列表中选择或输入路径并按 Enter 键"
   },
   "ds.editor.selector.completer.create": {
     "other": "文件夹将被创建"
@@ -225,7 +225,7 @@
     "other": "文件夹作为 S3 存储桶公开，必须符合 DNS 名称 (小写，无空格或特殊字符) 的要求。"
   },
   "ds.editor.selector.folder": {
-    "other": "本地目录"
+    "other": "本地文件夹"
   },
   "ds.editor.selector.folder.hint": {
     "other": "选择一个对等点加载文件夹"
@@ -234,10 +234,10 @@
     "other": "对等地址"
   },
   "ds.editor.selector.peer.any": {
-    "other": "任何节点 (唯一节点或分布的 FS)"
+    "other": "任何对等点(唯一节点或分布式 FS)"
   },
   "ds.editor.selector.peer.word": {
-    "other": "节点 / Peer"
+    "other": "对等点"
   },
   "ds.editor.selector.peer.invalid": {
     "other": "无效"
@@ -249,7 +249,7 @@
     "other": "在 %s 下创建一个新文件夹"
   },
   "ds.editor.selector.mkdir.field": {
-    "other": "文件夹名"
+    "other": "文件夹名称"
   },
   "ds.editor.storage.fs.macos": {
     "other": "操作系统是 MacOSX"
@@ -261,28 +261,28 @@
     "other": "Azure密钥"
   },
   "ds.editor.storage.azure.bucket": {
-    "other": "存储空间名"
+    "other": "桶名称"
   },
   "ds.editor.storage.gcs.credentials": {
     "other": "粘贴GCS JSON 凭据文件的内容"
   },
   "ds.editor.storage.gcs.bucket": {
-    "other": "存储空间名"
+    "other": "桶名称"
   },
   "ds.editor.storage.s3.api": {
-    "other": "S3 Api Key"
+    "other": "S3 Api 密钥"
   },
   "ds.editor.storage.s3.bucket": {
-    "other": "存储空间名"
+    "other": "桶名称"
   },
   "ds.editor.storage.s3.endpoint.type": {
-    "other": "接口类型"
+    "other": "端点类型"
   },
   "ds.editor.storage.s3.signatureVersion": {
     "other": "签名版本"
   },
   "ds.editor.storage.s3.endpoint.amazon": {
-    "other": "Amazon S3"
+    "other": "亚马逊 S3"
   },
   "ds.editor.storage.s3.endpoint.custom": {
     "other": "S3 兼容存储"
@@ -291,7 +291,7 @@
     "other": "Minio 服务器"
   },
   "ds.editor.storage.s3.endpoint": {
-    "other": "自定义终点URL"
+    "other": "自定义端点 URL"
   },
   "ds.editor.storage.s3.endpoint.hint": {
     "other": "包括 http(s)://"
@@ -303,19 +303,19 @@
     "other": "内部路径"
   },
   "ds.editor.storage.s3.secret": {
-    "other": "S3 Api Secret"
+    "other": "S3 Api 秘密"
   },
   "ds.editor.storage.buckets.legend": {
-    "other": "选择一个或多个bucet"
+    "other": "选择一个或多个桶"
   },
   "ds.editor.storage.buckets.reload": {
-    "other": "重新加载buckets"
+    "other": "重新装载桶"
   },
   "ds.editor.storage.buckets.create": {
-    "other": "创建 Bucket"
+    "other": "创建桶"
   },
   "ds.editor.storage.buckets.create.hint": {
-    "other": "Bucket名称"
+    "other": "桶名称"
   },
   "ds.editor.storage.buckets.regexp": {
     "other": "使用正则表达式"
