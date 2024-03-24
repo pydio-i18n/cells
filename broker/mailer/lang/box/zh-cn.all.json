@@ -1,6 +1,6 @@
 {
   "Mail.Main.Copyright": {
-    "other": "自豪的采用 Pydio 的文件共享平台"
+    "other": "由 Pydio 提供支持的文件共享平台"
   },
   "Mail.Main.Troubleshoot": {
     "other": "如果您无法使用 {ACTION} -按钮，只需复制并粘贴下面的 URL 到您的浏览器。"
@@ -12,7 +12,7 @@
     "other": "诚挚的"
   },
   "Mail.ResetPassword.Subject": {
-    "other": "来自 {{.Configs.Title}} 的重置密码请求"
+    "other": "请求重置 {{.Configs.Title}} 的密码"
   },
   "Mail.ResetPassword.Intros": {
     "other": "已收到您在 {{.Configs.Title}} 上的帐户的重置密码请求。"
@@ -81,10 +81,10 @@
     "other": "{{.TplData.Inviter}} 将您添加到 {{.TplData.Cell}}"
   },
   "Mail.Cell.Intros": {
-    "other": "{{.TplData.Inviter}} 已将您加入了{{.Configs.Title}}上的 {{.TplData.Cell}} ！您可以开始一起分享文件和文件夹并高效地进行合作。"
+    "other": "{{.TplData.Inviter}} 已将您纳入 {{.Configs.Title}} 的单元格 {{.TplData.Cell}} 中！ 您可以开始一起共享文件和文件夹并高效协作。"
   },
   "Mail.Cell.LinkInstructions": {
-    "other": "点击打开资料库"
+    "other": "单击打开单元格"
   },
   "Mail.Cell.LinkLabel": {
     "other": "打开 {{.TplData.Cell}}"
@@ -114,7 +114,7 @@
     "other": "打开 {{.TplData.FolderName}}"
   },
   "Mail.PublicFolder.LinkInstructions": {
-    "other": "点击以在浏览器中预览您的文档"
+    "other": "点击以在您的浏览器中预览文档"
   },
   "Mail.PublicFolder.Outros": {
     "other": "{{.Configs.Title}} 文件共享平台被 {{.TplData.Inviter}} 团队用于高效率地协作文档。"
@@ -126,7 +126,7 @@
     "other": "{{.TplData.Message}}"
   },
   "Mail.AdminTestMail.LinkLabel": {
-    "other": "打开资料库"
+    "other": "打开单元格"
   },
   "Mail.AdminTestMail.LinkInstructions": {
     "other": "点击打开前端"
@@ -135,7 +135,7 @@
     "other": "团队使用 {{.Configs.Title}} 文件共享平台来高效地协作文档。"
   },
   "Mail.Config.Title": {
-    "other": "邮件服务器"
+    "other": "邮寄者"
   },
   "Mail.Config.From.Label": {
     "other": "默认邮件地址"
