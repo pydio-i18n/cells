@@ -108,7 +108,7 @@
     "other": "描述"
   },
   "upgrade.ed.version.legend": {
-    "other": "点击下一步将下载新版本并替换您当前的Cells文件。 如果您需要恢复上一个版本，可在Cells的配置目录 (在%s) 中找到备份文件。"
+    "other": "点击“下一步”现在将下载这个新版本并替换您当前的 Cells 二进制文件。 如果您需要恢复，原始可执行文件的备份将保存在您的单元格配置文件夹(位于 %s 下) 中。"
   },
   "upgrade.ed.version.nomatch": {
     "other": "无法找到类似的Cells企业版"
