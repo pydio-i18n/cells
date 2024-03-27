@@ -6,7 +6,7 @@
     "other": "{{.Object}}訪問"
   },
   "AccessedObjectBy": {
-    "other": "{{.Object}} 已被 {{.Actor}} 訪問"
+    "other": "{{.Object}} 已被 {{.Actor}} 存取"
   },
   "Cell": {
     "other": "單元"
