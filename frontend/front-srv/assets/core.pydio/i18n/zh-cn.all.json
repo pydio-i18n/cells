@@ -2352,22 +2352,22 @@
     "other": "搜索： "
   },
   "searchengine.scope.title": {
-    "other": "搜索中......"
+    "other": "搜索..."
   },
   "searchengine.share.title": {
-    "other": "共享状态"
+    "other": "共享"
   },
   "searchengine.share.hint": {
     "other": "无状态"
   },
   "searchengine.share.option.link": {
-    "other": "对外共享"
+    "other": "公共链接"
   },
   "searchengine.share.option.cell": {
-    "other": "内部共享"
+    "other": "在单元格中共享"
   },
   "searchengine.share.option.any": {
-    "other": "内部或外部共享"
+    "other": "公共链接或单元格"
   },
   "searchengine.format.title": {
     "other": "格式"
@@ -2391,7 +2391,7 @@
     "other": "保存查询"
   },
   "searchengine.query.action.clear": {
-    "other": "清空"
+    "other": "清除"
   },
   "searchengine.query.action.clear-all": {
     "other": "全部清除"
@@ -2478,7 +2478,7 @@
     "other": "打开文档在..."
   },
   "workspace.quota-usage": {
-    "other": "配额使用"
+    "other": "额度使用情况"
   },
   "action.delete.permanently": {
     "other": "永久删除"
