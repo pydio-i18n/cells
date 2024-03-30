@@ -6,7 +6,7 @@
     "other": "所有角色"
   },
   "Allow Group Listing": {
-    "other": "允许群组列表"
+    "other": "允许组列表"
   },
   "Allow Role Listing": {
     "other": "允许角色列表"
@@ -42,7 +42,7 @@
     "other": "核心SQL连接"
   },
   "Country": {
-    "other": "国家/地区"
+    "other": "国家"
   },
   "User Country": {
     "other": "用户国家"
