@@ -1977,19 +1977,19 @@
     "other": "H:i"
   },
   "date_relative_today": {
-    "other": "[Today at] LT"
+    "other": "[Heute um] LT"
   },
   "date_relative_tomorrow": {
-    "other": "[Tomorrow at] LT"
+    "other": "[Morgen um] LT"
   },
   "date_relative_yesterday": {
-    "other": "[Yesterday at] LT"
+    "other": "[Gestern um] LT"
   },
   "date_relative_lastweek": {
-    "other": "[Last] dddd [at] LT"
+    "other": "[Letzten] dddd [um] LT"
   },
   "date_relative_nextweek": {
-    "other": "dddd [at] LT"
+    "other": "dddd [um] LT"
   },
   "delete_access_key": {
     "other": "L"
