@@ -2436,7 +2436,7 @@
     "other": "Click to modify"
   },
   "chat.dropzone.remove": {
-    "other": "Remove"
+    "other": "Eliminar"
   },
   "chat.dropzone.preview": {
     "other": "Include preview?"
@@ -2457,7 +2457,7 @@
     "other": "Revert Changes"
   },
   "chat.msg.delete": {
-    "other": "Delete Message"
+    "other": "Borrar mensaje"
   },
   "chat.msg.delete.confirm.title": {
     "other": "Delete Message?"
