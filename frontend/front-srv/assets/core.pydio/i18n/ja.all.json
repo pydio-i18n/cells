@@ -2256,10 +2256,10 @@
     "other": "ファイル名に / を使用しないでください！"
   },
   "filename.forbidden.empty": {
-    "other": "You must provide a name!"
+    "other": "ファイル名を指定してください！"
   },
   "filename.trailing-leading.spaces": {
-    "other": "Warning, it seems that the name begins or ends with a blank character (perhaps a typo?)"
+    "other": "警告: 名前は空白の文字で始まるか、または終わるようです(もしかしてタイプミスですか?)"
   },
   "rename.newvalue.error.similar": {
     "other": "名前を変更するには、別の値を使用してください!"
@@ -2346,7 +2346,7 @@
     "other": "5MB未満の画像を使用してください"
   },
   "searchengine.start": {
-    "other": "Start typing to search for files and folders"
+    "other": "ファイルとフォルダを検索するために入力を開始"
   },
   "searchengine.searching": {
     "other": "検索中..."
@@ -2439,10 +2439,10 @@
     "other": "削除"
   },
   "chat.dropzone.preview": {
-    "other": "Include preview?"
+    "other": "プレビューを含めますか？"
   },
   "chat.dropzone.inline": {
-    "other": "Insert inline"
+    "other": "インライン挿入"
   },
   "chat.load-older": {
     "other": "古い項目"
