@@ -45,7 +45,7 @@
     "other": "パラメータキャッシュを読み込んでいます、しばらくお待ちください、これは一度だけ行われます..."
   },
   "24": {
-    "other": "Account"
+    "other": "アカウント"
   },
   "25": {
     "other": "アクセス制限"
@@ -81,10 +81,10 @@
     "other": "アクセスコントロール"
   },
   "35": {
-    "other": "Workspaces"
+    "other": "ワークスペース"
   },
   "36": {
-    "other": "Pages"
+    "other": "ページ"
   },
   "37": {
     "other": "パラメータのカスタマイズ"
@@ -174,7 +174,7 @@
     "other": "ユーザーロールの管理"
   },
   "roles.picker.add": {
-    "other": "Add role"
+    "other": "ロールを追加"
   },
   "roles.picker.hint": {
     "other": "Start typing to search roles..."
@@ -225,15 +225,15 @@
     "other": "ワークスペース全体"
   },
   "section.user-info": {
-    "other": "User Info"
+    "other": "ユーザー情報"
   },
   "section.permissions": {
-    "other": "Permissions"
+    "other": "アクセス許可"
   },
   "section.security": {
-    "other": "Security"
+    "other": "セキュリティ"
   },
   "section.advanced": {
-    "other": "Advanced"
+    "other": "高度な設定"
   }
 }
