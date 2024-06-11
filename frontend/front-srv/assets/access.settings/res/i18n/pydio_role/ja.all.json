@@ -126,13 +126,13 @@
     "other": "メインアプリケーションページ(マイアカウント、ウェルカムページなど) へのアクセス"
   },
   "application-params.title": {
-    "other": "Parameters and actions"
+    "other": "パラメーターとアクション"
   },
   "application-params.legend": {
-    "other": "Modify UX parameters and show/hide certain actions for a specific role, globally or by workspace."
+    "other": "UXパラメータを変更し、特定のロール、グローバルまたはワークスペースの特定のアクションを表示/非表示にします。"
   },
   "application-params.legend.user-disclaimer": {
-    "other": "As a general rule, this should be managed at role level, not user level!"
+    "other": "一般的なルールとして、これはユーザーレベルではなくロールレベルで管理されるべきです！"
   },
   "49": {
     "other": "共有"
@@ -153,7 +153,7 @@
     "other": "%1 がワークスペース %2 内から共有しました"
   },
   "54": {
-    "other": "User informations and security actions. Hover fields in the form below to display explanations."
+    "other": "ユーザー情報とセキュリティアクション。下のフィールドにカーソルを合わせると説明が表示されます。"
   },
   "55": {
     "other": "プロファイルとロールを切り替えて、このユーザーに権限を自動的に付与します。"
@@ -177,10 +177,10 @@
     "other": "ロールを追加"
   },
   "roles.picker.hint": {
-    "other": "Start typing to search roles..."
+    "other": "入力してロールを検索..."
   },
   "roles.picker.effective": {
-    "other": "Effective role for %s"
+    "other": "%sの有効なロール"
   },
   "parameters.scope.selector.title": {
     "other": "追加..."
