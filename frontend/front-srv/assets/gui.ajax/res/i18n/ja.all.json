@@ -153,25 +153,25 @@
     "other": "クリップボードにコピーできませんでした。"
   },
   "layouts.preferences": {
-    "other": "Manage Layouts"
+    "other": "レイアウトを管理"
   },
   "layouts.preferences.legend": {
-    "other": "Save and Recall Layouts as Presets"
+    "other": "レイアウトをプリセットとして保存"
   },
   "layouts.action.rename": {
-    "other": "Rename Layout"
+    "other": "レイアウトの名前を変更"
   },
   "layouts.action.remove": {
-    "other": "Remove Layout"
+    "other": "レイアウトの削除"
   },
   "layouts.action.remove.confirm": {
-    "other": "Do you want to remove this layout?"
+    "other": "このレイアウトを削除しますか？"
   },
   "layouts.action.reset": {
-    "other": "Reset Layout"
+    "other": "レイアウトをリセット"
   },
   "layouts.action.reset.confirm": {
-    "other": "Do you want to reset the current layout?"
+    "other": "現在のレイアウトをリセットしますか？"
   },
   "layouts.action.create": {
     "other": "Save Layout..."
