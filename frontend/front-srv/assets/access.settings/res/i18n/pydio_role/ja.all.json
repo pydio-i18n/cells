@@ -111,13 +111,13 @@
     "other": "現在のロール/ユーザー/グループのワークスペースへのアクセスを許可"
   },
   "permissions.legend.user": {
-    "other": "Provide access to workspaces for the current user, overriding permissions inherited from user's roles. Use 'Manage Roles' to add/remove roles and identify the sources of inherited permissions."
+    "other": "ユーザのロールから継承された権限を上書きする、現在のユーザのワークスペースへのアクセス権を提供します。 ロールを追加/削除し、継承された権限のソースを特定するには、「ロールの管理」を使用します。"
   },
   "permissions.legend.group": {
-    "other": "Provide access to workspaces for the current group. These permissions will be inherited by all users belonging this group."
+    "other": "現在のグループのワークスペースへのアクセスを提供します。これらの権限は、このグループに属するすべてのユーザーに継承されます。"
   },
   "permissions.legend.role": {
-    "other": "Provide access to workspaces for the current role. These permissions will be applied to all users to whom the role has been assigned."
+    "other": "現在のロールに対するワークスペースへのアクセスを提供します。これらの権限は、ロールが割り当てられたすべてのユーザーに適用されます。"
   },
   "44": {
     "other": "アプリケーションのメインページ"
