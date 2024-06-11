@@ -201,16 +201,16 @@
     "other": "チーム (アドレス帳のチームとして表示)"
   },
   "roleType.IsUserRole": {
-    "other": "[Tech] User"
+    "other": "[Tech] ユーザー"
   },
   "roleType.IsUserRole.description": {
-    "other": "[Technical] Created automatically for the corresponding User"
+    "other": "[Technical] 対応するユーザーのために自動的に作成されました"
   },
   "roleType.IsGroupRole": {
-    "other": "[Tech] Group"
+    "other": "[Tech] グループ"
   },
   "roleType.IsGroupRole.description": {
-    "other": "[Technical] Created automatically for the corresponding Group"
+    "other": "[Technical] 対応するグループのために自動的に作成されました"
   },
   "dashboard.typeFilter.admin": {
     "other": "標準ロール"
@@ -219,10 +219,10 @@
     "other": "ユーザー定義チーム"
   },
   "dashboard.typeFilter.IsUserRole": {
-    "other": "[Technical] Attached to each users"
+    "other": "[Technical] 各ユーザーにアタッチされました"
   },
   "dashboard.typeFilter.IsGroupRole": {
-    "other": "[Technical] Attached to each groups"
+    "other": "[Technical] 各グループにアタッチされました"
   },
   "last_update": {
     "other": "最終更新"
