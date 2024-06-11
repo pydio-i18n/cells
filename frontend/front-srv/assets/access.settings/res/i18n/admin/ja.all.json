@@ -1290,7 +1290,7 @@
     "other": "Public users are created for public links (one per link) and are hidden by default. It can be useful to list them to detect locked public links."
   },
   "user.rootgroup.legend": {
-    "other": "Permissions applied to the entire user hierarchy"
+    "other": "ユーザ階層全体に適用される権限"
   },
   "user.filter.internal": {
     "other": "内部ユーザー"
@@ -1932,13 +1932,13 @@
     "other": "このフローのすべてのタスクをクリアしてもよろしいですか？"
   },
   "scheduler.trigger.picker.title": {
-    "other": "Trigger job on..."
+    "other": "ジョブをトリガーする..."
   },
   "scheduler.trigger.type.nodes": {
-    "other": "Files and folders (nodes) events : detect files modifications to move them or update their metadata automatically."
+    "other": "ファイルとフォルダ(ノード)イベント:ファイルの変更を検出して、ファイルを移動したり、メタデータを自動的に更新したりします。"
   },
   "scheduler.trigger.type.workspaces": {
-    "other": "Workspace events : triggered on workspace creation / deletion. Use the Scope flag to filter Workspaces from Cells"
+    "other": "ワークスペースイベント: ワークスペースの作成/削除時にトリガーされます。セルからワークスペースをフィルタリングするには、スコープフラグを使用します"
   },
   "scheduler.trigger.type.acls": {
     "other": "ACL events : access control lists link workspaces, nodes and roles together to provide accesses to data."
@@ -1974,31 +1974,31 @@
     "other": "パスを更新"
   },
   "scheduler.trigger.update.path.description": {
-    "other": "A file or folder was moved or renamed."
+    "other": "ファイルまたはフォルダが移動または名前変更されました。"
   },
   "scheduler.trigger.update.content": {
     "other": "コンテンツを更新"
   },
   "scheduler.trigger.update.content.description": {
-    "other": "A file content was updated by edition or upload overwriting."
+    "other": "ファイルの内容は、編集またはアップロード上書きによって更新されました。"
   },
   "scheduler.trigger.update.metadata": {
     "other": "メタデータを更新"
   },
   "scheduler.trigger.update.metadata.description": {
-    "other": "Internal metadata were modified on file or folder."
+    "other": "ファイルまたはフォルダの内部メタデータが変更されました。"
   },
   "scheduler.trigger.update.user-metadata": {
     "other": "ユーザメタデータを更新"
   },
   "scheduler.trigger.update.user-metadata.description": {
-    "other": "User-defined metadata were modified (event contains updated metadata)."
+    "other": "ユーザー定義のメタデータが変更されました (イベントには更新されたメタデータが含まれています)。"
   },
   "scheduler.trigger.delete.node": {
     "other": "ノードを削除"
   },
   "scheduler.trigger.delete.node.description": {
-    "other": "A file or a folder was definitively deleted."
+    "other": "ファイルまたはフォルダが確実に削除されました。"
   },
   "scheduler.trigger.create.user": {
     "other": "ユーザーを作成"
