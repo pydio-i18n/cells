@@ -1941,16 +1941,16 @@
     "other": "ワークスペースイベント: ワークスペースの作成/削除時にトリガーされます。セルからワークスペースをフィルタリングするには、スコープフラグを使用します"
   },
   "scheduler.trigger.type.acls": {
-    "other": "ACL events : access control lists link workspaces, nodes and roles together to provide accesses to data."
+    "other": "ACL イベント : アクセス制御リストは、ワークスペース、ノード、ロールをリンクして、データへのアクセス権を提供します。"
   },
   "scheduler.trigger.type.users": {
-    "other": "User events : triggered when adding/removing user and when users log in and log out. Can be used for triggering validation flows or assigning accesses."
+    "other": "ユーザーイベント: ユーザーの追加/削除時、およびユーザーのログイン/ログアウト時にトリガーされます。バリデーションフローのトリガーやアクセスの割り当てに使用できます。"
   },
   "scheduler.trigger.type.roles": {
-    "other": "Role events : can be used to automate accesses based on role names. Use IsTeam, IsGroup, IsUser flags to filter roles."
+    "other": "ロールイベント: ロール名に基づいてアクセスを自動化するために使用できます。IsTeam, IsGroup, IsUser フラグを使用してロールをフィルタリングします。"
   },
   "scheduler.trigger.type.chat": {
-    "other": "Chat Events: react to new chat message or chat room modification"
+    "other": "チャットイベント: 新しいチャットメッセージまたはチャットルームの変更に反応します"
   },
   "scheduler.trigger.type.chat-messages": {
     "other": "チャットメッセージイベント"
@@ -2010,13 +2010,13 @@
     "other": "ユーザーの読み取り"
   },
   "scheduler.trigger.read.user.description": {
-    "other": "A user or a group was accessed or listed."
+    "other": "ユーザーまたはグループがアクセスまたはリストされました。"
   },
   "scheduler.trigger.update.user": {
     "other": "ユーザーを更新"
   },
   "scheduler.trigger.update.user.description": {
-    "other": "A user or a group data was updated. Typically happens if user changes a preference or admin assigns a role."
+    "other": "ユーザーまたはグループデータが更新されました。通常、ユーザーが設定を変更した場合や、管理者がロールを割り当てた場合に発生します。"
   },
   "scheduler.trigger.delete.user": {
     "other": "ユーザーを削除"
