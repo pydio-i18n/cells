@@ -12,13 +12,13 @@
     "other": "Enter"
   },
   "43": {
-    "other": "My Profile"
+    "other": "내 프로필"
   },
   "43t": {
     "other": "All my personal data"
   },
   "44": {
-    "other": "My Account"
+    "other": "내 계정"
   },
   "45": {
     "other": "Personal data"
@@ -63,13 +63,13 @@
     "other": "안드로이드"
   },
   "59": {
-    "other": "iPhone/iPad"
+    "other": "아이폰/아이패드"
   },
   "60": {
-    "other": "Mac OS"
+    "other": "맥OS"
   },
   "61": {
-    "other": "Windows"
+    "other": "윈도우즈"
   },
   "62": {
     "other": "<h2>[How-to] What is a workspace?</h2>\n            This video explains what Workspaces are in APPLICATION_TITLE\n            <ul>\n                <li>Why are Workspaces central in APPLICATION_TITLE?</li>\n                <li>What are Workspaces from a technical perspective?</li>\n                <li>How do they allow you to organise your data?</li>\n            </ul>\n            "
