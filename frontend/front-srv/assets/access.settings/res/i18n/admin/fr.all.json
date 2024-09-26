@@ -1350,7 +1350,7 @@
     "other": "Créer"
   },
   "virtual.create.error": {
-    "other": "Must differ from datasources"
+    "other": "Doit différer des Datasources"
   },
   "virtual.label": {
     "other": "Libellé"
