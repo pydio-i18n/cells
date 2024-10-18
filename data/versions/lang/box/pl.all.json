@@ -1,62 +1,62 @@
 {
   "Job.Version.Title": {
-    "other": "Event Based Job for replicating data for versioning"
+    "other": "Zadanie oparte na zdarzeniach do replikacji danych dla wersjonowania"
   },
   "Job.Version.StatusFile": {
-    "other": "Created version {{.Uuid}} inside version bucket "
+    "other": "Utworzono wersję {{.Uuid}} wewnątrz kosza wersji "
   },
   "Job.Version.StatusMeta": {
-    "other": "Created version metadata for {{.Uuid}}"
+    "other": "Utworzono metadane wersji dla {{.Uuid}}"
   },
   "Job.Version.StatusPrune": {
-    "one": "Pruned {{.Count}} version",
-    "other": "Pruned {{.Count}} versions"
+    "one": "Przycięto {{.Count}} wersję",
+    "other": "Przycięto {{.Count}} wersje"
   },
   "Job.Pruning.Title": {
-    "other": "Cleaning versions files for deleted nodes"
+    "other": "Czyszczenie plików wersji dla usuniętych węzłów"
   },
   "Job.Pruning.StatusDone": {
-    "one": "Successfully removed {{.Count}} version",
-    "other": "Successfully removed {{.Count}} versions."
+    "one": "Pomyślnie usunięto {{.Count}} wersję",
+    "other": "Pomyślnie usunięto {{.Count}} wersje."
   },
   "Config.GroupPolicy.Title": {
-    "other": "Policy"
+    "other": "Polityka"
   },
   "Config.GroupPolicy.Name.Label": {
-    "other": "Name"
+    "other": "Nazwa"
   },
   "Config.GroupPolicy.Name.Description": {
-    "other": "Policy Name"
+    "other": "Nazwa Polityki"
   },
   "Config.GroupPolicy.Description.Label": {
-    "other": "Description"
+    "other": "Opis"
   },
   "Config.GroupPolicy.Description.Description": {
-    "other": "Policy description"
+    "other": "Opis Polityki"
   },
   "Config.GroupPolicy.VersionsDataSourceName.Label": {
-    "other": "Store"
+    "other": "Przechowywanie"
   },
   "Config.GroupPolicy.VersionsDataSourceName.Description": {
-    "other": "DataSource used to store versions"
+    "other": "Źródło danych używane do przechowywania wersji"
   },
   "Config.GroupPolicy.VersionsDataSourceBucket.Label": {
-    "other": "Bucket"
+    "other": "Kosz"
   },
   "Config.GroupPolicy.VersionsDataSourceBucket.Description": {
-    "other": "Bucket used inside this datasource"
+    "other": "Kosz używany wewnątrz tego źródła danych"
   },
   "Config.GroupSizes.Title": {
-    "other": "Size Limits"
+    "other": "Kimity Rozmiaru"
   },
   "Config.GroupSizes.MaxTotalSize.Label": {
-    "other": "Global size of all versions kept in this bucket"
+    "other": "Globalny rozmiar wszystkich wersji przechowywanych w tym koszu"
   },
   "Config.GroupSizes.MaxTotalSize.Description": {
-    "other": "Limit the overall size taken. If limit is hit, oldest versions will be deleted. Use -1 for no limit"
+    "other": "Ogranicz całkowity zajęty rozmiar. Jeśli limit zostanie osiągnięty, najstarsze wersje będą usuwane. Użyj -1, aby wyłączyć limit"
   },
   "Config.GroupSizes.MaxSizePerFile.Label": {
-    "other": "Cumulated sizes for versions of one given file"
+    "other": "Suma rozmiarów dla wersji jednego danego pliku"
   },
   "Config.GroupSizes.MaxSizePerFile.Description": {
     "other": "Limit the size taken by all versions of one file. If limit is hit, oldest versions will be deleted. Use -1 for no limit"
