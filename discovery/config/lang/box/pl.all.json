@@ -108,37 +108,37 @@
     "other": "Prawda"
   },
   "contextMetaCondition.CIDRCondition": {
-    "other": "CIDRCondition"
+    "other": "WarunekCIDR"
   },
   "contextMetaCondition.EqualsSubjectCondition": {
-    "other": "Subject equals"
+    "other": "Podmiot równa się"
   },
   "contextMetaCondition.ResourceContainsCondition": {
-    "other": "Resource contains"
+    "other": "Zasób zawiera"
   },
   "contextMetaCondition.StringEqualCondition": {
-    "other": "String equals"
+    "other": "Ciąg znaków równa się"
   },
   "contextMetaCondition.StringMatchCondition": {
-    "other": "String matches"
+    "other": "Ciąg znaków pasuje"
   },
   "contextMetaCondition.StringPairsEqualCondition": {
-    "other": "StringPairs equals"
+    "other": "Pary ciągów znaków równe"
   },
   "contextMetaCondition.StringNotMatchCondition": {
-    "other": "String does not match"
+    "other": "Ciąg znaków nie pasuje"
   },
   "contextMetaCondition.WithinPeriodCondition": {
-    "other": "Date period"
+    "other": "Okres dat"
   },
   "contextMetaCondition.OfficeHoursCondition": {
-    "other": "Office Hours"
+    "other": "Godziny pracy"
   },
   "contextMetaCondition.DateAfterCondition": {
-    "other": "Date after"
+    "other": "Data po"
   },
   "contextMetaCondition.PathGlobCondition": {
-    "other": "Glob Matcher"
+    "other": "Dopasowywanie wzorca Glob"
   },
   "contextMetaCondition.BooleanCondition": {
     "other": "Boolean Value"
