@@ -23,16 +23,16 @@
     "other": "策略"
   },
   "Config.GroupPolicy.Name.Label": {
-    "other": "名称："
+    "other": "名稱"
   },
   "Config.GroupPolicy.Name.Description": {
-    "other": "策略名称"
+    "other": "策略名稱"
   },
   "Config.GroupPolicy.Description.Label": {
     "other": "說明"
   },
   "Config.GroupPolicy.Description.Description": {
-    "other": "策略内容描述"
+    "other": "策略描述"
   },
   "Config.GroupPolicy.VersionsDataSourceName.Label": {
     "other": "儲存"
@@ -92,12 +92,12 @@
     "other": "Number of versions to keep after original file deletion."
   },
   "Config.GroupRetention.NodeDeletedStrategy.KeepAll": {
-    "other": "Backup all existing versions"
+    "other": "備份所有現存版本"
   },
   "Config.GroupRetention.NodeDeletedStrategy.KeepLast": {
-    "other": "Backup most recent version only"
+    "other": "僅備份最新版本"
   },
   "Config.GroupRetention.NodeDeletedStrategy.KeepNone": {
-    "other": "Delete all existing versions"
+    "other": "刪除所有現存版本"
   }
 }
