@@ -12,7 +12,7 @@
     "other": "谢谢"
   },
   "Mail.ResetPassword.Subject": {
-    "other": "{{.Configs.Title}} 重置密码"
+    "other": "{{.Configs.Title}} 重置密碼"
   },
   "Mail.ResetPassword.Intros": {
     "other": "{{.Configs.Title}} 我们已收到您帐户的密码重置请求。"
@@ -60,16 +60,16 @@
     "other": "{{.Configs.Title}} 登录到"
   },
   "Mail.Welcome.Outros": {
-    "other": "{{.Configs.Title}} 您的团队使用文件共享平台来促进文档的协同工作。欢迎加入我们！"
+    "other": "{{.Configs.Title}} 您的團隊已在使用檔案共享平台高效協作辦公。我們非常歡迎您的加入！"
   },
   "Mail.Invite.Subject": {
-    "other": "{{.TplData.Inviter}}邀请您加入 {{.Configs.Title}}"
+    "other": "{{.TplData.Inviter}} 邀請您加入協作 {{.Configs.Title}}"
   },
   "Mail.Invite.Intros": {
-    "other": "{{.Configs.Title}}在{{.TplData.Inviter}} 中创建了您的帐户。登录名是{{.TplData.Login}}{{if .TplData.Password}}，密码是{{.TplData.Password}}。您可以在首次登录{{end}}时进行更改。"
+    "other": "{{.TplData.Inviter}} 在 {{.Configs.Title}} 中建立了您的帳號。登入名：{{.TplData.Login}}{{if .TplData.Password}}，密碼：{{.TplData.Password}}。您可以在首次登入 {{end}} 時更改。"
   },
   "Mail.Invite.LinkInstructions": {
-    "other": "点击登录"
+    "other": "點擊登入"
   },
   "Mail.Invite.LinkLabel": {
     "other": "{{.Configs.Title}}登录"
@@ -144,7 +144,7 @@
     "other": "当您使用默认地址发送邮件，You should use a proper support email instead of no-reply email."
   },
   "Mail.Config.FixOutlookDisplay": {
-    "other": "Outlook Clients Fix (disable CSS inlining)"
+    "other": "Outlook 用戶端修復（停用 CSS 內嵌）"
   },
   "Mail.Config.Queue.Label": {
     "other": "队列文件"
@@ -162,19 +162,19 @@
     "other": "郵件引擎"
   },
   "Mail.Config.Mailer.Description": {
-    "other": "Engine used to actually send emails"
+    "other": "用於實際發送電子郵件的引擎"
   },
   "Mail.Config.Disabled.Label": {
-    "other": "Disabled (do not enable emails)"
+    "other": "已停用（不啟用電子郵件）"
   },
   "Mail.Config.NoOp.Label": {
-    "other": "No-Op (enable emails but do not send anything)"
+    "other": "No-Op（啟用電子郵件但不發送任何內容）"
   },
   "Mail.Config.NoOp.Dump": {
-    "other": "Write emails to file for debugging purpose"
+    "other": "將電子郵件寫入檔案以進行調試"
   },
   "Mail.Config.NoOp.DumpTarget": {
-    "other": "Target folder for writing emails"
+    "other": "用於撰寫電子郵件的目標資料夾"
   },
   "Mail.Config.Smtp.Label": {
     "other": "SMTP服务器"
@@ -183,7 +183,7 @@
     "other": "本地服务器"
   },
   "Mail.Config.Smtp.Host.Description": {
-    "other": "Host of the SMTP server, e.g. smtp.gmail.com"
+    "other": "SMTP 伺服器的 Host，例如smtp.gmail.com"
   },
   "Mail.Config.Smtp.Port.Label": {
     "other": "服务器端口"
