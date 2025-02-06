@@ -1,12 +1,12 @@
 {
   "Search.Config.IndexContent.Label": {
-    "other": "Index Contents"
+    "other": "索引內容"
   },
   "Search.Config.IndexContent.Description": {
-    "other": "If set to true, indexer will look for the ContentRef metadata, read contents from this reference and index it for search."
+    "other": "如果設定為 true，索引器將尋找 ContentRef 元數據，從此引用中讀取內容並對其進行索引以進行搜尋。"
   },
   "Search.Config.ContentRef.Label": {
-    "other": "Content Reference Metadata"
+    "other": "內容參考屬性"
   },
   "Search.Config.ContentRef.Description": {
     "other": "Name of the metadata pointing to the internal file that contains textual representation of the original document. Such internal contents may be plain-text or gzip-encoded, depending on the text extraction tool used (e.g. Tika). The search engine typically indexes this content to enable full-text search. Make sure to prefix the metadata name with 'pydio:' to prevent data leakage."
