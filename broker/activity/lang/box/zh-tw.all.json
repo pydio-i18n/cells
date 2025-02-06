@@ -81,7 +81,7 @@
     "other": "{{.Object}} 由 {{.Actor}} 移动"
   },
   "Workspace": {
-    "other": "工作空间"
+    "other": "工作區"
   },
   "DateFormat": {
     "other": "2006-01-02 15:04"
