@@ -111,7 +111,7 @@
     "other": "CIDR 條件"
   },
   "contextMetaCondition.EqualsSubjectCondition": {
-    "other": "Subject equals"
+    "other": "主體等於"
   },
   "contextMetaCondition.ResourceContainsCondition": {
     "other": "資源包含"
@@ -180,7 +180,7 @@
     "other": "條件"
   },
   "contextMetaSingleQuery.FieldName": {
-    "other": "Field Name"
+    "other": "欄位名稱"
   },
   "roleSingleQuery.HasAutoApply": {
     "other": "已啟用自動套用"
@@ -213,7 +213,7 @@
     "other": "修改日期（使用比較）"
   },
   "treeQuery.Extension": {
-    "other": "File Extension"
+    "other": "檔案副檔名"
   },
   "treeQuery.FileName": {
     "other": "檔名"
@@ -222,19 +222,19 @@
     "other": "檔名或內容"
   },
   "treeQuery.FreeString": {
-    "other": "Bleve-like search string"
+    "other": "類 Bleve 的搜尋字串"
   },
   "treeQuery.GeoQuery": {
-    "other": "Geolocation Query"
+    "other": "地理位置查詢"
   },
   "treeQuery.MaxDate": {
-    "other": "Modified before"
+    "other": "修改時間早於"
   },
   "treeQuery.MaxSize": {
-    "other": "MaxSize"
+    "other": "最大大小"
   },
   "treeQuery.MinDate": {
-    "other": "Modified since"
+    "other": "修改時間晚於"
   },
   "treeQuery.MinSize": {
     "other": "大小 >"
@@ -243,13 +243,13 @@
     "other": "不"
   },
   "treeQuery.PathDepth": {
-    "other": "Path Depth"
+    "other": "路徑深度"
   },
   "treeQuery.PathPrefix": {
-    "other": "Path Prefix"
+    "other": "路徑前綴"
   },
   "treeQuery.Paths": {
-    "other": "Absolute Paths"
+    "other": "絕對路徑"
   },
   "treeQuery.Type": {
     "other": "類型"
@@ -279,28 +279,28 @@
     "other": "屬性值"
   },
   "userSingleQuery.ConnectedSince": {
-    "other": "Connected Since"
+    "other": "自連線以來"
   },
   "userSingleQuery.FullPath": {
-    "other": "Full Path"
+    "other": "完整路徑"
   },
   "userSingleQuery.GroupPath": {
-    "other": "Group Path"
+    "other": "群組路徑"
   },
   "userSingleQuery.HasProfile": {
-    "other": "Has Profile"
+    "other": "具有設定檔"
   },
   "userSingleQuery.HasRole": {
     "other": "Has Role"
   },
   "userSingleQuery.Login": {
-    "other": "Login"
+    "other": "登入"
   },
   "userSingleQuery.NodeType": {
-    "other": "Object Type"
+    "other": "物件類型"
   },
   "userSingleQuery.NodeType.GROUP": {
-    "other": "Group"
+    "other": "群組"
   },
   "userSingleQuery.NodeType.UNKNOWN": {
     "other": "任何"
