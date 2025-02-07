@@ -45,7 +45,7 @@
     "other": "Are you sure you want to delete this team? This will not remove any users."
   },
   "53": {
-    "other": "Getting Started"
+    "other": "馬上開始"
   },
   "54": {
     "other": "Get started with APPLICATION_TITLE by following How-to videos"
@@ -75,7 +75,7 @@
     "other": "<h2>[操作教學] 什麼是工作區？</h2>\n            這部影片將說明在 APPLICATION_TITLE 中，工作區是什麼：\n            <ul>\n                <li>為什麼工作區在 APPLICATION_TITLE 中如此關鍵？</li>\n                <li>從技術面來看，工作區到底是什麼？</li>\n                <li>它們如何幫助您組織並管理資料？</li>\n            </ul>\n            "
   },
   "63": {
-    "other": "<h2>[How-to] Upload files to APPLICATION_TITLE</h2>\n            Get started with APPLICATION_TITLE and see how to upload files\n            <ul>\n                <li>Drag and drop files into APPLICATION_TITLE</li>\n                <li>Create a new folder</li>\n                <li>Rename files and folders</li>\n                <li>Download files to your Computer</li>\n            </ul>\n            "
+    "other": "<h2>[教學] 上傳檔案至 APPLICATION_TITLE</h2>\n            開始使用 APPLICATION_TITLE 並了解如何上傳檔案\n            <ul>\n                <li>將檔案拖移至 APPLICATION_TITLE</li>\n                <li>建立一個新資料夾</li>\n                <li>重命名檔案和資料夾</li>\n                <li>將檔案下載到您的電腦</li>\n            </ul>\n            "
   },
   "64": {
     "other": "<h2>[How-to] Search, browse and manage your files</h2>\n            This video shows you various tips to efficiently manage your files in APPLICATION_TITLE\n            <ul>\n                <li>Cross-workspaces search bar</li>\n                <li>Content display modes, Keyboard shortcuts</li>\n                <li>Sort Files</li>\n                <li>Meta Data, Bookmarks</li>\n            </ul>\n            "
