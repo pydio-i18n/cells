@@ -1,9 +1,9 @@
 {
   "Job.Version.Title": {
-    "other": "Event Based Job for replicating data for versioning"
+    "other": "自動化版本備份：透過事件觸發資料複製"
   },
   "Job.Version.StatusFile": {
-    "other": "Created version {{.Uuid}} inside version bucket "
+    "other": "已在版本儲存區內建立版本 {{.Uuid}} "
   },
   "Job.Version.StatusMeta": {
     "other": "Created version metadata for {{.Uuid}}"
