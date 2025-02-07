@@ -27,22 +27,22 @@
     "other": "Dev (at your own risks)"
   },
   "Update.Config.ProxyHost.Label": {
-    "other": "代理："
+    "other": "代理"
   },
   "Update.Config.ProxyHost.Description": {
     "other": "Host of a proxy server if required for outbound connections"
   },
   "Update.Config.ProxyUser.Label": {
-    "other": "代理用戶名"
+    "other": "代理使用者名稱"
   },
   "Update.Config.ProxyUser.Description": {
     "other": "User for proxy server identification"
   },
   "Update.Config.ProxyPassword.Label": {
-    "other": "代理服务器密碼 "
+    "other": "代理密碼"
   },
   "Update.Config.ProxyPassword.Description": {
-    "other": "代理服务器密码"
+    "other": "用於代理伺服器身份驗證的密碼"
   },
   "Update.Config.Disable.Label": {
     "other": "Disable update checks"
