@@ -72,7 +72,7 @@
     "other": "點擊登入"
   },
   "Mail.Invite.LinkLabel": {
-    "other": "{{.Configs.Title}}登录"
+    "other": "登入至 {{.Configs.Title}}"
   },
   "Mail.Invite.Outros": {
     "other": "{{.TplData.Inviter}} 團隊使用 {{.Configs.Title}} 檔案共享平台高效協作辦公。邀請您一同加入！"
