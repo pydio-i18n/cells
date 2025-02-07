@@ -3,7 +3,7 @@
     "other": "Update Configuration"
   },
   "Update.Config.Url.Label": {
-    "other": "Update Server"
+    "other": "更新伺服器"
   },
   "Update.Config.Url.Description": {
     "other": "Http URL of the update server"
@@ -15,16 +15,16 @@
     "other": "Official key used to verify binaries signature."
   },
   "Update.Config.Channel.Label": {
-    "other": "Update Channel"
+    "other": "更新頻道"
   },
   "Update.Config.Channel.Description": {
     "other": "Channel used for requesting for updates. Stick to Stable if you are not sure."
   },
   "Update.Config.Channel.ValueStable": {
-    "other": "Stable"
+    "other": "穩定"
   },
   "Update.Config.Channel.ValueDev": {
-    "other": "Dev (at your own risks)"
+    "other": "開發（請自行承擔風險）"
   },
   "Update.Config.ProxyHost.Label": {
     "other": "代理"
@@ -45,7 +45,7 @@
     "other": "用於代理伺服器身份驗證的密碼"
   },
   "Update.Config.Disable.Label": {
-    "other": "Disable update checks"
+    "other": "停用更新檢查"
   },
   "Update.Config.Disable.Description": {
     "other": "If your server has no access to outside world, do not try contact update site."
