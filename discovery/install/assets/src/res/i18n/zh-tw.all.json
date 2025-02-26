@@ -234,10 +234,10 @@
     "other": "使用 Amazon 時請留白"
   },
   "form.dsS3CustomRegion.label": {
-    "other": "S3 Custom region"
+    "other": "自訂 S3 區域"
   },
   "form.dsS3CustomRegion.legend": {
-    "other": "Leave empty for default (us-east-1)"
+    "other": "預設留空 (us-east-1)"
   },
   "form.dsS3ApiKey.label": {
     "other": "S3 API 金鑰"
@@ -252,13 +252,13 @@
     "other": "密鑰"
   },
   "form.dsS3ValidateKeys": {
-    "other": "Connect to S3 to define buckets"
+    "other": "連接到 S3 並定義存儲桶"
   },
   "form.s3BucketsPrefix.label": {
     "other": "儲存桶前綴"
   },
   "form.s3BucketsPrefix.legend": {
-    "other": "A unique prefix for creating the 6 default buckets"
+    "other": "用於建立6個預設儲存桶的前綴"
   },
   "form.bucketList.found": {
     "other": "以下儲存桶已經存在"
@@ -270,7 +270,7 @@
     "other": "找不到以下儲存桶"
   },
   "form.bucketList.warnCreate": {
-    "other": "You are not allowed to create buckets, make sure to create them manually!"
+    "other": "你無權建立儲存桶，請務必手動建立！"
   },
   "stepper.button.next": {
     "other": "下一步"
@@ -282,6 +282,6 @@
     "other": "立即安裝"
   },
   "stepper.button.reload": {
-    "other": "Reload"
+    "other": "重新讀取"
   }
 }
