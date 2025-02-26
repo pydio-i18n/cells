@@ -135,19 +135,19 @@
     "other": "{{.Configs.Title}} 檔案分享平台已被團隊使用並高效率地進行文件協作."
   },
   "Mail.Config.Title": {
-    "other": "发件人"
+    "other": "寄件者"
   },
   "Mail.Config.From.Label": {
-    "other": "默认邮件接收地址"
+    "other": "預設寄件者電子郵件地址"
   },
   "Mail.Config.From.Description": {
-    "other": "当您使用默认地址发送邮件，You should use a proper support email instead of no-reply email."
+    "other": "發送電子郵件時用作預設位址。您應該使用洽當的電子郵件而不是使用無回覆信箱。"
   },
   "Mail.Config.FixOutlookDisplay": {
-    "other": "Outlook 用戶端修復（停用 CSS 內嵌）"
+    "other": "Outlook 客戶端修復（停用 CSS 內嵌）"
   },
   "Mail.Config.Queue.Label": {
-    "other": "队列文件"
+    "other": "佇列類型"
   },
   "Mail.Config.Queue.Description": {
     "other": "用於存儲待發郵件的持久層"
@@ -156,10 +156,10 @@
     "other": "單文件數據庫(Bolt)"
   },
   "Mail.Config.Queue.ValueMemory": {
-    "other": "写入内存"
+    "other": "記憶體內"
   },
   "Mail.Config.Mailer.Label": {
-    "other": "郵件引擎"
+    "other": "電子郵件引擎"
   },
   "Mail.Config.Mailer.Description": {
     "other": "用於實際發送電子郵件的引擎"
@@ -177,43 +177,43 @@
     "other": "用於撰寫電子郵件的目標資料夾"
   },
   "Mail.Config.Smtp.Label": {
-    "other": "SMTP服务器"
+    "other": "SMTP伺服器"
   },
   "Mail.Config.Smtp.Host.Label": {
-    "other": "本地服务器"
+    "other": "伺服器主機"
   },
   "Mail.Config.Smtp.Host.Description": {
     "other": "SMTP 伺服器的 Host，例如smtp.gmail.com"
   },
   "Mail.Config.Smtp.Port.Label": {
-    "other": "服务器端口"
+    "other": "伺服器連接埠"
   },
   "Mail.Config.Smtp.Port.Description": {
-    "other": "SMTP服务器端口：e.g. 587 (non-secure) 或者465 (TLS)"
+    "other": "SMTP伺服器通訊埠：e.g. 587 (non-secure) 或者465 (TLS)"
   },
   "Mail.Config.Smtp.User.Label": {
-    "other": "联系用户"
+    "other": "使用者名稱"
   },
   "Mail.Config.Smtp.User.Description": {
-    "other": "SMTP服务器用户名错误"
+    "other": "連接到 SMTP 伺服器所需的帳號"
   },
   "Mail.Config.Smtp.Password.Label": {
-    "other": "连接密码"
+    "other": "使用者密碼"
   },
   "Mail.Config.Smtp.Password.Description": {
-    "other": "SMTP服务器密码错误"
+    "other": "連接到 SMTP 伺服器所需的密碼"
   },
   "Mail.Config.Smtp.Security.Label": {
     "other": "連線安全性"
   },
   "Mail.Config.Smtp.Security.Description": {
-    "other": "用於保護連線的協定。不支援 Clear，如果需要，請使用自訂 Sendmail。"
+    "other": "用於保護連線的協定。不支援清除協定，如果需要，請使用自訂 Sendmail。"
   },
   "Mail.Config.Smtp.SkipVerify.Label": {
     "other": "自簽憑證"
   },
   "Mail.Config.Smtp.SkipVerify.Description": {
-    "other": "如果您的 SMTP 伺服器憑證是自簽署的，請停用憑證驗證"
+    "other": "如果您的 SMTP 伺服器憑證是自簽憑證，請停用憑證驗證"
   },
   "Mail.Config.Smtp.LocalName.Label": {
     "other": "撥號器本機名稱"
@@ -225,10 +225,10 @@
     "other": "SendGrid 服務"
   },
   "Mail.Config.SendGrid.ApiKey.Label": {
-    "other": "Api密码"
+    "other": "Api密鑰"
   },
   "Mail.Config.SendGrid.ApiKey.Description": {
-    "other": "用於連接 SendGrid 服務的 Api Key"
+    "other": "用於連線 SendGrid 服務的 Api Key"
   },
   "Mail.Config.Sendmail.Label": {
     "other": "发送邮件"
