@@ -1,6 +1,6 @@
 {
   "39": {
-    "other": "Below is a list of the workspaces you can access to. They can be personal or shared with/by others users."
+    "other": "以下是您可以存取的工作區的清單。它們可以是個人的或與其他使用者共用/由其他使用者共用。"
   },
   "40": {
     "other": "歡迎， %s！ "
@@ -15,19 +15,19 @@
     "other": "我的資訊"
   },
   "43t": {
-    "other": "All my personal data"
+    "other": "我全部的個人資料"
   },
   "44": {
     "other": "我的帳號"
   },
   "45": {
-    "other": "Personal data"
+    "other": "個人資料"
   },
   "46": {
     "other": "Address Book"
   },
   "47": {
-    "other": "Users and teams that you created"
+    "other": "你建立的使用者及團隊"
   },
   "48": {
     "other": "My Users"
