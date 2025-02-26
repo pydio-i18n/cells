@@ -222,7 +222,7 @@
     "other": "儲存類型"
   },
   "form.dsType.FS": {
-    "other": "Local FS (store all data on this server)"
+    "other": "本機檔案系統 (所有資料都存在此伺服器上)"
   },
   "form.dsType.S3": {
     "other": "Amazon S3 / S3相容 (儲存於 S3 儲存桶)"
