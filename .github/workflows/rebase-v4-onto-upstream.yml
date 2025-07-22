@@ -1,0 +1,38 @@
+name: Rebase v4-dev onto upstream
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+env:
+  UPSTREAM_REPO: 'pydio/cells'
+  BRANCH_NAME: 'v4-dev'
+
+jobs:
+  sync:
+    environment: CICD
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout local target branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+          token: ${{ secrets.PYDIO_I18N_TOKEN }}
+
+      - name: Add upstream and fetch
+        run: |
+          git config --global user.email "${{ vars.I18N_USER_MAIL }}"
+          git config --global user.name "${{ vars.I18N_USER_NAME }}"
+          git config --global pull.rebase false
+          git remote add upstream https://github.com/${{ env.UPSTREAM_REPO }}.git
+          git fetch upstream ${{ env.BRANCH_NAME }}
+
+      - name: Rebase onto upstream branch
+        run: |
+          git checkout ${{ env.BRANCH_NAME }}
+          git rebase upstream/${{ env.BRANCH_NAME }}
+
+      - name: Push rebased branch
+        # --force is required because rebase rewrites history
+        run: git push origin ${{ env.BRANCH_NAME }} --force
