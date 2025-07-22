@@ -22,8 +22,8 @@ jobs:
 
       - name: Add upstream and fetch
         run: |
-          git config --global user.email "${{ vars.I18N_USER_MAIL }}"
-          git config --global user.name "${{ vars.I18N_USER_NAME }}"
+          git config --global user.email "${{ vars.PYDIO_I18N_MAIL }}"
+          git config --global user.name "${{ vars.PYDIO_I18N_NAME }}"
           git config --global pull.rebase false
           git remote add upstream https://github.com/${{ env.UPSTREAM_REPO }}.git
           git fetch upstream ${{ env.BRANCH_NAME }}
