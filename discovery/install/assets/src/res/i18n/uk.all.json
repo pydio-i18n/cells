@@ -24,7 +24,7 @@
     "other": "Будь ласка, переконайтеся, що ваша база даних працює на версії MySQL 5.6 або вище"
   },
   "database.installDetected": {
-    "other": "Схоже, у цій базі паролів вже встановлено ПЕЗ. Підтвердіть продовження або "
+    "other": "Схоже, у цій базі даних уже налаштовано інсталяцію Cells. Будь ласка, підтвердьте дію, щоб продовжити, або "
   },
   "database.installDetected.retry": {
     "other": "повторити з новим значенням"
@@ -138,7 +138,7 @@
     "other": "TCP"
   },
   "form.dbConnectionType.socket": {
-    "other": "Socket"
+    "other": "Сокет"
   },
   "form.dbConnectionType.manual": {
     "other": "Вручну"
@@ -147,7 +147,7 @@
     "other": "Ім'я хоста"
   },
   "form.dbTCPHostname.legend": {
-    "other": "Server where mysql is running"
+    "other": "Сервер, на якому запущено MySQL"
   },
   "form.dbName.label": {
     "other": "Ім'я бази даних"
@@ -159,7 +159,7 @@
     "other": "Порт"
   },
   "form.dbTCPPort.legend": {
-    "other": "Port to connect to mysql"
+    "other": "Порт для підключення до MySQL"
   },
   "form.dbUser.label": {
     "other": "Користувач"
