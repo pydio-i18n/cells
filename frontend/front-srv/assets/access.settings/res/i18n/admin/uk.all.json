@@ -858,7 +858,7 @@
     "other": "Color Labels"
   },
   "metadata.type.tags": {
-    "other": "Extensible Tags"
+    "other": "Розширювані теги"
   },
   "metadata.type.choice": {
     "other": "Select from values"
@@ -1350,7 +1350,7 @@
     "other": "Create"
   },
   "virtual.create.error": {
-    "other": "Must differ from datasources"
+    "other": "Має відрізнятися від джерел даних"
   },
   "virtual.label": {
     "other": "Label"
