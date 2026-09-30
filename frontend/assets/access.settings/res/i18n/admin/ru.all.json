@@ -839,6 +839,9 @@
   "metadata.toggle.write": {
     "other": "Ограничить редактирование администраторами"
   },
+  "metadata.toggle.closed.values": {
+    "other": "Restrict values to selection list"
+  },
   "metadata.type": {
     "other": "Тип"
   },
