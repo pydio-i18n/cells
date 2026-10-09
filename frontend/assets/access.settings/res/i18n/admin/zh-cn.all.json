@@ -839,6 +839,9 @@
   "metadata.toggle.write": {
     "other": "将版本限制为管理员"
   },
+  "metadata.toggle.closed.values": {
+    "other": "Restrict values to selection list"
+  },
   "metadata.type": {
     "other": "类型"
   },

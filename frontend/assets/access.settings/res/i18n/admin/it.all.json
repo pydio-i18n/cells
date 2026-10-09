@@ -839,6 +839,9 @@
   "metadata.toggle.write": {
     "other": "Limita la modifica agli amministratori"
   },
+  "metadata.toggle.closed.values": {
+    "other": "Restrict values to selection list"
+  },
   "metadata.type": {
     "other": "Tipo"
   },

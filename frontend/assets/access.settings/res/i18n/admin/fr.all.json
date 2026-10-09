@@ -839,6 +839,9 @@
   "metadata.toggle.write": {
     "other": "Limiter l'édition aux admins"
   },
+  "metadata.toggle.closed.values": {
+    "other": "Restreindre les valeurs à la liste de sélection"
+  },
   "metadata.type": {
     "other": "Type"
   },
