@@ -840,7 +840,7 @@
     "other": "Limiter l'édition aux admins"
   },
   "metadata.toggle.closed.values": {
-    "other": "Restrict values to selection list"
+    "other": "Restreindre les valeurs à la liste de sélection"
   },
   "metadata.type": {
     "other": "Type"
